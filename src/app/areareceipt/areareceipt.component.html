@@ -1,0 +1,1109 @@
+
+<div class="row nowrap">
+  <div class="col-md-12 ">
+        <div class="card-body fixitems" id="details" >
+          
+          <div style="display:flex;flex-wrap: wrap;">
+           
+            <table class="table" >
+              <thead>
+                <tr style="background:#223d61;color:white;">
+                  <td style="width:2%;"></td>
+                  <th style="width:18%;">Vazhipad</th>
+                  <th style="width:12%;">Name</th>
+                  <th style="width:8%;">Star</th>
+                  <th style="width:8%;">Dietee</th>
+                  <th style="width:4%;text-align:center;">Qty</th>
+                  <th style="width:7%;text-align:center;">Rate</th>
+                  <th style="width:7%;text-align:center;">Amount</th>
+                  <th style="width:9%;text-align:center;">Date</th>
+                  <td style="width:7%;text-align:center;">Single/Multi</td>
+                  <th style="width:10%;text-align:center;">Time</th>
+                  <th></th>
+                  <th></th>
+                </tr>
+              </thead>
+              
+              <tbody>
+                <tr>
+                  <td style="padding:10px;"></td>
+                  
+                 <td>
+                  <input matInput
+                  aria-label="vazhipad"
+                  [matAutocomplete]="auto"
+                  [formControl]="vazhipadCtrl" autofocus class="form-control sps" placeholder="Select Vazhipad" >
+                    <mat-autocomplete #auto="matAutocomplete">
+                      @for (vazhipad of filteredvazhipad | async; track vazhipad) {
+                        <mat-option [value]="vazhipad.name">
+                          <!-- <img alt="" class="example-option-img" [src]="vazhipad.flag" height="25"> -->
+                         <span> {{vazhipad.name}}</span>
+                          <!-- <small>Population: {{vazhipad.population}}</small> -->
+                        </mat-option>
+                      }
+                    </mat-autocomplete>
+                  
+                 </td>
+                  <td>
+                    <input type="text" class="form-control" placeholder="Enter Name">
+                  </td>
+                  <td>
+                    <select class="form-control" style="width:100%;height:30.6px;">
+                      <option>Select Star</option>
+                      <option>Aswathy</option>
+                      <option>Bharany</option>
+                      <option>Makayiram</option>
+                      <option>Karthika</option>
+                      <option>Thiruvathira</option>
+                      <option>Punartham</option>
+                      <option>Pooyam</option>
+                    </select>
+                  </td>
+                  <td >
+                    <select class="form-control" style="width:100%;height:30.6px;">
+                      <option>Select Diety</option>
+                      <option>Siva</option>
+                      <option>Vishnu</option>
+                      <option>Ganapathy</option>
+                    </select>
+                  </td>
+                  <td style="vertical-align: middle;text-align:center;">
+                    <input type="number" class="form-control" placeholder="Qty" value="1" style="vertical-align: middle;text-align:center;">
+                  </td>
+                  <td style="vertical-align: middle;text-align:center;">
+                    <label class="form-control spsr">&#8377; 2500</label>
+                  </td>
+                  <td style="vertical-align: middle;text-align:center;">
+                    <label class="form-control spsr">&#8377; 2500</label>
+                  </td>
+                  <td style="vertical-align: middle;text-align:center;">
+                    <p class="form-control" contenteditable style="font-size:10pt;background:none;">10-04-2024</p>
+                    <!-- <input type="date" class="form-control formdate"> -->
+                  </td>
+                  <td style="text-align:center;vertical-align:middle;">
+                    <app-multiday></app-multiday>
+                  </td>
+                  <td>
+                    <select class="form-control" style="width:80%;height:30.6px;">
+                      <option>രാവിലെ</option>
+                      <option>​വൈകുന്നേരം</option>
+                    </select>
+                  </td>
+                  <td>
+                    <a href="#"><mat-icon><span class="icons">add_comment</span></mat-icon></a>
+                  </td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td style="padding:2px;">
+                    <a href="#"  title="Delete"><mat-icon><span class="icons">delete</span></mat-icon></a>
+                  </td>
+                 
+                    <td>
+                      <input matInput
+                      aria-label="vazhipad"
+                      [matAutocomplete]="auto"
+                      [formControl]="vazhipadCtrl" autofocus class="form-control sps" placeholder="Select Vazhipad">
+                        <mat-autocomplete #auto="matAutocomplete">
+                          @for (vazhipad of filteredvazhipad | async; track vazhipad) {
+                            <mat-option [value]="vazhipad.name" style="padding-left:15px;padding-top:0px;">
+                              <!-- <img alt="" class="example-option-img" [src]="vazhipad.flag" height="25"> -->
+                              <span style="font-size:11pt;color:maroon;margin:0px;padding:0px;">{{vazhipad.name}}</span> 
+                              <!-- <small>Population: {{vazhipad.population}}</small> -->
+                            </mat-option>
+                          }
+                        </mat-autocomplete>
+                     </td>
+                      <td>
+                        <input type="text" class="form-control" placeholder="Enter Name">
+                      </td>
+                      <td>
+                        <select class="form-control" style="width:100%;height:30.6px;">
+                          <option>Select Star</option>
+                          <option>Aswathy</option>
+                          <option>Bharany</option>
+                          <option>Makayiram</option>
+                          <option>Karthika</option>
+                          <option>Thiruvathira</option>
+                          <option>Punartham</option>
+                          <option>Pooyam</option>
+                        </select>
+                      </td>
+                      <td >
+                        <select class="form-control" style="width:100%;height:30.6px;">
+                          <option>Select Diety</option>
+                          <option>Siva</option>
+                          <option>Vishnu</option>
+                          <option>Ganapathy</option>
+                        </select>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <input type="number" class="form-control" placeholder="Qty" value="1" style="vertical-align: middle;text-align:center;">
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <label class="form-control spsr">&#8377; 2500</label>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <label class="form-control spsr">&#8377; 2500</label>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <!-- <input type="date" class="form-control formdate"> -->
+                        <p class="form-control" style="font-size:6.8pt;background:none;">01-03-2024(50 D)</p>
+                      </td>
+                      <td style="text-align:center;vertical-align:middle;">
+                        <app-multiday></app-multiday>
+                      </td>
+                      <td>
+                        <select class="form-control" style="width:80%;height:30.6px;">
+                          <option>രാവിലെ</option>
+                          <option>​വൈകുന്നേരം</option>
+                        </select>
+                      </td>
+                      <td>
+                        <a href="#" color="accent"><mat-icon class="icons">add_comment</mat-icon></a>
+                      </td>
+                      <td>
+                        <app-morebutton></app-morebutton>
+                      </td>
+                </tr>
+                <tr>
+                  <td style="padding:2px;">
+                    <a href="#"  title="Delete"><mat-icon><span class="icons">delete</span></mat-icon></a>
+                  </td>
+                 
+                    <td>
+                      <input matInput
+                      aria-label="vazhipad"
+                      [matAutocomplete]="auto"
+                      [formControl]="vazhipadCtrl" autofocus class="form-control sps" placeholder="Select Vazhipad">
+                        <mat-autocomplete #auto="matAutocomplete">
+                          @for (vazhipad of filteredvazhipad | async; track vazhipad) {
+                            <mat-option [value]="vazhipad.name" style="padding-left:15px;padding-top:0px;">
+                              <!-- <img alt="" class="example-option-img" [src]="vazhipad.flag" height="25"> -->
+                              <span style="font-size:11pt;color:maroon;margin:0px;padding:0px;">{{vazhipad.name}}</span> 
+                              <!-- <small>Population: {{vazhipad.population}}</small> -->
+                            </mat-option>
+                          }
+                        </mat-autocomplete>
+                     </td>
+                      <td>
+                        <input type="text" class="form-control" placeholder="Enter Name">
+                      </td>
+                      <td>
+                        <select class="form-control" style="width:100%;height:30.6px;">
+                          <option>Select Star</option>
+                          <option>Aswathy</option>
+                          <option>Bharany</option>
+                          <option>Makayiram</option>
+                          <option>Karthika</option>
+                          <option>Thiruvathira</option>
+                          <option>Punartham</option>
+                          <option>Pooyam</option>
+                        </select>
+                      </td>
+                      <td >
+                        <select class="form-control" style="width:100%;height:30.6px;">
+                          <option>Select Diety</option>
+                          <option>Siva</option>
+                          <option>Vishnu</option>
+                          <option>Ganapathy</option>
+                        </select>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <input type="number" class="form-control" placeholder="Qty" value="1" style="vertical-align: middle;text-align:center;">
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <label class="form-control spsr">&#8377; 2500</label>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <label class="form-control spsr">&#8377; 2500</label>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <p class="form-control" contenteditable style="font-size:10pt;background:none;">10-04-2024</p>
+                        <!-- <input type="date" class="form-control formdate"> -->
+                      </td>
+                      <td style="text-align:center;vertical-align:middle;">
+                        <app-multiday></app-multiday>
+                      </td>
+                      <td>
+                        <select class="form-control" style="width:80%;height:30.6px;">
+                          <option>രാവിലെ</option>
+                          <option>​വൈകുന്നേരം</option>
+                        </select>
+                      </td>
+                      <td>
+                        <a href="#" color="accent"><mat-icon class="icons">add_comment</mat-icon></a>
+                      </td>
+                      <td>
+                        <!-- <app-morebutton></app-morebutton> -->
+                      </td>
+                </tr>
+                <tr>
+                  <td style="padding:2px;">
+                    <a href="#"  title="Delete"><mat-icon><span class="icons">delete</span></mat-icon></a>
+                  </td>
+                 
+                    <td>
+                      <input matInput
+                      aria-label="vazhipad"
+                      [matAutocomplete]="auto"
+                      [formControl]="vazhipadCtrl" autofocus class="form-control sps" placeholder="Select Vazhipad">
+                        <mat-autocomplete #auto="matAutocomplete">
+                          @for (vazhipad of filteredvazhipad | async; track vazhipad) {
+                            <mat-option [value]="vazhipad.name" style="padding-left:15px;padding-top:0px;">
+                              <!-- <img alt="" class="example-option-img" [src]="vazhipad.flag" height="25"> -->
+                              <span style="font-size:11pt;color:maroon;margin:0px;padding:0px;">{{vazhipad.name}}</span> 
+                              <!-- <small>Population: {{vazhipad.population}}</small> -->
+                            </mat-option>
+                          }
+                        </mat-autocomplete>
+                     </td>
+                      <td>
+                        <input type="text" class="form-control" placeholder="Enter Name">
+                      </td>
+                      <td>
+                        <select class="form-control" style="width:100%;height:30.6px;">
+                          <option>Select Star</option>
+                          <option>Aswathy</option>
+                          <option>Bharany</option>
+                          <option>Makayiram</option>
+                          <option>Karthika</option>
+                          <option>Thiruvathira</option>
+                          <option>Punartham</option>
+                          <option>Pooyam</option>
+                        </select>
+                      </td>
+                      <td >
+                        <select class="form-control" style="width:100%;height:30.6px;">
+                          <option>Select Diety</option>
+                          <option>Siva</option>
+                          <option>Vishnu</option>
+                          <option>Ganapathy</option>
+                        </select>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <input type="number" class="form-control" placeholder="Qty" value="1" style="vertical-align: middle;text-align:center;">
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <label class="form-control spsr">&#8377; 2500</label>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <label class="form-control spsr">&#8377; 2500</label>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <p class="form-control" contenteditable style="font-size:10pt;background:none;">10-04-2024</p>
+                      </td>
+                      <td style="text-align:center;vertical-align:middle;">
+                        <app-multiday></app-multiday>
+                      </td>
+                      <td>
+                        <select class="form-control" style="width:80%;height:30.6px;">
+                          <option>രാവിലെ</option>
+                          <option>​വൈകുന്നേരം</option>
+                        </select>
+                      </td>
+                      <td>
+                        <a href="#" color="accent"><mat-icon class="icons">add_comment</mat-icon></a>
+                      </td>
+                      <td>
+                        <!-- <app-morebutton></app-morebutton> -->
+                      </td>
+                </tr>
+                <tr>
+                  <td style="padding:2px;">
+                    <a href="#"  title="Delete"><mat-icon><span class="icons">delete</span></mat-icon></a>
+                  </td>
+                 
+                    <td>
+                      <input matInput
+                      aria-label="vazhipad"
+                      [matAutocomplete]="auto"
+                      [formControl]="vazhipadCtrl" autofocus class="form-control sps" placeholder="Select Vazhipad">
+                        <mat-autocomplete #auto="matAutocomplete">
+                          @for (vazhipad of filteredvazhipad | async; track vazhipad) {
+                            <mat-option [value]="vazhipad.name" style="padding-left:15px;padding-top:0px;">
+                              <!-- <img alt="" class="example-option-img" [src]="vazhipad.flag" height="25"> -->
+                              <span style="font-size:11pt;color:maroon;margin:0px;padding:0px;">{{vazhipad.name}}</span> 
+                              <!-- <small>Population: {{vazhipad.population}}</small> -->
+                            </mat-option>
+                          }
+                        </mat-autocomplete>
+                     </td>
+                      <td>
+                        <input type="text" class="form-control" placeholder="Enter Name">
+                      </td>
+                      <td>
+                        <select class="form-control" style="width:100%;height:30.6px;">
+                          <option>Select Star</option>
+                          <option>Aswathy</option>
+                          <option>Bharany</option>
+                          <option>Makayiram</option>
+                          <option>Karthika</option>
+                          <option>Thiruvathira</option>
+                          <option>Punartham</option>
+                          <option>Pooyam</option>
+                        </select>
+                      </td>
+                      <td >
+                        <select class="form-control" style="width:100%;height:30.6px;">
+                          <option>Select Diety</option>
+                          <option>Siva</option>
+                          <option>Vishnu</option>
+                          <option>Ganapathy</option>
+                        </select>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <input type="number" class="form-control" placeholder="Qty" value="1" style="vertical-align: middle;text-align:center;">
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <label class="form-control spsr">&#8377; 2500</label>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <label class="form-control spsr">&#8377; 2500</label>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <p class="form-control" contenteditable style="font-size:10pt;background:none;">10-04-2024</p>
+                      </td>
+                      <td style="text-align:center;vertical-align:middle;">
+                        <app-multiday></app-multiday>
+                      </td>
+                      <td>
+                        <select class="form-control" style="width:80%;height:30.6px;">
+                          <option>രാവിലെ</option>
+                          <option>​വൈകുന്നേരം</option>
+                        </select>
+                      </td>
+                      <td>
+                        <a href="#" color="accent"><mat-icon class="icons">add_comment</mat-icon></a>
+                      </td>
+                      <td>
+                        <!-- <app-morebutton></app-morebutton> -->
+                      </td>
+                </tr>
+                <tr>
+                  <td style="padding:2px;">
+                    <a href="#"  title="Delete"><mat-icon><span class="icons">delete</span></mat-icon></a>
+                  </td>
+                 
+                    <td>
+                      <input matInput
+                      aria-label="vazhipad"
+                      [matAutocomplete]="auto"
+                      [formControl]="vazhipadCtrl" autofocus class="form-control sps" placeholder="Select Vazhipad">
+                        <mat-autocomplete #auto="matAutocomplete">
+                          @for (vazhipad of filteredvazhipad | async; track vazhipad) {
+                            <mat-option [value]="vazhipad.name" style="padding-left:15px;padding-top:0px;">
+                              <!-- <img alt="" class="example-option-img" [src]="vazhipad.flag" height="25"> -->
+                              <span style="font-size:11pt;color:maroon;margin:0px;padding:0px;">{{vazhipad.name}}</span> 
+                              <!-- <small>Population: {{vazhipad.population}}</small> -->
+                            </mat-option>
+                          }
+                        </mat-autocomplete>
+                     </td>
+                      <td>
+                        <input type="text" class="form-control" placeholder="Enter Name">
+                      </td>
+                      <td>
+                        <select class="form-control" style="width:100%;height:30.6px;">
+                          <option>Select Star</option>
+                          <option>Aswathy</option>
+                          <option>Bharany</option>
+                          <option>Makayiram</option>
+                          <option>Karthika</option>
+                          <option>Thiruvathira</option>
+                          <option>Punartham</option>
+                          <option>Pooyam</option>
+                        </select>
+                      </td>
+                      <td >
+                        <select class="form-control" style="width:100%;height:30.6px;">
+                          <option>Select Diety</option>
+                          <option>Siva</option>
+                          <option>Vishnu</option>
+                          <option>Ganapathy</option>
+                        </select>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <input type="number" class="form-control" placeholder="Qty" value="1" style="vertical-align: middle;text-align:center;">
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <label class="form-control spsr">&#8377; 2500</label>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <label class="form-control spsr">&#8377; 2500</label>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                         <!-- <input type="date" class="form-control formdate"> -->
+                         <p class="form-control" style="font-size:6.8pt;background:none;">01-03-2024(360 D)</p>
+                      </td>
+                      <td style="text-align:center;vertical-align:middle;">
+                        <app-multiday></app-multiday>
+                      </td>
+                      <td>
+                        <select class="form-control" style="width:80%;height:30.6px;">
+                          <option>രാവിലെ</option>
+                          <option>​വൈകുന്നേരം</option>
+                        </select>
+                      </td>
+                      <td>
+                        <a href="#" color="accent"><mat-icon class="icons">add_comment</mat-icon></a>
+                      </td>
+                      <td>
+                        <app-morebutton></app-morebutton>
+                      </td>
+                </tr>
+                <tr>
+                  <td style="padding:2px;">
+                    <a href="#"  title="Delete"><mat-icon><span class="icons">delete</span></mat-icon></a>
+                  </td>
+                 
+                    <td>
+                      <input matInput
+                      aria-label="vazhipad"
+                      [matAutocomplete]="auto"
+                      [formControl]="vazhipadCtrl" autofocus class="form-control sps" placeholder="Select Vazhipad">
+                        <mat-autocomplete #auto="matAutocomplete">
+                          @for (vazhipad of filteredvazhipad | async; track vazhipad) {
+                            <mat-option [value]="vazhipad.name" style="padding-left:15px;padding-top:0px;">
+                              <!-- <img alt="" class="example-option-img" [src]="vazhipad.flag" height="25"> -->
+                              <span style="font-size:11pt;color:maroon;margin:0px;padding:0px;">{{vazhipad.name}}</span> 
+                              <!-- <small>Population: {{vazhipad.population}}</small> -->
+                            </mat-option>
+                          }
+                        </mat-autocomplete>
+                     </td>
+                      <td>
+                        <input type="text" class="form-control" placeholder="Enter Name">
+                      </td>
+                      <td>
+                        <select class="form-control" style="width:100%;height:30.6px;">
+                          <option>Select Star</option>
+                          <option>Aswathy</option>
+                          <option>Bharany</option>
+                          <option>Makayiram</option>
+                          <option>Karthika</option>
+                          <option>Thiruvathira</option>
+                          <option>Punartham</option>
+                          <option>Pooyam</option>
+                        </select>
+                      </td>
+                      <td >
+                        <select class="form-control" style="width:100%;height:30.6px;">
+                          <option>Select Diety</option>
+                          <option>Siva</option>
+                          <option>Vishnu</option>
+                          <option>Ganapathy</option>
+                        </select>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <input type="number" class="form-control" placeholder="Qty" value="1" style="vertical-align: middle;text-align:center;">
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <label class="form-control spsr">&#8377; 2500</label>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <label class="form-control spsr">&#8377; 2500</label>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <p class="form-control" contenteditable style="font-size:10pt;background:none;">10-04-2024</p>
+                      </td>
+                      <td style="text-align:center;vertical-align:middle;">
+                        <app-multiday></app-multiday>
+                      </td>
+                      <td>
+                        <select class="form-control" style="width:80%;height:30.6px;">
+                          <option>രാവിലെ</option>
+                          <option>​വൈകുന്നേരം</option>
+                        </select>
+                      </td>
+                      <td>
+                        <a href="#" color="accent"><mat-icon class="icons">add_comment</mat-icon></a>
+                      </td>
+                      <td>
+                        <!-- <app-morebutton></app-morebutton> -->
+                      </td>
+                </tr>
+                <tr>
+                  <td style="padding:2px;">
+                    <a href="#"  title="Delete"><mat-icon><span class="icons">delete</span></mat-icon></a>
+                  </td>
+                 
+                    <td>
+                      <input matInput
+                      aria-label="vazhipad"
+                      [matAutocomplete]="auto"
+                      [formControl]="vazhipadCtrl" autofocus class="form-control sps" placeholder="Select Vazhipad">
+                        <mat-autocomplete #auto="matAutocomplete">
+                          @for (vazhipad of filteredvazhipad | async; track vazhipad) {
+                            <mat-option [value]="vazhipad.name" style="padding-left:15px;padding-top:0px;">
+                              <!-- <img alt="" class="example-option-img" [src]="vazhipad.flag" height="25"> -->
+                              <span style="font-size:11pt;color:maroon;margin:0px;padding:0px;">{{vazhipad.name}}</span> 
+                              <!-- <small>Population: {{vazhipad.population}}</small> -->
+                            </mat-option>
+                          }
+                        </mat-autocomplete>
+                     </td>
+                      <td>
+                        <input type="text" class="form-control" placeholder="Enter Name">
+                      </td>
+                      <td>
+                        <select class="form-control" style="width:100%;height:30.6px;">
+                          <option>Select Star</option>
+                          <option>Aswathy</option>
+                          <option>Bharany</option>
+                          <option>Makayiram</option>
+                          <option>Karthika</option>
+                          <option>Thiruvathira</option>
+                          <option>Punartham</option>
+                          <option>Pooyam</option>
+                        </select>
+                      </td>
+                      <td >
+                        <select class="form-control" style="width:100%;height:30.6px;">
+                          <option>Select Diety</option>
+                          <option>Siva</option>
+                          <option>Vishnu</option>
+                          <option>Ganapathy</option>
+                        </select>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <input type="number" class="form-control" placeholder="Qty" value="1" style="vertical-align: middle;text-align:center;">
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <label class="form-control spsr">&#8377; 2500</label>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <label class="form-control spsr">&#8377; 2500</label>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                         <!-- <input type="date" class="form-control formdate"> -->
+                         <p class="form-control" style="font-size:6.8pt;background:none;">01-03-2024(150 D)</p>
+                      <td style="text-align:center;vertical-align:middle;">
+                        <app-multiday></app-multiday>
+                      </td>
+                      <td>
+                        <select class="form-control" style="width:80%;height:30.6px;">
+                          <option>രാവിലെ</option>
+                          <option>​വൈകുന്നേരം</option>
+                        </select>
+                      </td>
+                      <td>
+                        <a href="#" color="accent"><mat-icon class="icons">add_comment</mat-icon></a>
+                      </td>
+                      <td>
+                        <app-morebutton></app-morebutton>
+                      </td>
+                </tr>
+                <tr>
+                  <td style="padding:2px;">
+                    <a href="#"  title="Delete"><mat-icon><span class="icons">delete</span></mat-icon></a>
+                  </td>
+                 
+                    <td>
+                      <input matInput
+                      aria-label="vazhipad"
+                      [matAutocomplete]="auto"
+                      [formControl]="vazhipadCtrl" autofocus class="form-control sps" placeholder="Select Vazhipad">
+                        <mat-autocomplete #auto="matAutocomplete">
+                          @for (vazhipad of filteredvazhipad | async; track vazhipad) {
+                            <mat-option [value]="vazhipad.name" style="padding-left:15px;padding-top:0px;">
+                              <!-- <img alt="" class="example-option-img" [src]="vazhipad.flag" height="25"> -->
+                              <span style="font-size:11pt;color:maroon;margin:0px;padding:0px;">{{vazhipad.name}}</span> 
+                              <!-- <small>Population: {{vazhipad.population}}</small> -->
+                            </mat-option>
+                          }
+                        </mat-autocomplete>
+                     </td>
+                      <td>
+                        <input type="text" class="form-control" placeholder="Enter Name">
+                      </td>
+                      <td>
+                        <select class="form-control" style="width:100%;height:30.6px;">
+                          <option>Select Star</option>
+                          <option>Aswathy</option>
+                          <option>Bharany</option>
+                          <option>Makayiram</option>
+                          <option>Karthika</option>
+                          <option>Thiruvathira</option>
+                          <option>Punartham</option>
+                          <option>Pooyam</option>
+                        </select>
+                      </td>
+                      <td >
+                        <select class="form-control" style="width:100%;height:30.6px;">
+                          <option>Select Diety</option>
+                          <option>Siva</option>
+                          <option>Vishnu</option>
+                          <option>Ganapathy</option>
+                        </select>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <input type="number" class="form-control" placeholder="Qty" value="1" style="vertical-align: middle;text-align:center;">
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <label class="form-control spsr">&#8377; 2500</label>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <label class="form-control spsr">&#8377; 2500</label>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <p class="form-control" contenteditable style="font-size:10pt;background:none;">10-04-2024</p>
+                      </td>
+                      <td style="text-align:center;vertical-align:middle;">
+                        <app-multiday></app-multiday>
+                      </td>
+                      <td>
+                        <select class="form-control" style="width:80%;height:30.6px;">
+                          <option>രാവിലെ</option>
+                          <option>​വൈകുന്നേരം</option>
+                        </select>
+                      </td>
+                      <td>
+                        <a href="#" color="accent"><mat-icon class="icons">add_comment</mat-icon></a>
+                      </td>
+                      <td>
+                        <!-- <app-morebutton></app-morebutton> -->
+                      </td>
+                </tr>
+                <tr>
+                  <td style="padding:2px;">
+                    <a href="#"  title="Delete"><mat-icon><span class="icons">delete</span></mat-icon></a>
+                  </td>
+                 
+                    <td>
+                      <input matInput
+                      aria-label="vazhipad"
+                      [matAutocomplete]="auto"
+                      [formControl]="vazhipadCtrl" autofocus class="form-control sps" placeholder="Select Vazhipad">
+                        <mat-autocomplete #auto="matAutocomplete">
+                          @for (vazhipad of filteredvazhipad | async; track vazhipad) {
+                            <mat-option [value]="vazhipad.name" style="padding-left:15px;padding-top:0px;">
+                              <!-- <img alt="" class="example-option-img" [src]="vazhipad.flag" height="25"> -->
+                              <span style="font-size:11pt;color:maroon;margin:0px;padding:0px;">{{vazhipad.name}}</span> 
+                              <!-- <small>Population: {{vazhipad.population}}</small> -->
+                            </mat-option>
+                          }
+                        </mat-autocomplete>
+                     </td>
+                      <td>
+                        <input type="text" class="form-control" placeholder="Enter Name">
+                      </td>
+                      <td>
+                        <select class="form-control" style="width:100%;height:30.6px;">
+                          <option>Select Star</option>
+                          <option>Aswathy</option>
+                          <option>Bharany</option>
+                          <option>Makayiram</option>
+                          <option>Karthika</option>
+                          <option>Thiruvathira</option>
+                          <option>Punartham</option>
+                          <option>Pooyam</option>
+                        </select>
+                      </td>
+                      <td >
+                        <select class="form-control" style="width:100%;height:30.6px;">
+                          <option>Select Diety</option>
+                          <option>Siva</option>
+                          <option>Vishnu</option>
+                          <option>Ganapathy</option>
+                        </select>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <input type="number" class="form-control" placeholder="Qty" value="1" style="vertical-align: middle;text-align:center;">
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <label class="form-control spsr">&#8377; 2500</label>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <label class="form-control spsr">&#8377; 2500</label>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <p class="form-control" contenteditable style="font-size:10pt;background:none;">10-04-2024</p>
+                      </td>
+                      <td style="text-align:center;vertical-align:middle;">
+                        <app-multiday></app-multiday>
+                      </td>
+                      <td>
+                        <select class="form-control" style="width:80%;height:30.6px;">
+                          <option>രാവിലെ</option>
+                          <option>​വൈകുന്നേരം</option>
+                        </select>
+                      </td>
+                      <td>
+                        <a href="#" color="accent"><mat-icon class="icons">add_comment</mat-icon></a>
+                      </td>
+                      <td>
+                        <!-- <app-morebutton></app-morebutton> -->
+                      </td>
+                </tr>
+                <tr>
+                  <td style="padding:2px;">
+                    <a href="#"  title="Delete"><mat-icon><span class="icons">delete</span></mat-icon></a>
+                  </td>
+                 
+                    <td>
+                      <input matInput
+                      aria-label="vazhipad"
+                      [matAutocomplete]="auto"
+                      [formControl]="vazhipadCtrl" autofocus class="form-control sps" placeholder="Select Vazhipad">
+                        <mat-autocomplete #auto="matAutocomplete">
+                          @for (vazhipad of filteredvazhipad | async; track vazhipad) {
+                            <mat-option [value]="vazhipad.name" style="padding-left:15px;padding-top:0px;">
+                              <!-- <img alt="" class="example-option-img" [src]="vazhipad.flag" height="25"> -->
+                              <span style="font-size:11pt;color:maroon;margin:0px;padding:0px;">{{vazhipad.name}}</span> 
+                              <!-- <small>Population: {{vazhipad.population}}</small> -->
+                            </mat-option>
+                          }
+                        </mat-autocomplete>
+                     </td>
+                      <td>
+                        <input type="text" class="form-control" placeholder="Enter Name">
+                      </td>
+                      <td>
+                        <select class="form-control" style="width:100%;height:30.6px;">
+                          <option>Select Star</option>
+                          <option>Aswathy</option>
+                          <option>Bharany</option>
+                          <option>Makayiram</option>
+                          <option>Karthika</option>
+                          <option>Thiruvathira</option>
+                          <option>Punartham</option>
+                          <option>Pooyam</option>
+                        </select>
+                      </td>
+                      <td >
+                        <select class="form-control" style="width:100%;height:30.6px;">
+                          <option>Select Diety</option>
+                          <option>Siva</option>
+                          <option>Vishnu</option>
+                          <option>Ganapathy</option>
+                        </select>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <input type="number" class="form-control" placeholder="Qty" value="1" style="vertical-align: middle;text-align:center;">
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <label class="form-control spsr">&#8377; 2500</label>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <label class="form-control spsr">&#8377; 2500</label>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <p class="form-control" contenteditable style="font-size:10pt;background:none;">10-04-2024</p>
+                      </td>
+                      <td style="text-align:center;vertical-align:middle;">
+                        <app-multiday></app-multiday>
+                      </td>
+                      <td>
+                        <select class="form-control" style="width:80%;height:30.6px;">
+                          <option>രാവിലെ</option>
+                          <option>​വൈകുന്നേരം</option>
+                        </select>
+                      </td>
+                      <td>
+                        <a href="#" color="accent"><mat-icon class="icons">add_comment</mat-icon></a>
+                      </td>
+                      <td>
+                        <!-- <app-morebutton></app-morebutton> -->
+                      </td>
+                </tr>
+                <tr>
+                  <td style="padding:2px;">
+                    <a href="#"  title="Delete"><mat-icon><span class="icons">delete</span></mat-icon></a>
+                  </td>
+                 
+                    <td>
+                      <input matInput
+                      aria-label="vazhipad"
+                      [matAutocomplete]="auto"
+                      [formControl]="vazhipadCtrl" autofocus class="form-control sps" placeholder="Select Vazhipad">
+                        <mat-autocomplete #auto="matAutocomplete">
+                          @for (vazhipad of filteredvazhipad | async; track vazhipad) {
+                            <mat-option [value]="vazhipad.name" style="padding-left:15px;padding-top:0px;">
+                              <!-- <img alt="" class="example-option-img" [src]="vazhipad.flag" height="25"> -->
+                              <span style="font-size:11pt;color:maroon;margin:0px;padding:0px;">{{vazhipad.name}}</span> 
+                              <!-- <small>Population: {{vazhipad.population}}</small> -->
+                            </mat-option>
+                          }
+                        </mat-autocomplete>
+                     </td>
+                      <td>
+                        <input type="text" class="form-control" placeholder="Enter Name">
+                      </td>
+                      <td>
+                        <select class="form-control" style="width:100%;height:30.6px;">
+                          <option>Select Star</option>
+                          <option>Aswathy</option>
+                          <option>Bharany</option>
+                          <option>Makayiram</option>
+                          <option>Karthika</option>
+                          <option>Thiruvathira</option>
+                          <option>Punartham</option>
+                          <option>Pooyam</option>
+                        </select>
+                      </td>
+                      <td >
+                        <select class="form-control" style="width:100%;height:30.6px;">
+                          <option>Select Diety</option>
+                          <option>Siva</option>
+                          <option>Vishnu</option>
+                          <option>Ganapathy</option>
+                        </select>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <input type="number" class="form-control" placeholder="Qty" value="1" style="vertical-align: middle;text-align:center;">
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <label class="form-control spsr">&#8377; 2500</label>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <label class="form-control spsr">&#8377; 2500</label>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <p class="form-control" contenteditable style="font-size:10pt;background:none;">10-04-2024</p>
+                      </td>
+                      <td style="text-align:center;vertical-align:middle;">
+                        <app-multiday></app-multiday>
+                      </td>
+                      <td>
+                        <select class="form-control" style="width:80%;height:30.6px;">
+                          <option>രാവിലെ</option>
+                          <option>​വൈകുന്നേരം</option>
+                        </select>
+                      </td>
+                      <td>
+                        <a href="#" color="accent"><mat-icon class="icons">add_comment</mat-icon></a>
+                      </td>
+                      <td>
+                        <!-- <app-morebutton></app-morebutton> -->
+                      </td>
+                </tr>
+                <tr>
+                  <td style="padding:2px;">
+                    <a href="#"  title="Delete"><mat-icon><span class="icons">delete</span></mat-icon></a>
+                  </td>
+                 
+                    <td>
+                      <input matInput
+                      aria-label="vazhipad"
+                      [matAutocomplete]="auto"
+                      [formControl]="vazhipadCtrl" autofocus class="form-control sps" placeholder="Select Vazhipad">
+                        <mat-autocomplete #auto="matAutocomplete">
+                          @for (vazhipad of filteredvazhipad | async; track vazhipad) {
+                            <mat-option [value]="vazhipad.name" style="padding-left:15px;padding-top:0px;">
+                              <!-- <img alt="" class="example-option-img" [src]="vazhipad.flag" height="25"> -->
+                              <span style="font-size:11pt;color:maroon;margin:0px;padding:0px;">{{vazhipad.name}}</span> 
+                              <!-- <small>Population: {{vazhipad.population}}</small> -->
+                            </mat-option>
+                          }
+                        </mat-autocomplete>
+                     </td>
+                      <td>
+                        <input type="text" class="form-control" placeholder="Enter Name">
+                      </td>
+                      <td>
+                        <select class="form-control" style="width:100%;height:30.6px;">
+                          <option>Select Star</option>
+                          <option>Aswathy</option>
+                          <option>Bharany</option>
+                          <option>Makayiram</option>
+                          <option>Karthika</option>
+                          <option>Thiruvathira</option>
+                          <option>Punartham</option>
+                          <option>Pooyam</option>
+                        </select>
+                      </td>
+                      <td >
+                        <select class="form-control" style="width:100%;height:30.6px;">
+                          <option>Select Diety</option>
+                          <option>Siva</option>
+                          <option>Vishnu</option>
+                          <option>Ganapathy</option>
+                        </select>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <input type="number" class="form-control" placeholder="Qty" value="1" style="vertical-align: middle;text-align:center;">
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <label class="form-control spsr">&#8377; 2500</label>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <label class="form-control spsr">&#8377; 2500</label>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                         <!-- <input type="date" class="form-control formdate"> -->
+                         <p class="form-control" style="font-size:6.8pt;background:none;">01-03-2024(10 D)</p>
+                      </td>
+                      <td style="text-align:center;vertical-align:middle;">
+                        <app-multiday></app-multiday>
+                      </td>
+                      <td>
+                        <select class="form-control" style="width:80%;height:30.6px;">
+                          <option>രാവിലെ</option>
+                          <option>​വൈകുന്നേരം</option>
+                        </select>
+                      </td>
+                      <td>
+                        <a href="#" color="accent"><mat-icon class="icons">add_comment</mat-icon></a>
+                      </td>
+                      <td>
+                        <app-morebutton></app-morebutton>
+                      </td>
+                </tr>
+                <tr>
+                  <td style="padding:2px;">
+                    <a href="#"  title="Delete"><mat-icon><span class="icons">delete</span></mat-icon></a>
+                  </td>
+                 
+                    <td>
+                      <input matInput
+                      aria-label="vazhipad"
+                      [matAutocomplete]="auto"
+                      [formControl]="vazhipadCtrl" autofocus class="form-control sps" placeholder="Select Vazhipad">
+                        <mat-autocomplete #auto="matAutocomplete">
+                          @for (vazhipad of filteredvazhipad | async; track vazhipad) {
+                            <mat-option [value]="vazhipad.name" style="padding-left:15px;padding-top:0px;">
+                              <!-- <img alt="" class="example-option-img" [src]="vazhipad.flag" height="25"> -->
+                              <span style="font-size:11pt;color:maroon;margin:0px;padding:0px;">{{vazhipad.name}}</span> 
+                              <!-- <small>Population: {{vazhipad.population}}</small> -->
+                            </mat-option>
+                          }
+                        </mat-autocomplete>
+                     </td>
+                      <td>
+                        <input type="text" class="form-control" placeholder="Enter Name">
+                      </td>
+                      <td>
+                        <select class="form-control" style="width:100%;height:30.6px;">
+                          <option>Select Star</option>
+                          <option>Aswathy</option>
+                          <option>Bharany</option>
+                          <option>Makayiram</option>
+                          <option>Karthika</option>
+                          <option>Thiruvathira</option>
+                          <option>Punartham</option>
+                          <option>Pooyam</option>
+                        </select>
+                      </td>
+                      <td >
+                        <select class="form-control" style="width:100%;height:30.6px;">
+                          <option>Select Diety</option>
+                          <option>Siva</option>
+                          <option>Vishnu</option>
+                          <option>Ganapathy</option>
+                        </select>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <input type="number" class="form-control" placeholder="Qty" value="1" style="vertical-align: middle;text-align:center;">
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <label class="form-control spsr">&#8377; 2500</label>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <label class="form-control spsr">&#8377; 2500</label>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                         <!-- <input type="date" class="form-control formdate"> -->
+                         <p class="form-control" style="font-size:6.8pt;background:none;">01-03-2024(250 D)</p>
+                      </td>
+                      <td style="text-align:center;vertical-align:middle;">
+                        <app-multiday></app-multiday>
+                      </td>
+                      <td>
+                        <select class="form-control" style="width:80%;height:30.6px;">
+                          <option>രാവിലെ</option>
+                          <option>​വൈകുന്നേരം</option>
+                        </select>
+                      </td>
+                      <td>
+                        <a href="#" color="accent"><mat-icon class="icons">add_comment</mat-icon></a>
+                      </td>
+                      <td>
+                        <app-morebutton></app-morebutton>
+                      </td>
+                </tr>
+                <tr>
+                  <td style="padding:2px;">
+                    <a href="#"  title="Delete"><mat-icon><span class="icons">delete</span></mat-icon></a>
+                  </td>
+                 
+                    <td>
+                      <input matInput
+                      aria-label="vazhipad"
+                      [matAutocomplete]="auto"
+                      [formControl]="vazhipadCtrl" autofocus class="form-control sps" placeholder="Select Vazhipad">
+                        <mat-autocomplete #auto="matAutocomplete">
+                          @for (vazhipad of filteredvazhipad | async; track vazhipad) {
+                            <mat-option [value]="vazhipad.name" style="padding-left:15px;padding-top:0px;">
+                              <!-- <img alt="" class="example-option-img" [src]="vazhipad.flag" height="25"> -->
+                              <span style="font-size:11pt;color:maroon;margin:0px;padding:0px;">{{vazhipad.name}}</span> 
+                              <!-- <small>Population: {{vazhipad.population}}</small> -->
+                            </mat-option>
+                          }
+                        </mat-autocomplete>
+                     </td>
+                      <td>
+                        <input type="text" class="form-control" placeholder="Enter Name">
+                      </td>
+                      <td>
+                        <select class="form-control" style="width:100%;height:30.6px;">
+                          <option>Select Star</option>
+                          <option>Aswathy</option>
+                          <option>Bharany</option>
+                          <option>Makayiram</option>
+                          <option>Karthika</option>
+                          <option>Thiruvathira</option>
+                          <option>Punartham</option>
+                          <option>Pooyam</option>
+                        </select>
+                      </td>
+                      <td >
+                        <select class="form-control" style="width:100%;height:30.6px;">
+                          <option>Select Diety</option>
+                          <option>Siva</option>
+                          <option>Vishnu</option>
+                          <option>Ganapathy</option>
+                        </select>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <input type="number" class="form-control" placeholder="Qty" value="1" style="vertical-align: middle;text-align:center;">
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <label class="form-control spsr">&#8377; 2500</label>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <label class="form-control spsr">&#8377; 2500</label>
+                      </td>
+                      <td style="vertical-align: middle;text-align:center;">
+                        <p class="form-control" contenteditable style="font-size:10pt;background:none;">10-04-2024</p>
+                      </td>
+                      <td style="text-align:center;vertical-align:middle;">
+                        <app-multiday></app-multiday>
+                      </td>
+                      <td>
+                        <select class="form-control" style="width:80%;height:30.6px;">
+                          <option>രാവിലെ</option>
+                          <option>​വൈകുന്നേരം</option>
+                        </select>
+                      </td>
+                      <td>
+                        <a href="#" color="accent"><mat-icon class="icons">add_comment</mat-icon></a>
+                      </td>
+                      <td>
+                        <!-- <app-morebutton></app-morebutton> -->
+                      </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+         
+          
+          
+      </div>
+      
+      
+  </div>
+  
+  
+</div>

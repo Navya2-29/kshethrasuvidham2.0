@@ -1,0 +1,86 @@
+
+<h2 mat-dialog-title>Kshethrasuvidham - Counter</h2>
+<mat-dialog-content class="high fixitems" >
+    <div class="container">
+        <div class="row openmenu">
+            <div class="col-md-3.5">
+                <div class="card">
+                    <div class="card-header height" style="background-color:maroon;color:white;height:50px;">
+                        <h3>Masters</h3>
+                    </div> 
+                    <div class="card-body">
+                       <ul class="list-group list-group-flush">
+                        <a routerLink="/pmaster" [mat-dialog-close]="true"><li class="list-group-item">Prathishta Details</li></a>
+                        <a routerLink="/cmaster" [mat-dialog-close]="true"><li class="list-group-item">Vazhipad Category</li></a>
+                        <a routerLink="/vmaster" [mat-dialog-close]="true"><li class="list-group-item">Vazhipad Master</li></a>
+                        <a href=""><li class="list-group-item">Vazhipad Allocation</li></a>
+                        <a href=""><li class="list-group-item">Vazhipad Blocking</li></a>
+                        <a href=""><li class="list-group-item">Vazhipad Seasonal</li></a>
+                        <a href=""><li class="list-group-item">Vazhipad Booking Status</li></a>
+                        <a href=""><li class="list-group-item">Vihidham Master</li></a>
+                        <a href=""><li class="list-group-item">Vihidham Details</li></a>
+                        <a href=""><li class="list-group-item">Member Details</li></a>
+                      </ul>
+                     
+                    </div>
+                  </div>
+            </div>
+            <div class="col-md-3.5">
+                <div class="card">
+                    <div class="card-header height" style="background-color:maroon;color:white;height:50px;">
+                        <h3>Transactions</h3>
+                    </div>
+                    <div class="card-body">
+                      <ul class="list-group list-group-flush">
+                        <a href=""><li class="list-group-item">Nadavaravu Details</li></a>
+                        <a href=""><li class="list-group-item">Mattinam Vazhipadu Entry</li></a>
+                        <a href=""><li class="list-group-item">Credit Collection</li></a>
+                        <a href=""><li class="list-group-item">Editing</li></a>
+                      </ul>
+                      
+                    </div>
+                  </div>
+            </div>
+            <div class="col-md-2.5">
+                <div class="card">
+                    <div class="card-header height" style="background-color:maroon;color:white;height:50px;">
+                        <h3>Reports</h3>
+                    </div>
+                    <div class="card-body">
+                      <ul class="list-group list-group-flush">
+                        <a href=""><li class="list-group-item">Prathishta Details</li></a>
+                        <a href=""><li class="list-group-item">Vazhipad Category</li></a>
+                        <a href=""><li class="list-group-item">Vazhipad Master</li></a>
+                        <a href=""><li class="list-group-item">Vazhipad Allocation</li></a>
+                        <a href=""><li class="list-group-item">Vazhipad Blocking</li></a>
+                      </ul>
+                     
+                    </div>
+                  </div>
+            </div>
+            <div class="col-md-2.5">
+                <div class="card">
+                    <div class="card-header height" style="background-color:maroon;color:white;height:50px;">
+                        <h3>Utilities</h3>
+                    </div>
+                    <div class="card-body">
+                      <ul class="list-group list-group-flush">
+                        <a href=""><li class="list-group-item" >Prathishta Details</li></a>
+                        <a href=""><li class="list-group-item">Vazhipad Category</li></a>
+                        <a href=""><li class="list-group-item">Vazhipad Master</li></a>
+                        <a href=""><li class="list-group-item">Vazhipad Allocation</li></a>
+                        <a href=""><li class="list-group-item">Vazhipad Blocking</li></a>
+                      </ul>
+                     
+                    </div>
+                  </div>
+            </div>
+        </div>
+    </div>
+</mat-dialog-content>
+
+
+<mat-dialog-actions align="end" class="menuend">
+  <!-- <button mat-button mat-dialog-close>Cancel</button> -->
+  <button mat-button [mat-dialog-close]="true">Close</button>
+</mat-dialog-actions>

@@ -1,0 +1,217 @@
+<div class="card-body" style="background:white;">
+    <div class="row">
+        <div class="col-md-4">
+            <h2>
+                ക്രെഡിറ്റ് കളക്ഷൻ‍</h2>
+            <table class="table">
+                <tr>
+                    <td colspan="2">
+                        <input matInput
+                      aria-label="fname"
+                      [matAutocomplete]="auto"
+                      [formControl]="fnameCtrl" autofocus class="form-control sps" placeholder="Name">
+                        <mat-autocomplete #auto="matAutocomplete">
+                          @for (fname of filteredfname | async; track fname) {
+                            <mat-option [value]="fname.name" style="padding-left:15px;padding-top:0px;">
+                              <!-- <img alt="" class="example-option-img" [src]="vazhipad.flag" height="25"> -->
+                              <span style="font-size:11pt;color:maroon;margin:0px;padding:0px;">{{fname.name}}</span> 
+                              <!-- <small>Population: {{vazhipad.population}}</small> -->
+                            </mat-option>
+                          }
+                        </mat-autocomplete>
+                    </td>
+                    <td>
+                        <input type="text" placeholder="Mobile Number" class="form-control sps">
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td colspan="3">
+                        <input type="text" placeholder="Address" class="form-control sps">
+                    </td>
+                    
+                </tr>
+                <tr>
+                    <td style="text-align:center; vertical-align: middle; border:2px solid silver;padding-top:3%;background:#223d61;color:white;">
+                        <span>Balance Amount</span>
+                        <h4 style="font-weight:700;">Rs. 12500</h4>
+                    </td>
+                    <td style="text-align:center; vertical-align: middle; border:2px solid silver;padding-top:3%;margin:25px;">
+                        <span>Amount Paid</span>
+                        <h4 style="font-weight:700;">Rs. 2500</h4>
+                    </td>
+                    <td style="text-align:center; vertical-align: middle; border:2px solid silver;padding-top:3%;margin:25px;">
+                        <span>Total Amount</span>
+                        <h4 style="font-weight:700;">Rs. 15000</h4>
+                    </td>
+                </tr>
+                
+               
+                
+                <tr>
+                    <td style="width:25%;">
+                        <input type="text" placeholder="Amount" class="form-control sps">
+                    </td>
+                    <td colspan="2" style="border:1px solid gray;padding:6px;text-align:center;vertical-align:middle;">
+                        <span style="font-weight:700;">Payment Method: &nbsp;&nbsp; </span>
+                        <select>
+                             <option>Cash</option>
+                             <option>DD</option>
+                             <option>MO</option>
+                             <option>UPI</option>
+                        </select>
+                        <input type="text" placeholder="Remakrs" placeholder="Enter Number - Cheque/DD/MO/UPI" class="form-control sps">
+                    </td>
+                    
+                </tr>
+                <tr>
+                    <td colspan="3" style="text-align:right;padding:9px;">
+                        <button class="btn btn-primary">Save</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-md-8 search">
+            <div style="display:flex;">
+                <input type="date" class="form-control formdate" style="width:15%;">
+                <button class="btn btn-primary" style="margin-right:15px;">Search</button>
+                <input type="text" class="form-control sps" placeholder="search by Name" style="width:25%;">
+                <button class="btn btn-primary">Search</button>
+            </div>
+            <div class="fixitems">
+                <table class="table credit">
+                    <tr style="border-bottom: 2px solid #223d61;">
+                        <th>Sl No.</th>
+                        <th>Name</th>
+                        <th>Mobile Number</th>
+                        <th>Balance Amount</th>
+                        <th>Amount Paid</th>
+                        <th>Total</th>
+                        <th></th>
+                    </tr>
+                   
+                    <tr>
+                        <td>1</td>
+                        <td style="text-align:left;">Rohit</td>
+                        <td>9876543210</td>
+                        <td>Rs. 12500</td>
+                        <td>Rs. 2500</td>
+                        <td> Rs. 15000</td>
+                        <mat-icon title="Edit" class="small">edit</mat-icon>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td style="text-align:left;">Mohan Kumar</td>
+                        <td>9876543210</td>
+                        <td>Rs. 12500</td>
+                        <td>Rs. 2500</td>
+                        <td> Rs. 15000</td>
+                        <mat-icon title="Edit" class="small">edit</mat-icon>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td style="text-align:left;">Ravi Kumar</td>
+                        <td>9876543210</td>
+                        <td>Rs. 12500</td>
+                        <td>Rs. 2500</td>
+                        <td>Rs. 15000</td>
+                        <mat-icon title="Edit" class="small">edit</mat-icon>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td style="text-align:left;">Namboothiripadu</td>
+                        <td>654321987</td>
+                        <td>Rs. 12500</td>
+                        <td>Rs. 2500</td>
+                        <td>Rs. 15000</td>
+                        <mat-icon title="Edit" class="small">edit</mat-icon>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td style="text-align:left;">Namboothiripadu</td>
+                        <td>654321987</td>
+                        <td>Rs. 12500</td>
+                        <td>Rs. 2500</td>
+                        <td>Rs. 15000</td>
+                        <mat-icon title="Edit" class="small">edit</mat-icon>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td style="text-align:left;">Namboothiripadu</td>
+                        <td>654321987</td>
+                        <td>Rs. 12500</td>
+                        <td>Rs. 2500</td>
+                        <td>Rs. 15000</td>
+                        <mat-icon title="Edit" class="small">edit</mat-icon>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td style="text-align:left;">Namboothiripadu</td>
+                        <td>654321987</td>
+                        <td>Rs. 12500</td>
+                        <td>Rs. 2500</td>
+                        <td>Rs. 15000</td>
+                        <mat-icon title="Edit" class="small">edit</mat-icon>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td style="text-align:left;">Namboothiripadu</td>
+                        <td>654321987</td>
+                        <td>Rs. 12500</td>
+                        <td>Rs. 2500</td>
+                        <td>Rs. 15000</td>
+                        <mat-icon title="Edit" class="small">edit</mat-icon>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td style="text-align:left;">Namboothiripadu</td>
+                        <td>654321987</td>
+                        <td>Rs. 12500</td>
+                        <td>Rs. 2500</td>
+                        <td>Rs. 15000</td>
+                        <mat-icon title="Edit" class="small">edit</mat-icon>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td style="text-align:left;">Namboothiripadu</td>
+                        <td>654321987</td>
+                        <td>Rs. 12500</td>
+                        <td>Rs. 2500</td>
+                        <td>Rs. 15000</td>
+                        <mat-icon title="Edit" class="small">edit</mat-icon>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td style="text-align:left;">Namboothiripadu</td>
+                        <td>654321987</td>
+                        <td>Rs. 12500</td>
+                        <td>Rs. 2500</td>
+                        <td>Rs. 15000</td>
+                        <mat-icon title="Edit" class="small">edit</mat-icon>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td style="text-align:left;">Namboothiripadu</td>
+                        <td>654321987</td>
+                        <td>Rs. 12500</td>
+                        <td>Rs. 2500</td>
+                        <td>Rs. 15000</td>
+                        <mat-icon title="Edit" class="small">edit</mat-icon>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td style="text-align:left;">Namboothiripadu</td>
+                        <td>654321987</td>
+                        <td>Rs. 12500</td>
+                        <td>Rs. 2500</td>
+                        <td>Rs. 15000</td>
+                        <mat-icon title="Edit" class="small">edit</mat-icon>
+                    </tr>
+                </table>
+            </div>
+            
+        </div>
+    </div>
+                    
+    
+</div>

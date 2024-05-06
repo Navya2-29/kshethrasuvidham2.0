@@ -1,0 +1,70 @@
+{
+    "gets": [
+        {
+          "PM_Code": 1,
+          "PM_Name": "",
+          "PM_NameEng": "AYYAPPAN",
+          "imgurl": "",
+          "version": 0,
+          "updation": 0,
+          "id": "97ee"
+        },
+        {
+          "PM_Code": 2,
+          "PM_Name": "",
+          "PM_NameEng": "GANAPATHY",
+          "imgurl": "",
+          "version": 0,
+          "updation": 0,
+          "id": "83de"
+        },
+        {
+          "PM_Code": 3,
+          "PM_Name": "",
+          "PM_NameEng": "MURUGAN",
+          "imgurl": "",
+          "version": 0,
+          "updation": 0,
+          "id": "e41f"
+        },
+        {
+          "PM_Code": 4,
+          "PM_Name": "",
+          "PM_NameEng": "DURGA",
+          "imgurl": "",
+          "version": 0,
+          "updation": 0,
+          "id": "7983"
+        },
+        {
+          "PM_Code": 5,
+          "PM_Name": "",
+          "PM_NameEng": "ANJANEYAN",
+          "imgurl": "",
+          "version": 0,
+          "updation": 0,
+          "id": "48cd"
+        },
+        {
+          "PM_Code": 6,
+          "PM_Name": "",
+          "PM_NameEng": "NAVAGRAHANGAL",
+          "imgurl": "",
+          "version": 0,
+          "updation": 0,
+          "id": "8f84"
+        },
+        {
+          "PM_Code": 7,
+          "PM_Name": "",
+          "PM_NameEng": "NAGARAJA",
+          "imgurl": "",
+          "version": 0,
+          "updation": 0,
+          "id": "8e81"
+        }
+      ],
+    "post": {
+      "name": "typicode"
+    }
+  }
