@@ -1,18 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { HeaderComponent } from '../header/header.component';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { FormsModule, NgForm, ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
-import { ToastrService } from 'ngx-toastr';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { Pmaster, CreatePmaster } from '../models/pmaster.model';
-import { Observable } from 'rxjs';
 import { MasterService } from '../services/master/master.service';
 import { CommonModule } from '@angular/common';
 import { UpperCaseDirective } from '../shared/directives/upper-case.directive';
-
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-pmaster',
@@ -38,7 +36,13 @@ export class PmasterComponent implements OnInit {
   pmasterForm: FormGroup;
   updateFlag: boolean = false;
   searchQuery: string = '';
-  constructor(private masterService: MasterService, private formBuilder: FormBuilder) {
+  selectedFile: File;
+  fileError: string | null = null;
+  @ViewChild('fileInput') fileInput: any;
+  imagePreview: string | ArrayBuffer | null = null; 
+  fileInputMessageFlag:boolean=true;
+  
+  constructor(private masterService: MasterService, private formBuilder: FormBuilder,private _snackBar: MatSnackBar) {
 
     // form model
     this.pmasterForm = this.formBuilder.group({
@@ -56,10 +60,9 @@ export class PmasterComponent implements OnInit {
   }
 
 
-
-
   ngOnInit(): void {
     this.getPmaster();
+    
   }
 
   // view prathishta
@@ -87,6 +90,7 @@ export class PmasterComponent implements OnInit {
   // submitt pmasterform
   onSubmit(data: CreatePmaster) {
     // console.log(data);
+    this.openSnackBar(" Prathishta Details created sussess fully", "close","success-snackbar");
     const obj = this.pmasterForm.value;
     this.masterService.createPmaster(data).subscribe({
       next: (res) => {
@@ -97,10 +101,14 @@ export class PmasterComponent implements OnInit {
       }
     })
   }
-
+  // resetting form controls
   onReset() {
     this.pmasterForm.reset();
     this.updateFlag = false;
+    this.fileInput.nativeElement.value = '';
+    this.fileInputMessageFlag=true;
+    this.imagePreview='';
+    
   }
 
   //for editing the form fields
@@ -118,6 +126,7 @@ export class PmasterComponent implements OnInit {
   //update data
   onUpdate(updatedata: Pmaster) {
     console.log(updatedata);
+    this.openSnackBar(" Prathishta Details updated sussess fully", "close","success-snackbar");
     let id: string = '';
     this.masterService.updatePmaster(id, updatedata).subscribe((res) => {
       console.log(res)
@@ -125,6 +134,7 @@ export class PmasterComponent implements OnInit {
   }
   // deleteData
   onDelete(id: string) {
+    this.openSnackBar(" Prathishta Details deleted sussess fully", "close","delete-snackbar");
     this.masterService.delete(id).subscribe((res) => {
       console.log(res);
     })
@@ -141,7 +151,31 @@ export class PmasterComponent implements OnInit {
     });
   }
 
+// snack  message
+openSnackBar(message: string, action: string,classname:string) {
+  this._snackBar.open(message, action,{
+    panelClass: classname,
+    horizontalPosition: "end",
+    verticalPosition: "top",
+  });
+}
+// for previewing uploaded image
+previewImage(event: any) {
+  this.fileInputMessageFlag=false;
+  
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.imagePreview = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+  }
+}
 
 
 
 }
+
+
+

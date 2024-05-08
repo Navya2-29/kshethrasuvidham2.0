@@ -1,6 +1,5 @@
 <app-header></app-header>
 <div class="amster">
-
   <div class="container">
     <div class="card-body outlook" style="background:white;">
       <div class="posback">
@@ -13,15 +12,11 @@
           <h1 style="font-weight:500;">Prethishta Master</h1>
           <form [formGroup]="pmasterForm">
             <table class="table">
-
               <tr>
                 <td> prathishta Code
-
                   <input type="text" formControlName="PM_Code"   matInput class="form-control sps" placeholder="Enter Code"
-                    style="width:126px;">
-                    
+                    style="width:126px;"> 
                 </td>
-              
               </tr>
               <div *ngIf="pmasterFormFormControl['PM_Code'].invalid && (pmasterFormFormControl['PM_Code'].dirty || pmasterFormFormControl['PM_Code'].touched)" class="pl-1 text-danger" >
                 <div *ngIf="pmasterFormFormControl['PM_Code'].hasError('required')">
@@ -34,17 +29,14 @@
                   code must be include number or english alphabat.
                 </div>
                 </div>
-              
               <tr>
                 <td> prathishta Name<input type="text" matInput formControlName="PM_NameEng" class="form-control"
-                    placeholder="Enter Name" appUpperCase> </td>
-
+                    placeholder="Enter Name" appUpperCase></td>
               </tr>
               <div *ngIf="pmasterFormFormControl['PM_NameEng'].invalid && (pmasterFormFormControl['PM_NameEng'].dirty || pmasterFormFormControl['PM_NameEng'].touched)" class="pl-1 text-danger" >
                 <div *ngIf="pmasterFormFormControl['PM_NameEng'].hasError('required')">
                   name is required.
                 </div>
-               
                 <div *ngIf="pmasterFormFormControl['PM_NameEng'].hasError('pattern')">
                   name must be include english alphabat and spaces only.
                 </div>
@@ -52,7 +44,6 @@
               <tr>
                 <td>prathishta Name (In regional Language)<input type="text" matInput formControlName="PM_Name"
                     class="form-control" placeholder="In regional Language"> </td>
-
               </tr>
               <div *ngIf="pmasterFormFormControl['PM_Name'].invalid && (pmasterFormFormControl['PM_Name'].dirty || pmasterFormFormControl['PM_Name'].touched)" class="pl-1 text-danger" >
                 <div *ngIf="pmasterFormFormControl['PM_Name'].hasError('required')">
@@ -60,18 +51,23 @@
                 </div>
                 </div>
               <tr>
-                <td> Image<input type="file" forControlName="imgurl" class="form-control" placeholder="Enter Name">
+                <td> Image<input type="file" #fileInput forControlName="imgurl"  accept="image/png, image/jpeg" class="form-control" (change)="previewImage($event)"  placeholder="Enter Name">
                 </td>
-
+              </tr>
+              <div class="text-success ml-1">
+                <small *ngIf="fileInputMessageFlag">Only PNG, JPG, and JPEG files are allowed.</small>
+              </div>
+              <tr>
+                <td>
+                  <img [src]="imagePreview" *ngIf="imagePreview" alt="Preview" width="100" height="100">
+                </td>
               </tr>
               <tr>
                 <td><button  *ngIf="!updateFlag" class="btn btn-primary" [disabled]="!pmasterForm.valid" (click)="onSubmit(pmasterForm.value)">save</button>
                   <button  *ngIf="updateFlag" class="btn btn-primary" [disabled]="!pmasterForm.valid" (click)="onUpdate(pmasterForm.value)">update</button>
-                  <button class="btn btn-secondary" (click)="onReset()">cancel</button>
+                  <button class="btn btn-secondary ml-1" (click)="onReset()">cancel</button>
                 </td>
-
               </tr>
-
             </table>
           </form>
         </div>
@@ -113,13 +109,10 @@
                 </tr>
               </tfoot>
             </table>
-
-
           </div>
         </div>
         <div class="col-md-2"
           style="background-image:url('assets/images/login-bg.jpg');background-size:cover;background-position:center;border-radius:0px 15px 15px 0px;">
-
         </div>
       </div>
     </div>
