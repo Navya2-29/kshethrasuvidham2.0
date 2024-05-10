@@ -5,7 +5,6 @@ import { AreareceiptComponent } from '../areareceipt/areareceipt.component';
 import { AreaothersComponent } from '../areaothers/areaothers.component';
 import { PanjankamComponent } from '../panjankam/panjankam.component';
 
-
 @Component({
   selector: 'app-area',
   standalone: true,

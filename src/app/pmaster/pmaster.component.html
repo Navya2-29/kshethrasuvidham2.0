@@ -86,7 +86,7 @@
                 <th></th>
               </tr>
               <tbody *ngIf="pmaster && pmaster.length > 0">
-                <tr *ngFor="let data of pmaster ; let i=index">
+                <tr *ngFor="let data of filteredPmaster ; let i=index">
                   <td style="background-color: #87b6f3;"><input type="Checkbox"
                       style="vertical-align: middle;width:12px;" checked></td>
                   <td>{{data.id}}</td>

@@ -10,10 +10,4 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
       --mdc-snackbar-supporting-text-color: #ffffff;
     }
   }
-  .mat-mdc-snack-bar-container {
-    &.success-snackbar {
-      --mdc-snackbar-container-color: #e73333;
-      --mat-mdc-snack-bar-button-color: #638488;
-      --mdc-snackbar-supporting-text-color: #ffffff;
-    }
-  }
+  

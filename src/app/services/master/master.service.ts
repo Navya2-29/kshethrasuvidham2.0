@@ -10,6 +10,8 @@ export class MasterService {
   private readonly http = inject(HttpClient);
 
   constructor() { }
+
+  // pmster service
   // get all prathishta list
   getPmaster(): Observable<Pmaster[]> {
     return this.http.get<Pmaster[]>(Constant.BASE_URL + Constant.METHODS.GET_PMASTER).pipe(catchError(this.errorHandler))
@@ -29,8 +31,27 @@ export class MasterService {
   delete(id: string): Observable<any> {
     return this.http.delete<any>(Constant.BASE_URL + Constant.METHODS.DELETE_PMASTER + id).pipe(catchError(this.errorHandler))
   }
-  // search by name or code
+ 
+  // cmaster service
 
+  getCmaster(): Observable<Pmaster[]> {
+    return this.http.get<Pmaster[]>(Constant.BASE_URL + Constant.METHODS.GET_PMASTER).pipe(catchError(this.errorHandler))
+  }
+
+  // create category
+  createCmaster(obj: CreatePmaster): Observable<any> {
+    return this.http.post<CreatePmaster>(Constant.BASE_URL + Constant.METHODS.CREATE_PMASTER, obj).pipe(catchError(this.errorHandler))
+  }
+
+  // update category
+  updateCmaster(id: string, obj: CreatePmaster): Observable<any> {
+    return this.http.put<CreatePmaster>(Constant.BASE_URL + Constant.METHODS.UPDATE_PMASTER + id, obj).pipe(catchError(this.errorHandler))
+  }
+
+  // delete categor
+  deleteCmaster(id: string): Observable<any> {
+    return this.http.delete<any>(Constant.BASE_URL + Constant.METHODS.DELETE_PMASTER + id).pipe(catchError(this.errorHandler))
+  }
 
 
   // error handling

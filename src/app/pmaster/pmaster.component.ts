@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { HeaderComponent } from '../header/header.component';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
@@ -11,6 +11,7 @@ import { MasterService } from '../services/master/master.service';
 import { CommonModule } from '@angular/common';
 import { UpperCaseDirective } from '../shared/directives/upper-case.directive';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import { MatTableModule } from '@angular/material/table';
 
 @Component({
   selector: 'app-pmaster',
@@ -24,7 +25,8 @@ import {MatSnackBar} from '@angular/material/snack-bar';
     MatInputModule,
     ReactiveFormsModule,
     CommonModule,
-    UpperCaseDirective
+    UpperCaseDirective,
+    MatTableModule
   ],
   templateUrl: './pmaster.component.html',
   styleUrl: './pmaster.component.css',
@@ -32,6 +34,7 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 })
 export class PmasterComponent implements OnInit {
   pmaster: Pmaster[] = [];
+  filteredPmaster:Pmaster[]=[];
   showNoRecordsMessage: boolean = false;
   pmasterForm: FormGroup;
   updateFlag: boolean = false;
@@ -42,8 +45,11 @@ export class PmasterComponent implements OnInit {
   imagePreview: string | ArrayBuffer | null = null; 
   fileInputMessageFlag:boolean=true;
   
-  constructor(private masterService: MasterService, private formBuilder: FormBuilder,private _snackBar: MatSnackBar) {
+  private masterService=inject(MasterService);
+  private formBuilder=inject(FormBuilder);
+  private _snackBar=inject(MatSnackBar);
 
+  constructor() {
     // form model
     this.pmasterForm = this.formBuilder.group({
       PM_Code: ['', [
@@ -72,6 +78,7 @@ export class PmasterComponent implements OnInit {
         if (data && data.length > 0) {
           // console.log(data)
           this.pmaster = data;
+          this.filteredPmaster=this.pmaster
         }
       },
       error: (error) => {
@@ -89,12 +96,19 @@ export class PmasterComponent implements OnInit {
 
   // submitt pmasterform
   onSubmit(data: CreatePmaster) {
-    // console.log(data);
+console.log(data.PM_Code,data.PM_NameEng,this.selectedFile.name);
+    const formData = new FormData();
+    formData.append('PM_Code', data.PM_Code);
+    formData.append('PM_NameEng',data.PM_NameEng);
+    formData.append('PM_Name',data.PM_Name);
+    formData.append('imgurl', this.selectedFile.name);
+     console.log(formData);
     this.openSnackBar(" Prathishta Details created sussess fully", "close","success-snackbar");
     const obj = this.pmasterForm.value;
     this.masterService.createPmaster(data).subscribe({
       next: (res) => {
         console.log(res);
+        this.onReset();
       },
       error: (error) => {
         console.log(error);
@@ -134,7 +148,7 @@ export class PmasterComponent implements OnInit {
   }
   // deleteData
   onDelete(id: string) {
-    this.openSnackBar(" Prathishta Details deleted sussess fully", "close","delete-snackbar");
+    this.openSnackBar(" Prathishta Details deleted sussess fully", "close","success-snackbar");
     this.masterService.delete(id).subscribe((res) => {
       console.log(res);
     })
@@ -142,13 +156,16 @@ export class PmasterComponent implements OnInit {
 
   // search functionality by pname
   onSearch(searchQuery: string) {
-    console.log(searchQuery)
-    console.log(this.pmaster)
-    this.pmaster = this.pmaster.filter((data) => {
-
+    if (!this.searchQuery.trim()) {
+      this.filteredPmaster = this.pmaster;
+    }
+  
+else{
+    this.filteredPmaster = this.pmaster.filter((data) => {
       console.log(data)
       return data.PM_NameEng.toLowerCase().includes(this.searchQuery);
     });
+  }
   }
 
 // snack  message
@@ -162,14 +179,14 @@ openSnackBar(message: string, action: string,classname:string) {
 // for previewing uploaded image
 previewImage(event: any) {
   this.fileInputMessageFlag=false;
-  
-  const file = event.target.files[0];
-  if (file) {
+  this.selectedFile = event.target.files[0];
+  // const file = event.target.files[0];
+  if (this.selectedFile) {
     const reader = new FileReader();
     reader.onload = () => {
       this.imagePreview = reader.result as string;
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(this.selectedFile);
   }
 }
 
