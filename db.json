@@ -64,7 +64,44 @@
           "id": "8e81"
         }
       ],
-    "post": {
-      "name": "typicode"
-    }
+    "posts": [{
+      
+        "CM_Code": 6,
+        "CM_Name": "",
+        "CM_NameEng": "NAVAGRAHANGAL",
+        "version": 0,
+        "updation": 0,
+        "id": "8f84"
+      
+    },
+    {
+      
+      "CM_Code": 6,
+      "CM_Name": "",
+      "CM_NameEng": "NAVAGRAHANGAL",
+      "version": 0,
+      "updation": 0,
+      "id": "8f84"
+    
+  },
+  {
+      
+    "CM_Code": 6,
+    "CM_Name": "",
+    "CM_NameEng": "NAVAGRAHANGAL",
+    "version": 0,
+    "updation": 0,
+    "id": "8f84"
+  
+},
+{
+      
+  "CM_Code": 6,
+  "CM_Name": "",
+  "CM_NameEng": "NAVAGRAHANGAL",
+  "version": 0,
+  "updation": 0,
+  "id": "8f84"
+
+}]
   }

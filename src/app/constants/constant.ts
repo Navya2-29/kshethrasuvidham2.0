@@ -7,9 +7,15 @@ export const Constant={
         UPDATE_PMASTER:'update',
         DELETE_PMASTER:'delete',
         // cmaster
-        GET_CMASTER:"gets",
+        GET_CMASTER:'posts',
         CREATE_CMASTER:"create",
         UPDATE_CMASTER:"update",
-        DELETE_CMASTER:"delete"
+        DELETE_CMASTER:"delete",
+
+        // vmaster
+        GET_VMASTER:'posts',
+        CREATE_VMASTER:"create",
+        UPDATE_VMASTER:"update",
+        DELETE_VMASTER:"delete",
     }
 }

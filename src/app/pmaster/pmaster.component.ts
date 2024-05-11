@@ -44,6 +44,7 @@ export class PmasterComponent implements OnInit {
   @ViewChild('fileInput') fileInput: any;
   imagePreview: string | ArrayBuffer | null = null; 
   fileInputMessageFlag:boolean=true;
+Id:string='';
   
   private masterService=inject(MasterService);
   private formBuilder=inject(FormBuilder);
@@ -96,24 +97,33 @@ export class PmasterComponent implements OnInit {
 
   // submitt pmasterform
   onSubmit(data: CreatePmaster) {
-console.log(data.PM_Code,data.PM_NameEng,this.selectedFile.name);
-    const formData = new FormData();
-    formData.append('PM_Code', data.PM_Code);
-    formData.append('PM_NameEng',data.PM_NameEng);
-    formData.append('PM_Name',data.PM_Name);
-    formData.append('imgurl', this.selectedFile.name);
-     console.log(formData);
-    this.openSnackBar(" Prathishta Details created sussess fully", "close","success-snackbar");
-    const obj = this.pmasterForm.value;
+// console.log(data.PM_Code,data.PM_NameEng,this.selectedFile.name);
+//     const formData = new FormData();
+//     formData.append('PM_Code', data.PM_Code);
+//     formData.append('PM_NameEng',data.PM_NameEng);
+//     formData.append('PM_Name',data.PM_Name);
+//     formData.append('imgurl', this.selectedFile.name);
+//      console.log(formData);
+    // this.openSnackBar(" Prathishta Details created sussess fully", "close","success-snackbar");
+
+    // const obj = this.pmasterForm.value;
+    if(this.pmasterForm.valid){
     this.masterService.createPmaster(data).subscribe({
       next: (res) => {
         console.log(res);
+        this.openSnackBar(" Prathishta Details created sussess fully", "close","success-snackbar");
+
         this.onReset();
       },
       error: (error) => {
         console.log(error);
       }
     })
+  }
+  else{
+    this.markFormGroupTouched(this.pmasterForm);
+
+  }
   }
   // resetting form controls
   onReset() {
@@ -129,6 +139,7 @@ console.log(data.PM_Code,data.PM_NameEng,this.selectedFile.name);
   onEdit(data: Pmaster) {
     console.log(data);
     this.updateFlag = true;
+    this.Id=data.id;
     this.pmasterForm.patchValue({
       PM_Code: data.PM_Code,
       PM_NameEng: data.PM_NameEng,
@@ -139,18 +150,20 @@ console.log(data.PM_Code,data.PM_NameEng,this.selectedFile.name);
 
   //update data
   onUpdate(updatedata: Pmaster) {
-    console.log(updatedata);
-    this.openSnackBar(" Prathishta Details updated sussess fully", "close","success-snackbar");
-    let id: string = '';
-    this.masterService.updatePmaster(id, updatedata).subscribe((res) => {
+    console.log(updatedata,this.Id);
+   
+    this.masterService.updatePmaster(this.Id, updatedata).subscribe((res) => {
+      this.openSnackBar(" Prathishta Details updated sussess fully", "close","success-snackbar");
+
       console.log(res)
     })
   }
   // deleteData
   onDelete(id: string) {
-    this.openSnackBar(" Prathishta Details deleted sussess fully", "close","success-snackbar");
     this.masterService.delete(id).subscribe((res) => {
       console.log(res);
+      this.openSnackBar(" Prathishta Details deleted sussess fully", "close","success-snackbar");
+
     })
   }
 
@@ -190,7 +203,16 @@ previewImage(event: any) {
   }
 }
 
+// validation
+markFormGroupTouched(formGroup: FormGroup) {
+  Object.values(formGroup.controls).forEach(control => {
+    control.markAsTouched();
 
+    if (control instanceof FormGroup) {
+      this.markFormGroupTouched(control);
+    }
+  });
+}
 
 }
 
