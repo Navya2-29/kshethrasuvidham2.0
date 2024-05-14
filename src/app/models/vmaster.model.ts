@@ -1,7 +1,7 @@
 export interface Vmaster{
-    vazhipadCode:string,
+      VM_Code:string,
       seasonalVazhipad: boolean,
-      vazhipadName: string,
+      VM_Name: string,
       vazhipadNameMalayalam:string,
       vazhipadCategory: string,
       prethishta: string,
@@ -10,6 +10,6 @@ export interface Vmaster{
       timeLimit: string,
       ticketMachine: boolean,
       mobileApp: boolean,
-      allyQty: boolean,
+      allwQty: boolean,
       id:string
 }

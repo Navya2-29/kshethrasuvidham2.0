@@ -50,7 +50,7 @@ errorMessage:string='';
   private masterService = inject(MasterService);
   private formBuilder = inject(FormBuilder);
   private _snackBar = inject(MatSnackBar);
-private duplicateCheck=inject(DuplicatecheckService);
+  private duplicateCheck=inject(DuplicatecheckService);
   
 
   constructor() {
@@ -80,7 +80,7 @@ private duplicateCheck=inject(DuplicatecheckService);
 
   // view prathishta
   getPmaster() {
-    this.loading=true;
+    this.loading=false;
     this.masterService.getPmaster().subscribe({
       next: (data) => {
         if (data && data.length > 0) {
@@ -92,6 +92,7 @@ private duplicateCheck=inject(DuplicatecheckService);
       },
       error: (error) => {
         console.log(error);
+        this.loading=true;
       }
     });
   }
