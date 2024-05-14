@@ -1,11 +1,10 @@
 <app-header></app-header>
 <div class="amster">
-
   <div class="container">
     <div class="card-body outlook" style="background:white;">
       <div class="posback">
         <a routerLink="/dashboard" class="back">&nbsp;&nbsp;<mat-icon title="Edit"
-            style="color:white;">arrow_back_ios</mat-icon></a>
+           style="color:white;">arrow_back_ios</mat-icon></a>
         <h1 class="tname">Guruvayurappan Temple</h1>
       </div>
       <div class="master">
@@ -14,7 +13,7 @@
           <form [formGroup]="vazhipadForm">
             <table class="table">
               <tr>
-                <td> Vazhipad Code<input type="text" class="form-control sps" placeholder="Enter Code"
+                <td> Vazhipad Code<input type="text"  class="form-control sps" placeholder="Enter Code"
                     formControlName="vazhipadCode"> </td>
                 <td colspan="2"
                   style="vertical-align:middle;border:0px solid silver;text-align:center;background-color: #223d61;color:white;border-radius:0px 0px 0px 9px;">
@@ -74,7 +73,7 @@
                 <td colspan="3">
                   Select Prethishta <br>
 
-                  <!-- <mat-label>Toppings</mat-label> -->
+                  <mat-label>Toppings</mat-label>
                   <mat-select [formControl]="toppings" formControlName="prethishta" class="form-control sps"
                     placeholder="Select Prathishta" multiple>
                     <mat-select-trigger>
@@ -185,14 +184,9 @@
                   </td>
                 </tr>
               </tfoot>
-
-
-
-
             </table>
           </div>
         </div>
-
       </div>
     </div>
   </div>

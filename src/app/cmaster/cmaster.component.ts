@@ -36,7 +36,7 @@ export class CmasterComponent implements OnInit {
   updateFlag: boolean = false;
   searchQuery: string = '';
   Id: string = '';
-
+  showMaxLengthError:boolean=false;
   private masterService = inject(MasterService);
   private formBuilder = inject(FormBuilder);
   private _snackBar = inject(MatSnackBar);
@@ -156,6 +156,15 @@ export class CmasterComponent implements OnInit {
       horizontalPosition: "end",
       verticalPosition: "top",
     });
+  }
+
+  onInputChange(event: any) {
+    const inputValue: string = event.target.value;
+    if (inputValue.length > 3) {
+      this.showMaxLengthError = true;
+    } else {
+      this.showMaxLengthError = false;
+    }
   }
 
 }

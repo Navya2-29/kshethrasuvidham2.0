@@ -14,7 +14,7 @@
           <form [formGroup]="cmasterForm">
             <table class="table">
               <tr>
-                <td> Category Code<input type="text" matInput formControlName="CM_Code" class="form-control sps"
+                <td> Category Code<input type="text" maxlength="3" (input)="onInputChange($event)" appUpperCase matInput formControlName="CM_Code" class="form-control sps"
                     placeholder="Enter Code" style="width:126px;"> </td>
 
               </tr>
@@ -24,13 +24,17 @@
                 <div *ngIf="cmasterFormControl['CM_Code'].hasError('required')">
                   code is required.
                 </div>
-                <div *ngIf="cmasterFormControl['CM_Code'].hasError('maxlength')">
+                <div *ngIf="cmasterFormControl['CM_Code'].invalid && cmasterFormControl['CM_Code'].hasError('maxlength')">
                   code must be 3 characters long.
                 </div>
                 <div *ngIf="cmasterFormControl['CM_Code'].hasError('pattern')">
                   code must be include number or english alphabat.
                 </div>
+                <div *ngIf="showMaxLengthError" class="pl-1 text-danger">
+                  Code must be 3 characters long.
+                </div>
               </div>
+             
               <tr>
                 <td> Category Name<input type="text" appUpperCase formControlName="CM_NameEng" matInput
                     class="form-control" placeholder="Enter Name"> </td>

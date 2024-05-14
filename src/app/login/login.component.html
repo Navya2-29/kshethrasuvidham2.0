@@ -10,10 +10,12 @@
       <div class="right-side">
         <img src="assets/images/logo.jpg">
         <h2>Counter Login</h2>
+        <form [formGroup]="loginForm">
         <div>
+          
             <mat-form-field appearance="outline">
               <mat-label>Enter your Login ID</mat-label>
-              <input matInput placeholder="" autofocus>
+              <input matInput placeholder="" autofocus formControlName="userName">
               <mat-icon matSuffix>supervised_user_circle</mat-icon>
               <!-- <mat-hint>Hint</mat-hint> -->
             </mat-form-field>
@@ -21,13 +23,14 @@
            <div>
             <mat-form-field appearance="outline">
               <mat-label>Enter your password</mat-label>
-              <input matInput [type]="hide ? 'password' : 'text'">
-              <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+              <input matInput [type]="hide ? 'password' : 'text'" formControlName="password">
+              <button mat-icon-button matSuffix (click)="onSubmit(loginForm.value)"  [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
                 <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
               </button>
             </mat-form-field>
            </div>  
           <a routerLink="/dashboard" mat-raised-button style="background-color: maroon;color:orange;">Login</a>
+          </form>
        </div>
     </div>
   </main>

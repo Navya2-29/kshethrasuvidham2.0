@@ -7,11 +7,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { map, startWith } from 'rxjs/operators';
-
-
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
-
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MorebuttonComponent } from '../morebutton/morebutton.component';
@@ -19,10 +16,6 @@ import { vazhipad } from '../areareceipt/areareceipt.component';
 import { Vmaster } from '../models/vmaster.model';
 import { MasterService } from '../services/master/master.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-
-
-
-
 export interface vcat {
   name: string;
 }
@@ -74,6 +67,7 @@ export class VmasterComponent implements OnInit {
       vazhipadName: ['', Validators.required],
       vazhipadNameMalayalam: [''],
       vazhipadCategory: [''],
+      vazhipadCategoryId: [''],
       prethishta: [''],
       rate: ['', Validators.required],
       noLimit: [''],
@@ -118,7 +112,6 @@ export class VmasterComponent implements OnInit {
   onSubmit(data: Vmaster) {
     this.markFormGroupTouched(this.vazhipadForm);
     this.openSnackBar(" Prathishta Details created sussess fully", "close", "success-snackbar");
-
     this.masterService.createVmaster(data).subscribe({
       next: (res) => {
         console.log(res);
@@ -154,7 +147,6 @@ export class VmasterComponent implements OnInit {
       ticketMachine: data.ticketMachine,
       mobileApp: data.mobileApp,
       allyQty: data.allyQty
-
     });
   }
 
