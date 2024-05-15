@@ -24,12 +24,12 @@
             <mat-form-field appearance="outline">
               <mat-label>Enter your password</mat-label>
               <input matInput [type]="hide ? 'password' : 'text'" formControlName="password">
-              <button mat-icon-button matSuffix (click)="onSubmit(loginForm.value)"  [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+              <button mat-icon-button matSuffix (click)="onSubmit(loginForm.value)">
                 <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
               </button>
             </mat-form-field>
            </div>  
-          <a routerLink="/dashboard" mat-raised-button style="background-color: maroon;color:orange;">Login</a>
+          <a mat-raised-button routerLink="/dashboard" style="background-color: maroon;color:orange;">Login</a>
           </form>
        </div>
     </div>

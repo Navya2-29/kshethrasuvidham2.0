@@ -31,8 +31,8 @@ export class LoginComponent implements OnInit {
 
   }
 
-  onSubmit(login:any){
-
+onSubmit(login:any){
+console.log(login+"jjk");
 this.authservice.login(login).subscribe((res)=>{
   
 })

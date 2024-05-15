@@ -10,63 +10,20 @@
             <div class="master">
                 <div class="col-md-4">
                     <h1 style="font-weight:500;">Vazhipad Master</h1>
-                    <form [formGroup]="vazhipadMasterForm">
                     <table class="table">
                         <tr>
-                           <td> Vazhipad Code<input type="text" formControlName="code" class="form-control sps" placeholder="Enter Code"> </td>
-                          <td colspan="2" style="vertical-align:middle;border:0px solid silver;text-align:center;background-color: #223d61;color:white;border-radius:0px 0px 0px 9px;">
-                            Seasonal Vazhipad<br>
-                            <input type="radio" name="seasonal" formControlName="seasonal" value="true"> Yes &nbsp;&nbsp;<input type="radio" name="seasonal" formControlName="seasonal" value="false"> No
+                           <td> Vazhipad Code<input type="text" class="form-control sps" placeholder="Enter Code"> </td>
+                          <td colspan="2">
+                            Vazhipad Name
+                            <input type="text" class="form-control" placeholder="Enter Name"> 
                           </td>
                          </tr>
-                         <div
-                *ngIf="vmasterFormControl['code'].invalid && (vmasterFormControl['code'].dirty || vmasterFormControl['code'].touched)"
-                class="pl-1 text-danger">
-                <div *ngIf="vmasterFormControl['code'].hasError('required')">
-                  code is required.
-                </div>
-                <div *ngIf="vmasterFormControl['code'].hasError('maxlength')">
-                  code must be 3 characters long.
-                </div>
-                <div *ngIf="vmasterFormControl['code'].hasError('pattern')">
-                  code must be include number or english alphabat.
-                </div>
-                <div *ngIf="vmasterFormControl['code'].hasError('duplicateCode')" class="text-danger">
-                  Code already exists.
-                </div>
-              </div>
                          <tr>
-                           <td colspan="3"> Vazhipad Name<input formControlName="name" type="text" class="form-control" placeholder="Enter Name"> </td>
-                         </tr>
-                         <div
-                         *ngIf="vmasterFormControl['name'].invalid && (vmasterFormControl['name'].dirty || vmasterFormControl['name'].touched)"
-                         class="pl-1 text-danger">
-                         <div *ngIf="vmasterFormControl['name'].hasError('required')">
-                           name is required.
-                         </div>
-                         <div *ngIf="vmasterFormControl['name'].hasError('pattern')">
-                           name must be include english alphabat and spaces only.
-                         </div>
-                         <div *ngIf="vmasterFormControl['name'].hasError('duplicateName')" class="text-danger">
-                           Name already exists.
-                         </div>
-         
-                       </div>
-                      
-
-                         <tr>
-                            <td colspan="3"> Vazhipad Name<input formControlName="nameMalayalam" type="text" class="form-control" placeholder="Enter Name in Malayalam"> </td>
+                            <td colspan="3"> Vazhipad Name<input type="text" class="form-control" placeholder="Enter Name in Regional Language"> </td>
                           </tr>
-                          <div
-                *ngIf="vmasterFormControl['nameMalayalam'].invalid && (vmasterFormControl['nameMalayalam'].dirty || vmasterFormControl['nameMalayalam'].touched)"
-                class="pl-1 text-danger">
-                <div *ngIf="vmasterFormControl['nameMalayalam'].hasError('required')">
-                  name in your regional language is required.
-                </div>
-              </div>
                           <tr>
                             <td colspan="3">
-                                Vazhipad Category <input matInput formControlName="category"
+                                Vazhipad Category <input matInput
                                     aria-label="vcat"
                                     [matAutocomplete]="auto"
                                     [formControl]="vcatCtrl" autofocus class="form-control sps" placeholder="Select Vazhipad Category">
@@ -79,19 +36,14 @@
                                         </mat-autocomplete>
                             </td>
                             </tr>
-                            <div
-                *ngIf="vmasterFormControl['category'].invalid && (vmasterFormControl['category'].dirty || vmasterFormControl['category'].touched)"
-                class="pl-1 text-danger">
-                <div *ngIf="vmasterFormControl['category'].hasError('required')">
-                  category is required.
-                </div>
-              </div>
                             <tr>
                                 <td colspan="3">
                                     Select Prethishta <br>
-                                    
-                                        <!-- <mat-label>Toppings</mat-label> -->
-                                        <mat-select [formControl]="toppings" formControlName="prathishta" class="form-control sps" placeholder="Select Prathishta" multiple>
+                                    <!-- Start Dietee List -->
+                                      
+                                    <!-- End Dietee List -->
+                           <!-- <mat-label>Toppings</mat-label> -->
+                                        <mat-select [formControl]="toppings"  class="form-control sps" placeholder="Select Prathishta" multiple>
                                           <mat-select-trigger>
                                             {{toppings.value?.[0] || ''}}
                                             @if ((toppings.value?.length || 0) > 1) {
@@ -104,354 +56,260 @@
                                         <mat-option [value]="topping" class="" style="line-height:14pt;margin-top:-10px;margin-bottom:-10px;">{{topping}}</mat-option>
                                       }
                                         </mat-select>
-                                        
-                                </td>
-                            </tr>
-                            <div
-                *ngIf="vmasterFormControl['prathishta'].invalid && (vmasterFormControl['prathishta'].dirty || vmasterFormControl['prathishta'].touched)"
-                class="pl-1 text-danger">
-                <div *ngIf="vmasterFormControl['prathishta'].hasError('required')">
-                  prathishta is required.
-                </div>
-              </div>
-                            <tr>
-                                <td>
-                                    Rate<input type="text" formControlName="rate" class="form-control sps" placeholder="Enter Rate"> 
-                                </td>
-                                <td>
-                                    No Limit<input type="text" formControlName="limit" class="form-control sps" placeholder="Limit (in Nos)" > 
-                                </td>
-                                <td>
-                                    Time Limit<input type="text" formControlName="timeLimit" class="form-control sps" placeholder="Limit (in Hours)" > 
                                 </td>
                             </tr>
                             <tr>
-                                <td style="border:1px solid gray;text-align:center;">
-                                    Ticke Machine<br>
-                                    <input type="radio" formControlName="ticketMachine" value="true" name="ticketMachine"> Yes &nbsp;&nbsp;<input type="radio" formControlName="ticketMachine" name="ticketMachine" value="false"> No
+                                <td>
+                                    Rate<input type="text" class="form-control sps" placeholder="Enter Rate"> 
                                 </td>
-                                <td style="border:1px solid gray;text-align:center;">
-                                    Mobile APP<br>
-                                    <input type="radio" name="mobileApp" formControlName="mobileApp" value="true"> Yes &nbsp;&nbsp;<input type="radio" name="mobileApp" formControlName="mobileApp" value="false"> No
+                                <td>
+                                    No Limit<input type="text" class="form-control sps" placeholder="Limit (in Nos)" > 
                                 </td>
-                                <td style="border:1px solid gray;text-align:center;">
-                                    Ally Qty <br>
-                                    <input type="radio" value="true" formControlName="allwQty" name="allwQty" value="true"> Yes &nbsp;&nbsp;<input type="radio" value="false" formControlName="allwQty" value="false" name="allwQty" > No
+                                <td>
+                                    Time Limit<input type="text" class="form-control sps" placeholder="Limit (in Hours)" > 
                                 </td>
                             </tr>
-                         <tr>
-                           <td><button class="btn btn-primary" *ngIf="!updateFlag" (click)="onSubmit(vazhipadMasterForm.value)">save</button> 
-                            <button *ngIf="updateFlag" class="btn btn-primary" 
-                    (click)="onUpdate(vazhipadMasterForm.value)">update</button>
-                            <button class="btn btn-secondary" (click)="onReset()">cancel</button></td>
-                         </tr>
+                            <tr>
+                              <td>
+                                  <input type="checkbox">&nbsp;&nbsp; Multi Name
+                              </td>
+                              <td>
+                                <input type="checkbox">&nbsp;&nbsp; Blocking
+                              </td>
+                              <td>
+                                <input type="checkbox">&nbsp;&nbsp; Seasonal
+                              </td>
+                          </tr>
+                          <tr>
+                            <td>
+                                <input type="checkbox">&nbsp;&nbsp; SMS
+                            </td>
+                            <td>
+                              <input type="checkbox">&nbsp;&nbsp; Whatsapp
+                            </td>
+                            <td>
+                              <input type="checkbox">&nbsp;&nbsp; Receipt
+                            </td>
+                        </tr>
+                        <tr>
+                          <td>
+                              <input type="checkbox">&nbsp;&nbsp; Booking
+                          </td>
+                          <td>
+                            <input type="checkbox">&nbsp;&nbsp; Rate Change
+                          </td>
+                          <td>
+                            <input type="checkbox">&nbsp;&nbsp; Machine
+                          </td>
+                      </tr>
+                      <tr>
+                        <td>
+                            <input type="checkbox">&nbsp;&nbsp; APP
+                        </td>
+                        <td>
+                          <input type="checkbox">&nbsp;&nbsp; Online
+                        </td>
+                        <td>
+                          <input type="checkbox">&nbsp;&nbsp; Active
+                        </td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">
+                        <input type="checkbox">&nbsp;&nbsp; Special Vazhipad
+                      </td>
+                  </tr>
+                            
+                        
                        </table>
-                      </form>
                 </div>
-                <div class="col-md-8 search">
-                  <div style="display:flex;" class="search-container mt-3">
-                    <input type="text" class="form-control sps search-input" (input)="onSearch(searchQuery)"
-                      placeholder="search by Code or Name" style="width:36%;" [(ngModel)]="searchQuery">
-                    <!-- <button class="btn btn-primary" (click)="onSearch(searchQuery)">Search</button> -->
-                    <mat-icon class="search-icon" (click)="onSearch(searchQuery)">search</mat-icon>
-                  </div>
+                <div class="col-md-4">
+                  <h1 style="color:white;">.</h1>
+                  <table class="table">
+                    <tr>
+                       
+                      <td colspan="3">
+                        Account Head <input matInput
+                                    aria-label="vcat"
+                                    [matAutocomplete]="auto"
+                                    [formControl]="vcatCtrl" autofocus class="form-control sps" placeholder="Select Account Head">
+                                        <mat-autocomplete #auto="matAutocomplete">
+                                        @for (vcat of filteredvcat | async; track vcat) {
+                                            <mat-option [value]="vcat.name" style="padding-left:15px;padding-top:0px;">
+                                            <span>{{vcat.name}}</span> 
+                                            </mat-option>
+                                        }
+                                        </mat-autocomplete>
+                      </td>
+                     </tr>
+                     <tr>
+                       
+                      <td colspan="3">
+                        Account Sub Head <input matInput
+                                    aria-label="vcat"
+                                    [matAutocomplete]="auto"
+                                    [formControl]="vcatCtrl" autofocus class="form-control sps" placeholder="Select Account Sub Head">
+                                        <mat-autocomplete #auto="matAutocomplete">
+                                        @for (vcat of filteredvcat | async; track vcat) {
+                                            <mat-option [value]="vcat.name" style="padding-left:15px;padding-top:0px;">
+                                            <span>{{vcat.name}}</span> 
+                                            </mat-option>
+                                        }
+                                        </mat-autocomplete>
+                      </td>
+                     </tr>
+                     <tr>
+                       
+                      <td colspan="3">
+                        Description <br>
+                        <textarea class="form-control sps" style="width:100%;height:72px;" placeholder="Enter Description"></textarea>
+                      </td>
+                     </tr>
+                     <tr>
+                       
+                      <td colspan="3">
+                        Alert Message <br>
+                        <textarea class="form-control sps" style="width:100%;height:72px;" placeholder="Enter Alert Message"></textarea>
+                      </td>
+                     </tr>
+                     <tr>
+                      <td><button class="btn btn-primary">save</button> 
+                       <button class="btn btn-secondary">cancel</button></td>
+                    </tr>
+                   </table>
+                </div>
+                <div class="col-md-4 search">
+                    <div style="display:flex;">
+                        <input type="text" class="form-control sps" placeholder="Code or Name" style="width:36%;">
+                        <button class="btn btn-primary">Search</button>
+                    </div>
                     <div class="fixitems prathishta">
                         <table class="table">
                             <tr style="border-bottom: 2px solid #223d61;">
-                              <th style="width:10px;background-color: #223d61;color:white;">Active</th>  
-                              <th >Id</th>
-                              <th >code</th>
-                              <th >Vazhipad Name</th>
-                              <th >Category ID</th>
-                              <th >Seasonal</th>
-                              <th >Rate</th>
-                              <th >Time</th>
+                              <th>Vazhipad Name</th>
+                              <th>Rate</th>
                               <th></th>
                             </tr>
                             <tr>
-                                <td style="background-color: #87b6f3;"><input type="Checkbox" style="vertical-align: middle;width:12px;" checked></td>
-                              <td>1</td>
-                              <td>1</td>
-                              <td style="text-align:left;">Sree krishna Swamy</td>
-                              <td>12</td>
-                              <td>No</td>
-                              <td>1500</td>
-                              <td>Morning</td>
+                              <td style="text-align:left;padding-left:10px;">Sree krishna Swamy</td>
+                             <td>1500</td>
                               <td>
                                 <mat-icon title="Edit" class="small" style="vertical-align: middle;">edit</mat-icon>
                                 <mat-icon title="Delete" class="small" style="vertical-align: middle;">delete</mat-icon>
                               </td>
-                              
                             </tr>
                             <tr>
-                                <td style="background-color: #87b6f3;"><input type="Checkbox" style="vertical-align: middle;width:12px;" checked></td>
-                              <td>2</td>
-                              <td>2</td>
-                              <td style="text-align:left;">Sree murugan</td>
-                              <td>12</td>
-                              <td>No</td>
-                              <td>1500</td>
-                              <td>Morning</td>
-                              <td>
-                                <mat-icon title="Edit" class="small">edit</mat-icon>
-                              <mat-icon title="Delete" class="small">delete</mat-icon>
-                              </td>
-                            </tr>
-                            <tr>
-                                <td style="background-color: #87b6f3;"><input type="Checkbox" style="vertical-align: middle;width:12px;" checked></td>
-                              <td>3</td>
-                              <td>3</td>
-                              <td style="text-align:left;">Mahaganapathy</td>
-                              <td>12</td>
-                              <td>No</td>
-                              <td>1500</td>
-                              <td>Morning</td>
-                              <td>
-                                <mat-icon title="Edit" class="small">edit</mat-icon>
-                                <mat-icon title="Delete" class="small">delete</mat-icon>
-                              </td>
-                            </tr>
-                            <tr>
-                                <td style="background-color: #87b6f3;"><input type="Checkbox" style="vertical-align: middle;width:12px;" checked></td>
-                              <td>4</td>
-                              <td>4</td>
-                              <td style="text-align:left;">Sree hanuman swamy</td>
-                              <td>12</td>
-                              <td>No</td>
-                              <td>1500</td>
-                              <td>Morning</td>
-                              <td>
-                                <mat-icon title="Edit" class="small">edit</mat-icon>
-                                <mat-icon title="Delete" class="small">delete</mat-icon>
-                               </td>
-                            </tr>
-                            <tr>
-                                <td style="background-color: #87b6f3;"><input type="Checkbox" style="vertical-align: middle;width:12px;" checked></td>
-                                <td>5</td>
-                                <td>5</td>
-                                <td style="text-align:left;">Sree hanuman swamy</td>
-                                <td>12</td>
-                                <td>No</td>
-                                <td>1500</td>
-                                <td>Morning</td>
-                                <td>
-                                  <mat-icon title="Edit" class="small">edit</mat-icon>
-                                  <mat-icon title="Delete" class="small">delete</mat-icon>
-                                 </td>
-                              </tr>
-                              <tr>
-                                <td style="background-color: #87b6f3;"><input type="Checkbox" style="vertical-align: middle;width:12px;" checked></td>
-                              <td>1</td>
-                              <td>1</td>
-                              <td style="text-align:left;">Sree krishna Swamy</td>
-                              <td>12</td>
-                              <td>No</td>
-                              <td>1500</td>
-                              <td>Morning</td>
+                              <td style="text-align:left;padding-left:10px;">Sree krishna Swamy</td>
+                             <td>1500</td>
                               <td>
                                 <mat-icon title="Edit" class="small" style="vertical-align: middle;">edit</mat-icon>
                                 <mat-icon title="Delete" class="small" style="vertical-align: middle;">delete</mat-icon>
                               </td>
-                              
                             </tr>
                             <tr>
-                                <td style="background-color: #87b6f3;"><input type="Checkbox" style="vertical-align: middle;width:12px;" checked></td>
-                              <td>2</td>
-                              <td>2</td>
-                              <td style="text-align:left;">Sree murugan</td>
-                              <td>12</td>
-                              <td>No</td>
-                              <td>1500</td>
-                              <td>Morning</td>
-                              <td>
-                                <mat-icon title="Edit" class="small">edit</mat-icon>
-                              <mat-icon title="Delete" class="small">delete</mat-icon>
-                              </td>
-                            </tr>
-                            <tr>
-                                <td style="background-color: #87b6f3;"><input type="Checkbox" style="vertical-align: middle;width:12px;" checked></td>
-                              <td>3</td>
-                              <td>3</td>
-                              <td style="text-align:left;">Mahaganapathy</td>
-                              <td>12</td>
-                              <td>No</td>
-                              <td>1500</td>
-                              <td>Morning</td>
-                              <td>
-                                <mat-icon title="Edit" class="small">edit</mat-icon>
-                                <mat-icon title="Delete" class="small">delete</mat-icon>
-                              </td>
-                            </tr>
-                            <tr>
-                                <td style="background-color: #87b6f3;"><input type="Checkbox" style="vertical-align: middle;width:12px;" checked></td>
-                              <td>4</td>
-                              <td>4</td>
-                              <td style="text-align:left;">Sree hanuman swamy</td>
-                              <td>12</td>
-                              <td>No</td>
-                              <td>1500</td>
-                              <td>Morning</td>
-                              <td>
-                                <mat-icon title="Edit" class="small">edit</mat-icon>
-                                <mat-icon title="Delete" class="small">delete</mat-icon>
-                               </td>
-                            </tr>
-                            <tr>
-                                <td style="background-color: #87b6f3;"><input type="Checkbox" style="vertical-align: middle;width:12px;" checked></td>
-                                <td>5</td>
-                                <td>5</td>
-                                <td style="text-align:left;">Sree hanuman swamy</td>
-                                <td>12</td>
-                                <td>No</td>
-                                <td>1500</td>
-                                <td>Morning</td>
-                                <td>
-                                  <mat-icon title="Edit" class="small">edit</mat-icon>
-                                  <mat-icon title="Delete" class="small">delete</mat-icon>
-                                 </td>
-                              </tr>
-                              <tr>
-                                <td style="background-color: #87b6f3;"><input type="Checkbox" style="vertical-align: middle;width:12px;" checked></td>
-                              <td>1</td>
-                              <td>1</td>
-                              <td style="text-align:left;">Sree krishna Swamy</td>
-                              <td>12</td>
-                              <td>No</td>
-                              <td>1500</td>
-                              <td>Morning</td>
+                              <td style="text-align:left;padding-left:10px;">Sree krishna Swamy</td>
+                             <td>1500</td>
                               <td>
                                 <mat-icon title="Edit" class="small" style="vertical-align: middle;">edit</mat-icon>
                                 <mat-icon title="Delete" class="small" style="vertical-align: middle;">delete</mat-icon>
                               </td>
-                              
                             </tr>
                             <tr>
-                                <td style="background-color: #87b6f3;"><input type="Checkbox" style="vertical-align: middle;width:12px;" checked></td>
-                              <td>2</td>
-                              <td>2</td>
-                              <td style="text-align:left;">Sree murugan</td>
-                              <td>12</td>
-                              <td>No</td>
-                              <td>1500</td>
-                              <td>Morning</td>
-                              <td>
-                                <mat-icon title="Edit" class="small">edit</mat-icon>
-                              <mat-icon title="Delete" class="small">delete</mat-icon>
-                              </td>
-                            </tr>
-                            <tr>
-                                <td style="background-color: #87b6f3;"><input type="Checkbox" style="vertical-align: middle;width:12px;" checked></td>
-                              <td>3</td>
-                              <td>3</td>
-                              <td style="text-align:left;">Mahaganapathy</td>
-                              <td>12</td>
-                              <td>No</td>
-                              <td>1500</td>
-                              <td>Morning</td>
-                              <td>
-                                <mat-icon title="Edit" class="small">edit</mat-icon>
-                                <mat-icon title="Delete" class="small">delete</mat-icon>
-                              </td>
-                            </tr>
-                            <tr>
-                                <td style="background-color: #87b6f3;"><input type="Checkbox" style="vertical-align: middle;width:12px;" checked></td>
-                              <td>4</td>
-                              <td>4</td>
-                              <td style="text-align:left;">Sree hanuman swamy</td>
-                              <td>12</td>
-                              <td>No</td>
-                              <td>1500</td>
-                              <td>Morning</td>
-                              <td>
-                                <mat-icon title="Edit" class="small">edit</mat-icon>
-                                <mat-icon title="Delete" class="small">delete</mat-icon>
-                               </td>
-                            </tr>
-                            <tr>
-                                <td style="background-color: #87b6f3;"><input type="Checkbox" style="vertical-align: middle;width:12px;" checked></td>
-                                <td>5</td>
-                                <td>5</td>
-                                <td style="text-align:left;">Sree hanuman swamy</td>
-                                <td>12</td>
-                              <td>No</td>
-                              <td>1500</td>
-                              <td>Morning</td>
-                                <td>
-                                  <mat-icon title="Edit" class="small">edit</mat-icon>
-                                  <mat-icon title="Delete" class="small">delete</mat-icon>
-                                 </td>
-                              </tr>
-                              <tr>
-                                <td style="background-color: #87b6f3;"><input type="Checkbox" style="vertical-align: middle;width:12px;" checked></td>
-                              <td>1</td>
-                              <td>1</td>
-                              <td style="text-align:left;">Sree krishna Swamy</td>
-                              <td>12</td>
-                              <td>No</td>
-                              <td>1500</td>
-                              <td>Morning</td>
+                              <td style="text-align:left;padding-left:10px;">Sree krishna Swamy</td>
+                             <td>1500</td>
                               <td>
                                 <mat-icon title="Edit" class="small" style="vertical-align: middle;">edit</mat-icon>
                                 <mat-icon title="Delete" class="small" style="vertical-align: middle;">delete</mat-icon>
                               </td>
-                              
                             </tr>
                             <tr>
-                                <td style="background-color: #87b6f3;"><input type="Checkbox" style="vertical-align: middle;width:12px;" checked></td>
-                              <td>2</td>
-                              <td>2</td>
-                              <td style="text-align:left;">Sree murugan</td>
-                              <td>12</td>
-                              <td>No</td>
-                              <td>1500</td>
-                              <td>Morning</td>
+                              <td style="text-align:left;padding-left:10px;">Sree krishna Swamy</td>
+                             <td>1500</td>
                               <td>
-                                <mat-icon title="Edit" class="small">edit</mat-icon>
-                              <mat-icon title="Delete" class="small">delete</mat-icon>
+                                <mat-icon title="Edit" class="small" style="vertical-align: middle;">edit</mat-icon>
+                                <mat-icon title="Delete" class="small" style="vertical-align: middle;">delete</mat-icon>
                               </td>
                             </tr>
                             <tr>
-                                <td style="background-color: #87b6f3;"><input type="Checkbox" style="vertical-align: middle;width:12px;" checked></td>
-                              <td>3</td>
-                              <td>3</td>
-                              <td style="text-align:left;">Mahaganapathy</td>
-                              <td>12</td>
-                              <td>No</td>
-                              <td>1500</td>
-                              <td>Morning</td>
+                              <td style="text-align:left;padding-left:10px;">Sree krishna Swamy</td>
+                             <td>1500</td>
                               <td>
-                                <mat-icon title="Edit" class="small">edit</mat-icon>
-                                <mat-icon title="Delete" class="small">delete</mat-icon>
+                                <mat-icon title="Edit" class="small" style="vertical-align: middle;">edit</mat-icon>
+                                <mat-icon title="Delete" class="small" style="vertical-align: middle;">delete</mat-icon>
                               </td>
                             </tr>
                             <tr>
-                                <td style="background-color: #87b6f3;"><input type="Checkbox" style="vertical-align: middle;width:12px;" checked></td>
-                              <td>4</td>
-                              <td>4</td>
-                              <td style="text-align:left;">Sree hanuman swamy</td>
-                              <td>12</td>
-                              <td>No</td>
-                              <td>1500</td>
-                              <td>Morning</td>
+                              <td style="text-align:left;padding-left:10px;">Sree krishna Swamy</td>
+                             <td>1500</td>
                               <td>
-                                <mat-icon title="Edit" class="small">edit</mat-icon>
-                                <mat-icon title="Delete" class="small">delete</mat-icon>
-                               </td>
+                                <mat-icon title="Edit" class="small" style="vertical-align: middle;">edit</mat-icon>
+                                <mat-icon title="Delete" class="small" style="vertical-align: middle;">delete</mat-icon>
+                              </td>
                             </tr>
                             <tr>
-                                <td style="background-color: #87b6f3;"><input type="Checkbox" style="vertical-align: middle;width:12px;" checked></td>
-                                <td>5</td>
-                                <td>5</td>
-                                <td style="text-align:left;">Sree hanuman swamy</td>
-                                <td>12</td>
-                                <td>No</td>
-                                <td>1500</td>
-                                <td>Morning</td>
-                                <td>
-                                  <mat-icon title="Edit" class="small">edit</mat-icon>
-                                  <mat-icon title="Delete" class="small">delete</mat-icon>
-                                 </td>
-                              </tr>
+                              <td style="text-align:left;padding-left:10px;">Sree krishna Swamy</td>
+                             <td>1500</td>
+                              <td>
+                                <mat-icon title="Edit" class="small" style="vertical-align: middle;">edit</mat-icon>
+                                <mat-icon title="Delete" class="small" style="vertical-align: middle;">delete</mat-icon>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td style="text-align:left;padding-left:10px;">Sree krishna Swamy</td>
+                             <td>1500</td>
+                              <td>
+                                <mat-icon title="Edit" class="small" style="vertical-align: middle;">edit</mat-icon>
+                                <mat-icon title="Delete" class="small" style="vertical-align: middle;">delete</mat-icon>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td style="text-align:left;padding-left:10px;">Sree krishna Swamy</td>
+                             <td>1500</td>
+                              <td>
+                                <mat-icon title="Edit" class="small" style="vertical-align: middle;">edit</mat-icon>
+                                <mat-icon title="Delete" class="small" style="vertical-align: middle;">delete</mat-icon>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td style="text-align:left;padding-left:10px;">Sree krishna Swamy</td>
+                             <td>1500</td>
+                              <td>
+                                <mat-icon title="Edit" class="small" style="vertical-align: middle;">edit</mat-icon>
+                                <mat-icon title="Delete" class="small" style="vertical-align: middle;">delete</mat-icon>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td style="text-align:left;padding-left:10px;">Sree krishna Swamy</td>
+                             <td>1500</td>
+                              <td>
+                                <mat-icon title="Edit" class="small" style="vertical-align: middle;">edit</mat-icon>
+                                <mat-icon title="Delete" class="small" style="vertical-align: middle;">delete</mat-icon>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td style="text-align:left;padding-left:10px;">Sree krishna Swamy</td>
+                             <td>1500</td>
+                              <td>
+                                <mat-icon title="Edit" class="small" style="vertical-align: middle;">edit</mat-icon>
+                                <mat-icon title="Delete" class="small" style="vertical-align: middle;">delete</mat-icon>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td style="text-align:left;padding-left:10px;">Sree krishna Swamy</td>
+                             <td>1500</td>
+                              <td>
+                                <mat-icon title="Edit" class="small" style="vertical-align: middle;">edit</mat-icon>
+                                <mat-icon title="Delete" class="small" style="vertical-align: middle;">delete</mat-icon>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td style="text-align:left;padding-left:10px;">Sree krishna Swamy</td>
+                             <td>1500</td>
+                              <td>
+                                <mat-icon title="Edit" class="small" style="vertical-align: middle;">edit</mat-icon>
+                                <mat-icon title="Delete" class="small" style="vertical-align: middle;">delete</mat-icon>
+                              </td>
+                            </tr>
+                            
                               
                           </table>
                     </div>
@@ -461,5 +319,3 @@
         </div>
     </div>
 </div>
-
-

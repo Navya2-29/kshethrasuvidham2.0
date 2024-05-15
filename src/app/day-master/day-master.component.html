@@ -1,0 +1,92 @@
+
+<app-header></app-header>
+<app-spinner></app-spinner>
+<div class="amster">
+    <div class="container">
+     <div class="card-body outlook" style="background:white;">
+            <div class="posback">
+                <a routerLink="/dashboard" class="back">&nbsp;&nbsp;<mat-icon title="Edit" style="color:white;">arrow_back_ios</mat-icon></a>
+                <h1 class="tname">Guruvayurappan Temple</h1>
+            </div>
+            <div class="master">
+                <div class="col-md-4">
+                    <h1 style="font-weight:500;">Day Master</h1>
+                    <form >
+                    <table class="table">
+                        <tr>
+                           <td> Select Offering<input type="text"  class="form-control sps" placeholder="Enter Code"> </td>
+                           
+                           
+                         </tr>
+                         <tr>
+                            <td>Days</td>
+                            
+                            
+                          </tr>
+                          <tr>
+                            <section class="example-section">
+                                <span class="example-list-section">
+                                  <mat-checkbox class="example-margin"
+                                                [checked]="allComplete"
+                                                [color]="task.color"
+                                                [indeterminate]="someComplete()"
+                                                (change)="setAll($event.checked)">
+                                    {{task.name}}
+                                  </mat-checkbox>
+                                </span>
+                                <span class="example-list-section">
+                                  <ul>
+                                    @for (subtask of task.subtasks; track subtask) {
+                                      <li>
+                                        <mat-checkbox [(ngModel)]="subtask.completed"
+                                                      [color]="subtask.color"
+                                                      (ngModelChange)="updateAllComplete()">
+                                          {{subtask.name}}
+                                        </mat-checkbox>
+                                      </li>
+                                    }
+                                  </ul>
+                                </span>
+                              </section>
+                          </tr>
+                          
+                         
+                           
+                         <tr>
+                           <td><button class="btn btn-primary" >save</button> 
+                            <!-- <button class="btn btn-primary" 
+                   >update</button> -->
+                            <button class="btn btn-secondary" >cancel</button></td>
+                         </tr>
+                       </table>
+                      </form>
+                </div>
+                <div class="col-md-8 search">
+                  <div style="display:flex;" class="search-container mt-3">
+                    <input type="text" class="form-control sps search-input" 
+                      placeholder="search by Code or Name" style="width:36%;" >
+                    <!-- <button class="btn btn-primary" (click)="onSearch(searchQuery)">Search</button> -->
+                    <mat-icon class="search-icon" >search</mat-icon>
+                  </div>
+                    <div class="fixitems prathishta">
+                        <table class="table">
+                            <tr style="border-bottom: 2px solid #223d61;">
+                              
+                              <th >Id</th>
+                              <th >code</th>
+                              <th >Vazhipad Name</th>
+                              
+                            </tr>
+                           
+                            
+                              
+                          </table>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
