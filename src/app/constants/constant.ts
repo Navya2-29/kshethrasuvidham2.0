@@ -20,5 +20,13 @@ export const Constant={
         CREATE_VMASTER:"create",
         UPDATE_VMASTER:"update",
         DELETE_VMASTER:"delete",
+
+        // SPECIAL master
+        GET_VSPECIAL:'specialDay',
+        GET_ALL_SPECIAL:"getall",
+        CREATE_VSPECIAL:"create",
+        UPDATE_VSPECIAL:"update",
+        DELETE_VSPECIAL:"delete"
+
     }
 }

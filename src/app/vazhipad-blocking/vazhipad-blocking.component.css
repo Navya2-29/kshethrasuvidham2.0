@@ -449,3 +449,6 @@ mat-option {
     font-size:10pt;
     color:black;
   }
+  .blocking tr td{
+    text-align: left;
+  }

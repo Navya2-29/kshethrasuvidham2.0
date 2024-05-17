@@ -11,29 +11,34 @@
             <div class="master">
                 <div class="col-md-4">
                     <h1 style="font-weight:500;">Vihidham Master</h1>
-                    <form >
+                    <form [formGroup]="vihidhamMasterForm">
                     <table class="table">
                         <tr>
-                           <td> Code<input type="text"  class="form-control sps" placeholder="Enter Code"> </td>
+                           <td> Code<input type="text" formControlName="vihidham_code"  class="form-control sps" placeholder="Enter Code"> </td>
                            <td></td>
                            <td> SI No<input type="text"  class="form-control sps" > </td>
                          </tr>
                          
                          <tr>
-                           <td colspan="3"> Vihidham Name<input  type="text" class="form-control" placeholder="Enter Name"> </td>
+                           <td colspan="3"> Vihidham Name<input formControlName="vihidham_name" type="text" class="form-control" placeholder="Enter Name"> </td>
                          </tr>
                          <tr>
-                            <td colspan="3"> Account Head<input  type="text" class="form-control" placeholder="Enter Name"> </td>
+                            <!-- <td colspan="3"> Account Head <mat-select [(ngModel)]="selectedValue" name="food">
+                              @for (food of foods; track food) {
+                                <mat-option [value]="food.value">{{food.viewValue}}</mat-option>
+                              }
+                            </mat-select></td> -->
+                              <!-- <input formControlName="account_head" type="text" class="form-control" placeholder="Enter Name"> </td> -->
                           </tr>
                           <tr>
-                            <td colspan="3"> Account Sub Head<input  type="text" class="form-control" placeholder="Enter Name"> </td>
+                            <td colspan="3"> Account Sub Head<input formControlName="account_subHead"  type="text" class="form-control" placeholder="Enter Name"> </td>
                           </tr>
                          <tr>
                             <td colspan="3" >
                                 Type<br>
                                 <div class="p-2" style="border:1px solid rgb(155, 144, 144);text-align:center; text-align: start;display: flex; justify-content: space-between;">
-                                <div><input type="radio"  value="true" name="ticketMachine"> Avakasikal</div> &nbsp;&nbsp;<div><input type="radio"name="ticketMachine" value="false"> Samanavila</div>
-                                &nbsp;&nbsp;<div><input type="radio"name="ticketMachine" value="false"> PV Item</div>
+                                <div><input type="radio" formControlName="type"  name="type"> Avakasikal</div> &nbsp;&nbsp;<div><input type="radio" name="type" formControlName="type" > Samanavila</div>
+                                &nbsp;&nbsp;<div><input type="checkbox" formControlName="pvItem" > PV Item</div>
                             </div>
                             </td>
                            

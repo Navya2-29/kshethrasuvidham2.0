@@ -25,7 +25,7 @@ export interface vcat {
 @Component({
   selector: 'app-vmaster',
   standalone: true,
-  imports: [HeaderComponent, MatIconModule,CommonModule, RouterModule, MatSlideToggleModule, AsyncPipe, MatAutocompleteModule, FormsModule, ReactiveFormsModule, MatCheckboxModule, MatInputModule, MatAutocompleteModule, FormsModule, ReactiveFormsModule, AsyncPipe, MatIconModule, MorebuttonComponent, MatSelectModule],
+  imports: [HeaderComponent, MatIconModule,CommonModule,ReactiveFormsModule, RouterModule, MatSlideToggleModule, AsyncPipe, MatAutocompleteModule, FormsModule, ReactiveFormsModule, MatCheckboxModule, MatInputModule, MatAutocompleteModule, FormsModule, ReactiveFormsModule, AsyncPipe, MatIconModule, MorebuttonComponent, MatSelectModule],
   templateUrl: './vmaster.component.html',
   styleUrl: './vmaster.component.css'
 })
@@ -167,7 +167,6 @@ openSnackBar(message: string, action: string, classname: string) {
     this.loading=true;
     this.vazhipadMasterForm.reset();
     this.updateFlag = false;
-    
     this.loading=false;
     this.ngOnInit();
 

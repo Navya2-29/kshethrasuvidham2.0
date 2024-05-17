@@ -103,5 +103,21 @@
   "updation": 0,
   "id": "8f84"
 
-}]
+}],
+"specialDay":[{
+  "id":1,
+  "VM_Name":" Ashtadravya Ganapathy Homam 1501 - 24"
+  
+},
+{
+  "id":2,
+  "VM_Name":"Bhagya Sooktha Ganapathy Homam 501 "
+  
+},
+
+{
+  "id":3,
+  "VM_Name": "Samoha Mrithujaya Homam (First Saturday of every Malayalam Month)" 
+}
+]
   }

@@ -10,23 +10,62 @@
             <div class="master">
                 <div class="col-md-4">
                     <h1 style="font-weight:500;">Vazhipad Master</h1>
-                    <table class="table">
+                    <form [formGroup]="vazhipadMasterForm">
+                    <table class="table" >
                         <tr>
-                           <td> Vazhipad Code<input type="text" class="form-control sps" placeholder="Enter Code"> </td>
+                           <td> Vazhipad Code<input type="text"formControlName="code" class="form-control sps" placeholder="Enter Code"> </td>
                           <td colspan="2">
                             Vazhipad Name
-                            <input type="text" class="form-control" placeholder="Enter Name"> 
+                            <input type="text" class="form-control" formControlName="name" placeholder="Enter Name"> 
                           </td>
                          </tr>
+                         <div
+                         *ngIf="vmasterFormControl['code'].invalid && (vmasterFormControl['code'].dirty || vmasterFormControl['code'].touched)"
+                         class="pl-1 text-danger">
+                         <div *ngIf="vmasterFormControl['code'].hasError('required')">
+                           code is required.
+                         </div>
+                         <div *ngIf="vmasterFormControl['code'].hasError('maxlength')">
+                           code must be 3 characters long.
+                         </div>
+                         <div *ngIf="vmasterFormControl['code'].hasError('pattern')">
+                           code must be include number or english alphabat.
+                         </div>
+                         <div *ngIf="vmasterFormControl['code'].hasError('duplicateCode')" class="text-danger">
+                           Code already exists.
+                         </div>
+                       </div>
+                       <!-- name -->
+                       <div
+                       *ngIf="vmasterFormControl['name'].invalid && (vmasterFormControl['name'].dirty || vmasterFormControl['name'].touched)"
+                       class="pl-1 text-danger">
+                       <div *ngIf="vmasterFormControl['name'].hasError('required')">
+                         name is required.
+                       </div>
+                       <div *ngIf="vmasterFormControl['name'].hasError('pattern')">
+                         name must be include english alphabat and spaces only.
+                       </div>
+                       <div *ngIf="vmasterFormControl['name'].hasError('duplicateName')" class="text-danger">
+                         Name already exists.
+                       </div>
+       
+                     </div>
                          <tr>
-                            <td colspan="3"> Vazhipad Name<input type="text" class="form-control" placeholder="Enter Name in Regional Language"> </td>
+                            <td colspan="3"> Vazhipad Name<input type="text" formControlName="nameMalayalam" class="form-control" placeholder="Enter Name in Regional Language"> </td>
                           </tr>
+                          <div
+                          *ngIf="vmasterFormControl['nameMalayalam'].invalid && (vmasterFormControl['nameMalayalam'].dirty || vmasterFormControl['nameMalayalam'].touched)"
+                          class="pl-1 text-danger">
+                          <div *ngIf="vmasterFormControl['nameMalayalam'].hasError('required')">
+                            name in your regional language is required.
+                          </div>
+                        </div>
                           <tr>
                             <td colspan="3">
                                 Vazhipad Category <input matInput
                                     aria-label="vcat"
                                     [matAutocomplete]="auto"
-                                    [formControl]="vcatCtrl" autofocus class="form-control sps" placeholder="Select Vazhipad Category">
+                                    [formControl]="vcatCtrl" formControlName="category" autofocus class="form-control sps" placeholder="Select Vazhipad Category">
                                         <mat-autocomplete #auto="matAutocomplete">
                                         @for (vcat of filteredvcat | async; track vcat) {
                                             <mat-option [value]="vcat.name" style="padding-left:15px;padding-top:0px;">
@@ -43,7 +82,7 @@
                                       
                                     <!-- End Dietee List -->
                            <!-- <mat-label>Toppings</mat-label> -->
-                                        <mat-select [formControl]="toppings"  class="form-control sps" placeholder="Select Prathishta" multiple>
+                                        <mat-select [formControl]="toppings" formControlName="prathishta"  class="form-control sps" placeholder="Select Prathishta" multiple>
                                           <mat-select-trigger>
                                             {{toppings.value?.[0] || ''}}
                                             @if ((toppings.value?.length || 0) > 1) {
@@ -60,13 +99,13 @@
                             </tr>
                             <tr>
                                 <td>
-                                    Rate<input type="text" class="form-control sps" placeholder="Enter Rate"> 
+                                    Rate<input type="text" class="form-control sps" formControlName="rate" placeholder="Enter Rate"> 
                                 </td>
                                 <td>
-                                    No Limit<input type="text" class="form-control sps" placeholder="Limit (in Nos)" > 
+                                    No Limit<input type="text" formControlName="limit" class="form-control sps" placeholder="Limit (in Nos)" > 
                                 </td>
                                 <td>
-                                    Time Limit<input type="text" class="form-control sps" placeholder="Limit (in Hours)" > 
+                                    Time Limit<input type="text" formControlName="timeLimit" class="form-control sps" placeholder="Limit (in Hours)" > 
                                 </td>
                             </tr>
                             <tr>
@@ -121,6 +160,7 @@
                             
                         
                        </table>
+                      </form>
                 </div>
                 <div class="col-md-4">
                   <h1 style="color:white;">.</h1>

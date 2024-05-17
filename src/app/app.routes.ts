@@ -15,6 +15,7 @@ import { VihidhamMasterComponent } from './vihidham-master/vihidham-master.compo
 import { SpecialdayMasterComponent } from './specialday-master/specialday-master.component';
 import { DayMasterComponent } from './day-master/day-master.component';
 import { ComboMasterComponent } from './combo-master/combo-master.component';
+import { ItemMAterComponent } from './item-mater/item-mater.component';
 
 
 
@@ -36,6 +37,9 @@ export const routes: Routes = [
   },
   {
     path:'combo-master',component:ComboMasterComponent
+  },
+  {
+    path:'item-master',component:ItemMAterComponent
   }
 ];
 
