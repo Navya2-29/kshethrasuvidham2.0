@@ -1,4 +1,4 @@
-{
+export const AccountHead={
     "getAccountHead":[
         {
             "id":1,
