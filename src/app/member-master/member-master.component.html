@@ -1,84 +1,138 @@
-
 <app-header></app-header>
 <app-spinner></app-spinner>
 <div class="amster">
-    <div class="container">
-     <div class="card-body outlook" style="background:white;">
-            <div class="posback">
-                <a routerLink="/dashboard" class="back">&nbsp;&nbsp;<mat-icon title="Edit" style="color:white;">arrow_back_ios</mat-icon></a>
-                <h1 class="tname">Guruvayurappan Temple</h1>
+  <div class="container">
+    <div class="card-body outlook" style="background:white;">
+      <div class="posback">
+        <a routerLink="/dashboard" class="back">&nbsp;&nbsp;<mat-icon title="Edit"
+            style="color:white;">arrow_back_ios</mat-icon></a>
+        <h1 class="tname">Guruvayurappan Temple</h1>
+      </div>
+      <div class="master">
+        <div class="col-md-9" style="background:rgba(98, 6, 202, .1); border-radius: 15px; height: 70vh;" >
+          <!-- [ngStyle]="{'overflow-y': dynamicRows.length > 5 ? 'scroll' : 'hidden'}" -->
+          <h1 style="font-weight:500;">Member Master</h1>
+          <form [formGroup]="memeberForm">
+          <div class="row">
+            <div class="col-md-4">
+              <table class="table">
+                <tr>
+                  <td> Name<input formControlName="name" type="text" class="form-control sps" placeholder="Enter Code"> </td>
+
+                  <td></td>
+                </tr>
+
+                <tr>
+                  <td colspan="3"> Address 1<input formControlName="address1" type="text" class="form-control" placeholder="Enter Name"> </td>
+                </tr>
+                <tr>
+                  <td colspan="3"> Address 2<input type="text" formControlName="address2" class="form-control" placeholder="Enter Name"> </td>
+                </tr>
+                <tr>
+                  <td colspan="3"> Star<input type="text" formControlName="star" class="form-control" placeholder="Enter star"> </td>
+                </tr>
+                <tr>
+                  <td colspan="3"> Phone<input type="text" formControlName="phone" class="form-control" placeholder="Enter Name"> </td>
+                </tr>
+
+                <tr>
+                  <td colspan="3"> Mobile<input type="text" formControlName="mobile" class="form-control" placeholder="Enter Name"> </td>
+                </tr>
+                <tr>
+                  <td colspan="3"> Email<input type="email" formControlName="email" class="form-control" placeholder="Enter Name"> </td>
+                </tr>
+
+              </table>
             </div>
-            <div class="master">
-                <div class="col-md-4">
-                    <h1 style="font-weight:500;">Member Master</h1>
-                    <form >
-                    <table class="table">
-                        <tr>
-                           <td> Name<input type="text"  class="form-control sps" placeholder="Enter Code"> </td>
-                           
-                           
-                         </tr>
-                         
-                         <tr>
-                           <td colspan="3"> Address 1<input  type="text" class="form-control" placeholder="Enter Name"> </td>
-                         </tr>
-                         <tr>
-                            <td colspan="3"> Address 2<input  type="text" class="form-control" placeholder="Enter Name"> </td>
-                          </tr>
-                          <tr>
-                            <td colspan="3"> Address 3<input  type="text" class="form-control" placeholder="Enter Name"> </td>
-                          </tr>
-                          <tr>
-                            <td colspan="3"> Phone<input  type="text" class="form-control" placeholder="Enter Name"> </td>
-                          </tr>
-                        
-                          <tr>
-                            <td colspan="3"> Mobile<input  type="text" class="form-control" placeholder="Enter Name"> </td>
-                          </tr>  
-                          <tr>
-                            <td colspan="3"> Email<input  type="text" class="form-control" placeholder="Enter Name"> </td>
-                          </tr>   
-                         <tr>
-                           <td><button class="btn btn-primary" >save</button> 
-                            <!-- <button class="btn btn-primary" 
-                   >update</button> -->
-                            <button class="btn btn-secondary" >cancel</button></td>
-                         </tr>
-                       </table>
-                      </form>
-                </div>
-                <div class="col-md-8 search">
-                  
-                    <div class="fixitems prathishta">
-                        <div class="family" >
-                          <form [formGroup]="dynamicForm">
-                            <div formArrayName="fields">
-                              <div *ngFor="let field of fields.controls; let i=index" [formGroupName]="i" class="form-group">
-                                <label for="name">Name:</label>
-                                <input type="text" formControlName="name"><br><br>
-                          
-                                <label for="star">Star:</label>
-                                <select formControlName="star">
-                                  <option value="aswathy">Aswathy</option>
-                                  <option value="barany">Barany</option>
-                                </select><br><br>
-                          
-                                <label for="relation">Relation:</label>
-                                <input type="text" formControlName="relation"><br><br>
-                          
-                                <button type="button" (click)="removeField(i)">Remove</button>
-                                <br><br>
-                              </div>
-                            </div>
-                            <button type="button" (click)="addField()">Add Field</button>
-                          </form>
-                        </div>
+            <div class="col-md-8">
+              <table class="table">
+                <ng-container formArrayName="relativesDetails">
+                  <ng-container >
+                    <div>
+                    
+                      <tr>
+                        <td ><a  color="accent"><mat-icon class="icons">delete</mat-icon></a></td>
+                        <td><input  formControlName="relativeName" type="text" placeholder="Enter Name" style="border:none;"></td>
+                        <td>
+                          <select class="form-control" formControlName="star" style="width:100%;height:30.6px;">
+                            <option>Select Star</option>
+                            <option>Aswathy</option>
+                            <option>Bharany</option>
+                            <option>Makayiram</option>
+                            <option>Karthika</option>
+                            <option>Thiruvathira</option>
+                            <option>Punartham</option>
+                            <option>Pooyam</option>
+                          </select>
+                        </td>
+                        <td><select formControlName="realtion" class="form-control" style="width:100%;height:30.6px;">
+                            <option>Select relation</option>
+                            <option>father</option>
+                            <option>Mother</option>
+                            <option>son</option>
+                            <option>daughter</option>
+                            <option>wife</option>
+                            <option>husband</option>
+                            <option>grand mother</option>
+                            <option>grand father</option>
+                          </select> </td>
+                        <td style="vertical-align:center;" >
+                          <a (click)="addRelativeDetails()" color="accent"><mat-icon class="icons">add_comment</mat-icon></a>
+      
+                        </td>
+                      </tr>
+                    
+
                     </div>
-                </div>
+                  </ng-container>
+                  
+                </ng-container>
                 
+              </table>
+              <table style="border: none;">
+                <tr>
+                  <td></td>
+                  <td colspan="3"><button class="btn btn-success mt-8" (click)="onSubmit(memeberForm.value)">save</button>
+                    <!-- <button class="btn btn-primary" 
+                  >update</button> -->
+                    <button class="btn btn-danger ml-4">cancel</button>
+                    <button class="btn btn-primary ml-4">Edit</button>
+                    
+                  </td>
+                </tr>
+              </table>
             </div>
+          </div>
+        </form>
+          
         </div>
+        <div class="col-md-3 search">
+
+          <div class="fixitems prathishta">
+            <div>
+              <div style="padding:0px;margin-bottom:18px; margin-top: 20px;">
+                <table class="table">
+                  <tr>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>
+                    </th>
+                  </tr>
+                  <tr>
+                    <td>1</td>
+                    <td>abc</td>
+                    <td> <a href="#" color="accent"><mat-icon class="icons">add_comment</mat-icon></a></td>
+                  </tr>
+                </table>
+              </div>
+              <div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
+  </div>
 </div>
-
-

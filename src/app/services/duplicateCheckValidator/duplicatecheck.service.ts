@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 // import { MasterService } from '../master/master.service';
 import { Pmaster } from '../../models/pmaster.model';
+import { Vmaster } from '../../models/vmaster.model';
 
 @Injectable({
   providedIn: 'root'
@@ -19,11 +20,11 @@ export class DuplicatecheckService {
     return pmasterData.some(p => p.PM_NameEng === name);
   }
 
-  vmastercheckDuplicateCode(code: string, vmasterData: Pmaster[]): boolean {
-    return vmasterData.some(v => v.PM_Code == code);
+  vmastercheckDuplicateCode(code: string, vmasterData: Vmaster[]): boolean {
+    return vmasterData.some(v => v.VM_Code == code);
   }
 
-  vmastercheckDuplicateName(name: string, vmasterData: Pmaster[]): boolean {
-    return vmasterData.some(v => v.PM_NameEng === name);
+  vmastercheckDuplicateName(name: string, vmasterData: Vmaster[]): boolean {
+    return vmasterData.some(v => v.VM_Name === name);
   }
 }

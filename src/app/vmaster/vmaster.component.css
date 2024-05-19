@@ -449,3 +449,7 @@ mat-option {
     font-size:10pt;
     color:black;
   }
+  button{
+    width: 100px;
+    margin: 5px;
+  }

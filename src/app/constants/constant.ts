@@ -16,10 +16,12 @@ export const Constant={
         DELETE_CMASTER:"delete",
 
         // vmaster
-        GET_VMASTER:'posts',
+        GET_VMASTER:'vmaster',
         CREATE_VMASTER:"create",
         UPDATE_VMASTER:"update",
         DELETE_VMASTER:"delete",
+        GET_VCATEGORY:"VMcategory",
+        GET_VPRATHISHTA:"vprathishta",
 
         // SPECIAL master
         GET_VSPECIAL:'specialDay',
@@ -76,6 +78,10 @@ export const Constant={
         CREATE_MEMBER:'create',
         UPDATE_MEMBER:'update',
         DELETE_MEMBER:'delete',
+
+        // commen
+        GET_ACCOUNTHEAD:"getAccountHead",
+        GET_SUBACCOUNTHEAD:"getAccountSubHead"
 
     }
 }

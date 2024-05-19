@@ -167,7 +167,7 @@ table tr td {
   }
 
   table {
-    background:rgba(98, 6, 202, .1);
+    /* background:rgba(98, 6, 202, .1); */
     border-bottom:2px solid #223d61;
   }
   
@@ -451,4 +451,8 @@ mat-option {
   }
   .family{
     background-color: #5d85b9;
+  }
+
+  button{
+    width:100px;
   }

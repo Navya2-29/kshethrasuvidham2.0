@@ -58,13 +58,14 @@ errorMessage:string='';
     this.pmasterForm = this.formBuilder.group({
       PM_Code: ['', [
         Validators.required,
-        Validators.maxLength(3),
+        Validators.maxLength(10),
         Validators.pattern('^[a-zA-Z0-9]+$'),
         this.duplicateCodeValidator.bind(this)
       ]],
       PM_NameEng: ['', [Validators.required,
       Validators.pattern('^[a-zA-Z\s]+$'),
-      this.duplicateNameValidator.bind(this)
+      this.duplicateNameValidator.bind(this),
+      Validators.maxLength(100),
       ]],
       PM_Name: ['', Validators.required],
       imgurl: ['',]

@@ -4,8 +4,9 @@ import { Observable, catchError, retry, throwError } from 'rxjs';
 import { CreatePmaster, Pmaster } from '../../models/pmaster.model';
 import { Constant } from '../../constants/constant';
 import { Cmaster, CreateCmaster } from '../../models/cmaster.model';
-import { Vmaster } from '../../models/vmaster.model';
+import { AccountHead, AccountSubHead, Vmaster } from '../../models/vmaster.model';
 import { SpecialDayMaster, SpecialDayMasterList } from '../../models/special-day-master.model';
+import { observableToBeFn } from 'rxjs/internal/testing/TestScheduler';
 @Injectable({
   providedIn: 'root'
 })
@@ -67,7 +68,7 @@ export class MasterService {
   }
 
   // update vamster
-  updateVmaster(id: string, obj: Vmaster): Observable<Vmaster> {
+  updateVmaster(id: number, obj: Vmaster): Observable<Vmaster> {
     return this.http.put<Vmaster>(Constant.BASE_URL + Constant.METHODS.UPDATE_VMASTER + id, obj).pipe(catchError(this.errorHandler))
   }
 
@@ -75,7 +76,14 @@ export class MasterService {
   deleteVmaster(id: string): Observable<void> {
     return this.http.delete<void>(Constant.BASE_URL + Constant.METHODS.DELETE_VMASTER + id).pipe(catchError(this.errorHandler))
   }
-
+  // get vmaster category
+getVmasterCategory():Observable<Cmaster[]>{
+  return this.http.get<Cmaster[]>(Constant.BASE_URL+Constant.METHODS.GET_VCATEGORY)
+}
+// get vmaster prethishta
+getVmasterPrathishta():Observable<Pmaster[]>{
+  return this.http.get<Pmaster[]>(Constant.BASE_URL+Constant.METHODS.GET_VPRATHISHTA)
+}
 
   
 
@@ -285,8 +293,12 @@ getNakshthra():Observable<string[]>{
 }
 
 // get account heads
-getAccountHeads():Observable<any>{
-  return this.http.get<any>('assets/data/accountHead.json');
+getAccountHeads():Observable<AccountHead[]>{
+  return this.http.get<AccountHead[]>(Constant.BASE_URL+Constant.METHODS.GET_ACCOUNTHEAD);
+}
+// get account sub heads
+getSubAccountHeads():Observable<AccountSubHead[]>{
+  return this.http.get<AccountSubHead[]>(Constant.BASE_URL+Constant.METHODS.GET_SUBACCOUNTHEAD);
 }
 
   // error handling
