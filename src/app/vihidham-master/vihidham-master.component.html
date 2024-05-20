@@ -18,10 +18,39 @@
                            <td></td>
                            <td> SI No<input type="text"  class="form-control sps" > </td>
                          </tr>
-                         
+                         <div
+                         *ngIf="vihidhamMasterControl['vihidham_code'].invalid && (vihidhamMasterControl['vihidham_code'].dirty || vihidhamMasterControl['vihidham_code'].touched)"
+                         class="pl-1 text-danger">
+                         <div *ngIf="vihidhamMasterControl['vihidham_code'].hasError('required')">
+                           code is required.
+                         </div>
+                         <div *ngIf="vihidhamMasterControl['vihidham_code'].hasError('maxlength')">
+                           code must be 3 characters long.
+                         </div>
+                         <div *ngIf="vihidhamMasterControl['vihidham_code'].hasError('pattern')">
+                           code must be include number or english alphabat.
+                         </div>
+                         <div *ngIf="vihidhamMasterControl['vihidham_code'].hasError('duplicateCode')" class="text-danger">
+                           Code already exists.
+                         </div>
+                       </div>
                          <tr>
                            <td colspan="3"> Vihidham Name<input formControlName="vihidham_name" type="text" class="form-control" placeholder="Enter Name"> </td>
                          </tr>
+                         <div
+                         *ngIf="vihidhamMasterControl['vihidham_name'].invalid && (vihidhamMasterControl['vihidham_name'].dirty || vihidhamMasterControl['vihidham_name'].touched)"
+                         class="pl-1 text-danger">
+                         <div *ngIf="vihidhamMasterControl['vihidham_name'].hasError('required')">
+                           name is required.
+                         </div>
+                         <div *ngIf="vihidhamMasterControl['vihidham_name'].hasError('pattern')">
+                           name must be include english alphabat and spaces only.
+                         </div>
+                         <div *ngIf="vihidhamMasterControl['vihidham_name'].hasError('duplicateName')" class="text-danger">
+                           Name already exists.
+                         </div>
+         
+                       </div>
                          <tr>
                             <!-- <td colspan="3"> Account Head <mat-select [(ngModel)]="selectedValue" name="food">
                               @for (food of foods; track food) {
@@ -37,8 +66,8 @@
                             <td colspan="3" >
                                 Type<br>
                                 <div class="p-2" style="border:1px solid rgb(155, 144, 144);text-align:center; text-align: start;display: flex; justify-content: space-between;">
-                                <div><input type="radio" formControlName="type"  name="type"> Avakasikal</div> &nbsp;&nbsp;<div><input type="radio" name="type" formControlName="type" > Samanavila</div>
-                                &nbsp;&nbsp;<div><input type="checkbox" formControlName="pvItem" > PV Item</div>
+                                <div><input type="radio" formControlName="type"  name="type" value="Avakasikal"> Avakasikal</div> &nbsp;&nbsp;<div><input type="radio" value="Samanavila" name="type" formControlName="type" > Samanavila</div>
+                                &nbsp;&nbsp;<div><input type="checkbox" formControlName="pvItem" value="pvitem" > PV Item</div>
                             </div>
                             </td>
                            
@@ -47,10 +76,12 @@
                          
                            
                          <tr>
-                           <td colspan="3"><button class="btn btn-primary" >save</button> 
-                            <!-- <button class="btn btn-primary" 
-                   >update</button> -->
-                            <button class="btn btn-danger" >cancel</button></td>
+                          <td colspan="3"><button *ngIf="!updateFlag" class="btn btn-primary"
+                            (click)="onSubmit(vihidhamMasterForm.value)">save</button>
+                          <button *ngIf="updateFlag" class="btn btn-primary"
+                            (click)="onUpdate(vihidhamMasterForm.value)">update</button>
+                          <button class="btn btn-danger ml-1" (click)="onReset()">cancel</button>
+                        </td>
                          </tr>
                        </table>
                       </form>
@@ -66,20 +97,21 @@
                         <table class="table">
                             <tr style="border-bottom: 2px solid #223d61;">
                               <th style="width:10px;background-color: #223d61;color:white;">Active</th>  
-                              <th >Id</th>
+                              
                               <th >code</th>
                               <th >vihidham Name</th>
-                              <th >Account sub</th>
+                             
                               <th >Type</th>
+                              <th >Account sub</th>
                               <th></th>
                             </tr>
-                            <tr>
+                            <tbody *ngIf="!showNoRecordsMessage &&vihidhamMaster && vihidhamMaster.length > 0">
+                              <tr *ngFor="let data of filteredVihidhamMaster">
                                 <td style="background-color: #87b6f3;"><input type="Checkbox" style="vertical-align: middle;width:12px;" checked></td>
-                              <td>1</td>
-                              <td>1o</td>
-                              <td style="text-align:left;">abc</td>
-                              <td>bcc</td>
-                              <td>No</td>
+                              <td>{{data.vihidham_code}}</td>
+                              <td>{{data.vihidham_name}}</td>
+                              <td style="text-align:left;">{{data.type}}</td>
+                              <td>{{data.account_head}}</td>
                               
                               <td>
                                 <mat-icon title="Edit" class="small" style="vertical-align: middle;">edit</mat-icon>
@@ -87,11 +119,16 @@
                               </td>
                               
                             </tr>
-                         
-                            
-                            
-                            
-                              
+                            </tbody>
+                            <tfoot>
+                              <tr *ngIf="!vihidhamMaster || vihidhamMaster.length === 0 || showNoRecordsMessage">
+                                <td colspan="5">
+                                  <div style="width: 100%;" class="mt-3">
+                                    <h4 class="text-center">No Records found</h4>
+                                  </div>
+                                </td>
+                              </tr>
+                            </tfoot>
                           </table>
                     </div>
                 </div>

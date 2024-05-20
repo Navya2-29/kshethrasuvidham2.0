@@ -4,6 +4,7 @@ import { Pmaster } from '../../models/pmaster.model';
 import { Vmaster } from '../../models/vmaster.model';
 import { Cmaster } from '../../models/cmaster.model';
 import { ItemMaster } from '../../models/item-master.model';
+import { VihidhamMaster } from '../../models/vihidham-master.model';
 
 @Injectable({
   providedIn: 'root'
@@ -44,6 +45,13 @@ export class DuplicatecheckService {
 
   itemMastercheckDuplicateName(name: string, ImasterData: ItemMaster[]): boolean {
     return ImasterData.some(I => I.item_code === name);
+  }
+  vihidhamMastercheckDuplicateCode(code: string, vihidhamData: VihidhamMaster[]): boolean {
+    return vihidhamData.some(v => v.vihidham_code == code);
+  }
+
+  vihidhamMastercheckDuplicateName(name: string, vihidhamData: VihidhamMaster[]): boolean {
+    return vihidhamData.some(v => v.vihidham_name === name);
   }
 
 }
