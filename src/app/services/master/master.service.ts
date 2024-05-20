@@ -132,7 +132,7 @@ createSpecialDayMaster(data:SpecialDayMaster):Observable<SpecialDayMaster>{
 }
 
 // update special day
-updateSpecialDay(id: string, obj: SpecialDayMaster): Observable<any> {
+updateSpecialDay(id: Number, obj: SpecialDayMaster): Observable<any> {
   return this.http.put<SpecialDayMaster>(Constant.BASE_URL + Constant.METHODS.UPDATE_VSPECIAL + id, obj).pipe(catchError(this.errorHandler))
 }
 

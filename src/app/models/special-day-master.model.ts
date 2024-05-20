@@ -5,6 +5,8 @@ export interface SpecialDayMaster{
 	SD_MDate :number;
 	SD_EDate :number;
 	SD_Day:number;
+	VM_Name:string;
+	star:string;
 
 }
 export interface SpecialDayMasterList{
