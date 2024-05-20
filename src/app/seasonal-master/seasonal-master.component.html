@@ -30,6 +30,7 @@
                 <td colspan="3"> Vazhipad Name<input type="text" formControlName="VM_name" class="form-control"
                     placeholder="Enter Name"> </td>
               </tr>
+
               <div
                 *ngIf="SeasonalFormControl['VM_name'].invalid && (SeasonalFormControl['VM_name'].dirty || SeasonalFormControl['VM_name'].touched)"
                 class="pl-1 text-danger">
@@ -39,13 +40,7 @@
               <tr>
                 <td>
                   From date<input type="date" class="form-control sps" formControlName="VS_fromDate">
-                  <div
-                *ngIf="SeasonalFormControl['VS_fromDate'].invalid && (SeasonalFormControl['VS_fromDate'].dirty || SeasonalFormControl['VS_fromDate'].touched)"
-                class="pl-1 text-danger">
-                <div *ngIf="SeasonalFormControl['VS_fromDate'].hasError('required')">
-                  code is required.
-                </div>
-              </div>
+                 
                 </td>
                 <td></td>
                 <td>To date <br><input type="date" class="form-control sps" formControlName="VS_toDate">
@@ -53,26 +48,27 @@
                   *ngIf="SeasonalFormControl['VS_toDate'].invalid && (SeasonalFormControl['VS_toDate'].dirty || SeasonalFormControl['VS_toDate'].touched)"
                   class="pl-1 text-danger">
                   <div *ngIf="SeasonalFormControl['VS_toDate'].hasError('required')">
-                    code is required.
+                   <small>To date is required.</small> 
                   </div>
                 </div></td>
               </tr>
               <tr>
-                <td colspan="3"><button class="btn btn-primary">save</button>
-                  <!-- <button class="btn btn-primary" 
-                   >update</button> -->
-                  <button class="btn btn-danger">cancel</button>
-                </td>
+                <td colspan="3"><button *ngIf="!updateFlag" class="btn btn-primary"
+                  (click)="onSubmit(seasonalBlockingForm.value)">save</button>
+                <button *ngIf="updateFlag" class="btn btn-primary"
+                  (click)="onUpdate(seasonalBlockingForm.value)">update</button>
+                <button class="btn btn-danger ml-1" (click)="onReset()">cancel</button>
+              </td>
               </tr>
             </table>
           </form>
         </div>
         <div class="col-md-8 search">
           <div style="display:flex;" class="search-container mt-3">
-            <input type="text" class="form-control sps search-input" placeholder="search by Code or Name"
-              style="width:36%;">
+            <input type="text" class="form-control sps search-input" (input)="onSearch(searchQuery)"
+              placeholder="search by Code or Name" style="width:36%;" [(ngModel)]="searchQuery">
             <!-- <button class="btn btn-primary" (click)="onSearch(searchQuery)">Search</button> -->
-            <mat-icon class="search-icon">search</mat-icon>
+            <mat-icon class="search-icon" (click)="onSearch(searchQuery)">search</mat-icon>
           </div>
           <div class="fixitems prathishta">
             <table class="table">
@@ -86,24 +82,34 @@
                
                 <th></th>
               </tr>
-              <tr>
-                <td style="background-color: #87b6f3;"><input type="Checkbox" style="vertical-align: middle;width:12px;"
-                    checked></td>
-                <td>1</td>
-                <td>1</td>
-                <td style="text-align:left;">Archna</td>
-                <td>12-08-24</td>
-                <td>07-09-24</td>
-                <td>
-                  <mat-icon title="Edit" class="small" style="vertical-align: middle;">edit</mat-icon>
-                  <mat-icon title="Delete" class="small" style="vertical-align: middle;">delete</mat-icon>
-                </td>
-
-              </tr>
-             
+              <tbody *ngIf="!showNoRecordsMessage &&seasonalMaster && seasonalMaster.length > 0">
+                <tr>
+                  <td style="background-color: #87b6f3;"><input type="Checkbox" style="vertical-align: middle;width:12px;"
+                      checked></td>
+                  <td>1</td>
+                  <td>1</td>
+                  <td style="text-align:left;">Archna</td>
+                  <td>12-08-24</td>
+                  <td>07-09-24</td>
+                  <td>
+                    <mat-icon title="Edit" class="small" style="vertical-align: middle;">edit</mat-icon>
+                    <mat-icon title="Delete" class="small" style="vertical-align: middle;">delete</mat-icon>
+                  </td>
+  
+                </tr>
+              </tbody>
               
-             
-
+              <tfoot>
+                <tr *ngIf="!seasonalMaster || seasonalMaster.length === 0 || showNoRecordsMessage">
+                  <td colspan="5">
+                    <div style="width: 100%;" class="mt-3">
+                      <h4 class="text-center">No Records found</h4>
+                    </div>
+                  </td>
+                </tr>
+              </tfoot>
+              
+        
             </table>
           </div>
         </div>
