@@ -9,7 +9,6 @@
             style="color:white;">arrow_back_ios</mat-icon></a>
         <h1 class="tname">Guruvayurappan Temple</h1>
       </div>
-
       <div class="master">
         <div class="col-md-8">
           <form [formGroup]="vazhipadMasterForm">
@@ -18,7 +17,7 @@
               <h1 style="font-weight:500;">Vazhipad Master</h1>
               <table class="table">
                 <tr colspn="2">
-                  <td> Vazhipad Code<input type="text" maxlength="10" formControlName="VM_Code" class="form-control sps"
+                  <td> Vazhipad Code <span class="text-danger">*</span><input type="text" maxlength="10" formControlName="VM_Code" class="form-control sps"
                       placeholder="Enter Code">
 
                   </td>
@@ -33,15 +32,15 @@
                     <small>must be 3 characters long.</small>
                   </div>
                   <div *ngIf="vmasterFormControl['VM_Code'].hasError('pattern')">
-                    code must be include number or english alphabat.
+                    <small>code must be include number or english alphabat.</small>
                   </div>
                   <div *ngIf="vmasterFormControl['VM_Code'].hasError('duplicateCode')" class="text-danger">
-                    Code already exists.
+                  <small>Code already exists.</small>  
                   </div>
                 </div>
                 <tr>
                   <td colspan="3">
-                    Vazhipad Name
+                    Vazhipad Name<span class="text-danger">*</span>
                     <input type="text" class="form-control" appUpperCase maxlength="100" formControlName="VM_Name" placeholder="Enter Name">
                   </td>
                 </tr>
@@ -49,33 +48,33 @@
                 *ngIf="vmasterFormControl['VM_Name'].invalid && (vmasterFormControl['VM_Name'].dirty || vmasterFormControl['VM_Name'].touched)"
                 class="pl-1 text-danger ">
                 <div *ngIf="vmasterFormControl['VM_Name'].hasError('required')">
-                  name is required.
+                   <small>name is required.</small>
                 </div>
                 <div *ngIf="vmasterFormControl['VM_Name'].hasError('pattern')">
-                  name must be include english alphabat and spaces only.
+                  <small>name must be include english alphabat and spaces only.</small>
                 </div>
                 <div *ngIf="vmasterFormControl['VM_Name'].hasError('duplicateName')" class="text-danger">
-                  Name already exists.
+                 <small> Name already exists.</small>
                 </div>
 
               </div>
 
                 <tr>
-                  <td colspan="3"> Vazhipad Name in Regional Lang.<input type="text" formControlName="VM_RName"
+                  <td colspan="3"> Vazhipad Name in Regional Lang.<span class="text-danger">*</span><input type="text" formControlName="VM_RName"
                       class="form-control" placeholder="Enter Name in Regional Language"> </td>
                 </tr>
                 <div
                 *ngIf="vmasterFormControl['VM_RName'].invalid && (vmasterFormControl['VM_RName'].dirty || vmasterFormControl['VM_RName'].touched)"
                 class="pl-1 text-danger">
                 <div *ngIf="vmasterFormControl['VM_RName'].hasError('required')">
-                  name  is required.
+                <small> name  is required.</small> 
                 </div>
               </div>
                 <tr>
 
                   <td colspan="3">
 
-                    Vazhipad Category <input matInput aria-label="vazhpad category" [matAutocomplete]="vcategory"
+                    Vazhipad Category<span class="text-danger">*</span> <input matInput aria-label="vazhpad category" [matAutocomplete]="vcategory"
                       formControlName="VC_Name" autofocus class="form-control sps"
                       placeholder="Select Vazhipad Category">
                     <mat-autocomplete #vcategory="matAutocomplete">
@@ -92,7 +91,7 @@
                 *ngIf="vmasterFormControl['VC_Name'].invalid && (vmasterFormControl['VC_Name'].dirty || vmasterFormControl['VC_Name'].touched)"
                 class="pl-1 text-danger">
                 <div *ngIf="vmasterFormControl['VC_Name'].hasError('required')">
-                  category is required.
+                  <small>category is required.</small>
                 </div>
               </div>
                 <tr>
@@ -116,7 +115,7 @@
                 </tr>
                 <tr>
                   <td>
-                    Rate<input type="text" class="form-control sps" formControlName="VM_Amt" placeholder="Enter Rate">
+                    Rate<span class="text-danger">*</span><input type="text" class="form-control sps" formControlName="VM_Amt" placeholder="Enter Rate">
                   </td>
                   <td>
                     No Limit<input type="text" formControlName="VM_MaxNo" class="form-control sps"
@@ -243,10 +242,11 @@
      
 
       <div class="col-md-4 search">
-        <div style="display:flex;">
-          <input type="text" class="form-control sps" [(ngModel)]="searchQuery" (input)="onSearch(searchQuery)"
-            placeholder="Code or Name" style="width:36%;">
-          <!-- <button class="btn btn-primary">Search</button> -->
+        <div style="display:flex;" class="search-container mt-3">
+          <input type="text" class="form-control sps search-input" (input)="onSearch(searchQuery)"
+            placeholder="search by Code or Name" style="width:60%;" [(ngModel)]="searchQuery">
+          <!-- <button class="btn btn-primary" (click)="onSearch(searchQuery)">Search</button> -->
+          <mat-icon class="search-icon" (click)="onSearch(searchQuery)">search</mat-icon>
         </div>
         <div class="fixitems prathishta">
           <table class="table">

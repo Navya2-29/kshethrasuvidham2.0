@@ -1,9 +1,11 @@
 export interface ComboVazhipadMaster{
 
-    CM_Id:number,
+    CM_Id:string,
     VM_Id:number,
     CM_VM_Id:number,
-    CM_Flag:boolean
+    CM_Flag:boolean,
+    VM_Name:string,
+    
 
 
 

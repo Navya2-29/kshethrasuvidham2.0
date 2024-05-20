@@ -71,4 +71,6 @@ get relativesDetails(){
     console.log(data);
 
   }
+
+  
 }

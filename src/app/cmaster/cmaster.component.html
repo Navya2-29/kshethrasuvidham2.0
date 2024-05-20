@@ -14,7 +14,7 @@
           <form [formGroup]="cmasterForm">
             <table class="table">
               <tr>
-                <td> Category Code<input type="text" maxlength="3" (input)="onInputChange($event)" appUpperCase matInput formControlName="CM_Code" class="form-control sps"
+                <td> Category Code<span class="text-danger">*</span><input type="text" maxlength="3" (input)="onInputChange($event)" appUpperCase matInput formControlName="CM_Code" class="form-control sps"
                     placeholder="Enter Code" style="width:126px;"> </td>
 
               </tr>
@@ -36,7 +36,7 @@
               </div>
              
               <tr>
-                <td> Category Name<input type="text" appUpperCase formControlName="CM_NameEng" matInput
+                <td> Category Name<span class="text-danger">*</span><input type="text" appUpperCase formControlName="CM_NameEng" matInput
                     class="form-control" placeholder="Enter Name"> </td>
 
               </tr>
@@ -51,21 +51,22 @@
                 </div>
               </div>
               <tr>
-                <td><button *ngIf="!updateFlag" class="btn btn-primary" [disabled]="!cmasterForm.valid"
-                    (click)="onSubmit(cmasterForm.value)">save</button>
-                  <button *ngIf="updateFlag" class="btn btn-primary" [disabled]="!cmasterForm.valid"
-                    (click)="onUpdate(cmasterForm.value)">update</button>
-                  <button class="btn btn-secondary" (click)="onReset()">cancel</button>
-                </td>
+                <td><button *ngIf="!updateFlag" class="btn btn-primary"
+                  (click)="onSubmit(cmasterForm.value)">save</button>
+                <button *ngIf="updateFlag" class="btn btn-primary"
+                  (click)="onUpdate(cmasterForm.value)">update</button>
+                <button class="btn btn-danger ml-1" (click)="onReset()">cancel</button>
+              </td>
               </tr>
             </table>
           </form>
         </div>
         <div class="col-md-6 search">
-          <div style="display:flex;">
-            <input type="text" class="form-control sps" placeholder="search by Code or Name" style="width:36%;"
-              [(ngModel)]="searchQuery">
-            <button class="btn btn-primary" (click)="onSearch(searchQuery)">Search</button>
+          <div style="display:flex;" class="search-container mt-3">
+            <input type="text" class="form-control sps search-input" (input)="onSearch(searchQuery)"
+              placeholder="search by Code or Name" style="width:36%;" [(ngModel)]="searchQuery">
+            <!-- <button class="btn btn-primary" (click)="onSearch(searchQuery)">Search</button> -->
+            <mat-icon class="search-icon" (click)="onSearch(searchQuery)">search</mat-icon>
           </div>
           <div class="fixitems prathishta">
             <table class="table">

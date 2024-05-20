@@ -493,3 +493,6 @@ mat-option {
   .close-button :active{
     border: 1px solid gray;
   }
+  button{
+    width: 100px;
+  }

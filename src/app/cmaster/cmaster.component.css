@@ -440,3 +440,22 @@ mat-option {
   .tname {
     background:white;font-family:montserrat;font-weight:600;padding-left:10px;padding-right:10px;border-radius:9px 9px 0px 0px;color:#223d61;
   }
+  button{
+    width: 100px;
+  }
+  .search-container {
+    position: relative;
+  }
+  
+  .search-input {
+    padding-right: 30px;
+  }
+  
+  .search-icon {
+    position: absolute;
+    top: 50%;
+    right: 65%; 
+    transform: translateY(-50%);
+    color: #888;
+    cursor: pointer;
+  }

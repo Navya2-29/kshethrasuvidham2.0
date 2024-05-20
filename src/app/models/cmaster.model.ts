@@ -3,8 +3,7 @@ export interface Cmaster {
     CM_Name: string;
     CM_NameEng: string;
     id:string;
-    version: number;
-    updation: number;
+    
   }
 
   export interface CreateCmaster{

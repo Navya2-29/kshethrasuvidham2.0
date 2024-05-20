@@ -59,7 +59,7 @@ export const Constant={
         DELETE_VDAY:'delete',
 
         // COMBO MASTWR
-        GET_VCOMBO:'combo',
+        GET_VCOMBO:'comboVazhipad',
         GET_ALL_VCOMBO:'getall',
         CREATE_VCOMBO:'create',
         UPDATE_VCOMBO:'update',

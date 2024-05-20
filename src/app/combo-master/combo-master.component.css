@@ -336,8 +336,8 @@ background-color: #f4f5f7 !important;
 mat-option {
   font-size:11pt;
   margin-bottom:0px;
-  margin-top:-20px;
-  margin-bottom:-8px;
+  margin-top:0px;
+  
   height:auto;
 }
 
@@ -448,4 +448,24 @@ mat-option {
   mat-select {
     font-size:10pt;
     color:black;
+  }
+
+  .search-container {
+    position: relative;
+  }
+  
+  .search-input {
+    padding-right: 30px; /* Adjust the padding to make space for the icon */
+  }
+  
+  .search-icon {
+    position: absolute;
+    top: 50%;
+    right: 65%; /* Adjust the position of the icon */
+    transform: translateY(-50%);
+    color: #888; /* Adjust the color of the icon */
+    cursor: pointer;
+  }
+  button{
+    width: 100px;
   }

@@ -453,3 +453,19 @@ mat-option {
     width: 100px;
     margin: 5px;
   }
+  .search-container {
+    position: relative;
+  }
+  
+  .search-input {
+    padding-right: 0px;
+  }
+  
+  .search-icon {
+    position: absolute;
+    top: 50%;
+    right: 40%; 
+    transform: translateY(-50%);
+    color: #888;
+    cursor: pointer;
+  }

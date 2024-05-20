@@ -3,7 +3,7 @@ import { HeaderComponent } from '../header/header.component';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { FormsModule, NgForm, ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
+import { FormsModule, NgForm, ReactiveFormsModule, FormBuilder, Validators, FormGroup, ValidationErrors, AbstractControl } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { Pmaster, CreatePmaster } from '../models/pmaster.model';
@@ -13,6 +13,7 @@ import { UpperCaseDirective } from '../shared/directives/upper-case.directive';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { Cmaster, CreateCmaster } from '../models/cmaster.model';
+import { DuplicatecheckService } from '../services/duplicateCheckValidator/duplicatecheck.service';
 @Component({
   selector: 'app-cmaster',
   standalone: true,
@@ -40,16 +41,21 @@ export class CmasterComponent implements OnInit {
   private masterService = inject(MasterService);
   private formBuilder = inject(FormBuilder);
   private _snackBar = inject(MatSnackBar);
+  private duplicateCheck=inject(DuplicatecheckService)
   constructor() {
 
     this.cmasterForm = this.formBuilder.group({
       CM_Code: ['', [
         Validators.required,
         Validators.maxLength(3),
-        Validators.pattern('^[a-zA-Z0-9]+$')
+        Validators.pattern('^[a-zA-Z0-9]+$'),
+        this.duplicateCodeValidator.bind(this),
+
       ]],
       CM_NameEng: ['', [Validators.required,
-      Validators.pattern('^[a-zA-Z\s]+$')
+      Validators.pattern('^[a-zA-Z\s]+$'),
+      this.duplicateNameValidator.bind(this),
+
       ]],
     });
   }
@@ -166,5 +172,34 @@ export class CmasterComponent implements OnInit {
       this.showMaxLengthError = false;
     }
   }
+
+    // validation
+    markFormGroupTouched(formGroup: FormGroup) {
+      Object.values(formGroup.controls).forEach(control => {
+        control.markAsTouched();
+  
+        if (control instanceof FormGroup) {
+          this.markFormGroupTouched(control);
+        }
+      });
+    }
+  
+    // duplicate code check validators
+    duplicateCodeValidator(control: AbstractControl): ValidationErrors | null {
+      const code = control.value;
+      if (this.duplicateCheck.cmastercheckDuplicateCode(code, this.cmaster)) {
+        return { duplicateCode: true };
+      }
+      return null;
+    }
+  
+    // duplicate name check validators
+    duplicateNameValidator(control: AbstractControl): ValidationErrors | null {
+      const name = control.value;
+      if (this.duplicateCheck.cmastercheckDuplicateCode(name, this.cmaster)) {
+        return { duplicateName: true };
+      }
+      return null;
+    }
 
 }

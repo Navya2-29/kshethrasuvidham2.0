@@ -13,6 +13,7 @@ import { RouterModule } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { map, startWith } from 'rxjs/operators';
+import { VazhipadBlocking } from '../models/vazhipadBlockingMaster.model';
 @Component({
   selector: 'app-vazhipad-blocking',
   standalone: true,
@@ -21,16 +22,21 @@ import { map, startWith } from 'rxjs/operators';
   styleUrl: './vazhipad-blocking.component.css'
 })
 export class VazhipadBlockingComponent {
-
+  searchQuery:string='';
+  BlockingMater:VazhipadBlocking[]=[];
+  filteredBlockingMater:VazhipadBlocking[]=[];
   vazhipadBlockingForm: FormGroup;
   blockingCategory: boolean = false;
   VB_category: string = 'Yearly';
   nakshatham: string[] = [];
   filteredOptions: Observable<string[]>;
   blockingFlag: boolean = false;
+  loading:boolean=false;
   today: Date = new Date();
+  updateFlag:boolean=false;
   private formBuilder = inject(FormBuilder);
   private masterService = inject(MasterService);
+  private _snackBar=inject(MatSnackBar);
   constructor() {
 
     // form model
@@ -72,6 +78,7 @@ export class VazhipadBlockingComponent {
       this.nakshatham = res;
     })
   }
+  // get Categary
   getCategory(category: string) {
     console.log(category);
     if (category == 'Yearly') {
@@ -92,6 +99,50 @@ export class VazhipadBlockingComponent {
    get vazhipadBlockingControl() {
     return this.vazhipadBlockingForm.controls;
   }
+// search functionality by pname
+onSearch(searchQuery: string) {
+  if (!this.searchQuery.trim()) {
+    this.filteredBlockingMater = this.BlockingMater;
+  }
 
+  else {
+    this.filteredBlockingMater = this.BlockingMater.filter((data) => {
+      console.log(data)
+      return data.VM_Name.toLowerCase().includes(this.searchQuery);
+    });
+  }
+}
+
+// onsubmit
+// onSubmit(data: VazhipadBlocking) {
+//   console.log(data);
+//   this.loading=true;
+//   if (this.vazhipadBlockingForm.valid) {
+//     this.masterService.createBlockingMaster(data).subscribe({
+//       next: (res) => {
+//         console.log(res);
+//         this.loading=false;
+//         this.openSnackBar("Vazhpad  Details created sussess fully", "close", "success-snackbar");
+
+//         this.onReset();
+//       },
+//       error: (error) => {
+//         this.loading=true;
+//         console.log(error);
+//       }
+//     })
+//   }
+  // else {
+  //   this.markFormGroupTouched(this.vazhipadMasterForm);
+  // }
+
+
+// onReset() {
+//   this.loading=true;
+//   this.vazhipadBlockingForm.reset();
+//   this.updateFlag = false;
+  
+
+// }
 
 }

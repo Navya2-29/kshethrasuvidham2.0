@@ -11,36 +11,42 @@
       <div class="master">
         <div class="col-md-4">
           <h1 style="font-weight:500;">Combo Master</h1>
-          <form>
+          <form [formGroup]="comboMasterForm">
             <table class="table">
               <tr>
-                <td> Select Offering <input type="text" class="form-control sps" placeholder="Enter Code"> </td>
-
+                <td> Select Offering <input type="text"
+                  placeholder="select one vazhipad "
+                  aria-label="vazhipad list"
+                  formControlName="VM_Name"
+                  matInput
+                  (optionSelected)="onOptionSelected($event)"
+                  class="form-control sps"
+                  [matAutocomplete]="combo">
+           <mat-autocomplete autoActiveFirstOption #combo="matAutocomplete">
+             @for (list of filteredComboList | async; track list) {
+               <mat-option [value]="list.VM_Name">{{list.VM_Name}}</mat-option>
+             }
+           </mat-autocomplete> </td>
               </tr>
-              <tr>
+              <tr >
                 <td colspan="3">
-
                   <div class="p-2"
                     style="border:1px solid rgb(155, 144, 144);text-align:center; text-align: start;display: flex;flex-direction: column;align-content: space-between;height:200px;overflow:scroll;">
                     <div><input type="checkbox" value="true" name="ticketMachine"> Archanakal</div>
-                    <div><input type="checkbox" value="true" name="ticketMachine"> Archanakalds ddsf sdsdfsdsd fsdfsdf
-                      dds sfdds sddssdsdsdd sdsdsdsdsdss</div>
+                    <div><input type="checkbox" value="true" name="ticketMachine"> Archanakal </div>
                     <div><input type="checkbox" value="true" name="ticketMachine"> Archanakal</div>
                     <div><input type="checkbox" value="true" name="ticketMachine"> Archanakal</div>
-                    <div><input type="checkbox" value="true" name="ticketMachine"> Archanakal</div> &nbsp;&nbsp;
-                    <div><input type="checkbox" value="true" name="ticketMachine"> Archanakal</div>
-                    <div><input type="checkbox" value="true" name="ticketMachine"> Archanakal</div>
+                    <div><input type="checkbox" value="true" name="ticketMachine"> Archanakal</div> 
                     <div><input type="checkbox" value="true" name="ticketMachine"> Archanakal</div>
                     <div><input type="checkbox" value="true" name="ticketMachine"> Archanakal</div>
                     <div><input type="checkbox" value="true" name="ticketMachine"> Archanakal</div>
                     <div><input type="checkbox" value="true" name="ticketMachine"> Archanakal</div>
-
+                    <div><input type="checkbox" value="true" name="ticketMachine"> Archanakal</div>
+                    <div><input type="checkbox" value="true" name="ticketMachine"> Archanakal</div>
                     &nbsp;&nbsp;
                   </div>
                 </td>
-
               </tr>
-
               <tr>
                 <td colspan="3">
 
@@ -54,20 +60,21 @@
 
               </tr>
               <tr>
-                <td><button class="btn btn-primary">save</button>
-                  <button class="btn btn-primary">update</button>
-                  <button class="btn btn-secondary">cancel</button>
-                </td>
+                <td><button *ngIf="!updateFlag" class="btn btn-primary"
+                  (click)="onSubmit(comboMasterForm.value)">save</button>
+                <button *ngIf="updateFlag" class="btn btn-primary" 
+                  (click)="onUpdate(comboMasterForm.value)">update</button>
+                <button class="btn btn-danger ml-1" (click)="onReset()">cancel</button>
+              </td>
               </tr>
             </table>
           </form>
         </div>
         <div class="col-md-8 search">
           <div style="display:flex;" class="search-container mt-3">
-            <input type="text" class="form-control sps search-input" placeholder="search by Code or Name"
-              style="width:36%;">
-            <!-- <button class="btn btn-primary" (click)="onSearch(searchQuery)">Search</button> -->
-            <mat-icon class="search-icon">search</mat-icon>
+            <input type="text" class="form-control sps search-input" (input)="onSearch(searchQuery)"
+              placeholder="search by Code or Name" style="width:36%;" [(ngModel)]="searchQuery">
+            <mat-icon class="search-icon" (click)="onSearch(searchQuery)">search</mat-icon>
           </div>
           <div class="fixitems prathishta">
             <table class="table">
@@ -76,10 +83,31 @@
                 <th>Id</th>
                 <th>vazhipad</th>
                 <th>Combo-vazhipad</th>
+                <th></th>
 
               </tr>
-
-
+              <tbody>
+              <tr *ngFor="let data of filteredComboMaster">
+                <td>{{data.VM_Name}}</td>
+                <td>{{data}}</td>
+                <td></td>
+              <td>
+                <mat-icon title="Edit" class="small" style="vertical-align: middle;"
+                  (click)="onEdit(data)">edit</mat-icon>
+                <mat-icon title="Delete" class="small" style="vertical-align: middle;"
+                  (click)="onDelete(data.CM_Id)">delete</mat-icon>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr *ngIf="!comboMaster || comboMaster.length === 0 || showNoRecordsMessage">
+              <td colspan="5">
+                <div style="width: 100%;" class="mt-3">
+                  <h4 class="text-center">No Records found</h4>
+                </div>
+              </td>
+            </tr>
+          </tfoot>
 
             </table>
           </div>

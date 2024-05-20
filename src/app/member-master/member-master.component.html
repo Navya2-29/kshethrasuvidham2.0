@@ -34,22 +34,17 @@
                 <tr>
                   <td colspan="3"> Phone<input type="text" formControlName="phone" class="form-control" placeholder="Enter Name"> </td>
                 </tr>
-
                 <tr>
                   <td colspan="3"> Mobile<input type="text" formControlName="mobile" class="form-control" placeholder="Enter Name"> </td>
                 </tr>
                 <tr>
                   <td colspan="3"> Email<input type="email" formControlName="email" class="form-control" placeholder="Enter Name"> </td>
                 </tr>
-
               </table>
             </div>
             <div class="col-md-8">
               <table class="table">
-                <ng-container formArrayName="relativesDetails">
-                  <ng-container >
                     <div>
-                    
                       <tr>
                         <td ><a  color="accent"><mat-icon class="icons">delete</mat-icon></a></td>
                         <td><input  formControlName="relativeName" type="text" placeholder="Enter Name" style="border:none;"></td>
@@ -78,16 +73,9 @@
                           </select> </td>
                         <td style="vertical-align:center;" >
                           <a (click)="addRelativeDetails()" color="accent"><mat-icon class="icons">add_comment</mat-icon></a>
-      
                         </td>
                       </tr>
-                    
-
                     </div>
-                  </ng-container>
-                  
-                </ng-container>
-                
               </table>
               <table style="border: none;">
                 <tr>
@@ -96,7 +84,7 @@
                     <!-- <button class="btn btn-primary" 
                   >update</button> -->
                     <button class="btn btn-danger ml-4">cancel</button>
-                    <button class="btn btn-primary ml-4">Edit</button>
+                    <!-- <button class="btn btn-primary ml-4">Edit</button> -->
                     
                   </td>
                 </tr>
@@ -121,17 +109,21 @@
                   <tr>
                     <td>1</td>
                     <td>abc</td>
-                    <td> <a href="#" color="accent"><mat-icon class="icons">add_comment</mat-icon></a></td>
+                    <td> <a href="#" color="accent"><mat-icon class="icons">add_comment</mat-icon></a><br/>
+                      <mat-icon title="Edit" class="small" style="vertical-align: middle;"
+                     >edit</mat-icon>
+                    <mat-icon title="Delete" class="small" style="vertical-align: middle;"
+                    >delete</mat-icon>
+                  </td>
+                    
                   </tr>
                 </table>
               </div>
               <div>
-
               </div>
             </div>
           </div>
         </div>
-
       </div>
     </div>
   </div>

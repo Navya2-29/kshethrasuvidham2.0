@@ -85,9 +85,9 @@
               <tr>
                 <td><button *ngIf="!updateFlag" class="btn btn-primary"
                     (click)="onSubmit(pmasterForm.value)">save</button>
-                  <button *ngIf="updateFlag" class="btn btn-primary" [disabled]="!pmasterForm.valid"
+                  <button *ngIf="updateFlag" class="btn btn-primary"
                     (click)="onUpdate(pmasterForm.value)">update</button>
-                  <button class="btn btn-secondary ml-1" (click)="onReset()">cancel</button>
+                  <button class="btn btn-danger ml-1" (click)="onReset()">cancel</button>
                 </td>
               </tr>
             </table>

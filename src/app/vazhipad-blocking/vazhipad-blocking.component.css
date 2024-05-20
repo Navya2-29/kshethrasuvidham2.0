@@ -452,3 +452,6 @@ mat-option {
   .blocking tr td{
     text-align: left;
   }
+  button{
+    width: 100px;
+  }

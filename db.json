@@ -374,5 +374,19 @@
       "VP_Name": "siva",
       "VM_Watsapp": false
     }
+  ],
+  "comboVazhipad": [
+    {
+      "id": 1,
+      "VM_Name": " Ashtadravya Ganapathy Homam 1501 - 24"
+    },
+    {
+      "id": 2,
+      "VM_Name": "Bhagya Sooktha Ganapathy Homam 501 "
+    },
+    {
+      "id": 3,
+      "VM_Name": "Samoha Mrithujaya Homam (First Saturday of every Malayalam Month)"
+    }
   ]
 }
