@@ -167,12 +167,19 @@ errorMessage:string='';
   //update data
   onUpdate(updatedata: Pmaster) {
     this.loading=true;
-    console.log(updatedata, this.Id);
-    this.masterService.updatePmaster(this.Id, updatedata).subscribe((res) => {
-      this.loading=false;
-      this.openSnackBar(" Prathishta Details updated sussess fully", "close", "success-snackbar");
-      console.log(res)
-    })
+    if(this.pmasterForm.valid){
+      console.log(updatedata, this.Id);
+      this.masterService.updatePmaster(this.Id, updatedata).subscribe((res) => {
+        this.loading=false;
+        this.openSnackBar(" Prathishta Details updated sussess fully", "close", "success-snackbar");
+        console.log(res)
+      })
+    }
+    else{
+      this.markFormGroupTouched(this.pmasterForm)
+    }
+   
+   
   }
 
 

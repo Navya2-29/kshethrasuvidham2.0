@@ -1,5 +1,5 @@
 export interface VazhipadBlocking {
-    vbId: number;
+    vbId: string;
     vmId: number;
     vbFromDate: Date;
     vbToDate: Date;

@@ -22,7 +22,7 @@
               *ngIf="vazhipadBlockingControl['VM_code'].invalid && (vazhipadBlockingControl['VM_code'].dirty || vazhipadBlockingControl['VM_code'].touched)"
               class="pl-1 text-danger">
               <div *ngIf="vazhipadBlockingControl['VM_code'].hasError('required')">
-                code is required.
+                <small>code is required.</small>
               </div>
               
             </div>
@@ -35,7 +35,7 @@
               *ngIf="vazhipadBlockingControl['VB_name'].invalid && (vazhipadBlockingControl['VB_name'].dirty || vazhipadBlockingControl['VB_name'].touched)"
               class="pl-1 text-danger">
               <div *ngIf="vazhipadBlockingControl['VB_name'].hasError('required')">
-                name is required.
+               <small>code is required.</small>
               </div>
             </div>
               <tr>
@@ -58,11 +58,19 @@
               </tr>
               <tr>
                 <td>
-                  From date<input type="date" [min]="today | date:'yyyy-MM-dd'" class="form-control sps" formControlName="VB_FromDate">
+                  From date<input required type="date" [min]="today | date:'yyyy-MM-dd'" class="form-control sps" formControlName="VB_FromDate">
                 </td>
                 <td></td>
-                <td>To date<input type="date" class="form-control sps" formControlName="VB_ToDate"></td>
+                <td>To date<input required type="date" class="form-control sps" formControlName="VB_ToDate"></td>
               </tr>
+              <div
+              *ngIf="vazhipadBlockingControl['VB_ToDate'].invalid && (vazhipadBlockingControl['VB_ToDate'].dirty || vazhipadBlockingControl['VB_ToDate'].touched)"
+              class="pl-1 text-danger">
+              <div *ngIf="vazhipadBlockingControl['VB_ToDate'].hasError('required')">
+                To date is required.
+              </div>
+              
+            </div>
               <tr *ngIf="blockingFlag">
                 <td colspan="3"> Nakshathra
                   <input type="text"
@@ -84,12 +92,20 @@
                 <td colspan="3">Blocking Reason<textarea class="form-control" formControlName="VB_Reason" rows="3" placeholder="Enter the Reason"></textarea>
                 </td>
               </tr>
+              <div
+              *ngIf="vazhipadBlockingControl['VB_Reason'].invalid && (vazhipadBlockingControl['VB_Reason'].dirty || vazhipadBlockingControl['VB_Reason'].touched)"
+              class="pl-1 text-danger">
+              <div *ngIf="vazhipadBlockingControl['VB_Reason'].hasError('required')">
+                Reason is required.
+              </div>
+              
+            </div>
               <tr>
                 <td colspan="3"><button *ngIf="!updateFlag" class="btn btn-primary"
-                  >save</button>
+               (click)="onSubmit(vazhipadBlockingForm.value)"   >Save</button>
                 <button *ngIf="updateFlag" class="btn btn-primary"
-                  >update</button>
-                <button class="btn btn-danger ml-1" >cancel</button>
+              (click)="onUpdate(vazhipadBlockingForm.value)"    >Update</button>
+                <button class="btn btn-danger ml-1" (click)="onReset()" >Cancel</button>
               </td>
               </tr>
             </table>
@@ -113,19 +129,33 @@
                 <th>To date</th>
                 <th></th>
               </tr>
-              <tr>
+              <tbody>
+
+             
+              <tr *ngFor="let data of filteredBlockingMater">
                 
-                <td>1</td>
-                <td>1</td>
-                <td>Archana</td>
-                <td>yeary</td>
-                <td>12-3-25</td>
-                <td>15-7-2026</td>
+              <tr *ngFor="let data of filteredBlockingMater">
+                <td>{{data.vbId}}</td>
+                <td>{{data.VM_code}}</td>
+                <td>{{data.VM_Name}}</td>
+                <td>{{data.vbFromDate}}</td>
+                <td>{{data.vbToDate}}</td>
+                <td>{{data.vbReason}}</td>
                 <td>
-                  <mat-icon title="Edit" class="small pt-2">edit</mat-icon>
+                  <mat-icon title="Edit" class="small pt-2"(click)=onEdit(data)>edit</mat-icon>
                   <mat-icon title="Delete" class="small pt-2">delete</mat-icon>
                 </td>
               </tr>
+            </tbody>
+            <tfoot>
+              <tr *ngIf="!BlockingMater || BlockingMater.length === 0 || showNoRecordsMessage">
+                <td colspan="5">
+                  <div style="width: 100%;" class="mt-3">
+                    <h4 class="text-center">No Records found</h4>
+                  </div>
+                </td>
+              </tr>
+            </tfoot>
             </table>
           </div>
         </div>
