@@ -60,6 +60,7 @@ export const Constant={
 
         // COMBO MASTWR
         GET_VCOMBO:'comboVazhipad',
+        GET_VCOMBO_BYID:"vcombo",
         GET_ALL_VCOMBO:'getall',
         CREATE_VCOMBO:'create',
         UPDATE_VCOMBO:'update',
@@ -78,6 +79,9 @@ export const Constant={
         CREATE_MEMBER:'create',
         UPDATE_MEMBER:'update',
         DELETE_MEMBER:'delete',
+
+        // login
+        LOGIN:"LOGIN",
 
         // commen
         GET_ACCOUNTHEAD:"getAccountHead",

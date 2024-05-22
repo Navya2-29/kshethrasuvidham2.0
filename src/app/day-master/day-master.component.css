@@ -449,3 +449,22 @@ mat-option {
     font-size:10pt;
     color:black;
   }
+  button{
+    width: 100px;
+  }
+  .search-container {
+    position: relative;
+  }
+  
+  .search-input {
+    padding-right: 30px; /* Adjust the padding to make space for the icon */
+  }
+  
+  .search-icon {
+    position: absolute;
+    top: 50%;
+    right: 65%; /* Adjust the position of the icon */
+    transform: translateY(-50%);
+    color: #888; /* Adjust the color of the icon */
+    cursor: pointer;
+  }

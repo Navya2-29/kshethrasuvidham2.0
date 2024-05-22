@@ -388,5 +388,48 @@
       "id": 3,
       "VM_Name": "Samoha Mrithujaya Homam (First Saturday of every Malayalam Month)"
     }
+  ],
+  "combolistvazhipad":[
+    {
+      "id":1,
+      "name":"archana4"
+    },
+    {
+      "id":2,
+      "name":"archana3"
+    },
+    {
+      "id":3,
+      "name":"archana2"
+    },
+    {
+      "id":3,
+      "name":"archana1"
+    },
+    {
+      "id":4,
+      "name":"archana5"
+    },
+    {
+      "id":5,
+      "name":"archana6"
+    },
+    {
+      "id":1,
+      "name":"archana7"
+    },
+    {
+      "id":5,
+      "name":"archana8"
+    },
+    {
+      "id":6,
+      "name":"archana9"
+    },
+    {
+      "id":9,
+      "name":"archana10"
+    }
   ]
+
 }

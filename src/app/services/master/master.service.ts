@@ -7,6 +7,7 @@ import { Cmaster, CreateCmaster } from '../../models/cmaster.model';
 import { AccountHead, AccountSubHead, Vmaster } from '../../models/vmaster.model';
 import { SpecialDayMaster, SpecialDayMasterList } from '../../models/special-day-master.model';
 import { observableToBeFn } from 'rxjs/internal/testing/TestScheduler';
+import { Login } from '../../models/login.model';
 @Injectable({
   providedIn: 'root'
 })
@@ -220,6 +221,10 @@ getAllComoVazhipadList():Observable<any[]>{
   return this.http.get<any[]>(Constant.BASE_URL+Constant.METHODS.GET_VCOMBO)
 }
 
+getComboVazhipad(id:string):Observable<any[]>{
+  return this.http.get<any[]>(Constant.BASE_URL+Constant.METHODS.GET_VCOMBO_BYID)
+}
+
 // get list combo vazhipad
 getComboMaster():Observable<any[]>{
   return this.http.get<any[]>(Constant.BASE_URL+Constant.METHODS.GET_ALL_VCOMBO)
@@ -255,12 +260,12 @@ createDayMaster(data:any):Observable<any>{
 }
 
 // update  day
-updateDay(id: string, obj: any): Observable<any> {
+updateDay(id: number, obj: any): Observable<any> {
   return this.http.put<any>(Constant.BASE_URL + Constant.METHODS.UPDATE_VDAY + id, obj).pipe(catchError(this.errorHandler))
 }
 
 // delete  day
-deleteDay(id: string): Observable<any> {
+deleteDay(id: number): Observable<any> {
   return this.http.delete<any>(Constant.BASE_URL + Constant.METHODS.DELETE_VDAY+ id).pipe(catchError(this.errorHandler))
 }
 
@@ -299,6 +304,11 @@ getAccountHeads():Observable<AccountHead[]>{
 // get account sub heads
 getSubAccountHeads():Observable<AccountSubHead[]>{
   return this.http.get<AccountSubHead[]>(Constant.BASE_URL+Constant.METHODS.GET_SUBACCOUNTHEAD);
+}
+
+// LOGIN
+login():Observable<Login>{
+ return this.http.get<Login>(Constant.BASE_URL+Constant.METHODS.LOGIN)
 }
 
   // error handling

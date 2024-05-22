@@ -5,13 +5,17 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root'
 })
 export class AuthService {
- 
+ isLoggedIn:boolean=false;
   private httpClient=inject(HttpClient)
   constructor() { }
 
 login(login:any){
- return this.httpClient.post<any>(Constant.BASE_URL+Constant.METHODS,login);
+ return this.httpClient.get<any>(Constant.BASE_URL+Constant.METHODS.LOGIN);
 }
-
-
+isLogged(){
+  this.isLoggedIn=true;
+}
+logout(): void {
+  this.isLoggedIn = false;
+}
 }
