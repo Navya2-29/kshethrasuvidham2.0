@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { LoginComponent } from './login/login.component';
+import { LoginComponent } from './auth/login/login.component';
 
 
 @Component({

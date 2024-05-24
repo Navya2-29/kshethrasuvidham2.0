@@ -1,13 +1,15 @@
+import { NgPluralCase } from "@angular/common";
+
 export const Constant={
-    BASE_URL:'http://localhost:3000/',
+    BASE_URL:'http://api.suvidham.in/api/KshetramAPI/',
     
     METHODS:{
 
         // pmaster
-        GET_PMASTER:'gets',
-        CREATE_PMASTER:'create',
-        UPDATE_PMASTER:'update',
-        DELETE_PMASTER:'delete',
+        GET_PMASTER:'ViewMasters',
+        CREATE_PMASTER:'AddPrathista',
+        UPDATE_PMASTER:'AddPrathista',
+        DELETE_PMASTER:'DeleteMasters',
 
         // cmaster
         GET_CMASTER:'posts',
@@ -81,11 +83,14 @@ export const Constant={
         DELETE_MEMBER:'delete',
 
         // login
-        LOGIN:"LOGIN",
+        LOGIN:"GetLoginInfo",
 
         // commen
         GET_ACCOUNTHEAD:"getAccountHead",
         GET_SUBACCOUNTHEAD:"getAccountSubHead"
+
+        // request body
+       
 
     }
 }

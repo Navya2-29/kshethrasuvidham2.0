@@ -6,7 +6,6 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { FormsModule, NgForm, ReactiveFormsModule, FormBuilder, Validators, FormGroup, ValidationErrors, AbstractControl } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { Pmaster, CreatePmaster } from '../models/pmaster.model';
 import { MasterService } from '../services/master/master.service';
 import { CommonModule } from '@angular/common';
 import { UpperCaseDirective } from '../shared/directives/upper-case.directive';
@@ -122,10 +121,10 @@ export class CmasterComponent implements OnInit {
   }
 
   //update data
-  onUpdate(updatedata: Pmaster) {
+  onUpdate(updatedata: Cmaster) {
     console.log(updatedata);
     
-    this.masterService.updatePmaster(this.Id, updatedata).subscribe((res) => {
+    this.masterService.updateCmaster(this.Id, updatedata).subscribe((res) => {
       this.openSnackBar(" category Details updated sussess fully", "close", "success-snackbar");
 
       console.log(res);
@@ -134,7 +133,7 @@ export class CmasterComponent implements OnInit {
   }
   // deleteData
   onDelete(id: string) {
-    this.masterService.delete(id).subscribe((res) => {
+    this.masterService.deleteCmaster(id).subscribe((res) => {
       this.openSnackBar(" category Details deleted sussess fully", "close", "success-snackbar");
 
       console.log(res);

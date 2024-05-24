@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, catchError, retry, throwError } from 'rxjs';
-import { CreatePmaster, Pmaster } from '../../models/pmaster.model';
+import {  Pmaster } from '../../models/pmaster.model';
 import { Constant } from '../../constants/constant';
 import { Cmaster, CreateCmaster } from '../../models/cmaster.model';
 import { AccountHead, AccountSubHead, Vmaster } from '../../models/vmaster.model';
@@ -18,23 +18,29 @@ export class MasterService {
 
   // pmster service
   // get all prathishta list
-  getPmaster(): Observable<Pmaster[]> {
-    return this.http.get<Pmaster[]>(Constant.BASE_URL + Constant.METHODS.GET_PMASTER).pipe(catchError(this.errorHandler))
+  getPmaster(): Observable<any[]> {
+   const reqBody={"Type":"PrethistaALL","Code":""}
+    return this.http.post<any[]>(Constant.BASE_URL + Constant.METHODS.GET_PMASTER,reqBody).pipe(catchError(this.errorHandler))
   }
 
   // create prathishta
-  createPmaster(obj: CreatePmaster): Observable<any> {
-    return this.http.post<CreatePmaster>(Constant.BASE_URL + Constant.METHODS.CREATE_PMASTER, obj).pipe(catchError(this.errorHandler))
+  createPmaster(obj: Pmaster): Observable<Pmaster> {
+    console.log(obj);
+    return this.http.post<Pmaster>(Constant.BASE_URL + Constant.METHODS.CREATE_PMASTER, obj).pipe(catchError(this.errorHandler))
   }
 
   // update pmaster
-  updatePmaster(id: string, obj: CreatePmaster): Observable<any> {
-    return this.http.put<CreatePmaster>(Constant.BASE_URL + Constant.METHODS.UPDATE_PMASTER + id, obj).pipe(catchError(this.errorHandler))
+  updatePmaster(updateData:Pmaster): Observable<any> {
+    console.log(updateData);
+    console.log("service")
+   
+    return this.http.post<Pmaster>(Constant.BASE_URL + Constant.METHODS.UPDATE_PMASTER,updateData).pipe(catchError(this.errorHandler))
   }
 
   // delete pmaster
-  delete(id: string): Observable<any> {
-    return this.http.delete<any>(Constant.BASE_URL + Constant.METHODS.DELETE_PMASTER + id).pipe(catchError(this.errorHandler))
+  deletePmaster(data:object): Observable<any> {
+    
+    return this.http.post<any>(Constant.BASE_URL + Constant.METHODS.DELETE_PMASTER , data).pipe(catchError(this.errorHandler))
   }
  
   // cmaster service

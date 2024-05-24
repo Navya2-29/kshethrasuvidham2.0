@@ -1,16 +1,14 @@
 export interface Pmaster {
-    PM_Code: string;
-    PM_Name: string;
-    PM_NameEng: string;
-    imgurl: string;
-    id:string;
-    version: number;
-    updation: number;
+  PM_Code: string;
+  PM_Name: string;
+  PM_RegName: string;
+  PM_Image: string;
+  PM_ID:string;
+    PM_Active:string;
+    Type:string;
+    Unit_ID:string;
+    Cuser:string;
+    
   }
 
-  export interface CreatePmaster{
-    PM_Code:string,
-    PM_NameEng:string,
-    PM_Name:string,
-    imgurl?:string
-  }
+ 

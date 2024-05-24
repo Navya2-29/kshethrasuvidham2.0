@@ -1,4 +1,4 @@
-
+<app-spinner *ngIf="loading"></app-spinner>
 <main class="main">
     <div class="content">
       <div class="left-side">
@@ -12,10 +12,10 @@
         <h2>Counter Login</h2>
         <form [formGroup]="loginForm">
         <div>
-          
+          <small *ngIf="errorMessage" class="text-danger">{{errorMessage}}</small>
             <mat-form-field appearance="outline">
               <mat-label>Enter your Login ID</mat-label>
-              <input matInput placeholder="" autofocus formControlName="userName">
+              <input matInput placeholder="" autofocus formControlName="username">
               <mat-icon matSuffix>supervised_user_circle</mat-icon>
               <!-- <mat-hint>Hint</mat-hint> -->
             </mat-form-field>
@@ -27,9 +27,11 @@
               <button mat-icon-button matSuffix >
                 <!-- <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon> -->
               </button>
+              
             </mat-form-field>
+           
            </div>  
-          <button mat-raised-button type="submit" style="background-color: maroon;color:orange;" (click)="onSubmit(loginForm.value)">Login</button>
+          <button mat-raised-button type="submit" style="background-color: maroon;color:orange;" (click)="submitLogin(loginForm.value)">Login</button>
           </form>
        </div>
     </div>

@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './login/login.component';
+import { LoginComponent } from './auth/login/login.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { PmasterComponent } from './pmaster/pmaster.component';
 import { CmasterComponent } from './cmaster/cmaster.component';
@@ -16,30 +16,31 @@ import { SpecialdayMasterComponent } from './specialday-master/specialday-master
 import { DayMasterComponent } from './day-master/day-master.component';
 import { ComboMasterComponent } from './combo-master/combo-master.component';
 import { ItemMAterComponent } from './item-mater/item-mater.component';
+import { authGuard } from './auth/guard/auth.guard';
 
 
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'dashboard', component: DashboardComponent },
-  { path: 'pmaster', component: PmasterComponent },
-  { path: 'cmaster', component: CmasterComponent },
-  { path: 'vmaster', component: VmasterComponent },
-  { path: 'panjankam', component: PanjankamComponent },
-  {path:'vazhipad-blocking',component:VazhipadBlockingComponent},
-  {path:'seasonal',component:SeasonalMasterComponent},
-  {path:'member-master',component:MemberMasterComponent},
-  {path:'vihidham-master',component:VihidhamMasterComponent},
-  {path:'day-master',component:DayMasterComponent},
+  { path: 'dashboard', component: DashboardComponent ,canActivate:[authGuard]},
+  { path: 'pmaster', component: PmasterComponent ,canActivate:[authGuard] },
+  { path: 'cmaster', component: CmasterComponent ,canActivate:[authGuard] },
+  { path: 'vmaster', component: VmasterComponent ,canActivate:[authGuard]},
+  { path: 'panjankam', component: PanjankamComponent ,canActivate:[authGuard] },
+  {path:'vazhipad-blocking',component:VazhipadBlockingComponent ,canActivate:[authGuard]},
+  {path:'seasonal',component:SeasonalMasterComponent ,canActivate:[authGuard]},
+  {path:'member-master',component:MemberMasterComponent ,canActivate:[authGuard]},
+  {path:'vihidham-master',component:VihidhamMasterComponent ,canActivate:[authGuard]},
+  {path:'day-master',component:DayMasterComponent ,canActivate:[authGuard]},
   {
-    path:'special-day-master',component:SpecialdayMasterComponent
+    path:'special-day-master',component:SpecialdayMasterComponent ,canActivate:[authGuard]
   },
   {
-    path:'combo-master',component:ComboMasterComponent
+    path:'combo-master',component:ComboMasterComponent,canActivate:[authGuard]
   },
   {
-    path:'item-master',component:ItemMAterComponent
+    path:'item-master',component:ItemMAterComponent,canActivate:[authGuard]
   }
 ];
 

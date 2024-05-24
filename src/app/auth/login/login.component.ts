@@ -1,0 +1,72 @@
+import { Component, OnInit, inject } from '@angular/core';
+import {MatIconModule} from '@angular/material/icon';
+import {MatInputModule} from '@angular/material/input';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatButtonModule} from '@angular/material/button';
+import { Router, RouterModule } from '@angular/router';
+import { FormBuilder, FormGroup, NgForm, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Login } from '../../models/login.model';
+import { AuthService } from '../service/auth.service';
+import { HttpClient, HttpStatusCode } from '@angular/common/http';
+import { SpinnerComponent } from '../../shared/component/spinner/spinner.component';
+import { CommonModule } from '@angular/common';
+
+@Component({
+  selector: 'app-login',
+  standalone: true,
+  imports: [MatFormFieldModule, MatInputModule,CommonModule, MatIconModule, MatButtonModule,SpinnerComponent, RouterModule,ReactiveFormsModule],
+  templateUrl: './login.component.html',
+  styleUrl: './login.component.css'
+})
+export class LoginComponent implements OnInit {
+  hide:false;
+  loginForm:FormGroup;
+  loading:boolean=false;
+  errorMessage="";
+  private readonly formBuilder=inject(FormBuilder);
+  private readonly authService=inject(AuthService);
+  private readonly router=inject(Router);
+  constructor(private http:HttpClient){    
+  }
+  ngOnInit(): void {
+    this.loginForm=this.formBuilder.group({
+      username:['',[Validators.required]],
+      password:['',[Validators.required]]
+   })
+   this.autoLogin();
+  }
+
+submitLogin(login:Login){
+  this.loading=true;
+  this.errorMessage='';
+  console.log(login +"data ts");
+  if(login.username=="admin" && login.password=="bbb"){
+    this.authService.getLoginInfo(login).subscribe({
+      next:(data)=>{
+        console.log(data);
+        localStorage.setItem('loggedIn', 'true');
+          this.router.navigate(['/dashboard']);
+        this.loading=false;
+        this.loginForm.reset();
+      },
+      error:(error)=>{
+    console.error(error);
+      }
+    })
+  }
+  else{
+    this.errorMessage="enter valid username or password";
+  }
+
+}
+autoLogin(){
+  const login=localStorage.getItem('loggedIn');
+  console.log(login);
+  if(login){
+    this.router.navigate(['/dashboard']);
+  }
+}
+
+
+
+}

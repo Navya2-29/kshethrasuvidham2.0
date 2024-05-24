@@ -20,7 +20,7 @@ export class DuplicatecheckService {
   }
 
   checkDuplicateName(name: string, pmasterData: Pmaster[]): boolean {
-    return pmasterData.some(p => p.PM_NameEng === name);
+    return pmasterData.some(p => p.PM_Name === name);
   }
 
   vmastercheckDuplicateCode(code: string, vmasterData: Vmaster[]): boolean {
