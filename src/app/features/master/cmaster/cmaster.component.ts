@@ -14,6 +14,7 @@ import { MatTableModule } from '@angular/material/table';
 import { Cmaster, VCMRequestBody } from '../../../models/cmaster.model';
 import { DuplicatecheckService } from '../../../services/duplicateCheckValidator/duplicatecheck.service';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 @Component({
   selector: 'app-cmaster',
   standalone: true,
@@ -23,8 +24,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     ReactiveFormsModule,
     CommonModule,
     UpperCaseDirective,
-    MatTableModule, MatSlideToggleModule, MatCheckboxModule
-
+    MatTableModule, MatSlideToggleModule, MatCheckboxModule, SpinnerComponent
   ],
   templateUrl: './cmaster.component.html',
   styleUrl: './cmaster.component.css'
@@ -37,13 +37,14 @@ export class CmasterComponent implements OnInit {
   updateFlag: boolean = false;
   searchQuery: string = '';
   Id: string = '';
+  loading: boolean = false;
   showMaxLengthError: boolean = false;
   private masterService = inject(MasterService);
   private formBuilder = inject(FormBuilder);
   private _snackBar = inject(MatSnackBar);
   private duplicateCheck = inject(DuplicatecheckService)
   constructor() {
-
+    this.loading = true;
     this.cmasterForm = this.formBuilder.group({
       VC_Code: ['', [
         Validators.required,
@@ -58,25 +59,29 @@ export class CmasterComponent implements OnInit {
 
       ]],
       VC_RegName: ['', [Validators.required]],
-      VC_Active: [true, [Validators.requiredTrue]]
+      VC_Active: [true]
     });
   }
+
+
   ngOnInit(): void {
+    this.loading = true;
     this.getcmaster();
   }
   // view prathishta
   getcmaster() {
-    const reqBody: VCMRequestBody = { "Type": "CategoryALL", "Code": "" }
-    this.masterService.getCmaster(reqBody).subscribe({
+    this.loading = true;
+    this.masterService.getCmaster().subscribe({
       next: (data) => {
         if (data && data.length > 0) {
-          console.log(data)
           this.cmaster = data;
-          this.filteredCmaster = this.cmaster
+          this.filteredCmaster = this.cmaster;
+          this.loading = false
         }
       },
       error: (error) => {
         console.log(error);
+        this.loading = true;
       }
     });
   }
@@ -88,14 +93,15 @@ export class CmasterComponent implements OnInit {
 
   // submitt pmasterform
   onSubmit(data: Cmaster) {
+    this.loading = true;
     if (this.cmasterForm.valid) {
       this.masterService.createCmaster(data).subscribe({
         next: (res) => {
 
           this.openSnackBar(" categoery Details created sussess fully", "close", "success-snackbar");
-          console.log(res);
           this.onReset();
           this.ngOnInit();
+          this.loading = false;
         },
         error: (error) => {
           console.log(error);
@@ -104,61 +110,66 @@ export class CmasterComponent implements OnInit {
     } else {
       this.markFormGroupTouched(this.cmasterForm);
       this.openSnackBar(" please fill the  details", "close", "success-snackbar");
+      this.loading=false;
     }
 
   }
 
-
-
   // resetting form controls
   onReset() {
-    this.cmasterForm.reset();
+    this.loading = true;
+    this.cmasterForm.reset({
+      VC_Active:true,
+      
+    });
     this.updateFlag = false;
-
+    this.loading = false;
   }
 
   //for editing the form fields
   onEdit(data: Cmaster) {
-    console.log(data);
+    this.loading=true;
     this.Id = data.VC_ID;
     this.updateFlag = true;
     this.cmasterForm.patchValue({
       VC_Code: data.VC_Code,
       VC_Name: data.VC_Name,
       VC_RegName: data.VC_RegName,
-      VC_Active: data.VC_Active
+      VC_Active: data.VC_Active=="Y"?true:false
 
     });
+    this.loading=false;
   }
 
   //update data
   onUpdate(updatedata: Cmaster) {
-    console.log(updatedata);
+    this.loading=true;
     if (this.cmasterForm.valid) {
       this.masterService.updateCmaster(this.Id, updatedata).subscribe((res) => {
         this.openSnackBar(" category Details updated sussess fully", "close", "success-snackbar");
-        console.log(res);
         this.onReset();
         this.ngOnInit();
+        this.loading=false;
       })
     }
     else {
       this.markFormGroupTouched(this.cmasterForm);
       this.openSnackBar(" please fill the  details", "close", "success-snackbar");
+      this.loading=false;
     }
   }
   // deleteData
   onDelete(id: string) {
-    console.log(typeof (id));
+    this.loading=true;
     this.masterService.deleteCmaster(id).subscribe((res) => {
       this.openSnackBar(" category Details deleted sussess fully", "close", "success-snackbar");
       this.ngOnInit();
-      console.log(res);
+      this.loading=false;
     })
   }
 
   // search functionality by pname
-  onSearch(searchQuery: string) {
+  onSearch() {
     if (!this.searchQuery.trim()) {
       this.filteredCmaster = this.cmaster;
     }
@@ -175,17 +186,11 @@ export class CmasterComponent implements OnInit {
       panelClass: classname,
       horizontalPosition: "end",
       verticalPosition: "top",
+      duration:3000
     });
   }
 
-  onInputChange(event: any) {
-    const inputValue: string = event.target.value;
-    if (inputValue.length > 3) {
-      this.showMaxLengthError = true;
-    } else {
-      this.showMaxLengthError = false;
-    }
-  }
+ 
 
   // validation
   markFormGroupTouched(formGroup: FormGroup) {
@@ -202,19 +207,30 @@ export class CmasterComponent implements OnInit {
   // duplicate code check validators
   duplicateCodeValidator(control: AbstractControl): ValidationErrors | null {
     const code = control.value;
-    if (this.duplicateCheck.cmastercheckDuplicateCode(code, this.cmaster)) {
-      return { duplicateCode: true };
+    if(this.updateFlag){
+      return null
+    }else{
+      if (this.duplicateCheck.cmastercheckDuplicateCode(code, this.cmaster)) {
+        return { duplicateCode: true };
+      }
+      return null;
+
     }
-    return null;
+    
   }
 
   // duplicate name check validators
   duplicateNameValidator(control: AbstractControl): ValidationErrors | null {
     const name = control.value;
-    if (this.duplicateCheck.cmastercheckDuplicateCode(name, this.cmaster)) {
-      return { duplicateName: true };
+    if(this.updateFlag){
+      return null
+    }else{
+      if (this.duplicateCheck.cmastercheckDuplicateCode(name, this.cmaster)) {
+        return { duplicateName: true };
+      }
+      return null;
     }
-    return null;
+    
   }
 
 

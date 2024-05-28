@@ -489,10 +489,18 @@ mat-option {
     border: none;
     cursor: pointer;
     color: #666;
+    width: 25px;
   }
   .close-button :active{
     border: 1px solid gray;
   }
-  button{
+  .btn{
     width: 100px;
+  }
+  thead th {
+    position: sticky;
+    top: 0;
+   background-color: #5d85b9;
+   color: #f1f1f1; 
+    z-index: 1; 
   }

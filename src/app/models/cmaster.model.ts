@@ -3,7 +3,7 @@ export interface Cmaster {
    VC_Name: string;
    VC_RegName: string;
    VC_ID:string;
-   VC_Active:boolean;
+   VC_Active:string;
     // Cuser:string;
     // Type:string;
   }

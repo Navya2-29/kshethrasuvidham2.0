@@ -133,8 +133,7 @@ export class VmasterComponent implements OnInit {
   // get All category 
 
   getCategory() {
-    const payLoad = { "Type": "CategoryALL", "Code": "" }
-    this.masterService.getCmaster(payLoad).subscribe({
+    this.masterService.getCmaster().subscribe({
       next: (cmasters) => {
         this.category = cmasters.map(item => ({
           VC_Id: item.VC_ID,

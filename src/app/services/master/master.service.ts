@@ -79,8 +79,9 @@ export class MasterService {
 
 
   // get category
-  getCmaster(data: VCMRequestBody): Observable<Cmaster[]> {
-    return this.http.post<Cmaster[]>(Constant.BASE_URL + Constant.METHODS.GET_MASTER, data)
+  getCmaster(): Observable<Cmaster[]> {
+    const payLoad: VCMRequestBody = { "Type": "CategoryALL", "Code": "" }
+    return this.http.post<Cmaster[]>(Constant.BASE_URL + Constant.METHODS.GET_MASTER, payLoad)
       .pipe(catchError(this.errorHandler))
   }
 

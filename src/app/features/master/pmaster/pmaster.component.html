@@ -4,7 +4,7 @@
   <div class="container">
     <div class="card-body outlook" style="background:white;">
       <div class="posback">
-        <a routerLink="/dashboard" class="back">&nbsp;&nbsp;<mat-icon title="Edit"
+        <a routerLink="/dashboard" class="back">&nbsp;&nbsp;<mat-icon title="Back"
             style="color:white;">arrow_back_ios</mat-icon></a>
         <h1 class="tname">Guruvayurappan Temple</h1>
       </div>
@@ -14,7 +14,7 @@
           <form [formGroup]="pmasterForm">
             <table class="table">
               <tr>
-                <td> prathishta Code<span class="text-danger">*</span>
+                <td> Prathishta Code<span class="text-danger">*</span>
                   <input type="text" id="PM_Code" appUpperCase formControlName="PM_Code" maxlength="3" required
                     class="form-control sps" placeholder="Enter Code" style="width:126px;">
                 </td>
@@ -23,20 +23,20 @@
                 *ngIf="pmasterFormFormControl['PM_Code'].invalid && (pmasterFormFormControl['PM_Code'].dirty || pmasterFormFormControl['PM_Code'].touched)"
                 class="pl-1 text-danger">
                 <div *ngIf="pmasterFormFormControl['PM_Code'].hasError('required')">
-                  code is required.
+                  Code is required.
                 </div>
                 <div *ngIf="pmasterFormFormControl['PM_Code'].hasError('maxlength')">
-                  code must be 3 characters long.
+                  Code must be 3 characters long.
                 </div>
                 <div *ngIf="pmasterFormFormControl['PM_Code'].hasError('pattern')">
-                  code must be include number or english alphabat.
+                  Code must be include number or english alphabat.
                 </div>
                 <div *ngIf="pmasterFormFormControl['PM_Code'].hasError('duplicateCode')" class="text-danger">
                   Code already exists.
                 </div>
               </div>
               <tr>
-                <td> prathishta Name<span class="text-danger">*</span><input type="text" matInput
+                <td> Prathishta Name<span class="text-danger">*</span><input type="text" matInput
                     formControlName="PM_Name" maxlength="50" class="form-control" placeholder="Enter Name" appUpperCase>
                 </td>
               </tr>
@@ -44,21 +44,21 @@
                 *ngIf="pmasterFormFormControl['PM_Name'].invalid && (pmasterFormFormControl['PM_Name'].dirty || pmasterFormFormControl['PM_Name'].touched)"
                 class="pl-1 text-danger">
                 <div *ngIf="pmasterFormFormControl['PM_Name'].hasError('required')">
-                  name is required.
+                  Name is required.
                 </div>
                 <div *ngIf="pmasterFormFormControl['PM_Name'].hasError('pattern')">
-                  name must be include english alphabat and spaces only.
+                  Name must be include english alphabat and spaces only.
                 </div>
               </div>
               <tr>
-                <td>prathishta Name (In regional Language)<span class="text-danger">*</span><input type="text" matInput
+                <td>Prathishta Name (In regional Language)<span class="text-danger">*</span><input type="text" matInput
                     formControlName="PM_RegName" class="form-control" placeholder="In regional Language"> </td>
               </tr>
               <div
                 *ngIf="pmasterFormFormControl['PM_RegName'].invalid && (pmasterFormFormControl['PM_RegName'].dirty || pmasterFormFormControl['PM_RegName'].touched)"
                 class="pl-1 text-danger">
                 <div *ngIf="pmasterFormFormControl['PM_RegName'].hasError('required')">
-                  name in your regional language is required.
+                  Name in your regional language is required.
                 </div>
               </div>
               <tr>
@@ -70,11 +70,12 @@
                   <div *ngIf="errorMessage" class="error text-danger">{{ errorMessage }}</div>
                 </td>
               </tr>
-              <div class="text-success ml-1">
+              <!-- <div class="text-success ml-1">
                 <small *ngIf="fileInputMessageFlag">Only PNG files are allowed.</small>
-              </div>
+              </div> -->
               <tr>
                 <td>
+                 
                   <img [src]="imagePreview" *ngIf="imagePreview" alt="Preview" width="100" height="100">
                 </td>
               </tr>
@@ -85,10 +86,10 @@
                 </td>
               </tr>
               <tr>
-                <td><button *ngIf="!updateFlag" class="btn btn-primary" (click)="onSubmit()">save</button>
+                <td><button  *ngIf="!updateFlag" class="btn btn-primary" (click)="onSubmit()">Save</button>
                   <button *ngIf="updateFlag" class="btn btn-primary"
-                    (click)="onUpdate(pmasterForm.value)">update</button>
-                  <button class="btn btn-danger ml-1" (click)="onReset()">cancel</button>
+                    (click)="onUpdate(pmasterForm.value)">Update</button>
+                  <button class="btn btn-secondary ml-1" (click)="onReset()">Cancel</button>
                 </td>
               </tr>
             </table>
@@ -104,24 +105,30 @@
           </div>
           <div class="fixitems prathishta">
             <table class="table">
-              <tr style="border-bottom: 2px solid #223d61;">
+              
+                <thead  style="border-bottom: 2px solid #223d61;">
                 <th>Id</th>
-                <th>code</th>
+                <th>Code</th>
                 <th>Name</th>
+                <th>Image</th>
                 <th></th>
-              </tr>
-
+             
+            </thead>
               <tbody *ngIf="!showNoRecordsMessage &&pmaster && pmaster.length > 0">
                 <tr *ngFor="let data of filteredPmaster ; let i=index">
                   <td contenteditable="">{{data.PM_ID}}</td>
                   <td>{{data.PM_Code}}</td>
                   <td style="text-align:left;">{{data.PM_Name}}-{{data.PM_RegName}}</td>
                   <td>
+                    <div *ngIf="!(data.PM_Image)">No image</div>
+                    <img *ngIf="data.PM_Image" [src]="data.PM_Image" alt="Nil" width="50px" height="50px"></td>
+                  <td>
                     <mat-icon title="Edit" class="small" style="vertical-align: middle;"
                       (click)="onEdit(data)">edit</mat-icon>
                     <mat-icon title="Delete" class="small" style="vertical-align: middle;"
                       (click)="onDelete(data.PM_ID)">delete</mat-icon>
                   </td>
+               
                 </tr>
               </tbody>
 

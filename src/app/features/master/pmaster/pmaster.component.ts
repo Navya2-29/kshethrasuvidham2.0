@@ -53,7 +53,9 @@ export class PmasterComponent implements OnInit {
   private formBuilder = inject(FormBuilder);
   private _snackBar = inject(MatSnackBar);
   private duplicateCheck = inject(DuplicatecheckService);
+
   constructor() {
+    this.loading=true;
     // form model
     this.pmasterForm = this.formBuilder.group({
       PM_Code: ['', [
@@ -83,7 +85,7 @@ export class PmasterComponent implements OnInit {
 
   // view prathishta
   getPmaster() {
-    this.loading = false;
+    this.loading = true;
     this.masterService.getPmaster().subscribe({
       next: (data) => {
         if (data && data.length > 0) {
@@ -108,14 +110,16 @@ export class PmasterComponent implements OnInit {
   // submitt pmasterform
   onSubmit() {
     this.loading = true;
+    console.log(this.pmasterForm.value)
     if (this.pmasterForm.valid) {
       this.masterService.createPmaster(this.pmasterForm.value).subscribe({
         next: (res) => {
           if (res) {
-            this.loading = false;
+            
             this.openSnackBar(" Prathishta Details created sussess fully", "close", "success-snackbar");
             this.onReset();
             this.ngOnInit();
+            this.loading = false;
           }
         },
         error: (error) => {
@@ -127,6 +131,8 @@ export class PmasterComponent implements OnInit {
     else {
       this.loading = false;
       this.markFormGroupTouched(this.pmasterForm);
+      this.openSnackBar(" please fill the  details", "close", "success-snackbar");
+
     }
   }
 
@@ -159,6 +165,9 @@ export class PmasterComponent implements OnInit {
       PM_Active:data.PM_Active=="Y"?true:false, 
     });
     console.log(this.pmasterForm);
+    if(data.PM_Image){
+      this.imagePreview=data.PM_Image
+    }
     this.loading = false;
   }
 
@@ -177,6 +186,8 @@ export class PmasterComponent implements OnInit {
     else {
       this.markFormGroupTouched(this.pmasterForm)
       this.loading=false;
+      this.openSnackBar(" please fill the  details", "close", "success-snackbar");
+
     }
   }
 
@@ -214,24 +225,70 @@ export class PmasterComponent implements OnInit {
       panelClass: classname,
       horizontalPosition: "end",
       verticalPosition: "top",
+      duration:2000
     });
   }
 
   // for previewing uploaded image
+  // previewImage(event: any) {
+  //   // Validate image dimensions
+  //   const file = event.target.files[0];
+  //   if (file) {
+  //     this.fileInputMessageFlag = false;
+  //     const maxSizeInBytes = 2 * 1024 * 1024; // 2MB
+  //     if (file.size > maxSizeInBytes) {
+  //       this.errorMessage = 'File size should not exceed 2MB.';
+  //       this.imagePreview = null;
+  //       this.fileInput.nativeElement.value = '';
+  //       this.fileInputMessageFlag = false;
+  //       return;
+  //     }
+  //     // Validate image dimensions
+  //     const img = new Image();
+  //     img.onload = () => {
+  //       const maxWidth = 1920;
+  //       const maxHeight = 1080;
+  //       if (img.width > maxWidth || img.height > maxHeight) {
+  //         this.errorMessage = `Image dimensions should not exceed ${maxWidth}x${maxHeight} pixels.`;
+  //         this.imagePreview = null;
+  //       } else {
+  //         this.errorMessage = '';
+  //         const reader = new FileReader();
+  //         reader.onload = (e) => {
+  //           this.imagePreview = e.target?.result ?? null;
+  //         };
+  //         reader.readAsDataURL(file);
+  //       }
+  //     };
+  //     img.src = URL.createObjectURL(file);
+  //   } else {
+  //     this.errorMessage = 'No file selected.';
+  //     this.imagePreview = null;
+  //   }
+  // }
   previewImage(event: any) {
-    // Validate image dimensions
     const file = event.target.files[0];
     if (file) {
       this.fileInputMessageFlag = false;
+  
+      // Check if the file type is PNG
+      if (file.type !== 'image/png') {
+        this.errorMessage = 'Only PNG images are allowed.';
+        this.imagePreview = null;
+        this.fileInput.nativeElement.value = '';
+        this.fileInputMessageFlag = true;
+        return;
+      }
+  
       const maxSizeInBytes = 2 * 1024 * 1024; // 2MB
       if (file.size > maxSizeInBytes) {
         this.errorMessage = 'File size should not exceed 2MB.';
         this.imagePreview = null;
         this.fileInput.nativeElement.value = '';
-        this.fileInputMessageFlag = false;
+        this.fileInputMessageFlag = true;
         return;
       }
-      // Validate image dimensions
+  
       const img = new Image();
       img.onload = () => {
         const maxWidth = 1920;
@@ -239,28 +296,40 @@ export class PmasterComponent implements OnInit {
         if (img.width > maxWidth || img.height > maxHeight) {
           this.errorMessage = `Image dimensions should not exceed ${maxWidth}x${maxHeight} pixels.`;
           this.imagePreview = null;
+          this.fileInput.nativeElement.value = '';
+          this.fileInputMessageFlag = true;
         } else {
           this.errorMessage = '';
           const reader = new FileReader();
           reader.onload = (e) => {
-            this.imagePreview = e.target?.result ?? null;
+            const base64Image = e.target?.result as string;
+            console.log(base64Image);
+            this.imagePreview = base64Image;
+            this.pmasterForm.patchValue({ PM_Image: base64Image });
+            
           };
           reader.readAsDataURL(file);
         }
+        URL.revokeObjectURL(img.src); // Clean up the object URL
       };
+  
       img.src = URL.createObjectURL(file);
     } else {
       this.errorMessage = 'No file selected.';
       this.imagePreview = null;
+      this.fileInputMessageFlag = true;
     }
   }
-
+  
+  
 
   // cancel uploded image only
   removeImagePreview() {
     this.fileInput.nativeElement.value = '';
     this.fileInputMessageFlag = true;
-    this.imagePreview = '';
+    this.imagePreview = null;
+  this.errorMessage = '';
+  this.pmasterForm.patchValue({ PM_Image: null });
   }
 
   // validation
