@@ -1,34 +1,31 @@
 export interface Vmaster{
-	VM_Id:number,
-	VM_Code:String;
-	VM_Name:String;
-	VM_RName:String;
-	VM_Amt:number;
-	VM_MaxNo:number;
-	VM_Receipt:String;
-	VM_Booking :String;
-	VM_Blocking:String;
-	VM_SeaSonal:String;
-	VM_MultiName:String;
-	VM_Device:String;
-	VM_Mobileapp:String;
-	VM_Special:String;
-	VM_Rate_Change:String;
-	VM_Time :String;
-	VM_TimeLimit:number;
-	VM_DeScription:String;
-	VM_AlertMSg:String;
-	VC_ID:String;
-	VM_Active:String;
-	DiSplayMode:String;
-	ACHeadCode:String;
-	ACSubCode:String;
-	VP_Name:string;
-	id:number;
-	VM_Online:string;
-	VM_Sms:string;
-	VM_Watsapp:string;
-	VC_Name:string;
+ACHeadCode:string;
+ACSubCode:string;
+DisplayMode:string;
+SMS:string;
+VC_ID:number;
+VM_Active:string;
+VM_AlertMsg:string;
+VM_Amt:number;
+VM_Blocking:string;
+VM_Booking:string;
+VM_Code:string;
+VM_Description:string;
+VM_Device:string;
+VM_Id:number;
+VM_MaxNo:number;
+VM_Mobileapp:string;
+VM_MultiName:string;
+VM_Name:string;
+VM_RName:string;
+VM_Rate_Change:string;
+VM_Receipt:string;
+VM_Seasonal:string;
+VM_Special:string;
+VM_Time:string;
+VM_TimeLimit:number
+Whatsapp:string
+
 }
 export  interface AccountHead{
 	id:number;
@@ -37,4 +34,8 @@ export  interface AccountHead{
 export interface AccountSubHead{
 	id:number;
 	name:string;
+}
+export interface VcList{
+	VC_Id:string,
+	VC_Name:string;
 }

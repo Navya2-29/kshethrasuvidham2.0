@@ -2,9 +2,7 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { LoginComponent } from './auth/login/login.component';
-
-
+import { LoginComponent } from './core/auth/login/login.component';
 @Component({
   selector: 'app-root',
   standalone: true,

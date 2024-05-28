@@ -1,22 +1,23 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './auth/login/login.component';
+
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { PmasterComponent } from './pmaster/pmaster.component';
-import { CmasterComponent } from './cmaster/cmaster.component';
-import { VmasterComponent } from './vmaster/vmaster.component';
+import { PmasterComponent } from './features/master/pmaster/pmaster.component';
+import { CmasterComponent } from './features/master/cmaster/cmaster.component';
+import { VmasterComponent } from './features/master/vmaster/vmaster.component';
 import { PanjankamComponent } from './panjankam/panjankam.component';
 
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { VazhipadBlockingComponent } from './vazhipad-blocking/vazhipad-blocking.component';
-import { SeasonalMasterComponent } from './seasonal-master/seasonal-master.component';
-import { MemberMasterComponent } from './member-master/member-master.component';
-import { VihidhamMasterComponent } from './vihidham-master/vihidham-master.component';
-import { SpecialdayMasterComponent } from './specialday-master/specialday-master.component';
-import { DayMasterComponent } from './day-master/day-master.component';
-import { ComboMasterComponent } from './combo-master/combo-master.component';
-import { ItemMAterComponent } from './item-mater/item-mater.component';
-import { authGuard } from './auth/guard/auth.guard';
+import { VazhipadBlockingComponent } from './features/master/vazhipad-blocking/vazhipad-blocking.component';
+import { SeasonalMasterComponent } from './features/master/seasonal-master/seasonal-master.component';
+import { MemberMasterComponent } from './features/master/member-master/member-master.component';
+import { VihidhamMasterComponent } from './features/master/vihidham-master/vihidham-master.component';
+import { SpecialdayMasterComponent } from './features/master/specialday-master/specialday-master.component';
+import { DayMasterComponent } from './features/master/day-master/day-master.component';
+import { ComboMasterComponent } from './features/master/combo-master/combo-master.component';
+import { ItemMAterComponent } from './features/master/item-mater/item-mater.component';
+import { LoginComponent } from './core/auth/login/login.component';
+import { authGuard } from './core/auth/guard/auth.guard';
 
 
 

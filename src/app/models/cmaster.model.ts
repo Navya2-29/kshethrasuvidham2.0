@@ -1,12 +1,13 @@
 export interface Cmaster {
-    CM_Code: string;
-    CM_Name: string;
-    CM_NameEng: string;
-    id:string;
-    
+   VC_Code: string;
+   VC_Name: string;
+   VC_RegName: string;
+   VC_ID:string;
+   VC_Active:boolean;
+    // Cuser:string;
+    // Type:string;
   }
-
-  export interface CreateCmaster{
-    CM_Code:string,
-    CM_NameEng:string,
-  }
+export interface VCMRequestBody{
+  Type:string;
+  Code:string
+}

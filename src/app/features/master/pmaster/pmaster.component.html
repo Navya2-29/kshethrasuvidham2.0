@@ -15,58 +15,54 @@
             <table class="table">
               <tr>
                 <td> prathishta Code<span class="text-danger">*</span>
-                  <input type="text" id="PMCode" appUpperCase formControlName="PMCode" maxlength="3" required
+                  <input type="text" id="PM_Code" appUpperCase formControlName="PM_Code" maxlength="3" required
                     class="form-control sps" placeholder="Enter Code" style="width:126px;">
                 </td>
               </tr>
               <div
-                *ngIf="pmasterFormFormControl['PMCode'].invalid && (pmasterFormFormControl['PMCode'].dirty || pmasterFormFormControl['PMCode'].touched)"
+                *ngIf="pmasterFormFormControl['PM_Code'].invalid && (pmasterFormFormControl['PM_Code'].dirty || pmasterFormFormControl['PM_Code'].touched)"
                 class="pl-1 text-danger">
-                <div *ngIf="pmasterFormFormControl['PMCode'].hasError('required')">
+                <div *ngIf="pmasterFormFormControl['PM_Code'].hasError('required')">
                   code is required.
                 </div>
-                <div *ngIf="pmasterFormFormControl['PMCode'].hasError('maxlength')">
+                <div *ngIf="pmasterFormFormControl['PM_Code'].hasError('maxlength')">
                   code must be 3 characters long.
                 </div>
-                <div *ngIf="pmasterFormFormControl['PMCode'].hasError('pattern')">
+                <div *ngIf="pmasterFormFormControl['PM_Code'].hasError('pattern')">
                   code must be include number or english alphabat.
                 </div>
-                <div *ngIf="pmasterFormFormControl['PMCode'].hasError('duplicateCode')" class="text-danger">
+                <div *ngIf="pmasterFormFormControl['PM_Code'].hasError('duplicateCode')" class="text-danger">
                   Code already exists.
                 </div>
               </div>
               <tr>
                 <td> prathishta Name<span class="text-danger">*</span><input type="text" matInput
-                    formControlName="PMName" maxlength="50" class="form-control" placeholder="Enter Name"
-                    appUpperCase></td>
+                    formControlName="PM_Name" maxlength="50" class="form-control" placeholder="Enter Name" appUpperCase>
+                </td>
               </tr>
               <div
-                *ngIf="pmasterFormFormControl['PMName'].invalid && (pmasterFormFormControl['PMName'].dirty || pmasterFormFormControl['PMName'].touched)"
+                *ngIf="pmasterFormFormControl['PM_Name'].invalid && (pmasterFormFormControl['PM_Name'].dirty || pmasterFormFormControl['PM_Name'].touched)"
                 class="pl-1 text-danger">
-                <div *ngIf="pmasterFormFormControl['PMName'].hasError('required')">
+                <div *ngIf="pmasterFormFormControl['PM_Name'].hasError('required')">
                   name is required.
                 </div>
-                <div *ngIf="pmasterFormFormControl['PMName'].hasError('pattern')">
+                <div *ngIf="pmasterFormFormControl['PM_Name'].hasError('pattern')">
                   name must be include english alphabat and spaces only.
                 </div>
-                <div *ngIf="pmasterFormFormControl['PMName'].hasError('duplicateName')" class="text-danger">
-                  Name already exists.
-                </div>
-
               </div>
               <tr>
                 <td>prathishta Name (In regional Language)<span class="text-danger">*</span><input type="text" matInput
-                    formControlName="PMRName" class="form-control" placeholder="In regional Language"> </td>
+                    formControlName="PM_RegName" class="form-control" placeholder="In regional Language"> </td>
               </tr>
               <div
-                *ngIf="pmasterFormFormControl['PMRName'].invalid && (pmasterFormFormControl['PMRName'].dirty || pmasterFormFormControl['PMRName'].touched)"
+                *ngIf="pmasterFormFormControl['PM_RegName'].invalid && (pmasterFormFormControl['PM_RegName'].dirty || pmasterFormFormControl['PM_RegName'].touched)"
                 class="pl-1 text-danger">
-                <div *ngIf="pmasterFormFormControl['PMRName'].hasError('required')">
+                <div *ngIf="pmasterFormFormControl['PM_RegName'].hasError('required')">
                   name in your regional language is required.
                 </div>
               </div>
               <tr>
-                <td> Image <div style="position: relative;"><input type="file" #fileInput forControlName="PMImage"
+                <td> Image <div style="position: relative;"><input type="file" #fileInput forControlName="PM_Image"
                       accept="image/png" class="form-control" (change)="previewImage($event)">
                     <button type="button" class="close-button" *ngIf="imagePreview"
                       (click)="removeImagePreview()">X</button>
@@ -84,23 +80,12 @@
               </tr>
               <tr>
                 <td>
-                  <mat-checkbox class="example-margin"  (change)="onChange($event)" formControlName="Active" >
-       
-    </mat-checkbox>Active
+                  <mat-checkbox class="example-margin" formControlName="PM_Active">
+                  </mat-checkbox>Active
                 </td>
               </tr>
-          
-               <input type="text" matInput
-                    formControlName="UnitId" hidden>
-                    <input type="text" matInput
-                    formControlName="Cuser" hidden>
-                    <input type="text" matInput
-                    formControlName="PMId" hidden>
-                    <input type="text" matInput
-                    formControlName="Type" hidden>
               <tr>
-                <td><button *ngIf="!updateFlag" class="btn btn-primary"
-                    (click)="onSubmit()">save</button>
+                <td><button *ngIf="!updateFlag" class="btn btn-primary" (click)="onSubmit()">save</button>
                   <button *ngIf="updateFlag" class="btn btn-primary"
                     (click)="onUpdate(pmasterForm.value)">update</button>
                   <button class="btn btn-danger ml-1" (click)="onReset()">cancel</button>
@@ -109,30 +94,28 @@
             </table>
           </form>
         </div>
+
+        
         <div class="col-md-6 search">
           <div style="display:flex;" class="search-container mt-3">
-            <input type="text" class="form-control sps search-input" (input)="onSearch(searchQuery)"
+            <input type="text" class="form-control sps search-input" (input)="onSearch()"
               placeholder="search by Code or Name" style="width:36%;" [(ngModel)]="searchQuery">
-            <!-- <button class="btn btn-primary" (click)="onSearch(searchQuery)">Search</button> -->
-            <mat-icon class="search-icon" (click)="onSearch(searchQuery)">search</mat-icon>
+            <mat-icon class="search-icon" (click)="onSearch()">search</mat-icon>
           </div>
           <div class="fixitems prathishta">
             <table class="table">
               <tr style="border-bottom: 2px solid #223d61;">
-                <!-- <th style="width:10px;background-color: #223d61;color:white;">Active</th> -->
                 <th>Id</th>
                 <th>code</th>
                 <th>Name</th>
                 <th></th>
               </tr>
+
               <tbody *ngIf="!showNoRecordsMessage &&pmaster && pmaster.length > 0">
                 <tr *ngFor="let data of filteredPmaster ; let i=index">
-                  <!-- <td style="background-color: #87b6f3;"><input type="Checkbox"
-                      style="vertical-align: middle;width:12px;" checked></td> -->
-                      
                   <td contenteditable="">{{data.PM_ID}}</td>
                   <td>{{data.PM_Code}}</td>
-                  <td style="text-align:left;">{{data.PM_Name}}</td>
+                  <td style="text-align:left;">{{data.PM_Name}}-{{data.PM_RegName}}</td>
                   <td>
                     <mat-icon title="Edit" class="small" style="vertical-align: middle;"
                       (click)="onEdit(data)">edit</mat-icon>
@@ -151,6 +134,7 @@
                   </td>
                 </tr>
               </tfoot>
+
             </table>
           </div>
         </div>

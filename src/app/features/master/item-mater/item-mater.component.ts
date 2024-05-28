@@ -1,19 +1,19 @@
 
 import { Component, OnInit, inject } from '@angular/core';
-import { HeaderComponent } from '../header/header.component';
+import { HeaderComponent } from '../../../header/header.component';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { FormsModule, NgForm, ReactiveFormsModule, FormBuilder, Validators, FormGroup, AbstractControl, ValidationErrors } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MasterService } from '../services/master/master.service';
+import { MasterService } from '../../../services/master/master.service';
 import { CommonModule } from '@angular/common';
-import { UpperCaseDirective } from '../shared/directives/upper-case.directive';
+import { UpperCaseDirective } from '../../../shared/directives/upper-case.directive';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
-import { ItemMaster } from '../models/item-master.model';
-import { DuplicatecheckService } from '../services/duplicateCheckValidator/duplicatecheck.service';
+import { ItemMaster } from '../../../models/item-master.model';
+import { DuplicatecheckService } from '../../../services/duplicateCheckValidator/duplicatecheck.service';
 @Component({
   selector: 'app-item-mater',
   standalone: true,

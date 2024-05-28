@@ -1,14 +1,14 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { HeaderComponent } from '../header/header.component';
-import { SpinnerComponent } from '../shared/component/spinner/spinner.component';
+import { HeaderComponent } from '../../../header/header.component';
+import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AsyncPipe, CommonModule } from '@angular/common';
-import { MasterService } from '../services/master/master.service';
+import { MasterService } from '../../../services/master/master.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { SeasonalMaster } from '../models/season-master.model';
+import { SeasonalMaster } from '../../../models/season-master.model';
 
 @Component({
   selector: 'app-seasonal-master',

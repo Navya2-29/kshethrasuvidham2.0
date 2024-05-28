@@ -1,87 +1,97 @@
 <app-header></app-header>
 <app-spinner></app-spinner>
 <div class="amster">
-
   <div class="container">
-    <div class="card-body outlook" style="background:white;">
+    <div class="card-body  outlook" style="background:white;">
       <div class="posback">
         <a routerLink="/dashboard" class="back">&nbsp;&nbsp;<mat-icon title="Edit"
             style="color:white;">arrow_back_ios</mat-icon></a>
         <h1 class="tname">Guruvayurappan Temple</h1>
       </div>
       <div class="master">
-        <div class="col-md-8">
+        <div class="col-md-8 ">
           <form [formGroup]="vazhipadMasterForm">
           <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-6 fixitems">
               <h1 style="font-weight:500;">Vazhipad Master</h1>
               <table class="table">
-                <tr colspn="2">
+                <tr>
                   <td> Vazhipad Code <span class="text-danger">*</span><input type="text" maxlength="10" formControlName="VM_Code" class="form-control sps"
                       placeholder="Enter Code">
-
+                      <div
+                      *ngIf="vmasterFormControl['VM_Code'].invalid && (vmasterFormControl['VM_Code'].dirty || vmasterFormControl['VM_Code'].touched)"
+                      class="pl-1 text-danger">
+                      <div *ngIf="vmasterFormControl['VM_Code'].hasError('required')">
+                        <small>code is required.</small>
+                      </div>
+                      <div *ngIf="vmasterFormControl['VM_Code'].hasError('maxlength')">
+                        <small>must be 3 characters long.</small>
+                      </div>
+                      <div *ngIf="vmasterFormControl['VM_Code'].hasError('pattern')">
+                        <small>code must be include number or english alphabat.</small>
+                      </div>
+                      <div *ngIf="vmasterFormControl['VM_Code'].hasError('duplicateCode')" class="text-danger">
+                      <small>Code already exists.</small>  
+                      </div>
+                    </div>
+                  </td>
+                  <td colspan="2">
+                    Vazhipad Name<span class="text-danger">*</span>
+                    <input type="text" class="form-control" appUpperCase maxlength="100" formControlName="VM_Name" placeholder="Enter Name">
+                    <div
+                    *ngIf="vmasterFormControl['VM_Name'].invalid && (vmasterFormControl['VM_Name'].dirty || vmasterFormControl['VM_Name'].touched)"
+                    class="pl-1 text-danger ">
+                    <div *ngIf="vmasterFormControl['VM_Name'].hasError('required')">
+                       <small> required.</small>
+                    </div>
+                    <div *ngIf="vmasterFormControl['VM_Name'].hasError('pattern')">
+                      <small>name must be include english alphabat and spaces only.</small>
+                    </div>
+                    <div *ngIf="vmasterFormControl['VM_Name'].hasError('duplicateName')" class="text-danger">
+                     <small> Name already exists.</small>
+                    </div>
+                  </div>
                   </td>
                 </tr>
-                <div
-                  *ngIf="vmasterFormControl['VM_Code'].invalid && (vmasterFormControl['VM_Code'].dirty || vmasterFormControl['VM_Code'].touched)"
-                  class="pl-1 text-danger">
-                  <div *ngIf="vmasterFormControl['VM_Code'].hasError('required')">
-                    <small>code is required.</small>
-                  </div>
-                  <div *ngIf="vmasterFormControl['VM_Code'].hasError('maxlength')">
-                    <small>must be 3 characters long.</small>
-                  </div>
-                  <div *ngIf="vmasterFormControl['VM_Code'].hasError('pattern')">
-                    <small>code must be include number or english alphabat.</small>
-                  </div>
-                  <div *ngIf="vmasterFormControl['VM_Code'].hasError('duplicateCode')" class="text-danger">
-                  <small>Code already exists.</small>  
-                  </div>
-                </div>
-                <tr>
+               
+                <!-- <tr>
                   <td colspan="3">
                     Vazhipad Name<span class="text-danger">*</span>
                     <input type="text" class="form-control" appUpperCase maxlength="100" formControlName="VM_Name" placeholder="Enter Name">
                   </td>
-                </tr>
-                <div
-                *ngIf="vmasterFormControl['VM_Name'].invalid && (vmasterFormControl['VM_Name'].dirty || vmasterFormControl['VM_Name'].touched)"
-                class="pl-1 text-danger ">
-                <div *ngIf="vmasterFormControl['VM_Name'].hasError('required')">
-                   <small>name is required.</small>
-                </div>
-                <div *ngIf="vmasterFormControl['VM_Name'].hasError('pattern')">
-                  <small>name must be include english alphabat and spaces only.</small>
-                </div>
-                <div *ngIf="vmasterFormControl['VM_Name'].hasError('duplicateName')" class="text-danger">
-                 <small> Name already exists.</small>
-                </div>
-
-              </div>
-
+                </tr> -->
+                
                 <tr>
-                  <td colspan="3"> Vazhipad Name in Regional Lang.<span class="text-danger">*</span><input type="text" formControlName="VM_RName"
-                      class="form-control" placeholder="Enter Name in Regional Language"> </td>
-                </tr>
-                <div
+                  <td colspan="2"> Vazhipad Name in Regional Lang.<span class="text-danger">*</span><input type="text" formControlName="VM_RName"
+                      class="form-control" placeholder="Enter Name in Regional Language"> 
+                      <div
                 *ngIf="vmasterFormControl['VM_RName'].invalid && (vmasterFormControl['VM_RName'].dirty || vmasterFormControl['VM_RName'].touched)"
                 class="pl-1 text-danger">
                 <div *ngIf="vmasterFormControl['VM_RName'].hasError('required')">
                 <small> name  is required.</small> 
                 </div>
               </div>
+                    </td>
+                    <td colspan="1">Time
+                      <select name="" id="" class="form-control sps" formControlName="VM_Time">
+                        <option selected value="Morning">Morning</option>
+                        <option value="Evening">Evening</option>
+                        <option value="Noon">Noon</option>
+                        <option value="Night">Night</option>
+                      </select>
+                    </td>
+                </tr>
                 <tr>
-
                   <td colspan="3">
 
                     Vazhipad Category<span class="text-danger">*</span> <input matInput aria-label="vazhpad category" [matAutocomplete]="vcategory"
                       formControlName="VC_Name" autofocus class="form-control sps"
                       placeholder="Select Vazhipad Category">
                     <mat-autocomplete #vcategory="matAutocomplete">
-                      @for (category of filteredCategory | async; track category) {
+                      @for (category of filteredCategory | async; track category.VC_Name) {
 
-                      <mat-option [value]="category" style="padding-left:15px;padding-top:0px;">
-                        <span>{{category}}</span>
+                      <mat-option [value]="category.VC_Name" style="padding-left:15px;padding-top:0px;">
+                        <span>{{category.VC_Name}}</span>
                       </mat-option>
                       }
                     </mat-autocomplete>
@@ -134,15 +144,15 @@
                     <input type="checkbox" formControlName="VM_Booking">&nbsp;&nbsp; Blocking
                   </td>
                   <td>
-                    <input type="checkbox" formControlName="VM_SeaSonal">&nbsp;&nbsp; Seasonal
+                    <input type="checkbox" formControlName="VM_Seasonal">&nbsp;&nbsp; Seasonal
                   </td>
                 </tr>
                 <tr>
                   <td>
-                    <input type="checkbox" formControlName="VM_Sms">&nbsp;&nbsp; SMS
+                    <input type="checkbox" formControlName="SMS">&nbsp;&nbsp; SMS
                   </td>
                   <td>
-                    <input type="checkbox" formControlName="VM_Watsapp">&nbsp;&nbsp; Whatsapp
+                    <input type="checkbox" formControlName="Whatsapp">&nbsp;&nbsp; Whatsapp
                   </td>
                   <td>
                     <input type="checkbox" formControlName="VM_Receipt">&nbsp;&nbsp; Receipt
@@ -164,7 +174,7 @@
                     <input type="checkbox" formControlName="VM_Mobileapp">&nbsp;&nbsp; APP
                   </td>
                   <td>
-                    <input type="checkbox" formControlName="VM_Online">&nbsp;&nbsp; Online
+                    <input type="checkbox" formControlName="DisplayMode">&nbsp;&nbsp; Online
                   </td>
                   <td>
                     <input type="checkbox" formControlName="VM_Active">&nbsp;&nbsp; Active
@@ -177,14 +187,10 @@
                 </tr>
               </table>
             </div>
-
-
-
             <div class="col-md-6">
               <h1 style="color:white;">.</h1>
               <table class="table">
                 <tr>
-
                   <td colspan="3">
                     Account Head <input matInput formControlName="ACHeadCode" aria-label="Account Head"
                       [matAutocomplete]="accountHead" autofocus class="form-control sps"
@@ -199,7 +205,6 @@
                   </td>
                 </tr>
                 <tr>
-
                   <td colspan="3">
                     Account Sub Head <input matInput aria-label="accountSubHead" formControlName="ACSubCode"
                       [matAutocomplete]="accountSubHead" autofocus class="form-control sps"
@@ -214,23 +219,22 @@
                   </td>
                 </tr>
                 <tr>
-
                   <td colspan="3">
                     Description <br>
-                    <textarea class="form-control sps" style="width:100%;height:72px;" formControlName="VM_AlertMSg"
+                    <textarea class="form-control sps" style="width:100%;height:72px;" formControlName="VM_Description"
                       placeholder="Enter Description"></textarea>
                   </td>
                 </tr>
                 <tr>
-
                   <td colspan="3">
                     Alert Message <br>
-                    <textarea class="form-control sps" style="width:100%;height:72px;" formControlName="VM_AlertMSg"
+                    <textarea class="form-control sps" style="width:100%;height:72px;" formControlName="VM_AlertMsg"
                       placeholder="Enter Alert Message"></textarea>
                   </td>
                 </tr>
                 <tr>
                   <td><button class="btn btn-primary" (click)="onSubmit(vazhipadMasterForm.value)">save</button>
+                    <button class="btn btn-primary" (click)="onUpdate(vazhipadMasterForm.value)">Update</button>
                     <button class="btn btn-danger" (click)="onReset()">cancel</button>
                   </td>
                 </tr>
@@ -239,8 +243,6 @@
           </div>
         </form>
         </div>
-     
-
       <div class="col-md-4 search">
         <div style="display:flex;" class="search-container mt-3">
           <input type="text" class="form-control sps search-input" (input)="onSearch(searchQuery)"
@@ -259,14 +261,15 @@
               <tr *ngFor="let data of filteredVmaster; let i=index">
                 <td style="text-align:left;padding-left:10px;">{{data.VM_Name}}</td>
                 <td>{{data.VM_Amt}}</td>
+                <td></td>
                 <td>
                   <mat-icon title="Edit" class="small" style="vertical-align: middle;"
-                    (click)="onEdit(data)">edit</mat-icon>
-                  <mat-icon title="Delete" class="small" style="vertical-align: middle;">delete</mat-icon>
+                   (click)="onEdit(data)"  >edit</mat-icon>
+                   
+                  <mat-icon title="Delete" class="small" style="vertical-align: middle;" (click)="onDelete(data.VM_Id)" >delete</mat-icon>
                 </td>
               </tr>
             </tbody>
-
             <tfoot>
               <tr *ngIf="!Vmaster || Vmaster.length === 0 || showNoRecordsMessage">
                 <td colspan="3">
@@ -279,9 +282,7 @@
           </table>
         </div>
       </div>
-
     </div>
-
   </div>
 </div>
 </div>

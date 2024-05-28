@@ -1,14 +1,14 @@
 import { Component, inject } from '@angular/core';
-import { HeaderComponent } from '../header/header.component';
-import { SpinnerComponent } from '../shared/component/spinner/spinner.component';
+import { HeaderComponent } from '../../../header/header.component';
+import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ThemePalette } from '@angular/material/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { DayMaster } from '../models/day-master.model';
-import { MasterService } from '../services/master/master.service';
+import { DayMaster } from '../../../models/day-master.model';
+import { MasterService } from '../../../services/master/master.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 export interface Task {
   name: string;

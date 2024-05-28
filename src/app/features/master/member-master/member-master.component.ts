@@ -1,11 +1,11 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { HeaderComponent } from '../header/header.component';
-import { SpinnerComponent } from '../shared/component/spinner/spinner.component';
+import { HeaderComponent } from '../../../header/header.component';
+import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MasterService } from '../services/master/master.service';
+import { MasterService } from '../../../services/master/master.service';
 
 @Component({
   selector: 'app-member-master',

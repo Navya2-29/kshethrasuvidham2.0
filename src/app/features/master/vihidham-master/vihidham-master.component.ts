@@ -1,14 +1,14 @@
 import { Component, inject } from '@angular/core';
-import { HeaderComponent } from '../header/header.component';
-import { SpinnerComponent } from '../shared/component/spinner/spinner.component';
+import { HeaderComponent } from '../../../header/header.component';
+import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
-import { VihidhamMaster } from '../models/vihidham-master.model';
-import { MasterService } from '../services/master/master.service';
+import { VihidhamMaster } from '../../../models/vihidham-master.model';
+import { MasterService } from '../../../services/master/master.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { DuplicatecheckService } from '../services/duplicateCheckValidator/duplicatecheck.service';
+import { DuplicatecheckService } from '../../../services/duplicateCheckValidator/duplicatecheck.service';
 import { CommonModule } from '@angular/common';
 
 @Component({

@@ -5,10 +5,10 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatButtonModule} from '@angular/material/button';
 import { Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, NgForm, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Login } from '../../models/login.model';
+import { Login } from '../../../models/login.model';
 import { AuthService } from '../service/auth.service';
-import { HttpClient, HttpStatusCode } from '@angular/common/http';
-import { SpinnerComponent } from '../../shared/component/spinner/spinner.component';
+import { HttpClient } from '@angular/common/http';
+import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 import { CommonModule } from '@angular/common';
 
 @Component({

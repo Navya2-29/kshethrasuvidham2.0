@@ -1,18 +1,18 @@
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
-import { HeaderComponent } from '../header/header.component';
+import { HeaderComponent } from '../../../header/header.component';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
 import { FormsModule, NgForm, ReactiveFormsModule, FormBuilder, Validators, FormGroup, AbstractControl, ValidationErrors, AsyncValidatorFn } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { Pmaster } from '../models/pmaster.model';
-import { MasterService } from '../services/master/master.service';
+import { Pmaster } from '../../../models/pmaster.model';
+import { MasterService } from '../../../services/master/master.service';
 import { CommonModule } from '@angular/common';
-import { UpperCaseDirective } from '../shared/directives/upper-case.directive';
+import { UpperCaseDirective } from '../../../shared/directives/upper-case.directive';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
-import { DuplicatecheckService } from '../services/duplicateCheckValidator/duplicatecheck.service';
-import { SpinnerComponent } from '../shared/component/spinner/spinner.component';
+import { DuplicatecheckService } from '../../../services/duplicateCheckValidator/duplicatecheck.service';
+import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 @Component({
   selector: 'app-pmaster',
@@ -32,8 +32,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
   ],
   templateUrl: './pmaster.component.html',
   styleUrl: './pmaster.component.css',
-
 })
+
 export class PmasterComponent implements OnInit {
   pmaster: Pmaster[] = [];
   filteredPmaster: Pmaster[] = [];
@@ -48,41 +48,37 @@ export class PmasterComponent implements OnInit {
   fileInputMessageFlag: boolean = true;
   loading: boolean = false;
   errorMessage: string = '';
-  reqBody: object;
-  chckBoxValue:string='Y';
+  Id:string='';
   private masterService = inject(MasterService);
   private formBuilder = inject(FormBuilder);
   private _snackBar = inject(MatSnackBar);
   private duplicateCheck = inject(DuplicatecheckService);
-
-
   constructor() {
     // form model
     this.pmasterForm = this.formBuilder.group({
-      PMCode: ['', [
+      PM_Code: ['', [
         Validators.required,
         Validators.maxLength(10),
         Validators.pattern('^[a-zA-Z0-9]+$'),
-        this.duplicateCodeValidator.bind(this)
+        this.duplicateCodeValidator.bind(this),
       ]],
-      PMName: ['', [Validators.required,
-      Validators.pattern('^[a-zA-Z\s]+$'),
-      this.duplicateNameValidator.bind(this),
+      PM_Name: ['', [Validators.required,
+      Validators.pattern('[a-zA-Z\\s]*'),
+      
       Validators.maxLength(100),
       ]],
-      PMRName: ['', Validators.required],
-      PMImage: ['',],
-      PMId: [''],
-      Active: [true],
-      Type: ['INSERT'],
-      UnitId: ["1"],
-      Cuser: ['1']
+      PM_RegName: ['', Validators.required],
+      PM_Image: [''],
+      PM_Active: [true],
+      
     });
   }
+
+
   ngOnInit(): void {
     this.loading = true;
     this.getPmaster();
-
+    
   }
 
   // view prathishta
@@ -90,13 +86,10 @@ export class PmasterComponent implements OnInit {
     this.loading = false;
     this.masterService.getPmaster().subscribe({
       next: (data) => {
-        console.log(data);
         if (data && data.length > 0) {
-
           this.pmaster = data;
           this.filteredPmaster = this.pmaster;
           this.loading = false;
-          // console.log(this.filteredPmaster + "both")
         }
       },
       error: (error) => {
@@ -106,6 +99,7 @@ export class PmasterComponent implements OnInit {
     });
   }
 
+
   // get pmaster form controls
   get pmasterFormFormControl() {
     return this.pmasterForm.controls;
@@ -113,28 +107,20 @@ export class PmasterComponent implements OnInit {
 
   // submitt pmasterform
   onSubmit() {
-    console.log(this.pmasterForm.value);
-    console.log("data");
     this.loading = true;
     if (this.pmasterForm.valid) {
-      const reqBody=this.pmasterForm.value;
-      reqBody.Active=reqBody.Active ? 'Y' : 'N';
-      console.log(reqBody)
-      console.log("req")
-      this.masterService.createPmaster(reqBody).subscribe({
+      this.masterService.createPmaster(this.pmasterForm.value).subscribe({
         next: (res) => {
-          console.log(res + "response");
           if (res) {
             this.loading = false;
             this.openSnackBar(" Prathishta Details created sussess fully", "close", "success-snackbar");
-
             this.onReset();
             this.ngOnInit();
           }
         },
         error: (error) => {
           this.loading = true;
-          console.log(error);
+          // console.log(error);
         }
       })
     }
@@ -144,10 +130,14 @@ export class PmasterComponent implements OnInit {
     }
   }
 
+
   // resetting form controls
   onReset() {
     this.loading = true;
-    this.pmasterForm.reset();
+    this.pmasterForm.reset({
+      PM_Active:true,
+      PM_Image:""
+    });
     this.updateFlag = false;
     this.fileInput.nativeElement.value = '';
     this.fileInputMessageFlag = true;
@@ -159,50 +149,31 @@ export class PmasterComponent implements OnInit {
   //for editing the form fields
   onEdit(data: Pmaster) {
     this.loading = true;
-    console.log(data);
     this.updateFlag = true;
+    this.Id=data.PM_ID;
     this.pmasterForm.patchValue({
-      PMCode: data.PM_Code,
-      PMName: data.PM_Name,
-      PMRName: data.PM_RegName,
-      PMImage: data.PM_Image,
-      PMId:data.PM_ID,
-      Type:'UPDATE',
-      Active:this.chckBoxValue,
-      UnitId: "1",
-      Cuser:"1"
+      PM_Code: data.PM_Code,
+      PM_Name: data.PM_Name,
+      PM_RegName: data.PM_RegName,
+      PM_Image: data.PM_Image,
+      PM_Active:data.PM_Active=="Y"?true:false, 
     });
     console.log(this.pmasterForm);
     this.loading = false;
   }
-  //update data
-  onUpdate(updatedata:any) {
-    this.loading = true;
-    console.log(updatedata.PM_Active +"bnnnnn");
-    if (this.pmasterForm.valid) {
-      console.log(updatedata);
-      const updateBody={
-        PMCode: updatedata.PM_Code,
-      PMName: updatedata.PM_Name,
-      PMRName: updatedata.PM_RegName,
-      PMImage: updatedata.PM_Image,
-      PMId:updatedata.PM_ID,
-      Type:'UPDATE',
-      Active:this.chckBoxValue,
-      UnitId: "1",
-      Cuser:"1"
 
-      }
-      console.log(updateBody);
-      console.log("ddddd");
-      this.masterService.updatePmaster(updatedata).subscribe((res) => {
+  //update data
+  onUpdate(updatedata:Pmaster) {
+    this.loading = true;
+   if (this.pmasterForm.valid) {
+      this.masterService.updatePmaster(updatedata,this.Id).subscribe((res) => {
         this.loading = false;
         this.openSnackBar(" Prathishta Details updated sussess fully", "close", "success-snackbar");
         this.ngOnInit();
-        console.log(res);
         this.onReset();
       })
     }
+
     else {
       this.markFormGroupTouched(this.pmasterForm)
       this.loading=false;
@@ -210,16 +181,10 @@ export class PmasterComponent implements OnInit {
   }
 
 
-  // deleteData
+  // delete Data
   onDelete(Id: string) {
-    console.log(Id);
     this.loading = true;
-    const deleteReq={
-      "Type":"Prethista",
-      "Id":Id
-    }
-    this.masterService.deletePmaster(deleteReq).subscribe((res) => {
-      console.log(res);
+    this.masterService.deletePmaster(Id).subscribe((res) => {
       this.loading = false;
       this.openSnackBar(" Prathishta Details deleted sussess fully", "close", "success-snackbar");
       this.ngOnInit();
@@ -228,7 +193,7 @@ export class PmasterComponent implements OnInit {
 
 
   // search functionality by name and code
-  onSearch(searchQuery: string) {
+  onSearch() {
 
     if (!this.searchQuery.trim()) {
       this.filteredPmaster = this.pmaster;
@@ -239,7 +204,6 @@ export class PmasterComponent implements OnInit {
         console.log(data)
         return data.PM_Name.toLowerCase().includes(this.searchQuery.toLowerCase()) || data.PM_Code.toLowerCase().includes(this.searchQuery.toLowerCase())
       });
-
     }
     this.showNoRecordsMessage = this.filteredPmaster.length === 0
   }
@@ -257,7 +221,6 @@ export class PmasterComponent implements OnInit {
   previewImage(event: any) {
     // Validate image dimensions
     const file = event.target.files[0];
-
     if (file) {
       this.fileInputMessageFlag = false;
       const maxSizeInBytes = 2 * 1024 * 1024; // 2MB
@@ -311,13 +274,12 @@ export class PmasterComponent implements OnInit {
     });
   }
 
-  // duplicate code check validators
-  duplicateCodeValidator(control: AbstractControl): ValidationErrors | null {
+   // duplicate code check validators
+   duplicateCodeValidator(control: AbstractControl): ValidationErrors | null {
+    const code = control.value;
     if(this.updateFlag){
-      return null;
-    }
-    else{
-      const code = control.value;
+      return null
+    }else{
       if (this.duplicateCheck.checkDuplicateCode(code, this.pmaster)) {
         return { duplicateCode: true };
       }
@@ -327,39 +289,12 @@ export class PmasterComponent implements OnInit {
 
   // duplicate name check validators
   duplicateNameValidator(control: AbstractControl): ValidationErrors | null {
-    if(this.updateFlag){
-      return null
+    const name = control.value;
+    if (this.duplicateCheck.checkDuplicateName(name, this.pmaster)) {
+      return { duplicateName: true };
     }
-    else{
-      const name = control.value;
-      if (this.duplicateCheck.checkDuplicateName(name, this.pmaster)) {
-        return { duplicateName: true };
-      }
-      return null;
-    }
-    
+    return null;
   }
-
-// change check box value
-onChange(event:any){
-console.log(event.checked);
-const checked=event.checked;
-if(checked){
-  this.pmasterForm.patchValue({
-    Active:true
-  })
-  console.log(this.pmasterForm.value)
-  console.log("true")
-}else{
-  this.pmasterForm.patchValue({
-    Active:false
-  })
-  console.log(this.pmasterForm.value)
-  console.log("false")
-}
-
-}
-
 }
 
 

@@ -1,9 +1,9 @@
 import { Component, Inject, inject } from '@angular/core';
-import { HeaderComponent } from '../header/header.component';
-import { SpinnerComponent } from '../shared/component/spinner/spinner.component';
+import { HeaderComponent } from '../../../header/header.component';
+import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 import { Observable } from 'rxjs';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MasterService } from '../services/master/master.service';
+import { MasterService } from '../../../services/master/master.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,7 +12,7 @@ import { RouterModule } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { map, startWith } from 'rxjs/operators';
-import { VazhipadBlocking } from '../models/vazhipadBlockingMaster.model';
+import { VazhipadBlocking } from '../../../models/vazhipadBlockingMaster.model';
 import { BlockParameter } from '@angular/compiler';
 @Component({
   selector: 'app-vazhipad-blocking',

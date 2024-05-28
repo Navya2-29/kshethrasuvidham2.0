@@ -1,15 +1,15 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { HeaderComponent } from '../header/header.component';
-import { SpinnerComponent } from '../shared/component/spinner/spinner.component';
+import { HeaderComponent } from '../../../header/header.component';
+import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteActivatedEvent, MatAutocompleteModule } from '@angular/material/autocomplete';
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { Observable, map, startWith } from 'rxjs';
-import { MasterService } from '../services/master/master.service';
+import { MasterService } from '../../../services/master/master.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ComboVazhipadMaster } from '../models/combo-vazhipad-master.model';
+import { ComboVazhipadMaster } from '../../../models/combo-vazhipad-master.model';
 interface ComboItem {
   id: string;
   VM_Name: string;

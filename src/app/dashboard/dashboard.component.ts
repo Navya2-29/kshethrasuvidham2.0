@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { LoginComponent } from '../auth/login/login.component';
+
 import { HeaderComponent } from '../header/header.component';
 import { MenuComponent } from '../menu/menu.component';
 import { AreaComponent } from '../area/area.component';
 import { FixedbottomComponent } from '../fixedbottom/fixedbottom.component';
+import { LoginComponent } from '../core/auth/login/login.component';
 
 @Component({
   selector: 'app-dashboard',
