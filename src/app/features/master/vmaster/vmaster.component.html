@@ -1,5 +1,5 @@
 <app-header></app-header>
-<app-spinner></app-spinner>
+<app-spinner *ngIf="loading"></app-spinner>
 <div class="amster">
   <div class="container">
     <div class="card-body  outlook" style="background:white;">
@@ -233,9 +233,9 @@
                   </td>
                 </tr>
                 <tr>
-                  <td><button class="btn btn-primary" (click)="onSubmit(vazhipadMasterForm.value)">save</button>
-                    <button class="btn btn-primary" (click)="onUpdate(vazhipadMasterForm.value)">Update</button>
-                    <button class="btn btn-danger" (click)="onReset()">cancel</button>
+                  <td><button class="btn btn-primary" *ngIf="!updateFlag" (click)="onSubmit(vazhipadMasterForm.value)">Save</button>
+                    <button class="btn btn-primary" *ngIf="updateFlag" (click)="onUpdate(vazhipadMasterForm.value)">Update</button>
+                    <button class="btn btn-secondary" (click)="onReset()">Cancel</button>
                   </td>
                 </tr>
               </table>

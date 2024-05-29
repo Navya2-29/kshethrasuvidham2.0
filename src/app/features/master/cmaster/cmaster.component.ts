@@ -51,7 +51,6 @@ export class CmasterComponent implements OnInit {
         Validators.maxLength(3),
         Validators.pattern('^[a-zA-Z0-9]+$'),
         this.duplicateCodeValidator.bind(this),
-
       ]],
       VC_Name: ['', [Validators.required,
       Validators.pattern('[a-zA-Z\\s]*'),

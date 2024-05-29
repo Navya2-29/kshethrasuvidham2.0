@@ -14,6 +14,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DuplicatecheckService } from '../../../services/duplicateCheckValidator/duplicatecheck.service';
 import { UpperCaseDirective } from '../../../shared/directives/upper-case.directive';
 import { HttpClient } from '@angular/common/http';
+import { fakeAsync } from '@angular/core/testing';
 @Component({
   selector: 'app-vmaster',
   standalone: true,
@@ -45,7 +46,7 @@ export class VmasterComponent implements OnInit {
   private duplicateCheck = inject(DuplicatecheckService);
 
   
-  constructor(private http: HttpClient) {
+  constructor() {
     this.vazhipadMasterForm = this.formBuilder.group({
       VM_Code: ['', [Validators.required,
       Validators.maxLength(10),
@@ -58,7 +59,7 @@ export class VmasterComponent implements OnInit {
       this.duplicateNameValidator.bind(this)]],
       VM_RName: ['', [Validators.required]],
       VM_Amt: [0, [Validators.required]],
-      VM_MaxNo: [0, [Validators.required]],
+      VM_MaxNo: [0,],
       VM_Receipt: [false],
       VM_Booking: [false],
       VM_Blocking: [false],
@@ -87,7 +88,6 @@ export class VmasterComponent implements OnInit {
 
   ngOnInit(): void {
     // this.Addvazhpads();
-    this.loading = true;
     // filter for autocompleate category
     this.filteredCategory = this.vazhipadMasterForm.get('VC_Name')!.valueChanges.pipe(
       startWith(''),
@@ -133,13 +133,15 @@ export class VmasterComponent implements OnInit {
   // get All category 
 
   getCategory() {
+    this.loading=true;
     this.masterService.getCmaster().subscribe({
       next: (cmasters) => {
         this.category = cmasters.map(item => ({
           VC_Id: item.VC_ID,
           VC_Name: item.VC_Name
         }));
-        console.log(this.category)
+        // console.log(this.category)
+        this.loading=false;
       }
     })
   }
@@ -156,15 +158,15 @@ export class VmasterComponent implements OnInit {
   // }
 
   // getAccountSubHead
-  getAccountSubHead() {
-    this.masterService.getSubAccountHeads().subscribe({
-      next: (accountSubHead) => {
+  // getAccountSubHead() {
+  //   this.masterService.getSubAccountHeads().subscribe({
+  //     next: (accountSubHead) => {
 
-        this.accountSubHead = accountSubHead.map(subhead => subhead.name);
-        console.log(this.accountHead)
-      }
-    })
-  }
+  //       this.accountSubHead = accountSubHead.map(subhead => subhead.name);
+  //       console.log(this.accountHead)
+  //     }
+  //   })
+  // }
 
   // get vmaster
   getVmaster() {
@@ -173,7 +175,7 @@ export class VmasterComponent implements OnInit {
     this.masterService.getVmaster(payLoad).subscribe({
       next: (data) =>{
         if (data && data.length > 0) {
-          console.log(data)
+          // console.log(data)
           this.Vmaster = data;
           this.filteredVmaster = this.Vmaster;
           this.loading = false;
@@ -181,7 +183,7 @@ export class VmasterComponent implements OnInit {
       },
       error: (error) => {
         console.log(error);
-        this.loading = true;
+        // this.loading = true;
       }
     });
   }
@@ -193,8 +195,8 @@ export class VmasterComponent implements OnInit {
 
   // submit form
   onSubmit(data: Vmaster) {
-    console.log(data);
-    console.log("data")
+    // console.log(data);
+    // console.log("data")
     this.loading = true;
 
     if (this.vazhipadMasterForm.valid) {
@@ -222,17 +224,16 @@ export class VmasterComponent implements OnInit {
     }
     else {
       this.markFormGroupTouched(this.vazhipadMasterForm);
+      this.openSnackBar("Please ill the details", "close", "success-snackbar")
     }
   }
 
   // resetting form controls
   onReset() {
-    this.loading = true;
     this.vazhipadMasterForm.reset({
       VM_Active: true,
     });
     this.updateFlag = false;
-    this.loading = false;
   }
 
 
@@ -279,26 +280,26 @@ export class VmasterComponent implements OnInit {
 
   //update data
   onUpdate(updatedata: Vmaster) {
-    console.log(updatedata);
+    // console.log(updatedata);
     this.loading = true;
-    console.log(updatedata, this.Id);
+    // console.log(updatedata, this.Id);
     if (this.vazhipadMasterForm.valid) {
       const formValue=this.vazhipadMasterForm.value;
       const selectedVc =  this.category.find(vc => vc.VC_Name === formValue.VC_Name);
-      console.log(formValue);
-      console.log(JSON.stringify(selectedVc)+"daaaaaaaaaaaaa");
+      // console.log(formValue);
+      // console.log(JSON.stringify(selectedVc)+"daaaaaaaaaaaaa");
       if(selectedVc){
         const VCId=selectedVc.VC_Id;
         this.masterService.updateVmaster(VCId,updatedata,this.Id).subscribe({
           next: (res) => {
-            console.log(res);
+            // console.log(res);
             this.loading = false;
             this.openSnackBar("Vazhpad  Details created sussess fully", "close", "success-snackbar");
             this.onReset();
           },
           error: (error) => {
             this.loading = true;
-            console.log(error);
+            // console.log(error);
           }
         })
       }
@@ -312,7 +313,7 @@ export class VmasterComponent implements OnInit {
     this.loading = true;
     const Id=id+''
     this.masterService.deleteVmaster(Id).subscribe((res) => {
-      console.log(res);
+      // console.log(res);
       this.loading = false;
       this.openSnackBar(" Vazhipad Details deleted sussess fully", "close", "success-snackbar");
     })
@@ -356,86 +357,37 @@ export class VmasterComponent implements OnInit {
 
   // duplicate code check validators
   duplicateCodeValidator(control: AbstractControl): ValidationErrors | null {
-    const code = control.value;
-    if (this.duplicateCheck.vmastercheckDuplicateCode(code, this.Vmaster)) {
-      return { duplicateCode: true };
+    if(this.updateFlag){
+      return null
+    }else{
+      const code = control.value;
+      if (this.duplicateCheck.vmastercheckDuplicateCode(code, this.Vmaster)) {
+        return { duplicateCode: true };
+      }
+      return null;
     }
-    return null;
+    
   }
 
 
   // duplicate name check validators
   duplicateNameValidator(control: AbstractControl): ValidationErrors | null {
     const name = control.value;
-    if (this.duplicateCheck.vmastercheckDuplicateName(name, this.Vmaster)) {
-      return { duplicateName: true };
+    if(this.updateFlag){
+      return null
+    }else{
+      if (this.duplicateCheck.vmastercheckDuplicateName(name, this.Vmaster)) {
+        return { duplicateName: true };
+      }
+      return null;
     }
-    return null;
+    
   }
 
 
 
 
 
-  getVazhipadinfo() {
-
-    const reqBody = { "Type": "vazhipadALL", "Code": "" }
-
-    this.http.post('http://api.suvidham.in/api/KshetramAPI/ViewMasters', reqBody).subscribe({
-      next: (res) => {
-        console.log(res)
-      },
-      error: (err) => {
-        console.log(err)
-      }
-    })
-  }
-
-  Addvazhpads() {
-    const reqBody = {
-      "vazhId": "", "VazhCode": "admin", "VazhName": "bbb", "VazhRName": "admin", "VazhAmt": "100", "VazhMaxNo": "1", "VazhReceipt": "Y", "VazhBooking": "Y",
-      "VazhSeasonal": "Y", "VazhMultiName": "Y", "VMDevice": "Y", "VMapp": "Y", "VMspecial": "Y", "VMRatechange": "Y", "VazhTime": "bbb", "VazhTimeLimit": "10",
-      "VMDescription": "1", "VMAlert": "admin", "Active": "Y", "VCatId": "1", "ACHeadCode": "bbb", "ACSubCode": "admin", "Cuser": "1", "VazhBlocking": "Y", "Type": "INSERT", "DisplayMode": "1"
-    }
-
-
-    this.http.post('http://api.suvidham.in/api/KshetramAPI/AddVazhipadMaster', reqBody).subscribe({
-      next: (res) => {
-        console.log(res)
-      },
-      error: (err) => {
-        console.log(err)
-      }
-    })
-  }
-  updatevazhpads() {
-    const reqBody = {
-      "vazhId": "", "VazhCode": "admin", "VazhName": "bbb", "VazhRName": "admin", "VazhAmt": "100", "VazhMaxNo": "1", "VazhReceipt": "Y", "VazhBooking": "Y",
-      "VazhSeasonal": "Y", "VazhMultiName": "Y", "VMDevice": "Y", "VMapp": "Y", "VMspecial": "Y", "VMRatechange": "Y", "VazhTime": "bbb", "VazhTimeLimit": "10",
-      "VMDescription": "1", "VMAlert": "admin", "Active": "Y", "VCatId": "1", "ACHeadCode": "bbb", "ACSubCode": "admin", "Cuser": "1", "VazhBlocking": "Y", "Type": "UPDATE", "DisplayMode": "1"
-    }
-
-
-    this.http.post('http://api.suvidham.in/api/KshetramAPI/AddVazhipadMaster', reqBody).subscribe({
-      next: (res) => {
-        console.log(res)
-      },
-      error: (err) => {
-        console.log(err)
-      }
-    })
-  }
-  deletevazhpads() {
-    const reqBody = { "Type": "vazhipad", "Id": "2" }
-
-    this.http.post('http://api.suvidham.in/api/KshetramAPI/DeleteMasters', reqBody).subscribe({
-      next: (res) => {
-        console.log(res)
-      },
-      error: (err) => {
-        console.log(err)
-      }
-    })
-  }
+ 
 
 }
