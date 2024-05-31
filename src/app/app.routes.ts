@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 
-import { DashboardComponent } from './dashboard/dashboard.component';
+import { DashboardComponent } from './features/Billing/dashboard/dashboard.component';
 import { PmasterComponent } from './features/master/pmaster/pmaster.component';
 import { CmasterComponent } from './features/master/cmaster/cmaster.component';
 import { VmasterComponent } from './features/master/vmaster/vmaster.component';

@@ -1,8 +1,8 @@
-import { Component, OnInit, ViewChild, inject } from '@angular/core';
-import { HeaderComponent } from '../../../header/header.component';
+import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
+import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
-import { FormsModule, NgForm, ReactiveFormsModule, FormBuilder, Validators, FormGroup, AbstractControl, ValidationErrors, AsyncValidatorFn } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, Validators, FormGroup, AbstractControl, ValidationErrors } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { Pmaster } from '../../../models/pmaster.model';
@@ -14,6 +14,9 @@ import { MatTableModule } from '@angular/material/table';
 import { DuplicatecheckService } from '../../../services/duplicateCheckValidator/duplicatecheck.service';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-pmaster',
   standalone: true,
@@ -35,6 +38,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 })
 
 export class PmasterComponent implements OnInit {
+  @ViewChild('tableToExport', { static: false }) tableElement: ElementRef;
   pmaster: Pmaster[] = [];
   filteredPmaster: Pmaster[] = [];
   showNoRecordsMessage: boolean = false;
@@ -48,14 +52,14 @@ export class PmasterComponent implements OnInit {
   fileInputMessageFlag: boolean = true;
   loading: boolean = false;
   errorMessage: string = '';
-  Id:string='';
+  Id: string = '';
   private masterService = inject(MasterService);
   private formBuilder = inject(FormBuilder);
   private _snackBar = inject(MatSnackBar);
   private duplicateCheck = inject(DuplicatecheckService);
 
-  constructor() {
-    this.loading=true;
+  constructor(private toastr: ToastrService) {
+    this.loading = true;
     // form model
     this.pmasterForm = this.formBuilder.group({
       PM_Code: ['', [
@@ -66,13 +70,13 @@ export class PmasterComponent implements OnInit {
       ]],
       PM_Name: ['', [Validators.required,
       Validators.pattern('[a-zA-Z\\s]*'),
-      
+
       Validators.maxLength(100),
       ]],
       PM_RegName: ['', Validators.required],
       PM_Image: [''],
       PM_Active: [true],
-      
+
     });
   }
 
@@ -80,7 +84,7 @@ export class PmasterComponent implements OnInit {
   ngOnInit(): void {
     this.loading = true;
     this.getPmaster();
-    
+
   }
 
   // view prathishta
@@ -115,7 +119,7 @@ export class PmasterComponent implements OnInit {
       this.masterService.createPmaster(this.pmasterForm.value).subscribe({
         next: (res) => {
           if (res) {
-            
+
             this.openSnackBar(" Prathishta Details created sussess fully", "close", "success-snackbar");
             this.onReset();
             this.ngOnInit();
@@ -141,8 +145,8 @@ export class PmasterComponent implements OnInit {
   onReset() {
     this.loading = true;
     this.pmasterForm.reset({
-      PM_Active:true,
-      PM_Image:""
+      PM_Active: true,
+      PM_Image: ""
     });
     this.updateFlag = false;
     this.fileInput.nativeElement.value = '';
@@ -156,26 +160,26 @@ export class PmasterComponent implements OnInit {
   onEdit(data: Pmaster) {
     this.loading = true;
     this.updateFlag = true;
-    this.Id=data.PM_ID;
+    this.Id = data.PM_ID;
     this.pmasterForm.patchValue({
       PM_Code: data.PM_Code,
       PM_Name: data.PM_Name,
       PM_RegName: data.PM_RegName,
       PM_Image: data.PM_Image,
-      PM_Active:data.PM_Active=="Y"?true:false, 
+      PM_Active: data.PM_Active == "Y" ? true : false,
     });
     console.log(this.pmasterForm);
-    if(data.PM_Image){
-      this.imagePreview=data.PM_Image
+    if (data.PM_Image) {
+      this.imagePreview = data.PM_Image
     }
     this.loading = false;
   }
 
   //update data
-  onUpdate(updatedata:Pmaster) {
+  onUpdate(updatedata: Pmaster) {
     this.loading = true;
-   if (this.pmasterForm.valid) {
-      this.masterService.updatePmaster(updatedata,this.Id).subscribe((res) => {
+    if (this.pmasterForm.valid) {
+      this.masterService.updatePmaster(updatedata, this.Id).subscribe((res) => {
         this.loading = false;
         this.openSnackBar(" Prathishta Details updated sussess fully", "close", "success-snackbar");
         this.ngOnInit();
@@ -185,12 +189,11 @@ export class PmasterComponent implements OnInit {
 
     else {
       this.markFormGroupTouched(this.pmasterForm)
-      this.loading=false;
+      this.loading = false;
       this.openSnackBar(" please fill the  details", "close", "success-snackbar");
 
     }
   }
-
 
   // delete Data
   onDelete(Id: string) {
@@ -225,52 +228,16 @@ export class PmasterComponent implements OnInit {
       panelClass: classname,
       horizontalPosition: "end",
       verticalPosition: "top",
-      duration:2000
+      duration: 2000
     });
   }
 
-  // for previewing uploaded image
-  // previewImage(event: any) {
-  //   // Validate image dimensions
-  //   const file = event.target.files[0];
-  //   if (file) {
-  //     this.fileInputMessageFlag = false;
-  //     const maxSizeInBytes = 2 * 1024 * 1024; // 2MB
-  //     if (file.size > maxSizeInBytes) {
-  //       this.errorMessage = 'File size should not exceed 2MB.';
-  //       this.imagePreview = null;
-  //       this.fileInput.nativeElement.value = '';
-  //       this.fileInputMessageFlag = false;
-  //       return;
-  //     }
-  //     // Validate image dimensions
-  //     const img = new Image();
-  //     img.onload = () => {
-  //       const maxWidth = 1920;
-  //       const maxHeight = 1080;
-  //       if (img.width > maxWidth || img.height > maxHeight) {
-  //         this.errorMessage = `Image dimensions should not exceed ${maxWidth}x${maxHeight} pixels.`;
-  //         this.imagePreview = null;
-  //       } else {
-  //         this.errorMessage = '';
-  //         const reader = new FileReader();
-  //         reader.onload = (e) => {
-  //           this.imagePreview = e.target?.result ?? null;
-  //         };
-  //         reader.readAsDataURL(file);
-  //       }
-  //     };
-  //     img.src = URL.createObjectURL(file);
-  //   } else {
-  //     this.errorMessage = 'No file selected.';
-  //     this.imagePreview = null;
-  //   }
-  // }
+  //  preview  the image
   previewImage(event: any) {
     const file = event.target.files[0];
     if (file) {
       this.fileInputMessageFlag = false;
-  
+
       // Check if the file type is PNG
       if (file.type !== 'image/png') {
         this.errorMessage = 'Only PNG images are allowed.';
@@ -279,7 +246,7 @@ export class PmasterComponent implements OnInit {
         this.fileInputMessageFlag = true;
         return;
       }
-  
+
       const maxSizeInBytes = 2 * 1024 * 1024; // 2MB
       if (file.size > maxSizeInBytes) {
         this.errorMessage = 'File size should not exceed 2MB.';
@@ -288,7 +255,7 @@ export class PmasterComponent implements OnInit {
         this.fileInputMessageFlag = true;
         return;
       }
-  
+
       const img = new Image();
       img.onload = () => {
         const maxWidth = 1920;
@@ -306,13 +273,13 @@ export class PmasterComponent implements OnInit {
             console.log(base64Image);
             this.imagePreview = base64Image;
             this.pmasterForm.patchValue({ PM_Image: base64Image });
-            
+
           };
           reader.readAsDataURL(file);
         }
         URL.revokeObjectURL(img.src); // Clean up the object URL
       };
-  
+
       img.src = URL.createObjectURL(file);
     } else {
       this.errorMessage = 'No file selected.';
@@ -320,16 +287,14 @@ export class PmasterComponent implements OnInit {
       this.fileInputMessageFlag = true;
     }
   }
-  
-  
 
   // cancel uploded image only
   removeImagePreview() {
     this.fileInput.nativeElement.value = '';
     this.fileInputMessageFlag = true;
-    this.imagePreview = null;
-  this.errorMessage = '';
-  this.pmasterForm.patchValue({ PM_Image: null });
+    this.imagePreview = '';
+    this.errorMessage = '';
+    this.pmasterForm.patchValue({ PM_Image: " " });
   }
 
   // validation
@@ -343,12 +308,12 @@ export class PmasterComponent implements OnInit {
     });
   }
 
-   // duplicate code check validators
-   duplicateCodeValidator(control: AbstractControl): ValidationErrors | null {
+  // duplicate code check validators
+  duplicateCodeValidator(control: AbstractControl): ValidationErrors | null {
     const code = control.value;
-    if(this.updateFlag){
+    if (this.updateFlag) {
       return null
-    }else{
+    } else {
       if (this.duplicateCheck.checkDuplicateCode(code, this.pmaster)) {
         return { duplicateCode: true };
       }
@@ -364,6 +329,12 @@ export class PmasterComponent implements OnInit {
     }
     return null;
   }
+  showSuccess() {
+    this.toastr.success('Hello world!', 'Toastr fun!');
+  }
+
+  
+
 }
 
 

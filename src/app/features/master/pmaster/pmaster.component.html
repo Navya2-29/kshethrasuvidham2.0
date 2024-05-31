@@ -1,5 +1,6 @@
 <app-header></app-header>
 <app-spinner *ngIf="loading"></app-spinner>
+<button (click)="showSuccess()">click</button>
 <div class="amster">
   <div class="container">
     <div class="card-body outlook" style="background:white;">
@@ -103,7 +104,7 @@
               placeholder="search by Code or Name" style="width:36%;" [(ngModel)]="searchQuery">
             <mat-icon class="search-icon" (click)="onSearch()">search</mat-icon>
           </div>
-          <div class="fixitems prathishta">
+          <div class="fixitems prathishta" >
             <table class="table">
               
                 <thead  style="border-bottom: 2px solid #223d61;">

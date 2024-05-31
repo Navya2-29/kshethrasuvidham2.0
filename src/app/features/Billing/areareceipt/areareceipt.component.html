@@ -27,21 +27,18 @@
                     <mat-icon><span class="icons">delete</span></mat-icon>
                   </a></td>
                  <td>
-                  
-                    
-                  <input matInput
+                  <!-- <input matInput
                       aria-label="vazhipad"
                       [matAutocomplete]="auto"
                       [formControl]="vazhipadCtrl" autofocus class="form-control sps" placeholder="Select Vazhipad">
                         <mat-autocomplete #auto="matAutocomplete">
                           @for (vazhipad of filteredvazhipad | async; track vazhipad) {
                             <mat-option [value]="vazhipad.name" style="padding-left:15px;padding-top:0px;">
-                              <!-- <img alt="" class="example-option-img" [src]="vazhipad.flag" height="25"> -->
                               <span style="font-size:11pt;color:rgb(10, 10, 10);margin:0px;padding:0px;">{{vazhipad.name}}</span> 
-                              <!-- <small>Population: {{vazhipad.population}}</small> -->
                             </mat-option>
                           }
-                        </mat-autocomplete>
+                        </mat-autocomplete> -->
+                        <input type="text" matInput class="form-control sps">
                  
                  </td>
                   <td>

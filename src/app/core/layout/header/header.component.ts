@@ -3,7 +3,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatIconModule} from '@angular/material/icon';
 import { MenuComponent } from '../menu/menu.component';
-import { AreaComponent } from '../area/area.component';
+import { AreaComponent } from '../../../features/Billing/area/area.component';
 import {MatMenuModule} from '@angular/material/menu';
 import { Router } from '@angular/router';
 @Component({

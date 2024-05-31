@@ -7,11 +7,11 @@ import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import {AsyncPipe, CommonModule} from '@angular/common';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
-import { MorebuttonComponent } from '../morebutton/morebutton.component';
+import { MorebuttonComponent } from '../../../morebutton/morebutton.component';
 import {SelectionModel} from '@angular/cdk/collections';
 import {MatTableDataSource, MatTableModule} from '@angular/material/table';
 import {MatRadioModule} from '@angular/material/radio';
-import {MobserachbtnComponent} from '../mobserachbtn/mobserachbtn.component';
+import {MobserachbtnComponent} from '../../../mobserachbtn/mobserachbtn.component';
 import { MultidayComponent } from '../multiday/multiday.component';
 export interface vazhipad {
  name: string;

@@ -1,5 +1,5 @@
 import { Component, Inject, inject } from '@angular/core';
-import { HeaderComponent } from '../../../header/header.component';
+import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 import { Observable } from 'rxjs';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';

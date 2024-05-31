@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { HeaderComponent } from '../../../header/header.component';
+import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';

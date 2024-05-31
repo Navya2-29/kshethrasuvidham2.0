@@ -5,8 +5,9 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import {provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { headerInterceptor } from './shared/interceptor/header.interceptor';
+import { provideToastr } from 'ngx-toastr';
 export const appConfig: ApplicationConfig = {
   providers: [provideRouter(routes), provideAnimationsAsync(),provideHttpClient(withInterceptors([headerInterceptor])),
-    provideAnimations(), 
+    provideAnimations(), provideToastr(),
   ]
 };

@@ -430,6 +430,20 @@
       "id":9,
       "name":"archana10"
     }
+  ],
+  "billing":[
+    {
+      "vazhipad":"",
+      "name":"",
+      "Id":"",
+      "star":"",
+      "dietee":"",
+      "qty":"",
+      "rate":"",
+      "amount":"",
+      "date":"",
+      "single":"",
+      "time":""
+    }
   ]
-
 }

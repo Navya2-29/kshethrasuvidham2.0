@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { HeaderComponent } from '../../../header/header.component';
+import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';

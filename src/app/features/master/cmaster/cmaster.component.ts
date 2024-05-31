@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { HeaderComponent } from '../../../header/header.component';
+import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';

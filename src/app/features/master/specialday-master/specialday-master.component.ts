@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { HeaderComponent } from '../../../header/header.component';
+import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MasterService } from '../../../services/master/master.service';
