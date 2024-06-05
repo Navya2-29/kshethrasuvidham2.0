@@ -15,6 +15,7 @@ import { Cmaster, VCMRequestBody } from '../../../models/cmaster.model';
 import { DuplicatecheckService } from '../../../services/duplicateCheckValidator/duplicatecheck.service';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
+import { NotificationService } from '../../../services/notification/notification.service';
 @Component({
   selector: 'app-cmaster',
   standalone: true,
@@ -41,7 +42,7 @@ export class CmasterComponent implements OnInit {
   showMaxLengthError: boolean = false;
   private masterService = inject(MasterService);
   private formBuilder = inject(FormBuilder);
-  private _snackBar = inject(MatSnackBar);
+  private notifiacation = inject(NotificationService);
   private duplicateCheck = inject(DuplicatecheckService)
   constructor() {
     this.loading = true;
@@ -53,9 +54,7 @@ export class CmasterComponent implements OnInit {
         this.duplicateCodeValidator.bind(this),
       ]],
       VC_Name: ['', [Validators.required,
-      Validators.pattern('[a-zA-Z\\s]*'),
-      this.duplicateNameValidator.bind(this),
-
+      
       ]],
       VC_RegName: ['', [Validators.required]],
       VC_Active: [true]
@@ -79,8 +78,9 @@ export class CmasterComponent implements OnInit {
         }
       },
       error: (error) => {
-        console.log(error);
+        this.notifiacation.showError(error);
         this.loading = true;
+
       }
     });
   }
@@ -95,12 +95,11 @@ export class CmasterComponent implements OnInit {
     this.loading = true;
     if (this.cmasterForm.valid) {
       this.masterService.createCmaster(data).subscribe({
-        next: (res) => {
-
-          this.openSnackBar(" categoery Details created sussess fully", "close", "success-snackbar");
-          this.onReset();
-          this.ngOnInit();
-          this.loading = false;
+        next: (res) => { 
+            this.notifiacation.showSuccess("Category details added successfully");
+            this.onReset();
+            this.ngOnInit();
+            this.loading = false;
         },
         error: (error) => {
           console.log(error);
@@ -108,8 +107,8 @@ export class CmasterComponent implements OnInit {
       })
     } else {
       this.markFormGroupTouched(this.cmasterForm);
-      this.openSnackBar(" please fill the  details", "close", "success-snackbar");
-      this.loading=false;
+      this.notifiacation.showWarning("Please Fill the details");
+      this.loading = false;
     }
 
   }
@@ -118,8 +117,8 @@ export class CmasterComponent implements OnInit {
   onReset() {
     this.loading = true;
     this.cmasterForm.reset({
-      VC_Active:true,
-      
+      VC_Active: true,
+
     });
     this.updateFlag = false;
     this.loading = false;
@@ -127,43 +126,43 @@ export class CmasterComponent implements OnInit {
 
   //for editing the form fields
   onEdit(data: Cmaster) {
-    this.loading=true;
+    this.loading = true;
     this.Id = data.VC_ID;
     this.updateFlag = true;
     this.cmasterForm.patchValue({
       VC_Code: data.VC_Code,
       VC_Name: data.VC_Name,
       VC_RegName: data.VC_RegName,
-      VC_Active: data.VC_Active=="Y"?true:false
+      VC_Active: data.VC_Active == "Y" ? true : false
 
     });
-    this.loading=false;
+    this.loading = false;
   }
 
   //update data
   onUpdate(updatedata: Cmaster) {
-    this.loading=true;
+    this.loading = true;
     if (this.cmasterForm.valid) {
       this.masterService.updateCmaster(this.Id, updatedata).subscribe((res) => {
-        this.openSnackBar(" category Details updated sussess fully", "close", "success-snackbar");
+        this.notifiacation.showSuccess("Category Details updated successfully")
         this.onReset();
         this.ngOnInit();
-        this.loading=false;
+        this.loading = false;
       })
     }
     else {
       this.markFormGroupTouched(this.cmasterForm);
-      this.openSnackBar(" please fill the  details", "close", "success-snackbar");
-      this.loading=false;
+      this.notifiacation.showWarning(" Please Fill the  details")
+      this.loading = false;
     }
   }
   // deleteData
   onDelete(id: string) {
-    this.loading=true;
+    this.loading = true;
     this.masterService.deleteCmaster(id).subscribe((res) => {
-      this.openSnackBar(" category Details deleted sussess fully", "close", "success-snackbar");
+      this.notifiacation.showError(" Category Details deleted success fully")
       this.ngOnInit();
-      this.loading=false;
+      this.loading = false;
     })
   }
 
@@ -179,17 +178,9 @@ export class CmasterComponent implements OnInit {
       });
     }
   }
-  // snack  message
-  openSnackBar(message: string, action: string, classname: string) {
-    this._snackBar.open(message, action, {
-      panelClass: classname,
-      horizontalPosition: "end",
-      verticalPosition: "top",
-      duration:3000
-    });
-  }
+  
 
- 
+
 
   // validation
   markFormGroupTouched(formGroup: FormGroup) {
@@ -206,30 +197,30 @@ export class CmasterComponent implements OnInit {
   // duplicate code check validators
   duplicateCodeValidator(control: AbstractControl): ValidationErrors | null {
     const code = control.value;
-    if(this.updateFlag){
+    if (this.updateFlag) {
       return null
-    }else{
+    } else {
       if (this.duplicateCheck.cmastercheckDuplicateCode(code, this.cmaster)) {
         return { duplicateCode: true };
       }
       return null;
 
     }
-    
+
   }
 
   // duplicate name check validators
   duplicateNameValidator(control: AbstractControl): ValidationErrors | null {
     const name = control.value;
-    if(this.updateFlag){
+    if (this.updateFlag) {
       return null
-    }else{
+    } else {
       if (this.duplicateCheck.cmastercheckDuplicateCode(name, this.cmaster)) {
         return { duplicateName: true };
       }
       return null;
     }
-    
+
   }
 
 

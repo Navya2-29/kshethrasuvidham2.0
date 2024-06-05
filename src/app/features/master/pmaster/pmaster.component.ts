@@ -9,14 +9,12 @@ import { Pmaster } from '../../../models/pmaster.model';
 import { MasterService } from '../../../services/master/master.service';
 import { CommonModule } from '@angular/common';
 import { UpperCaseDirective } from '../../../shared/directives/upper-case.directive';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { DuplicatecheckService } from '../../../services/duplicateCheckValidator/duplicatecheck.service';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
 import { ToastrService } from 'ngx-toastr';
+import { NotificationService } from '../../../services/notification/notification.service';
 @Component({
   selector: 'app-pmaster',
   standalone: true,
@@ -55,7 +53,7 @@ export class PmasterComponent implements OnInit {
   Id: string = '';
   private masterService = inject(MasterService);
   private formBuilder = inject(FormBuilder);
-  private _snackBar = inject(MatSnackBar);
+  private notification = inject(NotificationService);
   private duplicateCheck = inject(DuplicatecheckService);
 
   constructor(private toastr: ToastrService) {
@@ -94,6 +92,7 @@ export class PmasterComponent implements OnInit {
       next: (data) => {
         if (data && data.length > 0) {
           this.pmaster = data;
+
           this.filteredPmaster = this.pmaster;
           this.loading = false;
         }
@@ -120,7 +119,7 @@ export class PmasterComponent implements OnInit {
         next: (res) => {
           if (res) {
 
-            this.openSnackBar(" Prathishta Details created sussess fully", "close", "success-snackbar");
+            this.notification.showSuccess(" Prathishta Details created successfully");
             this.onReset();
             this.ngOnInit();
             this.loading = false;
@@ -135,7 +134,7 @@ export class PmasterComponent implements OnInit {
     else {
       this.loading = false;
       this.markFormGroupTouched(this.pmasterForm);
-      this.openSnackBar(" please fill the  details", "close", "success-snackbar");
+      this.notification.showWarning(" Please fill the  details");
 
     }
   }
@@ -177,11 +176,12 @@ export class PmasterComponent implements OnInit {
 
   //update data
   onUpdate(updatedata: Pmaster) {
+    console.log(updatedata);
     this.loading = true;
     if (this.pmasterForm.valid) {
       this.masterService.updatePmaster(updatedata, this.Id).subscribe((res) => {
         this.loading = false;
-        this.openSnackBar(" Prathishta Details updated sussess fully", "close", "success-snackbar");
+        this.notification.showSuccess(" Prathishta Details updated success fully");
         this.ngOnInit();
         this.onReset();
       })
@@ -190,7 +190,7 @@ export class PmasterComponent implements OnInit {
     else {
       this.markFormGroupTouched(this.pmasterForm)
       this.loading = false;
-      this.openSnackBar(" please fill the  details", "close", "success-snackbar");
+      this.notification.showWarning(" Please Fill the  details");
 
     }
   }
@@ -200,7 +200,7 @@ export class PmasterComponent implements OnInit {
     this.loading = true;
     this.masterService.deletePmaster(Id).subscribe((res) => {
       this.loading = false;
-      this.openSnackBar(" Prathishta Details deleted sussess fully", "close", "success-snackbar");
+      this.notification.showError(" Prathishta Details deleted successfully");
       this.ngOnInit();
     })
   }
@@ -222,16 +222,6 @@ export class PmasterComponent implements OnInit {
     this.showNoRecordsMessage = this.filteredPmaster.length === 0
   }
 
-  // snack  message
-  openSnackBar(message: string, action: string, classname: string) {
-    this._snackBar.open(message, action, {
-      panelClass: classname,
-      horizontalPosition: "end",
-      verticalPosition: "top",
-      duration: 2000
-    });
-  }
-
   //  preview  the image
   previewImage(event: any) {
     const file = event.target.files[0];
@@ -246,7 +236,7 @@ export class PmasterComponent implements OnInit {
         this.fileInputMessageFlag = true;
         return;
       }
-
+// diamension check
       const maxSizeInBytes = 2 * 1024 * 1024; // 2MB
       if (file.size > maxSizeInBytes) {
         this.errorMessage = 'File size should not exceed 2MB.';
@@ -294,20 +284,18 @@ export class PmasterComponent implements OnInit {
     this.fileInputMessageFlag = true;
     this.imagePreview = '';
     this.errorMessage = '';
-    this.pmasterForm.patchValue({ PM_Image: " " });
+    this.pmasterForm.patchValue({ PM_Image: "" });
   }
 
   // validation
   markFormGroupTouched(formGroup: FormGroup) {
     Object.values(formGroup.controls).forEach(control => {
       control.markAsTouched();
-
       if (control instanceof FormGroup) {
         this.markFormGroupTouched(control);
       }
     });
   }
-
   // duplicate code check validators
   duplicateCodeValidator(control: AbstractControl): ValidationErrors | null {
     const code = control.value;
@@ -321,19 +309,10 @@ export class PmasterComponent implements OnInit {
     }
   }
 
-  // duplicate name check validators
-  duplicateNameValidator(control: AbstractControl): ValidationErrors | null {
-    const name = control.value;
-    if (this.duplicateCheck.checkDuplicateName(name, this.pmaster)) {
-      return { duplicateName: true };
-    }
-    return null;
-  }
-  showSuccess() {
-    this.toastr.success('Hello world!', 'Toastr fun!');
-  }
 
-  
+
+
+
 
 }
 

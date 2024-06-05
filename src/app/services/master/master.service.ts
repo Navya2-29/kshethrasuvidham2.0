@@ -6,7 +6,8 @@ import { Constant } from '../../constants/constant';
 import { Cmaster, VCMRequestBody } from '../../models/cmaster.model';
 import { AccountHead, AccountSubHead, Vmaster } from '../../models/vmaster.model';
 import { SpecialDayMaster, SpecialDayMasterList } from '../../models/special-day-master.model';
-import { Login } from '../../models/login.model';
+import { SeasonalMaster } from '../../models/season-master.model';
+import { DayMaster } from '../../models/day-master.model';
 @Injectable({
   providedIn: 'root'
 })
@@ -63,6 +64,7 @@ export class MasterService {
       "Cuser": "1",
       "PMImage": obj.PM_Image
     }
+    console.log(payLoad);
     return this.http.post<Pmaster>(Constant.BASE_URL + Constant.METHODS.CREATE_PMASTER, payLoad)
       .pipe(catchError(this.errorHandler))
   }
@@ -126,7 +128,8 @@ export class MasterService {
   }
 
   // vamster service
-  getVmaster(payLoad: object): Observable<Vmaster[]> {
+  getVmaster(): Observable<Vmaster[]> {
+    const payLoad = { "Type": "vazhipadALL", "Code": "" }
     return this.http.post<Vmaster[]>(Constant.BASE_URL + Constant.METHODS.GET_MASTER, payLoad)
       .pipe(catchError(this.errorHandler))
   }
@@ -170,6 +173,7 @@ export class MasterService {
   // update vamster
   updateVmaster(VC_Id: string, obj: Vmaster, id: number): Observable<Vmaster> {
     const Id = `${id}`;
+    console.log(typeof(VC_Id),obj,id)
     const payLoad = {
       "vazhId": Id,
       "VazhCode": obj.VM_Code,
@@ -198,7 +202,7 @@ export class MasterService {
       "Type": "UPDATE",
       "DisplayMode": obj.DisplayMode ? "Y" : "N"
     }
-
+console.log(payLoad)
     return this.http.post<Vmaster>(Constant.BASE_URL + Constant.METHODS.CREATE_VMASTER, payLoad)
       .pipe(catchError(this.errorHandler))
   }
@@ -212,48 +216,73 @@ export class MasterService {
       .pipe(catchError(this.errorHandler))
   }
 
+  getVazhipadeByCode(code: any) {
+    const payLoad = {
+      "Type": "vazhipad", "Code": code
+    }
+    return this.http.post(Constant.BASE_URL + Constant.METHODS.GET_MASTER, payLoad)
+  }
 
 
-  // get vmaster category
-  // getVmasterCategory():Observable<Cmaster[]>{
-  // return this.http.get<Cmaster[]>(Constant.BASE_URL+Constant.METHODS.GET_VCATEGORY)
-  // }
-  // get vmaster prethishta
-  //  getVmasterPrathishta():Observable<Pmaster[]>{
-  //   return this.http.get<Pmaster[]>(Constant.BASE_URL+Constant.METHODS.GET_VPRATHISHTA)
-  //  }
 
-  // // seasonl master master
+
+  // // seasonal  master
   // get list  seasonl master vazhipad
   getAllSeasonalMasterVazhipadList(): Observable<any[]> {
     return this.http.get<any[]>(Constant.BASE_URL + Constant.METHODS.GET_VSPECIAL)
   }
 
-  //// get list seasonl master
+  // get list seasonl master
   getSeasonalMaster(): Observable<any[]> {
-    return this.http.get<any[]>(Constant.BASE_URL + Constant.METHODS.GET_VSEASONAL)
+    const payLoad = { "Type": "SeasonalALL", "Code": "12" }
+    return this.http.post<any[]>(Constant.BASE_URL + Constant.METHODS.GET_MASTER, payLoad)
   }
 
   // create  seasonl master
-  createSeasonalMaster(data: any): Observable<any> {
-    return this.http.post<any>(Constant.BASE_URL + Constant.METHODS.CREATE_VSEASONAL, data);
+  createSeasonalMaster(id: number, data: SeasonalMaster): Observable<any> {
+    const payLoad = {
+      "VazhId": `${id}`,
+      "Fdate": data.VS_FromDate,
+      "Tdate": data.VS_ToDate,
+      "reason": data.VS_Reasion,
+      "Cuser": "2",
+      "Type": "INSERT"
+    }
+    console.log(payLoad)
+    return this.http.post<any>(Constant.BASE_URL + Constant.METHODS.CREATE_SEASONAL, payLoad);
   }
 
-  // update  seasonl master
-  updateSeasonalMaster(id: string, obj: any): Observable<any> {
-    return this.http.put<any>(Constant.BASE_URL + Constant.METHODS.UPDATE_VSEASONAL + id, obj)
+  // update  seasonal master
+  updateSeasonalMaster(id: number, data: SeasonalMaster): Observable<any> {
+    const payLoad = {
+      "VazhId": `${id}`,
+      "Fdate": data.VS_FromDate,
+      "Tdate": data.VS_ToDate,
+      "reason": data.VS_Reasion,
+      "Cuser": "2",
+      "Type": "UPDATE"
+    }
+    return this.http.post<any>(Constant.BASE_URL + Constant.METHODS.CREATE_SEASONAL, payLoad)
       .pipe(catchError(this.errorHandler))
   }
 
   // delete  seasonl master
   deleteSeasonalMaster(id: string): Observable<any> {
-    return this.http.delete<any>(Constant.BASE_URL + Constant.METHODS.DELETE_VSEASONAL + id)
+
+    const payLoad = { "Type": "Seasonal", "Id":id }
+    return this.http.post<any>(Constant.BASE_URL + Constant.METHODS.DELETE_MASTER, payLoad)
       .pipe(catchError(this.errorHandler))
   }
+
+
+
+
+
+
   // special day master
   // get list special vazhipad
   getAllSpecialVazhipadList(): Observable<SpecialDayMasterList[]> {
-    return this.http.get<SpecialDayMasterList[]>(Constant.BASE_URL + Constant.METHODS.GET_VSPECIAL)
+    return this.http.get<SpecialDayMasterList[]>(Constant.BASE_URL + Constant.METHODS.GET_MASTER)
   }
 
   //// get list special vazhipad
@@ -383,26 +412,32 @@ export class MasterService {
   // day master
 
 
-  getAllDayVazhipadList(): Observable<any[]> {
-    return this.http.get<any[]>(Constant.BASE_URL + Constant.METHODS.GET_VDAY)
-  }
+
   // get list day vazhipad
   getDayMaster(): Observable<any[]> {
-    return this.http.get<any[]>(Constant.BASE_URL + Constant.METHODS.GET_ALL_VDAY)
+    const payLoad = { "Type": "DayALL", "Code": "12" }
+    return this.http.post<any[]>(Constant.BASE_URL + Constant.METHODS.GET_MASTER, payLoad)
   }
   // create  day
-  createDayMaster(data: any): Observable<any> {
-    return this.http.post<any>(Constant.BASE_URL + Constant.METHODS.CREATE_VDAY, data);
+  createDayMaster(payLoad:object): Observable<any> {
+    // console.log(typeof(VMId));
+    // console.log(data.Day)
+    // const payLoad = { "VazhId": `${VMId}`, "Day": data.Day, "Cuser": "2", "Type": "INSERT" }
+    // console.log(payLoad);
+    return this.http.post<any>(Constant.BASE_URL + Constant.METHODS.CREATE_VDAY, payLoad);
   }
 
   // update  day
-  updateDay(id: number, obj: any): Observable<any> {
-    return this.http.put<any>(Constant.BASE_URL + Constant.METHODS.UPDATE_VDAY + id, obj).pipe(catchError(this.errorHandler))
+  updateDay(): Observable<any> {
+    const payLoad = { "VazhId": "1", "Day": "4", "Cuser": "2", "Type": "UPDATE" }
+    return this.http.post<any>(Constant.BASE_URL + Constant.METHODS.CREATE_VDAY, payLoad).pipe(catchError(this.errorHandler))
   }
 
   // delete  day
   deleteDay(id: number): Observable<any> {
-    return this.http.delete<any>(Constant.BASE_URL + Constant.METHODS.DELETE_VDAY + id).pipe(catchError(this.errorHandler))
+    console.log(id);
+    const payLoad = { "Type": "DayMaster", "Id": `${id}` }
+    return this.http.post<any>(Constant.BASE_URL + Constant.METHODS.DELETE_MASTER, payLoad).pipe(catchError(this.errorHandler))
   }
 
   // blocking master
@@ -411,8 +446,8 @@ export class MasterService {
     return this.http.get<any[]>(Constant.BASE_URL + Constant.METHODS.GET_VBLOCK)
   }
   // get list block vazhipad
-  getBlockingMaster(): Observable<any[]> {
-    return this.http.get<any[]>(Constant.BASE_URL + Constant.METHODS.GET_ALL_VBLOCK)
+  getBlockingMaster(payLoad:object): Observable<any[]> {
+    return this.http.post<any[]>(Constant.BASE_URL + Constant.METHODS.GET_MASTER,payLoad)
   }
   // create block 
   createBlockingMaster(data: any): Observable<any> {
@@ -425,8 +460,8 @@ export class MasterService {
   }
 
   // delete block
-  deleteBlockingMaster(id: string): Observable<any> {
-    return this.http.delete<any>(Constant.BASE_URL + Constant.METHODS.DELETE_VBLOCK + id).pipe(catchError(this.errorHandler))
+  deleteBlockingMaster(payLoad:object): Observable<any> {
+    return this.http.post<any>(Constant.BASE_URL + Constant.METHODS.DELETE_MASTER,payLoad).pipe(catchError(this.errorHandler))
   }
   // get nakshthram
   getNakshthra(): Observable<string[]> {
@@ -440,11 +475,6 @@ export class MasterService {
   // get account sub heads
   getSubAccountHeads(): Observable<AccountSubHead[]> {
     return this.http.get<AccountSubHead[]>(Constant.BASE_URL + Constant.METHODS.GET_SUBACCOUNTHEAD);
-  }
-
-  // LOGIN
-  login(): Observable<Login> {
-    return this.http.get<Login>(Constant.BASE_URL + Constant.METHODS.LOGIN)
   }
 
   // error handling

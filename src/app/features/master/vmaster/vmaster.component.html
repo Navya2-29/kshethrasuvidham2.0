@@ -44,9 +44,7 @@
                     <div *ngIf="vmasterFormControl['VM_Name'].hasError('required')">
                        <small> required.</small>
                     </div>
-                    <div *ngIf="vmasterFormControl['VM_Name'].hasError('pattern')">
-                      <small>name must be include english alphabat and spaces only.</small>
-                    </div>
+                    
                     <div *ngIf="vmasterFormControl['VM_Name'].hasError('duplicateName')" class="text-danger">
                      <small> Name already exists.</small>
                     </div>
@@ -74,16 +72,16 @@
                     </td>
                     <td colspan="1">Time
                       <select name="" id="" class="form-control sps" formControlName="VM_Time">
-                        <option selected value="Morning">Morning</option>
+                        
+                        <option selected="selected" value="Morning">Morning</option>
                         <option value="Evening">Evening</option>
-                        <option value="Noon">Noon</option>
+                        <!-- <option value="Noon">Noon</option> -->
                         <option value="Night">Night</option>
                       </select>
                     </td>
                 </tr>
                 <tr>
                   <td colspan="3">
-
                     Vazhipad Category<span class="text-danger">*</span> <input matInput aria-label="vazhpad category" [matAutocomplete]="vcategory"
                       formControlName="VC_Name" autofocus class="form-control sps"
                       placeholder="Select Vazhipad Category">
@@ -252,13 +250,19 @@
         </div>
         <div class="fixitems prathishta">
           <table class="table">
-            <tr style="border-bottom: 2px solid #223d61;">
+           
+              <thead style="border-bottom: 2px solid #223d61;">
+              <th>Code</th>
               <th>Vazhipad Name</th>
               <th>Rate</th>
               <th></th>
-            </tr>
+            </thead>
+            
             <tbody *ngIf="!showNoRecordsMessage && Vmaster && Vmaster.length > 0">
               <tr *ngFor="let data of filteredVmaster; let i=index">
+                <td>
+                  {{data.VM_Code}}
+                </td>
                 <td style="text-align:left;padding-left:10px;">{{data.VM_Name}}</td>
                 <td>{{data.VM_Amt}}</td>
                 <td></td>

@@ -80,6 +80,7 @@ a {
     vertical-align:middle;
     line-height:0pt;
     font-weight:530;
+    
 }
 
 .vazhlist tr > td a {
@@ -467,4 +468,11 @@ mat-option {
     transform: translateY(-50%);
     color: #888; /* Adjust the color of the icon */
     cursor: pointer;
+  }
+  thead th {
+    position: sticky;
+    top: 0;
+   background-color: #5d85b9;
+   color: #f1f1f1; 
+    z-index: 1; 
   }

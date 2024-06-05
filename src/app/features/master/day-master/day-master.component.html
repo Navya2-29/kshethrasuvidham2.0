@@ -1,6 +1,6 @@
 
 <app-header></app-header>
-<app-spinner></app-spinner>
+<app-spinner *ngIf="loading"></app-spinner>
 <div class="amster">
     <div class="container">
      <div class="card-body outlook" style="background:white;">
@@ -14,27 +14,41 @@
                     <form  [formGroup]="dayMasterForm">
                     <table class="table">
                         <tr>
-                           <td> Select Offering<input type="text" formControlName="offeringCode" class="form-control sps" placeholder="Enter Code"> </td>
-                         </tr>
+                           <td colspan="3"> Select Offering 
+                           <input type="text"
+                           placeholder="Select Vazhipad"
+                           aria-label="Number"
+                           matInput
+                           class="form-control sps"
+                           formControlName="VM_Name"
+                           [matAutocomplete]="auto">
+                    <mat-autocomplete #auto="matAutocomplete">
+                      @for (option of filteredVMList | async; track option.VM_Name) {
+                        <mat-option [value]="option.VM_Name">{{option.VM_Name}}</mat-option>
+                      }
+                    </mat-autocomplete>
+                  </td>
+                          </tr>
                          <tr>
                             <td>Days</td>
                           </tr>
                           <tr>
-                            <td ><input type="checkbox"  [checked]="allSelected"></td>
-                             <td >Select All</td>
+                            <td><input type="checkbox" (click)="toggle()"></td>
+                             <td>Select All</td>
         
                           </tr> 
                           <tr *ngFor="let day of days; let i=index">
-                            <td style="margin-left: 50%;"  ><input (change)="onChange($event)" type="checkbox"    [value]="day" name="days"></td>
-                             <td style="margin-right: 50%;" >{{day}}</td>
-                          </tr>  
-                           
+                            <td >&nbsp;&nbsp;&nbsp;<input type="Checkbox" [checked]="allSelected" (change)="onChange($event)" class="form-input-check"
+                              style="vertical-align: middle;width:20px;"[value]="i+1" name="days"></td>
+                             <td  style="padding-right: 100px;">{{day.name}}</td>
+                             <td></td>
+                          </tr>    
                          <tr>
-                          <td><button *ngIf="!updateFlag" class="btn btn-primary"
-                          (click)="onSubmit(dayMasterForm.value)" >save</button>
+                          <td colspan="3"><button *ngIf="!updateFlag" class="btn btn-primary" (click)="onSubmit()"
+                           >save</button>
                           <button *ngIf="updateFlag" class="btn btn-primary"
-                            >update</button>
-                          <button class="btn btn-danger ml-1">cancel</button>
+                            >Update</button>
+                          <button class="btn btn-secondary ml-1">Cancel</button>
                         </td>
                          </tr>
                        </table>
@@ -42,45 +56,43 @@
                 </div>
                 <div class="col-md-8 search">
                   <div style="display:flex;" class="search-container mt-3">
-                    <input type="text" class="form-control sps search-input" (input)="onSearch(searchQuery)"
-                      placeholder="search by Code or Name" style="width:36%;" [(ngModel)]="searchQuery">
-                    <!-- <button class="btn btn-primary" (click)="onSearch(searchQuery)">Search</button> -->
-                    <mat-icon class="search-icon" (click)="onSearch(searchQuery)">search</mat-icon>
+                    <input type="text" class="form-control sps search-input" 
+                      placeholder="Search by Name" style="width:36%;" [(ngModel)]="searchQuery">
+                    <mat-icon class="search-icon" >search</mat-icon>
                   </div>
                     <div class="fixitems prathishta">
                         <table class="table">
-                            <tr style="border-bottom: 2px solid #223d61;">
-                              <th >Id</th>
-                              <th >code</th>
-                              <th >Vazhipad Name</th>
-                            </tr>
-                            <tbody *ngIf="!showNoRecordsMessage &&dayMaster && dayMaster.length > 0">
-                              <tr *ngFor="let data of filteredDayMaster ; let i=index">
-                                <td style="background-color: #87b6f3;"><input type="Checkbox"
-                                  style="vertical-align: middle;width:12px;" checked></td>
-                              <td>{{data.id}}</td>
-                              <td>{{data.Days}}</td>
-                              <td style="text-align:left;">{{data.Vm_Name}}</td>
+                         
+                              <thead style="border-bottom: 2px solid #223d61;">
+                                <th >Id</th>
+                                <th >Day</th>
+                                <th >Vazhipad Name</th>
+                                <th></th>
+                              </thead>
+                              
+                        
+                            <tbody *ngIf="!showNoRecordsMessage &&dayMasterList && dayMasterList.length > 0">
+                              <tr *ngFor="let item of dayMasterList ; let i=index">
+                                <td>{{item.Day_id}}</td>
+                              <td>{{dayMap[item.Day]}}</td>
+                              <td>{{ vazhipadMap[item.VazhId]}}</td>
                               <td>
                                 <mat-icon title="Edit" class="small" style="vertical-align: middle;"
-                                  (click)="onEdit(data)">edit</mat-icon>
-                                <mat-icon title="Delete" class="small" style="vertical-align: middle;"
-                                  (click)="onDelete(data.id)">delete</mat-icon>
+                                 >edit</mat-icon>
+                                <mat-icon title="Delete" class="small" (click)="onDelete(item.Day_id)" style="vertical-align: middle;"
+                                  >delete</mat-icon>
                               </td>
-
                               </tr>
                             </tbody>
                             <tfoot>
-                              <tr *ngIf="!dayMaster || dayMaster.length === 0 || showNoRecordsMessage">
+                              <tr *ngIf="!dayMasterList || dayMasterList.length === 0 || showNoRecordsMessage">
                                 <td colspan="5">
                                   <div style="width: 100%;" class="mt-3">
                                     <h4 class="text-center">No Records found</h4>
                                   </div>
                                 </td>
                               </tr>
-                            </tfoot>
-                            
-                              
+                            </tfoot>  
                           </table>
                     </div>
                 </div>

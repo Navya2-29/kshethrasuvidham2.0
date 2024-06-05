@@ -1,6 +1,5 @@
 <app-header></app-header>
 <app-spinner *ngIf="loading"></app-spinner>
-<button (click)="showSuccess()">click</button>
 <div class="amster">
   <div class="container">
     <div class="card-body outlook" style="background:white;">
@@ -16,7 +15,7 @@
             <table class="table">
               <tr>
                 <td> Prathishta Code<span class="text-danger">*</span>
-                  <input type="text" id="PM_Code" appUpperCase formControlName="PM_Code" maxlength="3" required
+                  <input type="text" id="PM_Code" [readonly]="updateFlag" appUpperCase formControlName="PM_Code" maxlength="3" required
                     class="form-control sps" placeholder="Enter Code" style="width:126px;">
                 </td>
               </tr>
@@ -71,9 +70,6 @@
                   <div *ngIf="errorMessage" class="error text-danger">{{ errorMessage }}</div>
                 </td>
               </tr>
-              <!-- <div class="text-success ml-1">
-                <small *ngIf="fileInputMessageFlag">Only PNG files are allowed.</small>
-              </div> -->
               <tr>
                 <td>
                  
@@ -121,8 +117,8 @@
                   <td>{{data.PM_Code}}</td>
                   <td style="text-align:left;">{{data.PM_Name}}-{{data.PM_RegName}}</td>
                   <td>
-                    <div *ngIf="!(data.PM_Image)">No image</div>
-                    <img *ngIf="data.PM_Image" [src]="data.PM_Image" alt="Nil" width="50px" height="50px"></td>
+                    <div *ngIf="!data.PM_Image">No image</div>
+                    <img *ngIf="data.PM_Image" [src]="data.PM_Image"  width="50px" height="50px" ></td>
                   <td>
                     <mat-icon title="Edit" class="small" style="vertical-align: middle;"
                       (click)="onEdit(data)">edit</mat-icon>

@@ -19,11 +19,11 @@ export const Constant = {
         
         // vmaster
         CREATE_VMASTER: "AddVazhipadMaster",
-        // UPDATE_VMASTER: "update",
-        // DELETE_VMASTER: "delete",
-        // GET_VCATEGORY: "VMcategory",
-        // GET_VPRATHISHTA: "vprathishta",
+      
+        // daymaster
+        CREATE_VDAY:"DayMaster",
 
+        
         // SPECIAL master
         GET_VSPECIAL: 'specialDay',
         GET_ALL_SPECIAL: "getall",
@@ -32,11 +32,9 @@ export const Constant = {
         DELETE_VSPECIAL: "delete",
 
         // seasonal master
-        GET_VSEASONAL: 'seasonal',
-        GET_ALL_SEASONAL: 'getall',
-        CREATE_VSEASONAL: 'create',
-        UPDATE_VSEASONAL: 'update',
-        DELETE_VSEASONAL: 'delete',
+        
+        CREATE_SEASONAL: 'VazhipadSeasonal',
+       
 
         // vihidhm master
 
@@ -52,12 +50,7 @@ export const Constant = {
         UPDATE_VBLOCK: 'update',
         DELETE_VBLOCK: 'delete',
 
-        // DAY MASTER
-        GET_VDAY: 'days',
-        GET_ALL_VDAY: 'getall',
-        CREATE_VDAY: 'create',
-        UPDATE_VDAY: 'update',
-        DELETE_VDAY: 'delete',
+        
 
         // COMBO MASTWR
         GET_VCOMBO: 'comboVazhipad',

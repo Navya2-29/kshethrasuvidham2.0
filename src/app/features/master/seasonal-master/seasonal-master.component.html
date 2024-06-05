@@ -1,5 +1,5 @@
 <app-header></app-header>
-<app-spinner></app-spinner>
+<app-spinner *ngIf="loading"></app-spinner>
 <div class="amster">
   <div class="container">
     <div class="card-body outlook" style="background:white;">
@@ -14,10 +14,9 @@
           <form [formGroup]="seasonalBlockingForm">
             <table class="table">
               <tr>
-                <td> Vazhipad Code<input type="text" formControlName="VS_code" class="form-control sps"
+                <td> Vazhipad Code<span class="text-danger" *ngIf="!updateFlag">*</span><input type="text" formControlName="VS_code" class="form-control sps"
                     placeholder="Enter Code"> </td>
                 <td></td>
-
               </tr>
               <div
                 *ngIf="SeasonalFormControl['VS_code'].invalid && (SeasonalFormControl['VS_code'].dirty || SeasonalFormControl['VS_code'].touched)"
@@ -27,78 +26,66 @@
                 </div>
               </div>
               <tr>
-                <td colspan="3"> Vazhipad Name<input type="text" formControlName="VM_name" class="form-control"
+                <td colspan="3"> Vazhipad Name<input type="text" readonly formControlName="VM_name" class="form-control"
                     placeholder="Enter Name"> </td>
-              </tr>
-
-              <div
-                *ngIf="SeasonalFormControl['VM_name'].invalid && (SeasonalFormControl['VM_name'].dirty || SeasonalFormControl['VM_name'].touched)"
-                class="pl-1 text-danger">
-                <div *ngIf="SeasonalFormControl['VM_name'].hasError('required')">
-                  Name is required.
-                </div></div>
+              </tr>    
               <tr>
                 <td>
-                  From date<input type="date" class="form-control sps" formControlName="VS_fromDate">
-                 
+                  From date<span class="text-danger">*</span><input type="date" class="form-control sps" formControlName="VS_FromDate" [min]="today" >
                 </td>
                 <td></td>
-                <td>To date <br><input type="date" class="form-control sps" formControlName="VS_toDate">
-                  <div
-                  *ngIf="SeasonalFormControl['VS_toDate'].invalid && (SeasonalFormControl['VS_toDate'].dirty || SeasonalFormControl['VS_toDate'].touched)"
-                  class="pl-1 text-danger">
-                  <div *ngIf="SeasonalFormControl['VS_toDate'].hasError('required')">
-                   <small>To date is required.</small> 
-                  </div>
-                </div></td>
+                <td>To date<span class="text-danger">*</span> <br>
+                  <input type="date" class="form-control sps" formControlName="VS_ToDate" [min]="today">
+                  
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3">Reason
+                <textarea name="" id="" rows="5" cols="50" formControlName="VS_Reasion"></textarea></td>
               </tr>
               <tr>
                 <td colspan="3"><button *ngIf="!updateFlag" class="btn btn-primary"
-                  (click)="onSubmit(seasonalBlockingForm.value)">save</button>
-                <button *ngIf="updateFlag" class="btn btn-primary"
-                  (click)="onUpdate(seasonalBlockingForm.value)">update</button>
-                <button class="btn btn-danger ml-1" (click)="onReset()">cancel</button>
-              </td>
+                    (click)="onSubmit()">Save</button>
+                  <button *ngIf="updateFlag" class="btn btn-primary"
+                    (click)="onUpdate()">Update</button>
+                  <button class="btn btn-secondary ml-1" (click)="onReset()">Cancel</button>
+                </td>
               </tr>
             </table>
           </form>
         </div>
         <div class="col-md-8 search">
-          <div style="display:flex;" class="search-container mt-3">
-            <input type="text" class="form-control sps search-input" (input)="onSearch(searchQuery)"
-              placeholder="search by Code or Name" style="width:36%;" [(ngModel)]="searchQuery">
+           <div style="display:flex;" class="search-container mt-3"> 
+            <!-- <input type="text" class="form-control sps search-input" (input)="onSearch(searchQuery)" -->
+             <!-- placeholder="search by Code or Name" style="width:36%;" [(ngModel)]="searchQuery">  -->
             <!-- <button class="btn btn-primary" (click)="onSearch(searchQuery)">Search</button> -->
-            <mat-icon class="search-icon" (click)="onSearch(searchQuery)">search</mat-icon>
-          </div>
+            <!-- <mat-icon class="search-icon" (click)="onSearch(searchQuery)">search</mat-icon> -->
+           </div>  
           <div class="fixitems prathishta">
             <table class="table">
-              <tr style="border-bottom: 2px solid #223d61;">
-                <th style="width:10px;background-color: #223d61;color:white;">Active</th>
-                <th>Id</th>
-                <th>code</th>
-                <th style="text-align: left;">Vazhipad Name</th>
-                <th>from date</th>
-                <th>to date</th>
-               
-                <th></th>
-              </tr>
-              <tbody *ngIf="!showNoRecordsMessage &&seasonalMaster && seasonalMaster.length > 0">
-                <tr>
-                  <td style="background-color: #87b6f3;"><input type="Checkbox" style="vertical-align: middle;width:12px;"
-                      checked></td>
-                  <td>1</td>
-                  <td>1</td>
-                  <td style="text-align:left;">Archna</td>
-                  <td>12-08-24</td>
-                  <td>07-09-24</td>
+                <thead style="border-bottom: 2px solid #223d61; text-align: left;">
+                  <th>Id</th>
+                  <th>Vazhipad Id</th>
+                  <th>From Date</th>
+                  <th>To Date</th>
+                  <th>Reason</th>
+                  <th></th>
+                </thead>
+              <tbody *ngIf="!showNoRecordsMessage &&seasonalMaster && seasonalMaster.length > 0" >
+                <tr *ngFor="let data of filteredSeasonalMaster" >
+                  <!-- <td style="background-color: #87b6f3;"><input type="Checkbox" style="vertical-align: middle;width:12px;" -->
+                  <!-- checked></td> -->
+                  <td>{{data.VS_ID}}</td>
+                  <td>{{data.VM_ID}}</td>
+                  <td>{{data.VS_FromDate | date:'dd-MM-yyyy'}}</td>
+                  <td>{{data.VS_ToDate | date:'dd-MM-yyyy'}}</td>
+                  <td>{{data.VS_Reasion}}</td>
                   <td>
-                    <mat-icon title="Edit" class="small" style="vertical-align: middle;">edit</mat-icon>
-                    <mat-icon title="Delete" class="small" style="vertical-align: middle;">delete</mat-icon>
+                    <mat-icon title="Edit" class="small" style="vertical-align: middle;" (click)="onEdit(data)">edit</mat-icon>
+                    <mat-icon title="Delete" class="small" style="vertical-align: middle;" (click)="onDelete(data.VS_ID)">delete</mat-icon>
                   </td>
-  
                 </tr>
               </tbody>
-              
               <tfoot>
                 <tr *ngIf="!seasonalMaster || seasonalMaster.length === 0 || showNoRecordsMessage">
                   <td colspan="5">
@@ -108,12 +95,9 @@
                   </td>
                 </tr>
               </tfoot>
-              
-        
             </table>
           </div>
         </div>
-
       </div>
     </div>
   </div>

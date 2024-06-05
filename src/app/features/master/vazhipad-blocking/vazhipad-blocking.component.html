@@ -1,5 +1,5 @@
 <app-header></app-header>
-<app-spinner></app-spinner>
+<app-spinner *ngIf="loading"></app-spinner>
 <div class="amster">
   <div class="container">
     <div class="card-body outlook" style="background:white;">
@@ -135,15 +135,15 @@
               <tr *ngFor="let data of filteredBlockingMater">
                 
               <tr *ngFor="let data of filteredBlockingMater">
-                <td>{{data.vbId}}</td>
-                <td>{{data.VM_code}}</td>
+                <td>{{data.VB_ID}}</td>
                 <td>{{data.VM_Name}}</td>
-                <td>{{data.vbFromDate}}</td>
-                <td>{{data.vbToDate}}</td>
-                <td>{{data.vbReason}}</td>
+                <td></td>
+                <td>{{data.VB_FromDate | date:'dd-MM-yyyy'}}</td>
+                <td>{{data.VB_ToDate | date :'dd-MM-yyyy'}}</td>
+                <td>{{data.VB_Reasion}}</td>
                 <td>
                   <mat-icon title="Edit" class="small pt-2"(click)=onEdit(data)>edit</mat-icon>
-                  <mat-icon title="Delete" class="small pt-2">delete</mat-icon>
+                  <mat-icon title="Delete" class="small pt-2" (click)="onDelete(data.VB_ID)" >delete</mat-icon>
                 </td>
               </tr>
             </tbody>

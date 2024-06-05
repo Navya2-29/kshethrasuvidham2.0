@@ -1,196 +1,206 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { ThemePalette } from '@angular/material/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { DayMaster } from '../../../models/day-master.model';
+import { DayMaster, VMList } from '../../../models/day-master.model';
 import { MasterService } from '../../../services/master/master.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
-export interface Task {
-  name: string;
-  completed: boolean;
-  color: ThemePalette;
-  subtasks?: Task[];
-}
+import { Observable, map, startWith } from 'rxjs';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { NotificationService } from '../../../services/notification/notification.service';
+
 @Component({
   selector: 'app-day-master',
   standalone: true,
-  imports: [HeaderComponent,SpinnerComponent,CommonModule,ReactiveFormsModule, MatIconModule,MatInputModule,MatCheckboxModule,FormsModule],
+  imports: [HeaderComponent, SpinnerComponent, MatAutocompleteModule, CommonModule, ReactiveFormsModule, MatIconModule, MatInputModule, MatCheckboxModule, FormsModule],
   templateUrl: './day-master.component.html',
   styleUrl: './day-master.component.css'
 })
-export class DayMasterComponent {
+export class DayMasterComponent implements OnInit {
 
-dayMasterForm:FormGroup;
-dayMaster:DayMaster[]=[];
-showNoRecordsMessage:boolean=false;
-filteredDayMaster: DayMaster[] = [];
-Id: number ;
-loading:boolean=false;
-updateFlag:boolean=false;
-searchQuery:string='';
-allSelected: boolean = false;
+  dayMasterForm: FormGroup;
+  dayMasterList: DayMaster[] = [];
+  showNoRecordsMessage: boolean = false;
+  filteredDayMaster: DayMaster[] = [];
+  Id: number;
+  loading: boolean = false;
+  updateFlag: boolean = false;
+  searchQuery: string = '';
+  allSelected: boolean = false;
+  days = [
 
-days=["sunday","monday","wednesday","thursday","friday","satursday"];
-
-private masterService = inject(MasterService);
-private formBuilder = inject(FormBuilder);
-private _snackBar = inject(MatSnackBar);
-
-
-ngOnInit() {
-  this.dayMasterForm = this.formBuilder.group({
-    offeringCode: [''],
-    checkboxes: this.formBuilder.array([],[Validators.required]),
-    
-  });
-
- 
-}
-
-
-
-// for select the check box
-onChange(e:any){
-  const checkedValue=e.target.value;
-  const checked=e.target.checked;
-  const checkedArray=this.dayMasterForm.get('checkboxes') as FormArray
-  console.log(e.target.value,e.target.checked);
-if(checked){
-checkedArray.push(new FormControl(checkedValue))
-}
-else{
-  let i:number=0;
-  checkedArray.controls.forEach((item)=>{
-    if(item.value==checkedValue){
-checkedArray.removeAt(i);
+    {
+      "id": 1,
+      "name": "Monday"
+    },
+    {
+      "id": 2,
+      "name": "Tuesday"
+    },
+    {
+      "id": 3,
+      "name": "Wednesday"
+    },
+    {
+      "id": 4,
+      "name": "Thursday"
+    },
+    {
+      "id": 5,
+      "name": "Friday"
+    },
+    {
+      "id": 6,
+      "name": "Satursday"
+    },
+    {
+      "id": 7,
+      "name": "Sunday"
     }
-    i++;
-  })
 
-}
-}
+  ];
+  // myControl = new FormControl('');
+  VMList: VMList[] = [];
+  filteredVMList: Observable<VMList[]>;
+  vazhipadMap: { [key: number]: string } = {};
+  dayMap: { [key: number]: string } = {};
+  private masterService = inject(MasterService);
+  private formBuilder = inject(FormBuilder);
+  private notification = inject(NotificationService);
+  constructor() {
+    this.dayMasterForm = this.formBuilder.group({
+      VM_Name: ['', [Validators.required]],
+      day: this.formBuilder.array([], [Validators.required]),
 
+    });
+  }
 
- // submitt pmasterform
- onSubmit(data: DayMaster) {
-  
-  this.loading=true;
-  if (this.dayMasterForm.valid) {
-    this.masterService.createDayMaster(data).subscribe({
+  ngOnInit() {
+    this.loading = true;
+    this.getDayMster()
+    this.getAllVazhipadName();
+    this.getDayMap();
+    this.filteredVMList = this.dayMasterForm.get('VM_Name')!.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterVazhipad(value || '')),
+    );
+  }
+
+  // auto complete vazhipad name filtering
+  private _filterVazhipad(value: string) {
+    const vazhipad = value.toLowerCase();
+    return this.VMList.filter(option => option.VM_Name.toLowerCase().includes(vazhipad));
+  }
+
+  //  get day master
+  getDayMster() {
+    this.loading = true;
+    this.masterService.getDayMaster().subscribe({
       next: (res) => {
         console.log(res);
-        this.loading=false;
-        this.openSnackBar(" day master Details created sussess fully", "close", "success-snackbar");
-
-        this.onReset();
-      },
-      error: (error) => {
-        this.loading=true;
-        console.log(error);
+        this.dayMasterList = res;
+        this.loading = false
       }
     })
   }
-  else {
-    this.markFormGroupTouched(this.dayMasterForm);
+
+  // get day map
+  getDayMap() {
+    this.days.forEach(day => {
+      this.dayMap[day.id] = day.name;
+    });
   }
-}
 
-// resetting form controls
-onReset() {
-  this.loading=true;
-  this.dayMasterForm.reset();
-  this.updateFlag = false;
-  this.loading=false;
-
-}
-
-//for editing the form fields
-onEdit(data: DayMaster) {
-  this.loading=true;
-  console.log(data);
-  this.updateFlag = true;
-  this.Id = data.id;
-  this.dayMasterForm.patchValue({
-    offeringCode: data.Vm_Name,
-    checkboxes: data.Days
-  });
-  this.loading=false;
-}
-
-
-//update data
-onUpdate(updatedata: DayMaster) {
-  this.loading=true;
-  if(this.dayMasterForm.valid){
-    console.log(updatedata, this.Id);
-    this.masterService.updateDay(this.Id, updatedata).subscribe((res) => {
-      this.loading=false;
-      this.openSnackBar(" Prathishta Details updated sussess fully", "close", "success-snackbar");
-      console.log(res)
+  // get all vazhipad list
+  getAllVazhipadName() {
+    this.loading = true;
+    this.masterService.getVmaster().subscribe({
+      next: (data) => {
+        console.log(data);
+        this.VMList = data.map(item => ({ VM_Id: item.VM_Id, VM_Name: item.VM_Name }));
+        this.VMList.forEach(item => {
+          this.vazhipadMap[item.VM_Id] = item.VM_Name;
+          this.loading = false;
+          console.log(this.VMList)
+        });
+      }
     })
   }
-  else{
-    this.markFormGroupTouched(this.dayMasterForm)
-  }
- 
- 
-}
 
-
-
-// deleteData
-onDelete(id: number) {
-  this.loading=true;
-  this.masterService.deleteDay(id).subscribe((res) => {
-    console.log(res);
-    this.loading=false;
-    this.openSnackBar(" day master Details deleted sussess fully", "close", "success-snackbar");
-  })
-}
-
-
-// search functionality by name and code
-onSearch(searchQuery: string) {
-  
-  if (!this.searchQuery.trim()) {
-    this.filteredDayMaster = this.dayMaster;
+  onDelete(id: number) {
+    this.loading = true
+    this.masterService.deleteDay(id).subscribe({
+      next: (res) => {
+        if (res) {
+          this.notification.showSuccess("Day master deleted successfully");
+          this.loading = false;
+          this.getDayMster();
+        }
+        else {
+          this.notification.showError("An error occured try gain");
+          this.loading = false
+        }
+      },
+      error: (err) => {
+        this.notification.showError("server down please try after some time");
+        this.loading = false
+      }
+    })
   }
 
-  else {
-    this.filteredDayMaster = this.dayMaster.filter((data) => {
-      console.log(data)
-      return data.Vm_Name.toLowerCase().includes(this.searchQuery.toLowerCase());
-    });
-    
-  }
-  this.showNoRecordsMessage=this.filteredDayMaster.length===0
-}
-
-// snack  message
-openSnackBar(message: string, action: string, classname: string) {
-  this._snackBar.open(message, action, {
-    panelClass: classname,
-    horizontalPosition: "end",
-    verticalPosition: "top",
-  });
-}
-
-
-// validation
-markFormGroupTouched(formGroup: FormGroup) {
-  Object.values(formGroup.controls).forEach(control => {
-    control.markAsTouched();
-
-    if (control instanceof FormGroup) {
-      this.markFormGroupTouched(control);
+  onChange(e: any) {
+    console.log(e.target.value, e.target.checked)
+    const checkedValue = e.target.value;
+    const checked = e.target.checked;
+    const checkedArray = this.dayMasterForm.get('day') as FormArray;
+    if (checked) {
+      checkedArray.push(new FormControl(checkedValue))
+    } else {
+      let i: number = 0;
+      checkedArray.controls.forEach((item) => {
+        if (item.value == checkedValue) {
+          checkedArray.removeAt(i);
+        }
+        i++;
+      })
     }
-  });
-}
+  }
 
+  onSubmit() {
+    // console.log(this.dayMasterForm.value);
+    const formValue = this.dayMasterForm.value;
+    console.log(formValue);
+    // console.log(this.VMList);
+    const selectedVc = this.VMList.find(vc => vc.VM_Name === formValue.VM_Name);
+    console.log(selectedVc)
+    if (selectedVc) {
+
+      const VMId = selectedVc.VM_Id;
+      console.log(VMId)
+      const selectedDays = formValue.day.map((dayIndex: string) => (Number(dayIndex) + 1).toString()); // Convert day index to string
+      // 
+      // const selectedDays = formValue.day.map((dayIndex: any) => dayIndex.toString());    
+      const payLoad = {
+        "VazhId": VMId.toString(),
+        "Day": selectedDays,
+        "Cuser": "2",
+        "Type": "INSERT"
+      }
+      console.log(payLoad)
+      // const VMId = selectedVc.VM_Id;
+      this.masterService.createDayMaster(payLoad).subscribe({
+        next: (res) => {
+
+        }
+      })
+    }
+
+  }
+  toggle() {
+    this.allSelected = !this.allSelected;
+  }
 
 }

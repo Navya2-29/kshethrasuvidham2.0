@@ -1,7 +1,9 @@
 export interface SeasonalMaster{
-    VS_id:string;
+    VS_ID:string;
     VS_code:string;
     VM_name:string;
-    VS_fromDate:Date;
-    VS_toDate:Date;
+    VS_FromDate:Date;
+    VS_ToDate:Date;
+    VM_ID:number;
+    VS_Reasion:string;
 }

@@ -5,151 +5,201 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AsyncPipe, CommonModule } from '@angular/common';
+import { AsyncPipe, CommonModule, DatePipe } from '@angular/common';
 import { MasterService } from '../../../services/master/master.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SeasonalMaster } from '../../../models/season-master.model';
+import { debounceTime, switchMap } from 'rxjs';
+import { NotificationService } from '../../../services/notification/notification.service';
 
 @Component({
   selector: 'app-seasonal-master',
   standalone: true,
-  imports: [HeaderComponent,SpinnerComponent,MatInputModule,CommonModule,AsyncPipe,MatIconModule,MatButtonModule,FormsModule,ReactiveFormsModule],
+  imports: [HeaderComponent, SpinnerComponent, MatInputModule, CommonModule, AsyncPipe, MatIconModule, MatButtonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './seasonal-master.component.html',
-  styleUrl: './seasonal-master.component.css'
+  styleUrl: './seasonal-master.component.css',
+  providers: [DatePipe]
 })
 export class SeasonalMasterComponent implements OnInit {
-seasonalBlockingForm:FormGroup;
-seasonalMaster:SeasonalMaster[]=[];
-filteredSeasonalMaster: SeasonalMaster[] = [];
-showNoRecordsMessage: boolean = false;
-updateFlag: boolean = false;
-searchQuery: string = '';
-loading:boolean=false;
-Id:string;
-private masterService = inject(MasterService);
+  seasonalBlockingForm: FormGroup;
+  seasonalMaster: SeasonalMaster[] = [];
+  filteredSeasonalMaster: SeasonalMaster[] = [];
+  showNoRecordsMessage: boolean = false;
+  updateFlag: boolean = false;
+  searchQuery: string = '';
+  loading: boolean = false;
+  Id: number;
+  VM_Id: number;
+  today: string;
+  vazhipadDetails: any;
+  private masterService = inject(MasterService);
   private formBuilder = inject(FormBuilder);
-  private _snackBar = inject(MatSnackBar);
-constructor(){
-  this.seasonalBlockingForm=this.formBuilder.group({
-    VS_code:['',[Validators.required]],
-    VM_name:['',[Validators.required]],
-    VS_fromDate:[new Date(),[Validators.required]],
-    VS_toDate:[new Date(),[Validators.required]],
-  })
-}
-  ngOnInit(): void {
-    this.loading=true;
-    this.getSeasonalMaster();
-
+  private notification = inject(NotificationService);
+  constructor(private datePipe: DatePipe) {
+    this.seasonalBlockingForm = this.formBuilder.group({
+      VS_code: ['', [Validators.required]],
+      VM_name: ['', [Validators.required]],
+      VS_FromDate: [new Date(), [Validators.required]],
+      VS_ToDate: [new Date(), [Validators.required]],
+      VS_Reasion: ['']
+    })
+    const currentDate = new Date();
+    this.today = this.datePipe.transform(currentDate, 'yyyy-MM-dd') || '';
   }
-
+  ngOnInit(): void {
+    this.loading = true;
+    this.getSeasonalMaster();
+    this.seasonalBlockingForm.get('VS_code')!.valueChanges.pipe(
+      debounceTime(300),
+      switchMap((code) =>
+        this.masterService.getVazhipadeByCode(code)
+      )
+    ).subscribe((response: any) => {
+      if (response.length > 0) {
+        this.seasonalBlockingForm.get('VM_name')?.setValue(response[0].VM_Name);
+        this.VM_Id = response[0].VM_Id;
+        console.log(response)
+      }
+      else if (!response) {
+        this.notification.showError("Vazhipad is not exist for code");
+      }
+      else {
+        this.seasonalBlockingForm.get('VM_name')?.setValue('');
+      }
+    });
+  }
   // get form controls
-  get SeasonalFormControl(){
+  get SeasonalFormControl() {
     return this.seasonalBlockingForm.controls;
-
   }
 
   // get seasonal master data
-
-  getSeasonalMaster(){
-    this.loading=false;
+  getSeasonalMaster() {
+    this.loading = true;
     this.masterService.getSeasonalMaster().subscribe({
       next: (data) => {
+        console.log(data);
         if (data && data.length > 0) {
-          // console.log(data)
           this.seasonalMaster = data;
           this.filteredSeasonalMaster = this.seasonalMaster;
-          this.loading=false;
+          this.loading = false;
         }
       },
       error: (error) => {
-        console.log(error);
-        this.loading=true;
+        this.notification.showError(error);
       }
     });
   }
 
-  onSubmit(data: SeasonalMaster) {
-   console.log(data);
-    this.loading=true;
-    if (this.seasonalBlockingForm.valid) {
-      this.masterService.createSeasonalMaster(data).subscribe({
-        next: (res) => {
-          console.log(res);
-          this.loading=false;
-          this.openSnackBar(" seasonal Details created sussess fully", "close", "success-snackbar");
+  formatDate(date: string): string {
+    return this.datePipe.transform(date, 'dd-MM-yyyy') || '';
+  }
 
-          this.onReset();
+
+  onSubmit() {
+    const fromDateString = this.seasonalBlockingForm.value.VS_FromDate;
+    const toDateString = this.seasonalBlockingForm.value.VS_ToDate;
+    this.seasonalBlockingForm.patchValue({
+      VS_FromDate: this.formatDate(fromDateString),
+      VS_ToDate: this.formatDate(toDateString)
+    })
+    this.loading = true;
+    if (this.seasonalBlockingForm.valid) {
+      this.masterService.createSeasonalMaster(this.VM_Id, this.seasonalBlockingForm.value).subscribe({
+        next: (res) => {
+
+          if (res.RespStatus === "I") {
+            this.notification.showSuccess("seasonal vazhipad added sussessfully");
+            this.onReset();
+            this.loading = false;
+            this.ngOnInit();
+          }
+
         },
         error: (error) => {
-          this.loading=true;
-          console.log(error);
+          this.loading = true;
+          this.notification.showError(error);
         }
       })
     }
     else {
       this.markFormGroupTouched(this.seasonalBlockingForm);
+      this.notification.showSuccess("Pleasefill the details");
+
     }
   }
 
   // resetting form controls
   onReset() {
-    this.loading=true;
+    this.loading = true;
     this.seasonalBlockingForm.reset();
     this.updateFlag = false;
-    this.loading=false;
-
+    this.loading = false;
   }
 
   //for editing the form fields
   onEdit(data: SeasonalMaster) {
-    this.loading=true;
+    this.loading = true;
     console.log(data);
     this.updateFlag = true;
-    this.Id = data.VS_id;
+    this.Id = data.VM_ID;
+    this.seasonalBlockingForm.get('VS_code')?.disable();
+    this.seasonalBlockingForm.get('VM_name')?.disable();
+    const fromDate = new Date(data.VS_FromDate);
+    const toDate = new Date(data.VS_ToDate);
+    console.log(this.vazhipadDetails)
     this.seasonalBlockingForm.patchValue({
-      VS_code:data.VS_code,
-      VM_name:data.VM_name,
-      VS_fromDate:data.VS_fromDate,
-      VS_toDate:data.VS_toDate,
+      VS_FromDate: this.datePipe.transform(fromDate, 'yyyy-MM-dd'),
+      VS_ToDate: this.datePipe.transform(toDate, 'yyyy-MM-dd'),
+      VS_Reasion: data.VS_Reasion
     });
-    this.loading=false;
+    this.loading = false;
   }
 
-
   //update data
-  onUpdate(updatedata: SeasonalMaster) {
-    this.loading=true;
-    if(this.seasonalBlockingForm.valid){
-      console.log(updatedata, this.Id);
-      this.masterService.updateSeasonalMaster(this.Id, updatedata).subscribe((res) => {
-        this.loading=false;
-        this.openSnackBar(" seasonal Details updated sussess fully", "close", "success-snackbar");
-        console.log(res)
+  onUpdate() {
+    this.loading = true;
+
+    const fromDateString = this.seasonalBlockingForm.value.VS_FromDate;
+    const toDateString = this.seasonalBlockingForm.value.VS_ToDate;
+    this.seasonalBlockingForm.patchValue({
+      VS_FromDate: this.formatDate(fromDateString),
+      VS_ToDate: this.formatDate(toDateString)
+    })
+    if (this.seasonalBlockingForm.valid) {
+      console.log(this.seasonalBlockingForm.value, this.Id);
+      this.masterService.updateSeasonalMaster(this.Id, this.seasonalBlockingForm.value).subscribe((res) => {
+        if (res.RespStatus == 'U') {
+          this.notification.showSuccess('Seasonal details updated successfully');
+          this.loading = false;
+          this.getSeasonalMaster();
+          this.onReset();
+        }
+        else {
+          this.notification.showError("please try again")
+        }
+
       })
     }
-    else{
+    else {
       this.markFormGroupTouched(this.seasonalBlockingForm)
     }
-   
-   
   }
 
 
   // deleteData
   onDelete(id: string) {
-    this.loading=true;
+    this.loading = true;
     this.masterService.deleteSeasonalMaster(id).subscribe((res) => {
-      console.log(res);
-      this.loading=false;
-      this.openSnackBar(" seasonal Details deleted sussess fully", "close", "success-snackbar");
+      this.loading = false;
+      this.notification.showSuccess("deleted successfully");
+      this.getSeasonalMaster();
     })
   }
 
 
   // search functionality by name and code
   onSearch(searchQuery: string) {
-    
     if (!this.searchQuery.trim()) {
       this.filteredSeasonalMaster = this.seasonalMaster;
     }
@@ -159,24 +209,18 @@ constructor(){
         console.log(data)
         return data.VM_name.toLowerCase().includes(this.searchQuery.toLowerCase()) || data.VS_code.toLowerCase().includes(this.searchQuery.toLowerCase())
       });
-      
+
     }
-    this.showNoRecordsMessage=this.filteredSeasonalMaster.length===0
+    this.showNoRecordsMessage = this.filteredSeasonalMaster.length === 0
   }
 
-  // snack  message
-  openSnackBar(message: string, action: string, classname: string) {
-    this._snackBar.open(message, action, {
-      panelClass: classname,
-      horizontalPosition: "end",
-      verticalPosition: "top",
-    });
-  }
-   // validation
-   markFormGroupTouched(formGroup: FormGroup) {
+  
+
+
+  // validation
+  markFormGroupTouched(formGroup: FormGroup) {
     Object.values(formGroup.controls).forEach(control => {
       control.markAsTouched();
-
       if (control instanceof FormGroup) {
         this.markFormGroupTouched(control);
       }

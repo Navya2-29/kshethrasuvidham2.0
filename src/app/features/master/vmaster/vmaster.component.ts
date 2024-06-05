@@ -10,11 +10,9 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Observable, map, startWith } from 'rxjs';
 import { MasterService } from '../../../services/master/master.service';
 import { VcList, Vmaster } from '../../../models/vmaster.model';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { DuplicatecheckService } from '../../../services/duplicateCheckValidator/duplicatecheck.service';
 import { UpperCaseDirective } from '../../../shared/directives/upper-case.directive';
-import { HttpClient } from '@angular/common/http';
-import { fakeAsync } from '@angular/core/testing';
+import { NotificationService } from '../../../services/notification/notification.service';
 @Component({
   selector: 'app-vmaster',
   standalone: true,
@@ -42,10 +40,9 @@ export class VmasterComponent implements OnInit {
   showNoRecordsMessage: boolean = false;
   private formBuilder = inject(FormBuilder);
   private masterService = inject(MasterService);
-  private _snackBar = inject(MatSnackBar);
   private duplicateCheck = inject(DuplicatecheckService);
+  private notification = inject(NotificationService)
 
-  
   constructor() {
     this.vazhipadMasterForm = this.formBuilder.group({
       VM_Code: ['', [Validators.required,
@@ -54,9 +51,8 @@ export class VmasterComponent implements OnInit {
       this.duplicateCodeValidator.bind(this)
       ]],
       VM_Name: ['', [Validators.required,
-      Validators.pattern('^[a-zA-Z\s]+$'),
       Validators.maxLength(100),
-      this.duplicateNameValidator.bind(this)]],
+      ]],
       VM_RName: ['', [Validators.required]],
       VM_Amt: [0, [Validators.required]],
       VM_MaxNo: [0,],
@@ -85,7 +81,7 @@ export class VmasterComponent implements OnInit {
     })
   }
 
-
+  
   ngOnInit(): void {
     // this.Addvazhpads();
     // filter for autocompleate category
@@ -131,9 +127,8 @@ export class VmasterComponent implements OnInit {
 
 
   // get All category 
-
   getCategory() {
-    this.loading=true;
+    this.loading = true;
     this.masterService.getCmaster().subscribe({
       next: (cmasters) => {
         this.category = cmasters.map(item => ({
@@ -141,7 +136,7 @@ export class VmasterComponent implements OnInit {
           VC_Name: item.VC_Name
         }));
         // console.log(this.category)
-        this.loading=false;
+        this.loading = false;
       }
     })
   }
@@ -168,14 +163,15 @@ export class VmasterComponent implements OnInit {
   //   })
   // }
 
+
+
   // get vmaster
   getVmaster() {
     this.loading = true;
-    const payLoad = { "Type": "vazhipadALL", "Code": "" }
-    this.masterService.getVmaster(payLoad).subscribe({
-      next: (data) =>{
+    this.masterService.getVmaster().subscribe({
+      next: (data) => {
         if (data && data.length > 0) {
-          // console.log(data)
+          console.log(data)
           this.Vmaster = data;
           this.filteredVmaster = this.Vmaster;
           this.loading = false;
@@ -187,6 +183,7 @@ export class VmasterComponent implements OnInit {
       }
     });
   }
+
   // get vmaster form controls
   get vmasterFormControl() {
     return this.vazhipadMasterForm.controls;
@@ -198,19 +195,18 @@ export class VmasterComponent implements OnInit {
     // console.log(data);
     // console.log("data")
     this.loading = true;
-
     if (this.vazhipadMasterForm.valid) {
-      const formValue=this.vazhipadMasterForm.value;
-      const selectedVc =  this.category.find(vc => vc.VC_Name === formValue.VC_Name);
+      const formValue = this.vazhipadMasterForm.value;
+      const selectedVc = this.category.find(vc => vc.VC_Name === formValue.VC_Name);
       // console.log(formValue);
       // console.log(JSON.stringify(selectedVc)+"daaaaaaaaaaaaa");
-      if(selectedVc){
-        const VCId=selectedVc.VC_Id;
-        this.masterService.createVmaster(VCId,data).subscribe({
+      if (selectedVc) {
+        const VCId = selectedVc.VC_Id;
+        this.masterService.createVmaster(VCId, data).subscribe({
           next: (res) => {
             // console.log(res);
             this.loading = false;
-            this.openSnackBar("Vazhpad  Details created sussess fully", "close", "success-snackbar");
+            this.notification.showSuccess("vazhipad details added successfully");
             this.getVmaster();
             this.onReset();
           },
@@ -220,11 +216,10 @@ export class VmasterComponent implements OnInit {
           }
         })
       }
-     
     }
     else {
       this.markFormGroupTouched(this.vazhipadMasterForm);
-      this.openSnackBar("Please ill the details", "close", "success-snackbar")
+      this.notification.showWarning("Please Fill the Details");
     }
   }
 
@@ -239,66 +234,71 @@ export class VmasterComponent implements OnInit {
 
   // for editing the form fields
   onEdit(data: Vmaster) {
-    this.Id=data.VM_Id;
+    this.Id = data.VM_Id;
     this.loading = true;
     // console.log(data);
     this.updateFlag = true;
-    const id=data.VC_ID.toString()
+    const id = data.VC_ID.toString()
     // console.log(this.category)
-    const selectedVc =  this.category.find(vc => vc.VC_Id == id);
+    const selectedVc = this.category.find(vc => vc.VC_Id == id);
     // console.log(id,selectedVc)
-    const VCName= selectedVc?.VC_Name;
+    const VCName = selectedVc?.VC_Name;
     // console.log(VCName)
-   this.vazhipadMasterForm.patchValue({
+    this.vazhipadMasterForm.patchValue({
       VM_Code: data.VM_Code,
       VM_Name: data.VM_Name,
       VM_RName: data.VM_RName,
       VM_Amt: data.VM_Amt,
       VM_MaxNo: data.VM_MaxNo,
-      VM_Receipt: data.VM_Receipt=="Y"?true:false,
-      VM_Booking: data.VM_Booking=="Y"?true:false,
-      VM_Blocking: data.VM_Blocking=="Y"?true:false,
-      VM_Seasonal: data.VM_Seasonal=="Y"?true:false,
-      VM_MultiName: data.VM_MultiName=="Y"?true:false,
-      VM_Device: data.VM_Device=="Y"?true:false,
-      VM_Mobileapp: data.VM_Mobileapp=="Y"?true:false,
-      VM_Special: data.VM_Special=="Y"?true:false,
-      VM_Rate_Change: data.VM_Rate_Change=="Y"?true:false,
+      VM_Receipt: data.VM_Receipt == "Y" ? true : false,
+      VM_Booking: data.VM_Booking == "Y" ? true : false,
+      VM_Blocking: data.VM_Blocking == "Y" ? true : false,
+      VM_Seasonal: data.VM_Seasonal == "Y" ? true : false,
+      VM_MultiName: data.VM_MultiName == "Y" ? true : false,
+      VM_Device: data.VM_Device == "Y" ? true : false,
+      VM_Mobileapp: data.VM_Mobileapp == "Y" ? true : false,
+      VM_Special: data.VM_Special == "Y" ? true : false,
+      VM_Rate_Change: data.VM_Rate_Change == "Y" ? true : false,
       VM_TimeLimit: data.VM_TimeLimit,
       VM_Description: data.VM_Description,
       VM_AlertMsg: data.VM_AlertMsg,
-      DisplayMode: data.DisplayMode=="Y"?true:false,
-      VM_Active: data.VM_Active=="Y"?true:false,
+      DisplayMode: data.DisplayMode == "Y" ? true : false,
+      VM_Active: data.VM_Active == "Y" ? true : false,
       ACHeadCode: data.ACHeadCode,
       ACSubCode: data.ACSubCode,
       VC_Name: VCName
     });
-   
+
     this.loading = false;
-    
+
   }
 
   //update data
   onUpdate(updatedata: Vmaster) {
-    // console.log(updatedata);
+    console.log(updatedata);
     this.loading = true;
     // console.log(updatedata, this.Id);
     if (this.vazhipadMasterForm.valid) {
-      const formValue=this.vazhipadMasterForm.value;
-      const selectedVc =  this.category.find(vc => vc.VC_Name === formValue.VC_Name);
+      const formValue = this.vazhipadMasterForm.value;
+      const selectedVc = this.category.find(vc => vc.VC_Name === formValue.VC_Name);
       // console.log(formValue);
       // console.log(JSON.stringify(selectedVc)+"daaaaaaaaaaaaa");
-      if(selectedVc){
-        const VCId=selectedVc.VC_Id;
-        this.masterService.updateVmaster(VCId,updatedata,this.Id).subscribe({
+      if (selectedVc) {
+        const VCId = selectedVc.VC_Id;
+        this.masterService.updateVmaster(VCId, updatedata, this.Id).subscribe({
           next: (res) => {
             // console.log(res);
-            this.loading = false;
-            this.openSnackBar("Vazhpad  Details created sussess fully", "close", "success-snackbar");
-            this.onReset();
+            this.ngOnInit();
+              this.loading = false;
+
+              this.onReset();
+              this.notification.showSuccess("Vazhipad details updated suceesfully")
+              // this.notification.showWarning("Please try again")    
+
           },
           error: (error) => {
             this.loading = true;
+            this.notification.showError(error);
             // console.log(error);
           }
         })
@@ -306,21 +306,21 @@ export class VmasterComponent implements OnInit {
     }
     else {
       this.markFormGroupTouched(this.vazhipadMasterForm);
+      this.notification.showWarning("please fill the details");
     }
   }
   // deleteData
   onDelete(id: number) {
     this.loading = true;
-    const Id=id+''
+    const Id = id + ''
     this.masterService.deleteVmaster(Id).subscribe((res) => {
       // console.log(res);
       this.loading = false;
-      this.openSnackBar(" Vazhipad Details deleted sussess fully", "close", "success-snackbar");
+      this.notification.showSuccess(" Vazhipad Details deleted successfully");
     })
   }
   // search functionality by name and code
   onSearch(searchQuery: string) {
-
     if (!this.searchQuery.trim()) {
       this.filteredVmaster = this.Vmaster;
     }
@@ -328,22 +328,12 @@ export class VmasterComponent implements OnInit {
     else {
       this.filteredVmaster = this.Vmaster.filter((data) => {
         console.log(data)
-        return data.VM_Name.toLowerCase().includes(this.searchQuery.toLowerCase());
+        return data.VM_Name.toLowerCase().includes(this.searchQuery.toLowerCase()) || data.VM_Code.toLowerCase().includes(this.searchQuery.toLowerCase())
       });
 
     }
     this.showNoRecordsMessage = this.filteredVmaster.length === 0
   }
-
-  // snack  message
-  openSnackBar(message: string, action: string, classname: string) {
-    this._snackBar.open(message, action, {
-      panelClass: classname,
-      horizontalPosition: "end",
-      verticalPosition: "top",
-    });
-  }
-
   // validation
   markFormGroupTouched(formGroup: FormGroup) {
     Object.values(formGroup.controls).forEach(control => {
@@ -357,37 +347,18 @@ export class VmasterComponent implements OnInit {
 
   // duplicate code check validators
   duplicateCodeValidator(control: AbstractControl): ValidationErrors | null {
-    if(this.updateFlag){
+    if (this.updateFlag) {
       return null
-    }else{
+    } else {
       const code = control.value;
       if (this.duplicateCheck.vmastercheckDuplicateCode(code, this.Vmaster)) {
         return { duplicateCode: true };
       }
       return null;
     }
-    
+
   }
-
-
-  // duplicate name check validators
-  duplicateNameValidator(control: AbstractControl): ValidationErrors | null {
-    const name = control.value;
-    if(this.updateFlag){
-      return null
-    }else{
-      if (this.duplicateCheck.vmastercheckDuplicateName(name, this.Vmaster)) {
-        return { duplicateName: true };
-      }
-      return null;
-    }
-    
-  }
-
-
-
 
 
  
-
 }

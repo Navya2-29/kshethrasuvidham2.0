@@ -15,7 +15,7 @@
             <table class="table">
               <tr>
                 <td> Category Code<span class="text-danger">*</span><input type="text" maxlength="3"
-                    appUpperCase matInput formControlName="VC_Code"
+                    appUpperCase matInput formControlName="VC_Code" [readonly]="updateFlag"
                     class="form-control sps" placeholder="Enter Code" style="width:126px;"> </td>
               </tr>
               <div
@@ -49,11 +49,12 @@
                   Name is required.
                 </div>
                 <div *ngIf="cmasterFormControl['VC_Name'].hasError('pattern')">
-                  Name must be include english alphabat and spaces only.
+                  Name include only numbers,english alphabat,spaces .
                 </div>
-                <div *ngIf="cmasterFormControl['VC_Name'].hasError('duplicateName')" class="text-danger">
+                
+                <!-- <div *ngIf="cmasterFormControl['VC_Name'].hasError('duplicateName')" class="text-danger">
                   Name already exists.
-                </div>
+                </div> -->
               </div>
               <tr>
                 <td> Category Name in regional<span class="text-danger">*</span><input type="text"
