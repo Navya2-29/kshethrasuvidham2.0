@@ -15,4 +15,5 @@ export interface VazhipadBlocking {
   VB_ToDate: string;
   VM_ID: number;
   VB_FromDate:string;
+  VB_radio:string
 }

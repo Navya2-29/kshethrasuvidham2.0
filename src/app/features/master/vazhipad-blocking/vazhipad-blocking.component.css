@@ -16,7 +16,6 @@
     width:100%;
     height:100%;
     background-image:url('/assets/images/login-bg.jpg');background-position: center;background-size: cover;
-    
 }
 
 .content{
@@ -291,8 +290,6 @@ option {
   color: #666; /* Option tag font color */
 }
 
-
-
 .example-form {
   min-width: 150px;
   max-width: 500px;
@@ -331,7 +328,6 @@ background-color: #f4f5f7 !important;
 }
 
 /* Style for select element */
-
 
 mat-option {
   font-size:11pt;

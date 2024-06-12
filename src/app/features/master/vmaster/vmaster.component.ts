@@ -192,7 +192,7 @@ export class VmasterComponent implements OnInit {
 
   // submit form
   onSubmit(data: Vmaster) {
-    // console.log(data);
+    console.log(data);
     // console.log("data")
     this.loading = true;
     if (this.vazhipadMasterForm.valid) {
@@ -359,6 +359,7 @@ export class VmasterComponent implements OnInit {
 
   }
 
+  vazhipadTime=["Any time","Morning","Evening","Night"]
 
  
 }

@@ -71,12 +71,8 @@
               </div>
                     </td>
                     <td colspan="1">Time
-                      <select name="" id="" class="form-control sps" formControlName="VM_Time">
-                        
-                        <option selected="selected" value="Morning">Morning</option>
-                        <option value="Evening">Evening</option>
-                        <!-- <option value="Noon">Noon</option> -->
-                        <option value="Night">Night</option>
+                      <select name="" id="" class="form-control sps" formControlName="VM_Time" >
+                        <option [value]="i" *ngFor="let time of vazhipadTime;let i=index;" [selected]="i">{{time}}</option>
                       </select>
                     </td>
                 </tr>

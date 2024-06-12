@@ -44,11 +44,9 @@ export const Constant = {
         DELETE_VIHIDHAM: 'delete',
 
         // BLOcking master
-        GET_VBLOCK: 'seasonal',
-        GET_ALL_VBLOCK: 'getall',
-        CREATE_VBLOCK: 'create',
-        UPDATE_VBLOCK: 'update',
-        DELETE_VBLOCK: 'delete',
+       
+        CREATE_VBLOCK: 'VazhipadBlocking',
+        
 
         
 

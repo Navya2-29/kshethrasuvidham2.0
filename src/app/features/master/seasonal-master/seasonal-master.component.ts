@@ -7,7 +7,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AsyncPipe, CommonModule, DatePipe } from '@angular/common';
 import { MasterService } from '../../../services/master/master.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { SeasonalMaster } from '../../../models/season-master.model';
 import { debounceTime, switchMap } from 'rxjs';
 import { NotificationService } from '../../../services/notification/notification.service';
@@ -129,6 +128,7 @@ export class SeasonalMasterComponent implements OnInit {
     }
   }
 
+
   // resetting form controls
   onReset() {
     this.loading = true;
@@ -159,13 +159,14 @@ export class SeasonalMasterComponent implements OnInit {
   //update data
   onUpdate() {
     this.loading = true;
-
     const fromDateString = this.seasonalBlockingForm.value.VS_FromDate;
     const toDateString = this.seasonalBlockingForm.value.VS_ToDate;
+    
     this.seasonalBlockingForm.patchValue({
       VS_FromDate: this.formatDate(fromDateString),
       VS_ToDate: this.formatDate(toDateString)
     })
+
     if (this.seasonalBlockingForm.valid) {
       console.log(this.seasonalBlockingForm.value, this.Id);
       this.masterService.updateSeasonalMaster(this.Id, this.seasonalBlockingForm.value).subscribe((res) => {
@@ -214,7 +215,7 @@ export class SeasonalMasterComponent implements OnInit {
     this.showNoRecordsMessage = this.filteredSeasonalMaster.length === 0
   }
 
-  
+
 
 
   // validation

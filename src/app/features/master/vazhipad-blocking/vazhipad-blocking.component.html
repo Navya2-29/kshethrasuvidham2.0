@@ -9,153 +9,187 @@
         <h1 class="tname">Guruvayurappan Temple</h1>
       </div>
       <div class="master">
-        <div class="col-md-4">
+        <div class="col-md-5">
           <h1 style="font-weight:500;">Vazhipad Blocking Master</h1>
           <form [formGroup]="vazhipadBlockingForm">
             <table class="table">
               <tr>
-                <td> Vazhipad Code<input type="text" class="form-control sps" formControlName="VM_code" placeholder="Enter Code"> </td>
-                <td></td>
+                <td> Vazhipad Code<input type="text" class="form-control sps" formControlName="VM_code"
+                    placeholder="Enter Code"> </td>
+
                 <!-- <td> SI No<input type="text" class="form-control sps"> </td> -->
               </tr>
               <div
-              *ngIf="vazhipadBlockingControl['VM_code'].invalid && (vazhipadBlockingControl['VM_code'].dirty || vazhipadBlockingControl['VM_code'].touched)"
-              class="pl-1 text-danger">
-              <div *ngIf="vazhipadBlockingControl['VM_code'].hasError('required')">
-                <small>code is required.</small>
+                *ngIf="vazhipadBlockingControl['VM_code'].invalid && (vazhipadBlockingControl['VM_code'].dirty || vazhipadBlockingControl['VM_code'].touched)"
+                class="pl-1 text-danger">
+                <div *ngIf="vazhipadBlockingControl['VM_code'].hasError('required')">
+                  <small>code is required.</small>
+                </div>
+
               </div>
-              
-            </div>
               <tr>
-                <td colspan="3"> Vazhipad Name<input type="text" formControlName="VB_name" class="form-control" placeholder="Enter Name">
-                  
+                <td colspan="3"> Vazhipad Name<input type="text" readonly formControlName="VM_name" class="form-control"
+                    placeholder="Enter Name">
+
                 </td>
+              </tr>
+
+              <tr>
+                <td>Blocking Category</td>
+              </tr>
+              <tr>
+<td colspan="3">     
+   <input type="radio" value="Y" name="VB_radio" formControlName="VB_radio" class="m-2"> Yearly
+                <input type="radio" name="VB_radio" formControlName="VB_radio" value="M">
+                Monthly
+                <input type="radio" formControlName="VB_radio" name="VB_radio" value="N">
+                Nakshathra
+              </td>
+          
               </tr>
               <div
-              *ngIf="vazhipadBlockingControl['VB_name'].invalid && (vazhipadBlockingControl['VB_name'].dirty || vazhipadBlockingControl['VB_name'].touched)"
-              class="pl-1 text-danger">
-              <div *ngIf="vazhipadBlockingControl['VB_name'].hasError('required')">
-               <small>code is required.</small>
+                *ngIf="vazhipadBlockingControl['VB_radio'].invalid && (vazhipadBlockingControl['VB_radio'].dirty || vazhipadBlockingControl['VB_radio'].touched)"
+                class="pl-1 text-danger">
+                <div *ngIf="vazhipadBlockingControl['VB_radio'].hasError('required')">
+                  <small>Blocking category is required.</small>
+                </div>
+
               </div>
-            </div>
-              <tr>
-                <td colspan="3">
-                  Blocking Category<br>
-                  <div class="p-2"
-                    style="border:1px solid rgb(155, 144, 144);text-align:center; text-align: start;display: flex; justify-content: space-between;">
-                    <div><input type="radio" value="Yearly" name="VB_radio" formControlName="VB_radio"> Yearly</div> &nbsp;&nbsp;<div><input
-                        type="radio" name="VB_radio" formControlName="VB_radio" value="Monthly"> Monthly</div>
-                    &nbsp;&nbsp;<div><input type="radio" formControlName="VB_radio" name="VB_radio" value="Nakshathra"> Nakshathra</div>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td colspan="3">
-                  <label class="font-weight:bold"><b>{{VB_category}} Blocking</b></label><br />
-                  Date Category
-                  <input type="radio" name="dateCategory" class="ml-3"> English &nbsp;&nbsp;<input name="dateCategory" type="radio"> Malayalam
-                </td>
-              </tr>
               <tr>
                 <td>
-                  From date<input required type="date" [min]="today | date:'yyyy-MM-dd'" class="form-control sps" formControlName="VB_FromDate">
+                  <label class="font-weight:bold"><b>{{VB_category}} Blocking</b></label><br />
+                  Date Category
                 </td>
-                <td></td>
+              </tr>
+              <tr>
+                <td colspan="3">
+                  <input type="radio" name="VB_DateType" class="ml-3" formControlName="VB_DateType" value="E">
+                  English &nbsp;&nbsp;<input formControlName="VB_DateType" value="M" name="VB_DateType" type="radio">
+                  Malayalam
+                </td>
+              </tr>
+              <div
+                *ngIf="vazhipadBlockingControl['VB_DateType'].invalid && (vazhipadBlockingControl['VB_DateType'].dirty || vazhipadBlockingControl['VB_DateType'].touched)"
+                class="pl-1 text-danger">
+                <div *ngIf="vazhipadBlockingControl['VB_DateType'].hasError('required')">
+                  <small>Date type is required.</small>
+                </div>
+
+              </div>
+              <tr *ngIf="dateType!='Malayalam'">
+                <td>
+                  From date<input required type="date" [min]="today" class="form-control sps"
+                    formControlName="VB_FromDate">
+                </td>
+
                 <td>To date<input required type="date" class="form-control sps" formControlName="VB_ToDate"></td>
               </tr>
-              <div
-              *ngIf="vazhipadBlockingControl['VB_ToDate'].invalid && (vazhipadBlockingControl['VB_ToDate'].dirty || vazhipadBlockingControl['VB_ToDate'].touched)"
-              class="pl-1 text-danger">
-              <div *ngIf="vazhipadBlockingControl['VB_ToDate'].hasError('required')">
-                To date is required.
-              </div>
               
-            </div>
+              <tr *ngIf="dateType=='Malayalam'">
+                <td>From day
+                  <input type="text" class="form-control sps" formControlName="VB_MalFDay">
+                </td>
+                <td>Month<input type="text" class="form-control sps " formControlName="VB_MalFMonth"></td>
+                <td>Year<input type="text" class="form-control sps" formControlName="VB_MalFYear"></td>
+              </tr>
+              <tr *ngIf="dateType=='Malayalam'">
+                <td>To date
+                  <input type="text" class="form-control sps" formControlName="VB_MalTDay">
+                </td>
+                <td>month<input type="text" class="form-control sps " formControlName="VB_MalTMonth"></td>
+                <td>year<input type="text" class="form-control sps " formControlName="VB_MalTYear"></td>
+              </tr>
               <tr *ngIf="blockingFlag">
                 <td colspan="3"> Nakshathra
-                  <input type="text"
-                  matInput
-                  placeholder="select Nakshthra"
-                  aria-label="Number"
-                  class="form-control"
-                  formControlName="Nakshathra"
-                  [matAutocomplete]="auto">
-                  
-           <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
-             @for (option of filteredOptions | async; track option) {
-               <mat-option [value]="option">{{option}}</mat-option>
-             }
-            </mat-autocomplete>
+                  <input type="text" matInput placeholder="select Nakshthra" aria-label="Number" class="form-control"
+                    formControlName="Nakshathra" [matAutocomplete]="auto">
+
+                  <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+                    @for (option of filteredOptions | async; track option) {
+                    <mat-option [value]="option">{{option}}</mat-option>
+                    }
+                  </mat-autocomplete>
                 </td>
               </tr>
-                <tr>
-                <td colspan="3">Blocking Reason<textarea class="form-control" formControlName="VB_Reason" rows="3" placeholder="Enter the Reason"></textarea>
+              <tr>
+                <td colspan="3">Blocking Reason<textarea class="form-control" formControlName="VB_Reasion" rows="3"
+                    placeholder="Enter the Reason"></textarea>
                 </td>
               </tr>
               <div
-              *ngIf="vazhipadBlockingControl['VB_Reason'].invalid && (vazhipadBlockingControl['VB_Reason'].dirty || vazhipadBlockingControl['VB_Reason'].touched)"
-              class="pl-1 text-danger">
-              <div *ngIf="vazhipadBlockingControl['VB_Reason'].hasError('required')">
-                Reason is required.
+                *ngIf="vazhipadBlockingControl['VB_Reasion'].invalid && (vazhipadBlockingControl['VB_Reasion'].dirty || vazhipadBlockingControl['VB_Reasion'].touched)"
+                class="pl-1 text-danger">
+                <div *ngIf="vazhipadBlockingControl['VB_Reasion'].hasError('required')">
+                  Reason is required.
+                </div>
+
               </div>
-              
-            </div>
               <tr>
                 <td colspan="3"><button *ngIf="!updateFlag" class="btn btn-primary"
-               (click)="onSubmit(vazhipadBlockingForm.value)"   >Save</button>
-                <button *ngIf="updateFlag" class="btn btn-primary"
-              (click)="onUpdate(vazhipadBlockingForm.value)"    >Update</button>
-                <button class="btn btn-danger ml-1" (click)="onReset()" >Cancel</button>
-              </td>
+                    (click)="onSubmit()">Save</button>
+                  <button *ngIf="updateFlag" class="btn btn-primary"
+                    (click)="onUpdate(vazhipadBlockingForm.value)">Update</button>
+                  <button class="btn btn-danger ml-1" (click)="onReset()">Cancel</button>
+                </td>
               </tr>
             </table>
           </form>
         </div>
-        <div class="col-md-8 search">
+        <div class="col-md-7 search">
           <div style="display:flex;" class="search-container mt-3">
-            <input type="text" class="form-control sps search-input" (input)="onSearch(searchQuery)"
-              placeholder="search by Code or Name" style="width:36%;" [(ngModel)]="searchQuery">
-            <!-- <button class="btn btn-primary" (click)="onSearch(searchQuery)">Search</button> -->
-            <mat-icon class="search-icon" (click)="onSearch(searchQuery)">search</mat-icon>
+            <!-- <input type="text" class="form-control sps search-input" (input)="onSearch(searchQuery)" -->
+              <!-- placeholder="search by Code or Name" style="width:36%;" [(ngModel)]="searchQuery">
+            <button class="btn btn-primary" (click)="onSearch(searchQuery)">Search</button>
+            <mat-icon class="search-icon" (click)="onSearch(searchQuery)">search</mat-icon> -->
           </div>
           <div class="fixitems prathishta">
             <table class="table blocking">
               <tr style="border-bottom: 2px solid #223d61;">
                 <th>Id</th>
-                <th>code</th>
                 <th>Vazhipad Name</th>
-                <th>Category</th>
+                <th></th>
                 <th>From date</th>
                 <th>To date</th>
+                <th>Reason
+                </th>
                 <th></th>
               </tr>
               <tbody>
-
-             
-              <tr *ngFor="let data of filteredBlockingMater">
                 
-              <tr *ngFor="let data of filteredBlockingMater">
-                <td>{{data.VB_ID}}</td>
-                <td>{{data.VM_Name}}</td>
-                <td></td>
-                <td>{{data.VB_FromDate | date:'dd-MM-yyyy'}}</td>
-                <td>{{data.VB_ToDate | date :'dd-MM-yyyy'}}</td>
-                <td>{{data.VB_Reasion}}</td>
-                <td>
-                  <mat-icon title="Edit" class="small pt-2"(click)=onEdit(data)>edit</mat-icon>
-                  <mat-icon title="Delete" class="small pt-2" (click)="onDelete(data.VB_ID)" >delete</mat-icon>
-                </td>
-              </tr>
-            </tbody>
-            <tfoot>
-              <tr *ngIf="!BlockingMater || BlockingMater.length === 0 || showNoRecordsMessage">
-                <td colspan="5">
-                  <div style="width: 100%;" class="mt-3">
-                    <h4 class="text-center">No Records found</h4>
-                  </div>
-                </td>
-              </tr>
-            </tfoot>
+                <tr *ngFor="let data of filteredBlockingMater">
+                  <td>{{data.VB_ID}}</td>
+                  <td>{{data.VM_ID}}-{{vazhipadMap[data.VM_ID]}}</td>
+                  <td></td>
+                  <!-- <td *ngIf="data.VB_DateType!='M'">{{data.VB_FromDate | date:'dd-MM-yyyy'}}</td> -->
+                  <ng-container *ngIf="data.VB_DateType !== 'M'; else otherContent">
+                    <td>{{data.VB_FromDate | date:'dd-MM-yyyy'}}</td>
+                  </ng-container>
+                  <ng-template #otherContent>
+                    <td>{{data.VB_MalFDay}}-{{data.VB_MalFMonth}}-{{data.VB_MalFYear}}</td>
+                  </ng-template>
+                  <ng-container *ngIf="data.VB_DateType !== 'M'; else otherToDate">
+                    <td>{{data.VB_ToDate| date:'dd-MM-yyyy'}}</td>
+                  </ng-container>
+                  <ng-template #otherToDate>
+                    <td>{{data.VB_MalTDay}}-{{data.VB_MalTMonth}}-{{data.VB_MalTYear}}</td>
+                  </ng-template>
+                  <!-- <td>{{data.VB_ToDate | date :'dd-MM-yyyy'}}</td> -->
+                  <td>{{data.VB_Reasion}}</td>
+                  <td>
+                    <mat-icon title="Edit" class="small pt-2" (click)=onEdit(data)>edit</mat-icon>
+                    <mat-icon title="Delete" class="small pt-2" (click)="onDelete(data.VB_ID)">delete</mat-icon>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr *ngIf="!BlockingMater || BlockingMater.length === 0 || showNoRecordsMessage">
+                  <td colspan="5">
+                    <div style="width: 100%;" class="mt-3">
+                      <h4 class="text-center">No Records found</h4>
+                    </div>
+                  </td>
+                </tr>
+              </tfoot>
             </table>
           </div>
         </div>

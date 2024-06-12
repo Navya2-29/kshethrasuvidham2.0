@@ -442,21 +442,20 @@ console.log(payLoad)
 
   // blocking master
 
-  getAllBlockingVazhipadList(): Observable<any[]> {
-    return this.http.get<any[]>(Constant.BASE_URL + Constant.METHODS.GET_VBLOCK)
-  }
+  
   // get list block vazhipad
   getBlockingMaster(payLoad:object): Observable<any[]> {
     return this.http.post<any[]>(Constant.BASE_URL + Constant.METHODS.GET_MASTER,payLoad)
   }
   // create block 
   createBlockingMaster(data: any): Observable<any> {
+    console.log(data);
     return this.http.post<any>(Constant.BASE_URL + Constant.METHODS.CREATE_VBLOCK, data);
   }
 
   // update block 
-  updateBlockingMaster(id: string, obj: any): Observable<any> {
-    return this.http.put<any>(Constant.BASE_URL + Constant.METHODS.UPDATE_VBLOCK + id, obj).pipe(catchError(this.errorHandler))
+  updateBlockingMaster(payLoad:any): Observable<any> {
+    return this.http.post<any>(Constant.BASE_URL + Constant.METHODS.CREATE_VBLOCK, payLoad).pipe(catchError(this.errorHandler))
   }
 
   // delete block

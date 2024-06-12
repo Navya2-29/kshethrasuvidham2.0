@@ -56,21 +56,18 @@
                 </div>
                 <div class="col-md-8 search">
                   <div style="display:flex;" class="search-container mt-3">
-                    <input type="text" class="form-control sps search-input" 
+                    <!-- <input type="text" class="form-control sps search-input" 
                       placeholder="Search by Name" style="width:36%;" [(ngModel)]="searchQuery">
-                    <mat-icon class="search-icon" >search</mat-icon>
+                    <mat-icon class="search-icon" >search</mat-icon> -->
                   </div>
                     <div class="fixitems prathishta">
                         <table class="table">
-                         
                               <thead style="border-bottom: 2px solid #223d61;">
                                 <th >Id</th>
                                 <th >Day</th>
                                 <th >Vazhipad Name</th>
                                 <th></th>
                               </thead>
-                              
-                        
                             <tbody *ngIf="!showNoRecordsMessage &&dayMasterList && dayMasterList.length > 0">
                               <tr *ngFor="let item of dayMasterList ; let i=index">
                                 <td>{{item.Day_id}}</td>
@@ -95,8 +92,7 @@
                             </tfoot>  
                           </table>
                     </div>
-                </div>
-                
+                </div>   
             </div>
         </div>
     </div>
