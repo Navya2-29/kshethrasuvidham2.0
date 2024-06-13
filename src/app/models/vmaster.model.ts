@@ -25,7 +25,7 @@ VM_Special:string;
 VM_Time:string;
 VM_TimeLimit:number
 Whatsapp:string
-
+RespStatus:string
 }
 export  interface AccountHead{
 	id:number;

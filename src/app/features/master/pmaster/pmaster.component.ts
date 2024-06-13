@@ -36,7 +36,7 @@ import { NotificationService } from '../../../services/notification/notification
 })
 
 export class PmasterComponent implements OnInit {
-  @ViewChild('tableToExport', { static: false }) tableElement: ElementRef;
+  
   pmaster: Pmaster[] = [];
   filteredPmaster: Pmaster[] = [];
   showNoRecordsMessage: boolean = false;
@@ -68,7 +68,6 @@ export class PmasterComponent implements OnInit {
       ]],
       PM_Name: ['', [Validators.required,
       Validators.pattern('[a-zA-Z\\s]*'),
-
       Validators.maxLength(100),
       ]],
       PM_RegName: ['', Validators.required],
@@ -82,7 +81,6 @@ export class PmasterComponent implements OnInit {
   ngOnInit(): void {
     this.loading = true;
     this.getPmaster();
-
   }
 
   // view prathishta
@@ -92,7 +90,6 @@ export class PmasterComponent implements OnInit {
       next: (data) => {
         if (data && data.length > 0) {
           this.pmaster = data;
-
           this.filteredPmaster = this.pmaster;
           this.loading = false;
         }
@@ -110,7 +107,7 @@ export class PmasterComponent implements OnInit {
     return this.pmasterForm.controls;
   }
 
-  // submitt pmasterform
+  // submit pmasterform
   onSubmit() {
     this.loading = true;
     console.log(this.pmasterForm.value)
@@ -118,7 +115,6 @@ export class PmasterComponent implements OnInit {
       this.masterService.createPmaster(this.pmasterForm.value).subscribe({
         next: (res) => {
           if (res) {
-
             this.notification.showSuccess(" Prathishta Details created successfully");
             this.onReset();
             this.ngOnInit();

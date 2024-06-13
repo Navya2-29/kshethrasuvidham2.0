@@ -14,7 +14,7 @@
           <form [formGroup]="seasonalBlockingForm">
             <table class="table">
               <tr>
-                <td> Vazhipad Code<span class="text-danger" *ngIf="!updateFlag">*</span><input type="text" formControlName="VS_code" class="form-control sps"
+                <td> Vazhipad Code<span class="text-danger" *ngIf="!updateFlag">*</span><input type="text"  [readonly]="updateFlag" formControlName="VS_code" class="form-control sps"
                     placeholder="Enter Code"> </td>
                 <td></td>
               </tr>
@@ -77,7 +77,7 @@
                   <!-- <td style="background-color: #87b6f3;"><input type="Checkbox" style="vertical-align: middle;width:12px;" -->
                   <!-- checked></td> -->
                   <td>{{data.VS_ID}}</td>
-                  <td>{{data.VM_ID}}</td>
+                  <td>{{data.VM_Code}}-{{data.VM_Name}}</td>
                   <td>{{data.VS_FromDate | date:'dd-MM-yyyy'}}</td>
                   <td>{{data.VS_ToDate | date:'dd-MM-yyyy'}}</td>
                   <td>{{data.VS_Reasion}}</td>

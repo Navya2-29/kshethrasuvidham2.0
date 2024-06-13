@@ -14,10 +14,12 @@ import { VazhipadBlocking } from '../../../models/vazhipadBlockingMaster.model';
 import { BlockParameter } from '@angular/compiler';
 import { NotificationService } from '../../../services/notification/notification.service';
 import { VMList } from '../../../models/day-master.model';
+import { Router } from '@angular/router';
+import { MatSelectModule } from '@angular/material/select';
 @Component({
   selector: 'app-vazhipad-blocking',
   standalone: true,
-  imports: [HeaderComponent, SpinnerComponent, MatIconModule, FormsModule, MatButtonModule, MatAutocompleteModule, AsyncPipe, CommonModule, ReactiveFormsModule, MatFormFieldModule],
+  imports: [HeaderComponent, SpinnerComponent, MatIconModule,MatSelectModule, FormsModule, MatButtonModule, MatAutocompleteModule, AsyncPipe, CommonModule, ReactiveFormsModule, MatFormFieldModule],
   templateUrl: './vazhipad-blocking.component.html',
   styleUrl: './vazhipad-blocking.component.css',
   providers: [DatePipe]
@@ -30,7 +32,7 @@ export class VazhipadBlockingComponent {
   vazhipadBlockingForm: FormGroup;
   blockingCategory: boolean = false;
   VB_category: string = 'Yearly';
-  nakshatham: string[] = [];
+  nakshatham:any[];
   showNoRecordsMessage: boolean = false;
   filteredOptions: Observable<string[]>;
   blockingFlag: boolean = false;
@@ -41,50 +43,43 @@ export class VazhipadBlockingComponent {
   VM_Id: number;
   dateType: string;
   VMList:VMList[] = [];
-  vazhipadMap: { [key: number]: string } = {};
   private formBuilder = inject(FormBuilder);
   private masterService = inject(MasterService);
   private notification = inject(NotificationService);
-  constructor(private datePipe: DatePipe) {
+  constructor(private datePipe: DatePipe , private router:Router) {
     // form model
     this.vazhipadBlockingForm = this.formBuilder.group({
       VM_code: ['', [Validators.required]],
-      VM_name: ['', [Validators.required]],
+      VM_name: ['', ],
       VB_FromDate: [''],
       VB_ToDate: [''],
       VB_Reasion: ['', [Validators.required]],
-      Nakshathra: [''],
-      VB_radio: ['', [Validators.required]],
-      VB_DateType: ['', [Validators.required]],
-      VB_MalFDay: [''],
-      VB_MalFMonth: [''],
-      VB_MalFYear: [''],
-      VB_MalTDay: [''],
-      VB_MalTMonth: [''],
-      VB_MalTYear: [''],
-
+      Nakshathra: ["0"],
+      VB_radio: ['Y', ],
+      VB_DateType: ['E',],
+      VB_MalFDay: ['',[Validators.pattern(/[0-9\+\-]/)]],
+      VB_MalFMonth: ['',[Validators.pattern(/[0-9\+\-]/)]],
+      VB_MalFYear: ['',[Validators.pattern(/[0-9\+\-]/)]],
+      VB_MalTDay: ['',[Validators.pattern(/[0-9\+\-]/)]],
+      VB_MalTMonth: ['',[Validators.pattern(/[0-9\+\-]/)]],
+      VB_MalTYear: ['',[Validators.pattern(/[0-9\+\-]/)]]
     })
   }
 
-
     ngOnInit() {
-      this.getAllVazhipadName();
-    // filtering stars
-    this.filteredOptions = this.vazhipadBlockingForm.get('Nakshathra')!.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filter(value))
-    );
+   
     this.getNakshthram();
 
     // get the radio button blocking values
     this.vazhipadBlockingForm.get('VB_radio')!.valueChanges.subscribe(value => {
       this.getCategory(value);
+      this.updateFromDateAndToDateValidators();
     });
-
 
     // for getting date type values
     this.vazhipadBlockingForm.get('VB_DateType')!.valueChanges.subscribe(value => {
       this.getDteTpe(value);
+      this.updateFromDateAndToDateValidators();
     });
 
     // displaying vazhipad name with code
@@ -111,11 +106,7 @@ export class VazhipadBlockingComponent {
     this.getVazhipadBlockingMaster();
   }
 
-  private _filter(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    return this.nakshatham.filter(option => option.toLowerCase().includes(filterValue));
-  }
-
+ 
   // get nakshthram
   getNakshthram() {
     this.masterService.getNakshthra().subscribe((res) => {
@@ -124,22 +115,27 @@ export class VazhipadBlockingComponent {
     })
   }
 
-
-
   // get Categary
   getCategory(category: string) {
     console.log(category);
+    const fromDateControl = this.vazhipadBlockingForm.get('VB_FromDate');
+    const toDateControl = this.vazhipadBlockingForm.get('VB_ToDate');
     if (category == 'Y') {
       this.VB_category = "Yearly";
       this.blockingFlag = false;
+      fromDateControl!.setValidators([Validators.required]);
+      toDateControl!.setValidators([Validators.required]);
     }
     else if (category == 'M') {
       this.VB_category = "Monthly";
       this.blockingFlag = false;
+     
     }
     else {
       this.VB_category = "Nakshthra";
-      this.blockingFlag = true
+      this.blockingFlag = true;
+      fromDateControl!.clearValidators();
+      toDateControl!.clearValidators();
     }
 
   }
@@ -147,18 +143,17 @@ export class VazhipadBlockingComponent {
   getDteTpe(dateType: string) {
     if (dateType === "M" ) {
       this.dateType = "Malayalam";
-      if(this.updateFlag){
         this.vazhipadBlockingForm.patchValue({
           VB_FromDate:"",
           VB_ToDate:""
         })
-      }
+      
       
     }
     else {
       this.dateType = "English";
       this.vazhipadBlockingForm.patchValue({
-        VB_MalFDay: "",
+      VB_MalFDay: "",
       VB_MalFMonth: "",
       VB_MalFYear: "",
       VB_MalTDay: "",
@@ -167,6 +162,7 @@ export class VazhipadBlockingComponent {
       })
     }
   }
+
   // get vazhipadBlocking form controls
   get vazhipadBlockingControl() {
     return this.vazhipadBlockingForm.controls;
@@ -184,7 +180,7 @@ export class VazhipadBlockingComponent {
     else {
       this.filteredBlockingMater = this.BlockingMater.filter((data) => {
         console.log(data)
-        return data.VB_FromDate.toLowerCase().includes(this.searchQuery) || data.VB_ToDate.toLowerCase().includes(this.searchQuery.toLowerCase()) || data.VB_ID.toString().toLowerCase().includes(this.searchQuery.toLowerCase());
+        return data.VM_Name.toLowerCase().includes(this.searchQuery) || data.VM_Code.toLowerCase().includes(this.searchQuery.toLowerCase()) || data.VB_ID.toString().toLowerCase().includes(this.searchQuery.toLowerCase());
       });
     }
     this.showNoRecordsMessage = this.filteredBlockingMater.length === 0
@@ -209,14 +205,14 @@ export class VazhipadBlockingComponent {
       },
       error: (error) => {
         console.log(error);
-        this.loading = true;
+        
       }
     });
   }
 
   // submit data
   onSubmit() {
-    console.log(this.vazhipadBlockingForm.value)
+    console.log(this.vazhipadBlockingForm.value);
     // console.log(data);
     const fromDateString = this.vazhipadBlockingForm.value.VB_FromDate;
     const toDateString = this.vazhipadBlockingForm.value.VB_ToDate;
@@ -269,8 +265,13 @@ export class VazhipadBlockingComponent {
   // resetting form controls
   onReset() {
     this.loading = true;
-    this.vazhipadBlockingForm.reset();
     this.updateFlag = false;
+    this.vazhipadBlockingForm.reset({
+      VB_radio: "Y",
+      VB_DateType: "E",
+    }
+      
+    );
     
     this.ngOnInit();
     this.blockingFlag=false;
@@ -282,15 +283,15 @@ export class VazhipadBlockingComponent {
   //for editing the form fields
   onEdit(data: VazhipadBlocking) {
     this.loading = true;
-   
     this.updateFlag = true;
     this.Id = data.VB_ID;
     this.VM_Id=data.VM_ID
-    this.vazhipadBlockingForm.get('VM_code')?.disable();
-    this.vazhipadBlockingForm.get('VM_name')?.disable();
+   
     const fromDate = new Date(data.VB_FromDate);
     const toDate = new Date(data.VB_ToDate);
     this.vazhipadBlockingForm.patchValue({
+      VM_code:data.VM_Code,
+      VM_name:data.VM_Name,
       VB_FromDate: this.datePipe.transform(fromDate, 'yyyy-MM-dd'),
       VB_ToDate: this.datePipe.transform(toDate, 'yyyy-MM-dd'),
       VB_Reasion: data.VB_Reasion,
@@ -302,8 +303,7 @@ export class VazhipadBlockingComponent {
       VB_MalFYear: data.VB_MalFYear,
       VB_MalTDay: data.VB_MalTDay,
       VB_MalTMonth: data.VB_MalTMonth,
-      VB_MalTYear: data.VB_MalTYear,
-      
+      VB_MalTYear: data.VB_MalTYear, 
     });
     this.loading = false;
   }
@@ -311,11 +311,8 @@ export class VazhipadBlockingComponent {
   //update data
   onUpdate(updatedata: BlockParameter) {
     this.loading = true;
-   
     const fromDateString = this.vazhipadBlockingForm.value.VB_FromDate;
     const toDateString = this.vazhipadBlockingForm.value.VB_ToDate;
-  
-    
     const payLoad={
 
       "vazhId": `${this.VM_Id}`,
@@ -364,29 +361,32 @@ export class VazhipadBlockingComponent {
   markFormGroupTouched(formGroup: FormGroup) {
     Object.values(formGroup.controls).forEach(control => {
       control.markAsTouched();
-
       if (control instanceof FormGroup) {
         this.markFormGroupTouched(control);
       }
     });
   }
+gotoDashBoard(){
+  this.router.navigate(['/dashboard'])
+}
+updateFromDateAndToDateValidators() {
+  const fromDateControl = this.vazhipadBlockingForm.get('VB_FromDate');
+  const toDateControl = this.vazhipadBlockingForm.get('VB_ToDate');
+  const category = this.vazhipadBlockingForm.get('VB_radio')?.value;
+  const dateType = this.vazhipadBlockingForm.get('VB_DateType')?.value;
 
-  
-  getAllVazhipadName() {
-    this.loading = true;
-    this.masterService.getVmaster().subscribe({
-      next: (data) => {
-        console.log(data);
-        this.VMList = data.map(item => ({ VM_Id: item.VM_Id, VM_Name: item.VM_Name }));
-        this.VMList.forEach(item => {
-          this.vazhipadMap[item.VM_Id] = item.VM_Name;
-          this.loading = false;
-          console.log(this.VMList)
-        });
-      }
-    })
+  if ((category === 'Y' && dateType === 'E') || 
+      (category === 'M' && dateType === 'E') || 
+      (category === 'N')) {
+    fromDateControl?.setValidators([Validators.required]);
+    toDateControl?.setValidators([Validators.required]);
+  } else {
+    fromDateControl?.clearValidators();
+    toDateControl?.clearValidators();
   }
 
-
-
+  fromDateControl?.updateValueAndValidity();
+  toDateControl?.updateValueAndValidity();
+}
+  
 }

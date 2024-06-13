@@ -1,6 +1,6 @@
 export interface VazhipadBlocking {
   VB_ID: string;
-  VM_code: string;
+  VM_Code: string;
   VM_Name: string;
   VB_BlockType: string;
   VB_DateType: string;

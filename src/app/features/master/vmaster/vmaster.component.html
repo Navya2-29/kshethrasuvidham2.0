@@ -2,104 +2,207 @@
 <app-spinner *ngIf="loading"></app-spinner>
 <div class="amster">
   <div class="container">
-    <div class="card-body  outlook" style="background:white;">
+    <div class="card-body outlook" style="background: white">
       <div class="posback">
-        <a routerLink="/dashboard" class="back">&nbsp;&nbsp;<mat-icon title="Edit"
-            style="color:white;">arrow_back_ios</mat-icon></a>
+        <a (click)="gotoDashBoard()" class="back"
+          >&nbsp;&nbsp;<mat-icon title="Edit" style="color: white"
+            >arrow_back_ios</mat-icon
+          ></a
+        >
         <h1 class="tname">Guruvayurappan Temple</h1>
       </div>
       <div class="master">
-        <div class="col-md-8 ">
+        <div class="col-md-8">
           <form [formGroup]="vazhipadMasterForm">
-          <div class="row">
-            <div class="col-md-6 fixitems">
-              <h1 style="font-weight:500;">Vazhipad Master</h1>
-              <table class="table">
-                <tr>
-                  <td> Vazhipad Code <span class="text-danger">*</span><input type="text" maxlength="10" formControlName="VM_Code" class="form-control sps"
-                      placeholder="Enter Code">
+            <div class="row">
+              <div class="col-md-6 fixitems">
+                <h1 style="font-weight: 500">Vazhipad Master</h1>
+                <table class="table">
+                  <tr>
+                    <td>
+                      Vazhipad Code <span class="text-danger">*</span
+                      ><input
+                        type="text"
+                        maxlength="10"
+                        formControlName="VM_Code"
+                        class="form-control sps"
+                        placeholder="Enter Code"
+                      />
                       <div
-                      *ngIf="vmasterFormControl['VM_Code'].invalid && (vmasterFormControl['VM_Code'].dirty || vmasterFormControl['VM_Code'].touched)"
-                      class="pl-1 text-danger">
-                      <div *ngIf="vmasterFormControl['VM_Code'].hasError('required')">
-                        <small>code is required.</small>
+                        *ngIf="
+                          vmasterFormControl['VM_Code'].invalid &&
+                          (vmasterFormControl['VM_Code'].dirty ||
+                            vmasterFormControl['VM_Code'].touched)
+                        "
+                        class="pl-1 text-danger"
+                      >
+                        <div
+                          *ngIf="
+                            vmasterFormControl['VM_Code'].hasError('required')
+                          "
+                        >
+                          <small>code is required.</small>
+                        </div>
+                        <div
+                          *ngIf="
+                            vmasterFormControl['VM_Code'].hasError('maxlength')
+                          "
+                        >
+                          <small>must be 3 characters long.</small>
+                        </div>
+                        <div
+                          *ngIf="
+                            vmasterFormControl['VM_Code'].hasError('pattern')
+                          "
+                        >
+                          <small
+                            >code must be include number or english
+                            alphabat.</small
+                          >
+                        </div>
+                        <div
+                          *ngIf="
+                            vmasterFormControl['VM_Code'].hasError(
+                              'duplicateCode'
+                            )
+                          "
+                          class="text-danger"
+                        >
+                          <small>Code already exists.</small>
+                        </div>
                       </div>
-                      <div *ngIf="vmasterFormControl['VM_Code'].hasError('maxlength')">
-                        <small>must be 3 characters long.</small>
-                      </div>
-                      <div *ngIf="vmasterFormControl['VM_Code'].hasError('pattern')">
-                        <small>code must be include number or english alphabat.</small>
-                      </div>
-                      <div *ngIf="vmasterFormControl['VM_Code'].hasError('duplicateCode')" class="text-danger">
-                      <small>Code already exists.</small>  
-                      </div>
-                    </div>
-                  </td>
-                  <td colspan="2">
-                    Vazhipad Name<span class="text-danger">*</span>
-                    <input type="text" class="form-control" appUpperCase maxlength="100" formControlName="VM_Name" placeholder="Enter Name">
-                    <div
-                    *ngIf="vmasterFormControl['VM_Name'].invalid && (vmasterFormControl['VM_Name'].dirty || vmasterFormControl['VM_Name'].touched)"
-                    class="pl-1 text-danger ">
-                    <div *ngIf="vmasterFormControl['VM_Name'].hasError('required')">
-                       <small> required.</small>
-                    </div>
-                    
-                    <div *ngIf="vmasterFormControl['VM_Name'].hasError('duplicateName')" class="text-danger">
-                     <small> Name already exists.</small>
-                    </div>
-                  </div>
-                  </td>
-                </tr>
-               
-                <!-- <tr>
-                  <td colspan="3">
-                    Vazhipad Name<span class="text-danger">*</span>
-                    <input type="text" class="form-control" appUpperCase maxlength="100" formControlName="VM_Name" placeholder="Enter Name">
-                  </td>
-                </tr> -->
-                
-                <tr>
-                  <td colspan="2"> Vazhipad Name in Regional Lang.<span class="text-danger">*</span><input type="text" formControlName="VM_RName"
-                      class="form-control" placeholder="Enter Name in Regional Language"> 
-                      <div
-                *ngIf="vmasterFormControl['VM_RName'].invalid && (vmasterFormControl['VM_RName'].dirty || vmasterFormControl['VM_RName'].touched)"
-                class="pl-1 text-danger">
-                <div *ngIf="vmasterFormControl['VM_RName'].hasError('required')">
-                <small> name  is required.</small> 
-                </div>
-              </div>
                     </td>
-                    <td colspan="1">Time
-                      <select name="" id="" class="form-control sps" formControlName="VM_Time" >
-                        <option [value]="i" *ngFor="let time of vazhipadTime;let i=index;" [selected]="i">{{time}}</option>
+                    <td colspan="2">
+                      Vazhipad Name<span class="text-danger">*</span>
+                      <input
+                        type="text"
+                        class="form-control"
+                        appUpperCase
+                        maxlength="100"
+                        formControlName="VM_Name"
+                        placeholder="Enter Name"
+                      />
+                      <div
+                        *ngIf="
+                          vmasterFormControl['VM_Name'].invalid &&
+                          (vmasterFormControl['VM_Name'].dirty ||
+                            vmasterFormControl['VM_Name'].touched)
+                        "
+                        class="pl-1 text-danger"
+                      >
+                        <div
+                          *ngIf="
+                            vmasterFormControl['VM_Name'].hasError('required')
+                          "
+                        >
+                          <small> required.</small>
+                        </div>
+                        <div
+                          *ngIf="
+                            vmasterFormControl['VM_Name'].hasError('pattern')
+                          "
+                        >
+                          <small>Invalid name</small>
+                        </div>
+                        <div
+                          *ngIf="
+                            vmasterFormControl['VM_Name'].hasError(
+                              'duplicateName'
+                            )
+                          "
+                          class="text-danger"
+                        >
+                          <small> Name already exists.</small>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2">
+                      Vazhipad Name in Regional Lang.<span class="text-danger"
+                        >*</span
+                      ><input
+                        type="text"
+                        formControlName="VM_RName"
+                        class="form-control"
+                        placeholder="Enter Name in Regional Language"
+                      />
+                      <div
+                        *ngIf="
+                          vmasterFormControl['VM_RName'].invalid &&
+                          (vmasterFormControl['VM_RName'].dirty ||
+                            vmasterFormControl['VM_RName'].touched)
+                        "
+                        class="pl-1 text-danger"
+                      >
+                        <div
+                          *ngIf="
+                            vmasterFormControl['VM_RName'].hasError('required')
+                          "
+                        >
+                          <small> name is required.</small>
+                        </div>
+                      </div>
+                    </td>
+                    <td colspan="1">
+                      Time
+                      <select
+                        name=""
+                        id=""
+                        class="form-control sps"
+                        formControlName="VM_Time"
+                      >
+                        <option
+                          [value]="time.id"
+                          *ngFor="let time of vazhipadTime; let i = index"
+                        >
+                          {{ time.name }}
+                        </option>
                       </select>
                     </td>
-                </tr>
-                <tr>
-                  <td colspan="3">
-                    Vazhipad Category<span class="text-danger">*</span> <input matInput aria-label="vazhpad category" [matAutocomplete]="vcategory"
-                      formControlName="VC_Name" autofocus class="form-control sps"
-                      placeholder="Select Vazhipad Category">
-                    <mat-autocomplete #vcategory="matAutocomplete">
-                      @for (category of filteredCategory | async; track category.VC_Name) {
+                  </tr>
+                  <tr>
+                    <td colspan="3">
+                      Vazhipad Category<span class="text-danger">*</span>
+                      <input
+                        matInput
+                        aria-label="vazhpad category"
+                        [matAutocomplete]="vcategory"
+                        formControlName="VC_Name"
+                        autofocus
+                        class="form-control sps"
+                        placeholder="Select Vazhipad Category"
+                      />
+                      <mat-autocomplete #vcategory="matAutocomplete">
+                        @for (category of filteredCategory | async; track
+                        category.VC_Name) {
 
-                      <mat-option [value]="category.VC_Name" style="padding-left:15px;padding-top:0px;">
-                        <span>{{category.VC_Name}}</span>
-                      </mat-option>
-                      }
-                    </mat-autocomplete>
-                  </td>
-                </tr>
-                <div
-                *ngIf="vmasterFormControl['VC_Name'].invalid && (vmasterFormControl['VC_Name'].dirty || vmasterFormControl['VC_Name'].touched)"
-                class="pl-1 text-danger">
-                <div *ngIf="vmasterFormControl['VC_Name'].hasError('required')">
-                  <small>category is required.</small>
-                </div>
-              </div>
-                <tr>
-                  <!-- <td colspan="3">
+                        <mat-option
+                          [value]="category.VC_Name"
+                          style="padding-left: 15px; padding-top: 0px"
+                        >
+                          <span>{{ category.VC_Name }}</span>
+                        </mat-option>
+                        }
+                      </mat-autocomplete>
+                    </td>
+                  </tr>
+                  <div
+                    *ngIf="
+                      vmasterFormControl['VC_Name'].invalid &&
+                      (vmasterFormControl['VC_Name'].dirty ||
+                        vmasterFormControl['VC_Name'].touched)
+                    "
+                    class="pl-1 text-danger"
+                  >
+                    <div
+                      *ngIf="vmasterFormControl['VC_Name'].hasError('required')"
+                    >
+                      <small>category is required.</small>
+                    </div>
+                  </div>
+                  <tr>
+                    <!-- <td colspan="3">
                                     Select Prethishta <br>
                         
                                         <mat-select [formControl]="toppings" formControlName="VP_Name"  class="form-control sps" placeholder="Select Prathishta" multiple>
@@ -116,173 +219,343 @@
                                       }
                                         </mat-select>
                                 </td> -->
-                </tr>
-                <tr>
-                  <td>
-                    Rate<span class="text-danger">*</span><input type="text" class="form-control sps" formControlName="VM_Amt" placeholder="Enter Rate">
-                  </td>
-                  <td>
-                    No Limit<input type="text" formControlName="VM_MaxNo" class="form-control sps"
-                      placeholder="Limit (in Nos)">
-                  </td>
-                  <td>
-                    Time Limit<input type="text" formControlName="VM_TimeLimit" class="form-control sps"
-                      placeholder="Limit (in Hours)">
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <input type="checkbox" formControlName="VM_MultiName">&nbsp;&nbsp; Multi Name
-                  </td>
-                  <td>
-                    <input type="checkbox" formControlName="VM_Booking">&nbsp;&nbsp; Blocking
-                  </td>
-                  <td>
-                    <input type="checkbox" formControlName="VM_Seasonal">&nbsp;&nbsp; Seasonal
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <input type="checkbox" formControlName="SMS">&nbsp;&nbsp; SMS
-                  </td>
-                  <td>
-                    <input type="checkbox" formControlName="Whatsapp">&nbsp;&nbsp; Whatsapp
-                  </td>
-                  <td>
-                    <input type="checkbox" formControlName="VM_Receipt">&nbsp;&nbsp; Receipt
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <input type="checkbox" formControlName="VM_Blocking">&nbsp;&nbsp; Booking
-                  </td>
-                  <td>
-                    <input type="checkbox" formControlName="VM_Rate_Change">&nbsp;&nbsp; Rate Change
-                  </td>
-                  <td>
-                    <input type="checkbox" formControlName="VM_Device">&nbsp;&nbsp; Machine
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <input type="checkbox" formControlName="VM_Mobileapp">&nbsp;&nbsp; APP
-                  </td>
-                  <td>
-                    <input type="checkbox" formControlName="DisplayMode">&nbsp;&nbsp; Online
-                  </td>
-                  <td>
-                    <input type="checkbox" formControlName="VM_Active">&nbsp;&nbsp; Active
-                  </td>
-                </tr>
-                <tr>
-                  <td colspan="2">
-                    <input type="checkbox" formControlName="VM_Special">&nbsp;&nbsp; Special Vazhipad
-                  </td>
-                </tr>
-              </table>
-            </div>
-            <div class="col-md-6">
-              <h1 style="color:white;">.</h1>
-              <table class="table">
-                <tr>
-                  <td colspan="3">
-                    Account Head <input matInput formControlName="ACHeadCode" aria-label="Account Head"
-                      [matAutocomplete]="accountHead" autofocus class="form-control sps"
-                      placeholder="Select Account Head">
-                    <mat-autocomplete #accountHead="matAutocomplete">
-                      @for (ahead of filteredAccountHead | async; track ahead) {
-                      <mat-option [value]="ahead" style="padding-left:15px;padding-top:0px;">
-                        <span>{{ahead}}</span>
-                      </mat-option>
-                      }
-                    </mat-autocomplete>
-                  </td>
-                </tr>
-                <tr>
-                  <td colspan="3">
-                    Account Sub Head <input matInput aria-label="accountSubHead" formControlName="ACSubCode"
-                      [matAutocomplete]="accountSubHead" autofocus class="form-control sps"
-                      placeholder="Select Account Sub Head">
-                    <mat-autocomplete #accountSubHead="matAutocomplete">
-                      @for (accountSubHead of filteredAccountSubHead | async; track accountSubHead) {
-                      <mat-option [value]="accountSubHead" style="padding-left:15px;padding-top:0px;">
-                        <span>{{accountSubHead}}</span>
-                      </mat-option>
-                      }
-                    </mat-autocomplete>
-                  </td>
-                </tr>
-                <tr>
-                  <td colspan="3">
-                    Description <br>
-                    <textarea class="form-control sps" style="width:100%;height:72px;" formControlName="VM_Description"
-                      placeholder="Enter Description"></textarea>
-                  </td>
-                </tr>
-                <tr>
-                  <td colspan="3">
-                    Alert Message <br>
-                    <textarea class="form-control sps" style="width:100%;height:72px;" formControlName="VM_AlertMsg"
-                      placeholder="Enter Alert Message"></textarea>
-                  </td>
-                </tr>
-                <tr>
-                  <td><button class="btn btn-primary" *ngIf="!updateFlag" (click)="onSubmit(vazhipadMasterForm.value)">Save</button>
-                    <button class="btn btn-primary" *ngIf="updateFlag" (click)="onUpdate(vazhipadMasterForm.value)">Update</button>
-                    <button class="btn btn-secondary" (click)="onReset()">Cancel</button>
-                  </td>
-                </tr>
-              </table>
-            </div>
-          </div>
-        </form>
-        </div>
-      <div class="col-md-4 search">
-        <div style="display:flex;" class="search-container mt-3">
-          <input type="text" class="form-control sps search-input" (input)="onSearch(searchQuery)"
-            placeholder="search by Code or Name" style="width:60%;" [(ngModel)]="searchQuery">
-          <!-- <button class="btn btn-primary" (click)="onSearch(searchQuery)">Search</button> -->
-          <mat-icon class="search-icon" (click)="onSearch(searchQuery)">search</mat-icon>
-        </div>
-        <div class="fixitems prathishta">
-          <table class="table">
-           
-              <thead style="border-bottom: 2px solid #223d61;">
-              <th>Code</th>
-              <th>Vazhipad Name</th>
-              <th>Rate</th>
-              <th></th>
-            </thead>
-            
-            <tbody *ngIf="!showNoRecordsMessage && Vmaster && Vmaster.length > 0">
-              <tr *ngFor="let data of filteredVmaster; let i=index">
-                <td>
-                  {{data.VM_Code}}
-                </td>
-                <td style="text-align:left;padding-left:10px;">{{data.VM_Name}}</td>
-                <td>{{data.VM_Amt}}</td>
-                <td></td>
-                <td>
-                  <mat-icon title="Edit" class="small" style="vertical-align: middle;"
-                   (click)="onEdit(data)"  >edit</mat-icon>
-                   
-                  <mat-icon title="Delete" class="small" style="vertical-align: middle;" (click)="onDelete(data.VM_Id)" >delete</mat-icon>
-                </td>
-              </tr>
-            </tbody>
-            <tfoot>
-              <tr *ngIf="!Vmaster || Vmaster.length === 0 || showNoRecordsMessage">
-                <td colspan="3">
-                  <div style="width: 100%;" class="mt-3">
-                    <h4 class="text-center">No Records found</h4>
+                  </tr>
+                  <tr>
+                    <td>
+                      Rate<span class="text-danger">*</span
+                      ><input
+                        type="text"
+                        class="form-control sps"
+                        formControlName="VM_Amt"
+                        placeholder="in no.s"
+                      />
+                    </td>
+
+                    <td>
+                      No Limit<input
+                        type="text"
+                        formControlName="VM_MaxNo"
+                        class="form-control sps"
+                        placeholder="in Nos"
+                      />
+                    </td>
+
+                    <td>
+                      Time Limit<input
+                        type="text"
+                        formControlName="VM_TimeLimit"
+                        class="form-control sps"
+                        placeholder="in Hours"
+                      />
+                    </td>
+                  </tr>
+                  <div
+                    *ngIf="
+                      vmasterFormControl['VM_Amt'].invalid &&
+                      (vmasterFormControl['VM_Amt'].dirty ||
+                        vmasterFormControl['VM_Amt'].touched)
+                    "
+                    class="pl-1 text-danger"
+                  >
+                    <div
+                      *ngIf="vmasterFormControl['VM_Amt'].hasError('pattern')"
+                    >
+                      <small>Invalid rate</small>
+                    </div>
                   </div>
-                </td>
-              </tr>
-            </tfoot>
-          </table>
+                  <div
+                    *ngIf="
+                      vmasterFormControl['VM_MaxNo'].invalid &&
+                      (vmasterFormControl['VM_MaxNo'].dirty ||
+                        vmasterFormControl['VM_MaxNo'].touched)
+                    "
+                    class="pl-1 text-danger"
+                  >
+                    <div
+                      *ngIf="vmasterFormControl['VM_MaxNo'].hasError('pattern')"
+                    >
+                      <small>only numbers are allowed</small>
+                    </div>
+                  </div>
+                  <div
+                    *ngIf="
+                      vmasterFormControl['VM_TimeLimit'].invalid &&
+                      (vmasterFormControl['VM_TimeLimit'].dirty ||
+                        vmasterFormControl['VM_TimeLimit'].touched)
+                    "
+                    class="pl-1 text-danger"
+                  >
+                    <div
+                      *ngIf="
+                        vmasterFormControl['VM_TimeLimit'].hasError('pattern')
+                      "
+                    >
+                      <small>only numbers are allowed</small>
+                    </div>
+                  </div>
+                  <tr>
+                    <td>
+                      <input
+                        type="checkbox"
+                        formControlName="VM_MultiName"
+                      />&nbsp;&nbsp; Multi Name
+                    </td>
+                    <td>
+                      <input
+                        type="checkbox"
+                        formControlName="VM_Booking"
+                      />&nbsp;&nbsp; Blocking
+                    </td>
+                    <td>
+                      <input
+                        type="checkbox"
+                        formControlName="VM_Seasonal"
+                      />&nbsp;&nbsp; Seasonal
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <input
+                        type="checkbox"
+                        formControlName="SMS"
+                      />&nbsp;&nbsp; SMS
+                    </td>
+                    <td>
+                      <input
+                        type="checkbox"
+                        formControlName="Whatsapp"
+                      />&nbsp;&nbsp; Whatsapp
+                    </td>
+                    <td>
+                      <input
+                        type="checkbox"
+                        formControlName="VM_Receipt"
+                      />&nbsp;&nbsp; Receipt
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <input
+                        type="checkbox"
+                        formControlName="VM_Blocking"
+                      />&nbsp;&nbsp; Booking
+                    </td>
+                    <td>
+                      <input
+                        type="checkbox"
+                        formControlName="VM_Rate_Change"
+                      />&nbsp;&nbsp; Rate Change
+                    </td>
+                    <td>
+                      <input
+                        type="checkbox"
+                        formControlName="VM_Device"
+                      />&nbsp;&nbsp; Machine
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <input
+                        type="checkbox"
+                        formControlName="VM_Mobileapp"
+                      />&nbsp;&nbsp; APP
+                    </td>
+                    <td>
+                      <input
+                        type="checkbox"
+                        formControlName="DisplayMode"
+                      />&nbsp;&nbsp; Online
+                    </td>
+                    <td>
+                      <input
+                        type="checkbox"
+                        formControlName="VM_Active"
+                      />&nbsp;&nbsp; Active
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2">
+                      <input
+                        type="checkbox"
+                        formControlName="VM_Special"
+                      />&nbsp;&nbsp; Special Vazhipad
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              <div class="col-md-6">
+                <h1 style="color: white">.</h1>
+                <table class="table">
+                  <tr>
+                    <td colspan="3">
+                      Account Head
+                      <input
+                        matInput
+                        formControlName="ACHeadCode"
+                        aria-label="Account Head"
+                        [matAutocomplete]="accountHead"
+                        autofocus
+                        class="form-control sps"
+                        placeholder="Select Account Head"
+                      />
+                      <mat-autocomplete #accountHead="matAutocomplete">
+                        @for (ahead of filteredAccountHead | async; track ahead)
+                        {
+                        <mat-option
+                          [value]="ahead"
+                          style="padding-left: 15px; padding-top: 0px"
+                        >
+                          <span>{{ ahead }}</span>
+                        </mat-option>
+                        }
+                      </mat-autocomplete>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="3">
+                      Account Sub Head
+                      <input
+                        matInput
+                        aria-label="accountSubHead"
+                        formControlName="ACSubCode"
+                        [matAutocomplete]="accountSubHead"
+                        autofocus
+                        class="form-control sps"
+                        placeholder="Select Account Sub Head"
+                      />
+                      <mat-autocomplete #accountSubHead="matAutocomplete">
+                        @for (accountSubHead of filteredAccountSubHead | async;
+                        track accountSubHead) {
+                        <mat-option
+                          [value]="accountSubHead"
+                          style="padding-left: 15px; padding-top: 0px"
+                        >
+                          <span>{{ accountSubHead }}</span>
+                        </mat-option>
+                        }
+                      </mat-autocomplete>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="3">
+                      Description <br />
+                      <textarea
+                        class="form-control sps"
+                        style="width: 100%; height: 72px"
+                        formControlName="VM_Description"
+                        placeholder="Enter Description"
+                      ></textarea>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="3">
+                      Alert Message <br />
+                      <textarea
+                        class="form-control sps"
+                        style="width: 100%; height: 72px"
+                        formControlName="VM_AlertMsg"
+                        placeholder="Enter Alert Message"
+                      ></textarea>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <button
+                        class="btn btn-primary"
+                        *ngIf="!updateFlag"
+                        (click)="onSubmit(vazhipadMasterForm.value)"
+                      >
+                        Save
+                      </button>
+                      <button
+                        class="btn btn-primary"
+                        *ngIf="updateFlag"
+                        (click)="onUpdate(vazhipadMasterForm.value)"
+                      >
+                        Update
+                      </button>
+                      <button class="btn btn-secondary" (click)="onReset()">
+                        Cancel
+                      </button>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="col-md-4 search">
+          <div style="display: flex" class="search-container mt-3">
+            <input
+              type="text"
+              class="form-control sps search-input"
+              (input)="onSearch(searchQuery)"
+              placeholder="search by Code or Name"
+              style="width: 60%"
+              [(ngModel)]="searchQuery"
+            />
+            <!-- <button class="btn btn-primary" (click)="onSearch(searchQuery)">Search</button> -->
+            <mat-icon class="search-icon" (click)="onSearch(searchQuery)"
+              >search</mat-icon
+            >
+          </div>
+          <div class="fixitems prathishta">
+            <table class="table">
+              <thead style="border-bottom: 2px solid #223d61">
+                <th>Code</th>
+                <th>Vazhipad Name</th>
+                <th>Rate</th>
+                <th></th>
+              </thead>
+
+              <tbody
+                *ngIf="!showNoRecordsMessage && Vmaster && Vmaster.length > 0"
+              >
+                <tr *ngFor="let data of filteredVmaster; let i = index">
+                  <td>
+                    {{ data.VM_Code }}
+                  </td>
+                  <td style="text-align: left; padding-left: 10px">
+                    {{ data.VM_Name }}
+                  </td>
+                  <td>{{ data.VM_Amt }}</td>
+                  <td></td>
+                  <td>
+                    <mat-icon
+                      title="Edit"
+                      class="small"
+                      style="vertical-align: middle"
+                      (click)="onEdit(data)"
+                      >edit</mat-icon
+                    >
+
+                    <mat-icon
+                      title="Delete"
+                      class="small"
+                      style="vertical-align: middle"
+                      (click)="onDelete(data.VM_Id)"
+                      >delete</mat-icon
+                    >
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr
+                  *ngIf="
+                    !Vmaster || Vmaster.length === 0 || showNoRecordsMessage
+                  "
+                >
+                  <td colspan="3">
+                    <div style="width: 100%" class="mt-3">
+                      <h4 class="text-center">No Records found</h4>
+                    </div>
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 </div>

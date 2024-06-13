@@ -4,463 +4,567 @@ import { Observable, catchError, throwError } from 'rxjs';
 import { Pmaster } from '../../models/pmaster.model';
 import { Constant } from '../../constants/constant';
 import { Cmaster, VCMRequestBody } from '../../models/cmaster.model';
-import { AccountHead, AccountSubHead, Vmaster } from '../../models/vmaster.model';
-import { SpecialDayMaster, SpecialDayMasterList } from '../../models/special-day-master.model';
+import {
+  AccountHead,
+  AccountSubHead,
+  Vmaster,
+} from '../../models/vmaster.model';
+import {
+  SpecialDayMaster,
+  SpecialDayMasterList,
+} from '../../models/special-day-master.model';
 import { SeasonalMaster } from '../../models/season-master.model';
 import { DayMaster } from '../../models/day-master.model';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class MasterService {
   private readonly http = inject(HttpClient);
 
-  constructor() { }
+  constructor() {}
 
   // get all prathishta list
-  getPmaster(): Observable<any[]> {
+  getPmaster(): Observable<Pmaster[]> {
     const payLoad = {
-      "Type": "PrethistaALL", "Code": ""
-    }
-    return this.http.post<any[]>(Constant.BASE_URL + Constant.METHODS.GET_MASTER, payLoad)
-      .pipe(catchError(this.errorHandler))
+      Type: 'PrethistaALL',
+      Code: '',
+    };
+    return this.http
+      .post<Pmaster[]>(Constant.BASE_URL + Constant.METHODS.GET_MASTER, payLoad)
+      .pipe(catchError(this.errorHandler));
   }
 
   // getprathishta by code
   getPrathishtaByCode() {
     const payLoad = {
-      "Type": "Prethista", "Code": "12"
-    }
-    return this.http.post<any[]>(Constant.BASE_URL + Constant.METHODS.GET_MASTER, payLoad)
-      .pipe(catchError(this.errorHandler))
+      Type: 'Prethista',
+      Code: '12',
+    };
+    return this.http
+      .post<any[]>(Constant.BASE_URL + Constant.METHODS.GET_MASTER, payLoad)
+      .pipe(catchError(this.errorHandler));
   }
 
   // create prathishta
   createPmaster(obj: Pmaster): Observable<Pmaster> {
     const payload = {
-      "PMId": "",
-      "PMCode": obj.PM_Code,
-      "PMName": obj.PM_Name,
-      "PMRName": obj.PM_RegName,
-      "Active": obj.PM_Active ? "Y" : "N",
-      "Type": "INSERT",
-      "UnitId": "1",
-      "Cuser": "1",
-      "PMImage": obj.PM_Image
-    }
-    return this.http.post<Pmaster>(Constant.BASE_URL + Constant.METHODS.CREATE_PMASTER, payload)
-      .pipe(catchError(this.errorHandler))
+      PMId: '',
+      PMCode: obj.PM_Code,
+      PMName: obj.PM_Name,
+      PMRName: obj.PM_RegName,
+      Active: obj.PM_Active ? 'Y' : 'N',
+      Type: 'INSERT',
+      UnitId: '1',
+      Cuser: '1',
+      PMImage: obj.PM_Image,
+    };
+    return this.http
+      .post<Pmaster>(
+        Constant.BASE_URL + Constant.METHODS.CREATE_PMASTER,
+        payload
+      )
+      .pipe(catchError(this.errorHandler));
   }
   // update pmaster
   updatePmaster(obj: Pmaster, Id: string): Observable<Pmaster> {
-    const id = `${Id}`
+    const id = `${Id}`;
     const payLoad = {
-      "PMId": id,
-      "PMCode": obj.PM_Code,
-      "PMName": obj.PM_Name,
-      "PMRName": obj.PM_RegName,
-      "Active": obj.PM_Active ? "Y" : "N",
-      "Type": "UPDATE",
-      "UnitId": "1",
-      "Cuser": "1",
-      "PMImage": obj.PM_Image
-    }
+      PMId: id,
+      PMCode: obj.PM_Code,
+      PMName: obj.PM_Name,
+      PMRName: obj.PM_RegName,
+      Active: obj.PM_Active ? 'Y' : 'N',
+      Type: 'UPDATE',
+      UnitId: '1',
+      Cuser: '1',
+      PMImage: obj.PM_Image,
+    };
     console.log(payLoad);
-    return this.http.post<Pmaster>(Constant.BASE_URL + Constant.METHODS.CREATE_PMASTER, payLoad)
-      .pipe(catchError(this.errorHandler))
+    return this.http
+      .post<Pmaster>(
+        Constant.BASE_URL + Constant.METHODS.CREATE_PMASTER,
+        payLoad
+      )
+      .pipe(catchError(this.errorHandler));
   }
 
   // delete pmaster
   deletePmaster(id: string): Observable<void> {
     const payLoad = {
-      "Type": "Prethista",
-      "Id": id
-    }
-    return this.http.post<void>(Constant.BASE_URL + Constant.METHODS.DELETE_MASTER, payLoad)
-      .pipe(catchError(this.errorHandler))
+      Type: 'Prethista',
+      Id: id,
+    };
+    return this.http
+      .post<void>(Constant.BASE_URL + Constant.METHODS.DELETE_MASTER, payLoad)
+      .pipe(catchError(this.errorHandler));
   }
-
 
   // get category
   getCmaster(): Observable<Cmaster[]> {
-    const payLoad: VCMRequestBody = { "Type": "CategoryALL", "Code": "" }
-    return this.http.post<Cmaster[]>(Constant.BASE_URL + Constant.METHODS.GET_MASTER, payLoad)
-      .pipe(catchError(this.errorHandler))
+    const payLoad: VCMRequestBody = { Type: 'CategoryALL', Code: '' };
+    return this.http
+      .post<Cmaster[]>(Constant.BASE_URL + Constant.METHODS.GET_MASTER, payLoad)
+      .pipe(catchError(this.errorHandler));
   }
 
   // create category
   createCmaster(obj: Cmaster): Observable<any> {
     const payLoad = {
-      "VCId": "1",
-      "VCCode": obj.VC_Code,
-      "VCName": obj.VC_Name,
-      "VCRName": obj.VC_RegName,
-      "Active": obj.VC_Active ? "Y" : "N",
-      "Type": "INSERT",
-      "Cuser": "1"
-    }
-    return this.http.post<Cmaster>(Constant.BASE_URL + Constant.METHODS.CREATE_CMASTER, payLoad)
-      .pipe(catchError(this.errorHandler))
+      VCId: '1',
+      VCCode: obj.VC_Code,
+      VCName: obj.VC_Name,
+      VCRName: obj.VC_RegName,
+      Active: obj.VC_Active ? 'Y' : 'N',
+      Type: 'INSERT',
+      Cuser: '1',
+    };
+    return this.http
+      .post<Cmaster>(
+        Constant.BASE_URL + Constant.METHODS.CREATE_CMASTER,
+        payLoad
+      )
+      .pipe(catchError(this.errorHandler));
   }
 
   // update category
   updateCmaster(id: string, obj: Cmaster): Observable<any> {
     const payLoad = {
-      "VCId": id.toString(),
-      "VCCode": obj.VC_Code,
-      "VCName": obj.VC_Name,
-      "VCRName": obj.VC_RegName,
-      "Active": obj.VC_Active ? "Y" : "N",
-      "Type": "UPDATE",
-      "Cuser": "1"
-    }
-    return this.http.post<Cmaster>(Constant.BASE_URL + Constant.METHODS.CREATE_CMASTER, payLoad)
-      .pipe(catchError(this.errorHandler))
+      VCId: id.toString(),
+      VCCode: obj.VC_Code,
+      VCName: obj.VC_Name,
+      VCRName: obj.VC_RegName,
+      Active: obj.VC_Active ? 'Y' : 'N',
+      Type: 'UPDATE',
+      Cuser: '1',
+    };
+    return this.http
+      .post<Cmaster>(
+        Constant.BASE_URL + Constant.METHODS.CREATE_CMASTER,
+        payLoad
+      )
+      .pipe(catchError(this.errorHandler));
   }
 
   // delete category
   deleteCmaster(id: string): Observable<any> {
     const payLoad = {
-      "Type": Constant.METHODS.Type,
-      "Id": id.toString()
-    }
-    return this.http.post<any>(Constant.BASE_URL + Constant.METHODS.DELETE_MASTER, payLoad)
-      .pipe(catchError(this.errorHandler))
+      Type: Constant.METHODS.Type,
+      Id: id.toString(),
+    };
+    return this.http
+      .post<any>(Constant.BASE_URL + Constant.METHODS.DELETE_MASTER, payLoad)
+      .pipe(catchError(this.errorHandler));
   }
 
   // vamster service
   getVmaster(): Observable<Vmaster[]> {
-    const payLoad = { "Type": "vazhipadALL", "Code": "" }
-    return this.http.post<Vmaster[]>(Constant.BASE_URL + Constant.METHODS.GET_MASTER, payLoad)
-      .pipe(catchError(this.errorHandler))
+    const payLoad = { Type: 'vazhipadALL', Code: '' };
+    return this.http
+      .post<Vmaster[]>(Constant.BASE_URL + Constant.METHODS.GET_MASTER, payLoad)
+      .pipe(catchError(this.errorHandler));
   }
 
   // create vamster
   createVmaster(id: string, obj: Vmaster): Observable<Vmaster> {
-    const Id = `${id}`
+    const Id = `${id}`;
     const payLoad = {
-      "vazhId": "",
-      "VazhCode": obj.VM_Code,
-      "VazhName": obj.VM_Name,
-      "VazhRName": obj.VM_RName,
-      "VazhAmt": obj.VM_Amt,
-      "VazhMaxNo": obj.VM_MaxNo,
-      "VazhReceipt": obj.VM_Receipt ? "Y" : "N",
-      "VazhBooking": obj.VM_Booking ? "Y" : "N",
-      "VazhSeasonal": obj.VM_Seasonal ? "Y" : "N",
-      "VazhMultiName": obj.VM_MultiName ? "Y" : "N",
-      "VMDevice": obj.VM_Device ? "Y" : "N",
-      "VMapp": obj.VM_Mobileapp ? "Y" : "N",
-      "VMspecial": obj.VM_Special ? "Y" : "N",
-      "VMRatechange": obj.VM_Rate_Change ? "Y" : "N",
-      "VazhTime": obj.VM_Time,
-      "VazhTimeLimit": obj.VM_TimeLimit,
-      "VMDescription": obj.VM_Description,
-      "VMAlert": obj.VM_AlertMsg,
-      "Active": obj.VM_Active ? "Y" : "N",
-      "VCatId": Id,
-      "ACHeadCode": obj.ACHeadCode,
-      "ACSubCode": obj.ACSubCode,
-      "Cuser": "1",
-      "VazhBlocking": obj.VM_Blocking ? "Y" : "N",
-      "Type": "INSERT",
-      "DisplayMode": obj.DisplayMode ? "Y" : "N"
-
-    }
-    return this.http.post<Vmaster>(Constant.BASE_URL + Constant.METHODS.CREATE_VMASTER, payLoad)
-      .pipe(catchError(this.errorHandler))
+      vazhId: '',
+      VazhCode: obj.VM_Code,
+      VazhName: obj.VM_Name,
+      VazhRName: obj.VM_RName,
+      VazhAmt: obj.VM_Amt,
+      VazhMaxNo: obj.VM_MaxNo,
+      VazhReceipt: obj.VM_Receipt ? 'Y' : 'N',
+      VazhBooking: obj.VM_Booking ? 'Y' : 'N',
+      VazhSeasonal: obj.VM_Seasonal ? 'Y' : 'N',
+      VazhMultiName: obj.VM_MultiName ? 'Y' : 'N',
+      VMDevice: obj.VM_Device ? 'Y' : 'N',
+      VMapp: obj.VM_Mobileapp ? 'Y' : 'N',
+      VMspecial: obj.VM_Special ? 'Y' : 'N',
+      VMRatechange: obj.VM_Rate_Change ? 'Y' : 'N',
+      VazhTime: obj.VM_Time,
+      VazhTimeLimit: obj.VM_TimeLimit,
+      VMDescription: obj.VM_Description,
+      VMAlert: obj.VM_AlertMsg,
+      Active: obj.VM_Active ? 'Y' : 'N',
+      VCatId: Id,
+      ACHeadCode: obj.ACHeadCode,
+      ACSubCode: obj.ACSubCode,
+      Cuser: '1',
+      VazhBlocking: obj.VM_Blocking ? 'Y' : 'N',
+      Type: 'INSERT',
+      DisplayMode: obj.DisplayMode ? 'Y' : 'N',
+    };
+    return this.http
+      .post<Vmaster>(
+        Constant.BASE_URL + Constant.METHODS.CREATE_VMASTER,
+        payLoad
+      )
+      .pipe(catchError(this.errorHandler));
   }
 
   // update vamster
   updateVmaster(VC_Id: string, obj: Vmaster, id: number): Observable<Vmaster> {
     const Id = `${id}`;
-    console.log(typeof(VC_Id),obj,id)
+    console.log(typeof VC_Id, obj, id);
     const payLoad = {
-      "vazhId": Id,
-      "VazhCode": obj.VM_Code,
-      "VazhName": obj.VM_Name,
-      "VazhRName": obj.VM_RName,
-      "VazhAmt": `${obj.VM_Amt}`,
-      "VazhMaxNo": `${obj.VM_MaxNo}`,
-      "VazhReceipt": obj.VM_Receipt ? "Y" : "N",
-      "VazhBooking": obj.VM_Booking ? "Y" : "N",
-      "VazhSeasonal": obj.VM_Seasonal ? "Y" : "N",
-      "VazhMultiName": obj.VM_MultiName ? "Y" : "N",
-      "VMDevice": obj.VM_Device ? "Y" : "N",
-      "VMapp": obj.VM_Mobileapp ? "Y" : "N",
-      "VMspecial": obj.VM_Special ? "Y" : "N",
-      "VMRatechange": obj.VM_Rate_Change ? "Y" : "N",
-      "VazhTime": obj.VM_Time,
-      "VazhTimeLimit": `${obj.VM_TimeLimit}`,
-      "VMDescription": obj.VM_Description,
-      "VMAlert": obj.VM_AlertMsg,
-      "Active": obj.VM_Active ? "Y" : "N",
-      "VCatId": `${VC_Id}`,
-      "ACHeadCode": obj.ACHeadCode,
-      "ACSubCode": obj.ACSubCode,
-      "Cuser": "1",
-      "VazhBlocking": obj.VM_Blocking ? "Y" : "N",
-      "Type": "UPDATE",
-      "DisplayMode": obj.DisplayMode ? "Y" : "N"
-    }
-console.log(payLoad)
-    return this.http.post<Vmaster>(Constant.BASE_URL + Constant.METHODS.CREATE_VMASTER, payLoad)
-      .pipe(catchError(this.errorHandler))
+      vazhId: Id,
+      VazhCode: obj.VM_Code,
+      VazhName: obj.VM_Name,
+      VazhRName: obj.VM_RName,
+      VazhAmt: `${obj.VM_Amt}`,
+      VazhMaxNo: `${obj.VM_MaxNo}`,
+      VazhReceipt: obj.VM_Receipt ? 'Y' : 'N',
+      VazhBooking: obj.VM_Booking ? 'Y' : 'N',
+      VazhSeasonal: obj.VM_Seasonal ? 'Y' : 'N',
+      VazhMultiName: obj.VM_MultiName ? 'Y' : 'N',
+      VMDevice: obj.VM_Device ? 'Y' : 'N',
+      VMapp: obj.VM_Mobileapp ? 'Y' : 'N',
+      VMspecial: obj.VM_Special ? 'Y' : 'N',
+      VMRatechange: obj.VM_Rate_Change ? 'Y' : 'N',
+      VazhTime: obj.VM_Time,
+      VazhTimeLimit: `${obj.VM_TimeLimit}`,
+      VMDescription: obj.VM_Description,
+      VMAlert: obj.VM_AlertMsg,
+      Active: obj.VM_Active ? 'Y' : 'N',
+      VCatId: `${VC_Id}`,
+      ACHeadCode: obj.ACHeadCode,
+      ACSubCode: obj.ACSubCode,
+      Cuser: '1',
+      VazhBlocking: obj.VM_Blocking ? 'Y' : 'N',
+      Type: 'UPDATE',
+      DisplayMode: obj.DisplayMode ? 'Y' : 'N',
+    };
+    console.log(payLoad);
+    return this.http
+      .post<Vmaster>(
+        Constant.BASE_URL + Constant.METHODS.CREATE_VMASTER,
+        payLoad
+      )
+      .pipe(catchError(this.errorHandler));
   }
 
   // delete vamster
   deleteVmaster(Id: string): Observable<void> {
     const payLoad = {
-      "Type": "vazhipad", "Id": Id
-    }
-    return this.http.post<void>(Constant.BASE_URL + Constant.METHODS.DELETE_MASTER, payLoad)
-      .pipe(catchError(this.errorHandler))
+      Type: 'vazhipad',
+      Id: Id,
+    };
+    return this.http
+      .post<void>(Constant.BASE_URL + Constant.METHODS.DELETE_MASTER, payLoad)
+      .pipe(catchError(this.errorHandler));
   }
 
   getVazhipadeByCode(code: any) {
     const payLoad = {
-      "Type": "vazhipad", "Code": code
-    }
-    return this.http.post(Constant.BASE_URL + Constant.METHODS.GET_MASTER, payLoad)
+      Type: 'vazhipad',
+      Code: code,
+    };
+    return this.http.post(
+      Constant.BASE_URL + Constant.METHODS.GET_MASTER,
+      payLoad
+    );
   }
-
-
-
 
   // // seasonal  master
   // get list  seasonl master vazhipad
   getAllSeasonalMasterVazhipadList(): Observable<any[]> {
-    return this.http.get<any[]>(Constant.BASE_URL + Constant.METHODS.GET_VSPECIAL)
+    return this.http.get<any[]>(
+      Constant.BASE_URL + Constant.METHODS.GET_VSPECIAL
+    );
   }
 
   // get list seasonl master
   getSeasonalMaster(): Observable<any[]> {
-    const payLoad = { "Type": "SeasonalALL", "Code": "12" }
-    return this.http.post<any[]>(Constant.BASE_URL + Constant.METHODS.GET_MASTER, payLoad)
+    const payLoad = { Type: 'SeasonalALL', Code: '12' };
+    return this.http.post<any[]>(
+      Constant.BASE_URL + Constant.METHODS.GET_MASTER,
+      payLoad
+    );
   }
 
   // create  seasonl master
   createSeasonalMaster(id: number, data: SeasonalMaster): Observable<any> {
     const payLoad = {
-      "VazhId": `${id}`,
-      "Fdate": data.VS_FromDate,
-      "Tdate": data.VS_ToDate,
-      "reason": data.VS_Reasion,
-      "Cuser": "2",
-      "Type": "INSERT"
-    }
-    console.log(payLoad)
-    return this.http.post<any>(Constant.BASE_URL + Constant.METHODS.CREATE_SEASONAL, payLoad);
+      VazhId: `${id}`,
+      Fdate: data.VS_FromDate,
+      Tdate: data.VS_ToDate,
+      reason: data.VS_Reasion,
+      Cuser: '2',
+      Type: 'INSERT',
+    };
+    console.log(payLoad);
+    return this.http.post<any>(
+      Constant.BASE_URL + Constant.METHODS.CREATE_SEASONAL,
+      payLoad
+    );
   }
 
   // update  seasonal master
   updateSeasonalMaster(id: number, data: SeasonalMaster): Observable<any> {
     const payLoad = {
-      "VazhId": `${id}`,
-      "Fdate": data.VS_FromDate,
-      "Tdate": data.VS_ToDate,
-      "reason": data.VS_Reasion,
-      "Cuser": "2",
-      "Type": "UPDATE"
-    }
-    return this.http.post<any>(Constant.BASE_URL + Constant.METHODS.CREATE_SEASONAL, payLoad)
-      .pipe(catchError(this.errorHandler))
+      VazhId: `${id}`,
+      Fdate: data.VS_FromDate,
+      Tdate: data.VS_ToDate,
+      reason: data.VS_Reasion,
+      Cuser: '2',
+      Type: 'UPDATE',
+    };
+    return this.http
+      .post<any>(Constant.BASE_URL + Constant.METHODS.CREATE_SEASONAL, payLoad)
+      .pipe(catchError(this.errorHandler));
   }
 
   // delete  seasonl master
   deleteSeasonalMaster(id: string): Observable<any> {
-
-    const payLoad = { "Type": "Seasonal", "Id":id }
-    return this.http.post<any>(Constant.BASE_URL + Constant.METHODS.DELETE_MASTER, payLoad)
-      .pipe(catchError(this.errorHandler))
+    const payLoad = { Type: 'Seasonal', Id: id };
+    return this.http
+      .post<any>(Constant.BASE_URL + Constant.METHODS.DELETE_MASTER, payLoad)
+      .pipe(catchError(this.errorHandler));
   }
-
-
-
-
-
 
   // special day master
   // get list special vazhipad
   getAllSpecialVazhipadList(): Observable<SpecialDayMasterList[]> {
-    return this.http.get<SpecialDayMasterList[]>(Constant.BASE_URL + Constant.METHODS.GET_MASTER)
+    return this.http.get<SpecialDayMasterList[]>(
+      Constant.BASE_URL + Constant.METHODS.GET_MASTER
+    );
   }
 
   //// get list special vazhipad
   getSpecialDayMaster(): Observable<SpecialDayMaster[]> {
-    return this.http.get<SpecialDayMaster[]>(Constant.BASE_URL + Constant.METHODS.GET_ALL_SPECIAL)
+    return this.http.get<SpecialDayMaster[]>(
+      Constant.BASE_URL + Constant.METHODS.GET_ALL_SPECIAL
+    );
   }
 
   // create special day
   createSpecialDayMaster(data: SpecialDayMaster): Observable<SpecialDayMaster> {
-    return this.http.post<SpecialDayMaster>(Constant.BASE_URL + Constant.METHODS.CREATE_VSPECIAL, data);
+    return this.http.post<SpecialDayMaster>(
+      Constant.BASE_URL + Constant.METHODS.CREATE_VSPECIAL,
+      data
+    );
   }
 
   // update special day
   updateSpecialDay(id: Number, obj: SpecialDayMaster): Observable<any> {
-    return this.http.put<SpecialDayMaster>(Constant.BASE_URL + Constant.METHODS.UPDATE_VSPECIAL + id, obj)
-      .pipe(catchError(this.errorHandler))
+    return this.http
+      .put<SpecialDayMaster>(
+        Constant.BASE_URL + Constant.METHODS.UPDATE_VSPECIAL + id,
+        obj
+      )
+      .pipe(catchError(this.errorHandler));
   }
 
   // delete special day
   deleteSpecialDay(id: string): Observable<any> {
-    return this.http.delete<any>(Constant.BASE_URL + Constant.METHODS.DELETE_VSPECIAL + id)
-      .pipe(catchError(this.errorHandler))
+    return this.http
+      .delete<any>(Constant.BASE_URL + Constant.METHODS.DELETE_VSPECIAL + id)
+      .pipe(catchError(this.errorHandler));
   }
-
-
 
   // vihidham master
 
-
-
   //// get list vihidham master
   getVihidhamMaster(): Observable<any[]> {
-    return this.http.get<any[]>(Constant.BASE_URL + Constant.METHODS.GET_ALL_VIHIDHAM)
+    return this.http.get<any[]>(
+      Constant.BASE_URL + Constant.METHODS.GET_ALL_VIHIDHAM
+    );
   }
 
   // create  vihidham master
   createVihidhamMaster(data: any): Observable<any> {
-    return this.http.post<any>(Constant.BASE_URL + Constant.METHODS.CREATE_VIHIDHAM, data);
+    return this.http.post<any>(
+      Constant.BASE_URL + Constant.METHODS.CREATE_VIHIDHAM,
+      data
+    );
   }
 
   // update  vihidham master
   updateVihidhamMaster(id: string, obj: any): Observable<any> {
-    return this.http.put<any>(Constant.BASE_URL + Constant.METHODS.UPDATE_VIHIDHAM + id, obj).pipe(catchError(this.errorHandler))
+    return this.http
+      .put<any>(Constant.BASE_URL + Constant.METHODS.UPDATE_VIHIDHAM + id, obj)
+      .pipe(catchError(this.errorHandler));
   }
 
   // delete  vihidham master
   deleteVihidhamMaster(id: string): Observable<any> {
-    return this.http.delete<any>(Constant.BASE_URL + Constant.METHODS.DELETE_VIHIDHAM + id).pipe(catchError(this.errorHandler))
+    return this.http
+      .delete<any>(Constant.BASE_URL + Constant.METHODS.DELETE_VIHIDHAM + id)
+      .pipe(catchError(this.errorHandler));
   }
-
-
 
   // item master
 
   //// get list item master
   getItemMaster(): Observable<any[]> {
-    return this.http.get<any[]>(Constant.BASE_URL + Constant.METHODS.GET_ALL_ITEM)
+    return this.http.get<any[]>(
+      Constant.BASE_URL + Constant.METHODS.GET_ALL_ITEM
+    );
   }
 
   // create  item master
   createItemMaster(data: any): Observable<any> {
-    return this.http.post<any>(Constant.BASE_URL + Constant.METHODS.CREATE_ITEM, data);
+    return this.http.post<any>(
+      Constant.BASE_URL + Constant.METHODS.CREATE_ITEM,
+      data
+    );
   }
 
   // update  item master
   updateItemMaster(id: string, obj: any): Observable<any> {
-    return this.http.put<any>(Constant.BASE_URL + Constant.METHODS.UPDATE_ITEM + id, obj).pipe(catchError(this.errorHandler))
+    return this.http
+      .put<any>(Constant.BASE_URL + Constant.METHODS.UPDATE_ITEM + id, obj)
+      .pipe(catchError(this.errorHandler));
   }
 
   // delete  item master
   deleteItemMaster(id: string): Observable<any> {
-    return this.http.delete<any>(Constant.BASE_URL + Constant.METHODS.DELETE_ITEM + id).pipe(catchError(this.errorHandler))
+    return this.http
+      .delete<any>(Constant.BASE_URL + Constant.METHODS.DELETE_ITEM + id)
+      .pipe(catchError(this.errorHandler));
   }
-
 
   // member details
 
   getMember(): Observable<any[]> {
-    return this.http.get<any[]>(Constant.BASE_URL + Constant.METHODS.GET_ALL_MEMBER)
+    return this.http.get<any[]>(
+      Constant.BASE_URL + Constant.METHODS.GET_ALL_MEMBER
+    );
   }
 
   // create  member master
   createMember(data: any): Observable<any> {
-    return this.http.post<any>(Constant.BASE_URL + Constant.METHODS.CREATE_MEMBER, data);
+    return this.http.post<any>(
+      Constant.BASE_URL + Constant.METHODS.CREATE_MEMBER,
+      data
+    );
   }
 
   // update  member master
   updateMember(id: string, obj: any): Observable<any> {
-    return this.http.put<any>(Constant.BASE_URL + Constant.METHODS.UPDATE_MEMBER + id, obj).pipe(catchError(this.errorHandler))
+    return this.http
+      .put<any>(Constant.BASE_URL + Constant.METHODS.UPDATE_MEMBER + id, obj)
+      .pipe(catchError(this.errorHandler));
   }
 
   // delete  member master
   deleteMember(id: string): Observable<any> {
-    return this.http.delete<any>(Constant.BASE_URL + Constant.METHODS.DELETE_MEMBER + id).pipe(catchError(this.errorHandler))
+    return this.http
+      .delete<any>(Constant.BASE_URL + Constant.METHODS.DELETE_MEMBER + id)
+      .pipe(catchError(this.errorHandler));
   }
-
-
 
   // combo master
   getAllComoVazhipadList(): Observable<any[]> {
-    return this.http.get<any[]>(Constant.BASE_URL + Constant.METHODS.GET_VCOMBO)
+    return this.http.get<any[]>(
+      Constant.BASE_URL + Constant.METHODS.GET_VCOMBO
+    );
   }
 
   getComboVazhipad(id: string): Observable<any[]> {
-    return this.http.get<any[]>(Constant.BASE_URL + Constant.METHODS.GET_VCOMBO_BYID)
+    return this.http.get<any[]>(
+      Constant.BASE_URL + Constant.METHODS.GET_VCOMBO_BYID
+    );
   }
 
   // get list combo vazhipad
   getComboMaster(): Observable<any[]> {
-    return this.http.get<any[]>(Constant.BASE_URL + Constant.METHODS.GET_ALL_VCOMBO)
+    return this.http.get<any[]>(
+      Constant.BASE_URL + Constant.METHODS.GET_ALL_VCOMBO
+    );
   }
-  // create combo 
+  // create combo
   createComboMaster(data: any): Observable<any> {
-    return this.http.post<any>(Constant.BASE_URL + Constant.METHODS.CREATE_VCOMBO, data);
+    return this.http.post<any>(
+      Constant.BASE_URL + Constant.METHODS.CREATE_VCOMBO,
+      data
+    );
   }
 
-  // update combo 
+  // update combo
   updateCombo(id: string, obj: any): Observable<any> {
-    return this.http.put<any>(Constant.BASE_URL + Constant.METHODS.UPDATE_VCOMBO + id, obj).pipe(catchError(this.errorHandler))
+    return this.http
+      .put<any>(Constant.BASE_URL + Constant.METHODS.UPDATE_VCOMBO + id, obj)
+      .pipe(catchError(this.errorHandler));
   }
 
-  // delete combo 
+  // delete combo
   deleteCombo(id: string): Observable<any> {
-    return this.http.delete<any>(Constant.BASE_URL + Constant.METHODS.DELETE_VCOMBO + id).pipe(catchError(this.errorHandler))
+    return this.http
+      .delete<any>(Constant.BASE_URL + Constant.METHODS.DELETE_VCOMBO + id)
+      .pipe(catchError(this.errorHandler));
   }
 
   // day master
 
-
-
   // get list day vazhipad
   getDayMaster(): Observable<any[]> {
-    const payLoad = { "Type": "DayALL", "Code": "12" }
-    return this.http.post<any[]>(Constant.BASE_URL + Constant.METHODS.GET_MASTER, payLoad)
+    const payLoad = { Type: 'DayALL', Code: '12' };
+    return this.http.post<any[]>(
+      Constant.BASE_URL + Constant.METHODS.GET_MASTER,
+      payLoad
+    );
   }
   // create  day
-  createDayMaster(payLoad:object): Observable<any> {
+  createDayMaster(payLoad: object): Observable<any> {
     // console.log(typeof(VMId));
     // console.log(data.Day)
     // const payLoad = { "VazhId": `${VMId}`, "Day": data.Day, "Cuser": "2", "Type": "INSERT" }
     // console.log(payLoad);
-    return this.http.post<any>(Constant.BASE_URL + Constant.METHODS.CREATE_VDAY, payLoad);
+    return this.http.post<any>(
+      Constant.BASE_URL + Constant.METHODS.CREATE_VDAY,
+      payLoad
+    );
   }
 
   // update  day
   updateDay(): Observable<any> {
-    const payLoad = { "VazhId": "1", "Day": "4", "Cuser": "2", "Type": "UPDATE" }
-    return this.http.post<any>(Constant.BASE_URL + Constant.METHODS.CREATE_VDAY, payLoad).pipe(catchError(this.errorHandler))
+    const payLoad = { VazhId: '1', Day: '4', Cuser: '2', Type: 'UPDATE' };
+    return this.http
+      .post<any>(Constant.BASE_URL + Constant.METHODS.CREATE_VDAY, payLoad)
+      .pipe(catchError(this.errorHandler));
   }
 
   // delete  day
   deleteDay(id: number): Observable<any> {
     console.log(id);
-    const payLoad = { "Type": "DayMaster", "Id": `${id}` }
-    return this.http.post<any>(Constant.BASE_URL + Constant.METHODS.DELETE_MASTER, payLoad).pipe(catchError(this.errorHandler))
+    const payLoad = { Type: 'DayMaster', Id: `${id}` };
+    return this.http
+      .post<any>(Constant.BASE_URL + Constant.METHODS.DELETE_MASTER, payLoad)
+      .pipe(catchError(this.errorHandler));
   }
 
   // blocking master
 
-  
   // get list block vazhipad
-  getBlockingMaster(payLoad:object): Observable<any[]> {
-    return this.http.post<any[]>(Constant.BASE_URL + Constant.METHODS.GET_MASTER,payLoad)
+  getBlockingMaster(payLoad: object): Observable<any[]> {
+    return this.http.post<any[]>(
+      Constant.BASE_URL + Constant.METHODS.GET_MASTER,
+      payLoad
+    );
   }
-  // create block 
+  // create block
   createBlockingMaster(data: any): Observable<any> {
     console.log(data);
-    return this.http.post<any>(Constant.BASE_URL + Constant.METHODS.CREATE_VBLOCK, data);
+    return this.http.post<any>(
+      Constant.BASE_URL + Constant.METHODS.CREATE_VBLOCK,
+      data
+    );
   }
 
-  // update block 
-  updateBlockingMaster(payLoad:any): Observable<any> {
-    return this.http.post<any>(Constant.BASE_URL + Constant.METHODS.CREATE_VBLOCK, payLoad).pipe(catchError(this.errorHandler))
+  // update block
+  updateBlockingMaster(payLoad: any): Observable<any> {
+    return this.http
+      .post<any>(Constant.BASE_URL + Constant.METHODS.CREATE_VBLOCK, payLoad)
+      .pipe(catchError(this.errorHandler));
   }
 
   // delete block
-  deleteBlockingMaster(payLoad:object): Observable<any> {
-    return this.http.post<any>(Constant.BASE_URL + Constant.METHODS.DELETE_MASTER,payLoad).pipe(catchError(this.errorHandler))
+  deleteBlockingMaster(payLoad: object): Observable<any> {
+    return this.http
+      .post<any>(Constant.BASE_URL + Constant.METHODS.DELETE_MASTER, payLoad)
+      .pipe(catchError(this.errorHandler));
   }
   // get nakshthram
   getNakshthra(): Observable<string[]> {
@@ -469,18 +573,20 @@ console.log(payLoad)
 
   // get account heads
   getAccountHeads(): Observable<AccountHead[]> {
-    return this.http.get<AccountHead[]>(Constant.BASE_URL + Constant.METHODS.GET_ACCOUNTHEAD);
+    return this.http.get<AccountHead[]>(
+      Constant.BASE_URL + Constant.METHODS.GET_ACCOUNTHEAD
+    );
   }
   // get account sub heads
   getSubAccountHeads(): Observable<AccountSubHead[]> {
-    return this.http.get<AccountSubHead[]>(Constant.BASE_URL + Constant.METHODS.GET_SUBACCOUNTHEAD);
+    return this.http.get<AccountSubHead[]>(
+      Constant.BASE_URL + Constant.METHODS.GET_SUBACCOUNTHEAD
+    );
   }
 
   // error handling
   private errorHandler(error: HttpErrorResponse) {
-
     //
     return throwError(() => new Error('Error occurred'));
   }
-
 }

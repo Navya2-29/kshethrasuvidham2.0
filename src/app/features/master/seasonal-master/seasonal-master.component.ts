@@ -57,7 +57,7 @@ export class SeasonalMasterComponent implements OnInit {
       if (response.length > 0) {
         this.seasonalBlockingForm.get('VM_name')?.setValue(response[0].VM_Name);
         this.VM_Id = response[0].VM_Id;
-        console.log(response)
+        console.log(this.VM_Id);
       }
       else if (!response) {
         this.notification.showError("Vazhipad is not exist for code");
@@ -128,7 +128,6 @@ export class SeasonalMasterComponent implements OnInit {
     }
   }
 
-
   // resetting form controls
   onReset() {
     this.loading = true;
@@ -143,12 +142,14 @@ export class SeasonalMasterComponent implements OnInit {
     console.log(data);
     this.updateFlag = true;
     this.Id = data.VM_ID;
-    this.seasonalBlockingForm.get('VS_code')?.disable();
-    this.seasonalBlockingForm.get('VM_name')?.disable();
+    // this.seasonalBlockingForm.get('VS_code')?.disable();
+    // this.seasonalBlockingForm.get('VM_name')?.disable();
     const fromDate = new Date(data.VS_FromDate);
     const toDate = new Date(data.VS_ToDate);
     console.log(this.vazhipadDetails)
     this.seasonalBlockingForm.patchValue({
+      VS_code: data.VM_Code,
+      VM_name:data.VM_Name,
       VS_FromDate: this.datePipe.transform(fromDate, 'yyyy-MM-dd'),
       VS_ToDate: this.datePipe.transform(toDate, 'yyyy-MM-dd'),
       VS_Reasion: data.VS_Reasion
@@ -208,13 +209,12 @@ export class SeasonalMasterComponent implements OnInit {
     else {
       this.filteredSeasonalMaster = this.seasonalMaster.filter((data) => {
         console.log(data)
-        return data.VM_name.toLowerCase().includes(this.searchQuery.toLowerCase()) || data.VS_code.toLowerCase().includes(this.searchQuery.toLowerCase())
+        return data.VM_Name.toLowerCase().includes(this.searchQuery.toLowerCase()) || data.VM_Code.toLowerCase().includes(this.searchQuery.toLowerCase())
       });
 
     }
     this.showNoRecordsMessage = this.filteredSeasonalMaster.length === 0
   }
-
 
 
 
