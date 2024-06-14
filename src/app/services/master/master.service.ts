@@ -266,6 +266,16 @@ export class MasterService {
     );
   }
 
+getSeasonalVazhipadeByCode(code: any) {
+    const payLoad = {
+      Type: 'Seasonal',
+      Code: code,
+    };
+    return this.http.post(
+      Constant.BASE_URL + Constant.METHODS.GET_MASTER,
+      payLoad
+    );
+  }
   // // seasonal  master
   // get list  seasonl master vazhipad
   getAllSeasonalMasterVazhipadList(): Observable<any[]> {
@@ -310,6 +320,7 @@ export class MasterService {
       Cuser: '2',
       Type: 'UPDATE',
     };
+    console.log(payLoad);
     return this.http
       .post<any>(Constant.BASE_URL + Constant.METHODS.CREATE_SEASONAL, payLoad)
       .pipe(catchError(this.errorHandler));

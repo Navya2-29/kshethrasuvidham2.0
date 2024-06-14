@@ -385,7 +385,7 @@
               <tbody>
                 <tr *ngFor="let data of filteredBlockingMater">
                   <td>{{ data.VB_ID }}</td>
-                  <td>{{ data.VM_Code }}-{{ data.VM_Name }}</td>
+                  <td>{{ data.VM_Code }}-{{ data.VM_Name }}-{{data.VM_ID}}</td>
                   <td></td>
                   <!-- <td *ngIf="data.VB_DateType!='M'">{{data.VB_FromDate | date:'dd-MM-yyyy'}}</td> -->
                   <ng-container

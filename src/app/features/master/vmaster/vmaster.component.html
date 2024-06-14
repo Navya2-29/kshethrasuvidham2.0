@@ -20,13 +20,14 @@
                 <table class="table">
                   <tr>
                     <td>
-                      Vazhipad Code <span class="text-danger">*</span
+                      Vazhipad Code<span class="text-danger">*</span
                       ><input
                         type="text"
                         maxlength="10"
                         formControlName="VM_Code"
                         class="form-control sps"
                         placeholder="Enter Code"
+                        [readOnly]="updateFlag"
                       />
                       <div
                         *ngIf="
@@ -233,19 +234,21 @@
 
                     <td>
                       No Limit<input
-                        type="text"
+                        type="number"
                         formControlName="VM_MaxNo"
                         class="form-control sps"
                         placeholder="in Nos"
+                        min="0"
                       />
                     </td>
 
                     <td>
                       Time Limit<input
-                        type="text"
+                        type="number"
                         formControlName="VM_TimeLimit"
                         class="form-control sps"
                         placeholder="in Hours"
+                        min="0"
                       />
                     </td>
                   </tr>
@@ -263,36 +266,8 @@
                       <small>Invalid rate</small>
                     </div>
                   </div>
-                  <div
-                    *ngIf="
-                      vmasterFormControl['VM_MaxNo'].invalid &&
-                      (vmasterFormControl['VM_MaxNo'].dirty ||
-                        vmasterFormControl['VM_MaxNo'].touched)
-                    "
-                    class="pl-1 text-danger"
-                  >
-                    <div
-                      *ngIf="vmasterFormControl['VM_MaxNo'].hasError('pattern')"
-                    >
-                      <small>only numbers are allowed</small>
-                    </div>
-                  </div>
-                  <div
-                    *ngIf="
-                      vmasterFormControl['VM_TimeLimit'].invalid &&
-                      (vmasterFormControl['VM_TimeLimit'].dirty ||
-                        vmasterFormControl['VM_TimeLimit'].touched)
-                    "
-                    class="pl-1 text-danger"
-                  >
-                    <div
-                      *ngIf="
-                        vmasterFormControl['VM_TimeLimit'].hasError('pattern')
-                      "
-                    >
-                      <small>only numbers are allowed</small>
-                    </div>
-                  </div>
+                  
+                 
                   <tr>
                     <td>
                       <input

@@ -51,19 +51,24 @@ export class SeasonalMasterComponent implements OnInit {
     this.seasonalBlockingForm.get('VS_code')!.valueChanges.pipe(
       debounceTime(300),
       switchMap((code) =>
-        this.masterService.getVazhipadeByCode(code)
+        this.masterService.getSeasonalVazhipadeByCode(code)
       )
     ).subscribe((response: any) => {
       if (response.length > 0) {
         this.seasonalBlockingForm.get('VM_name')?.setValue(response[0].VM_Name);
         this.VM_Id = response[0].VM_Id;
-        console.log(this.VM_Id);
+        console.log(response);
       }
-      else if (!response) {
-        this.notification.showError("Vazhipad is not exist for code");
-      }
+      
       else {
-        this.seasonalBlockingForm.get('VM_name')?.setValue('');
+        if(this.seasonalBlockingForm.value.VS_code==="" || null){
+          this.seasonalBlockingForm.get('VM_name')?.setValue('');
+
+        }else{
+          this.seasonalBlockingForm.get('VM_name')?.setValue('');
+          this.notification.showWarning(`No  Seasonal vazhipad exist for this code ${this.seasonalBlockingForm.value.VS_code}`)
+        }
+        
       }
     });
   }
@@ -93,7 +98,6 @@ export class SeasonalMasterComponent implements OnInit {
   formatDate(date: string): string {
     return this.datePipe.transform(date, 'dd-MM-yyyy') || '';
   }
-
 
   onSubmit() {
     const fromDateString = this.seasonalBlockingForm.value.VS_FromDate;
@@ -162,14 +166,14 @@ export class SeasonalMasterComponent implements OnInit {
     this.loading = true;
     const fromDateString = this.seasonalBlockingForm.value.VS_FromDate;
     const toDateString = this.seasonalBlockingForm.value.VS_ToDate;
-    
     this.seasonalBlockingForm.patchValue({
       VS_FromDate: this.formatDate(fromDateString),
       VS_ToDate: this.formatDate(toDateString)
     })
 
     if (this.seasonalBlockingForm.valid) {
-      console.log(this.seasonalBlockingForm.value, this.Id);
+      console.log(this.seasonalBlockingForm.value);
+      console.log(this.Id);
       this.masterService.updateSeasonalMaster(this.Id, this.seasonalBlockingForm.value).subscribe((res) => {
         if (res.RespStatus == 'U') {
           this.notification.showSuccess('Seasonal details updated successfully');
@@ -215,8 +219,6 @@ export class SeasonalMasterComponent implements OnInit {
     }
     this.showNoRecordsMessage = this.filteredSeasonalMaster.length === 0
   }
-
-
 
   // validation
   markFormGroupTouched(formGroup: FormGroup) {

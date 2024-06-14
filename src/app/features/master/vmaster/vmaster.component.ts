@@ -307,8 +307,10 @@ export class VmasterComponent implements OnInit {
     const Id = id + '';
     this.masterService.deleteVmaster(Id).subscribe((res) => {
       this.loading = false;
+      this.getVmaster();
       this.notification.showSuccess(' Vazhipad Details deleted successfully');
     });
+    
   }
   // search functionality by name and code
   onSearch(searchQuery: string) {
