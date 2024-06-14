@@ -57,12 +57,12 @@ export class VazhipadBlockingComponent {
       Nakshathra: ["0"],
       VB_radio: ['Y', ],
       VB_DateType: ['E',],
-      VB_MalFDay: ['',[Validators.pattern(/[0-9\+\-]/)]],
-      VB_MalFMonth: ['',[Validators.pattern(/[0-9\+\-]/)]],
-      VB_MalFYear: ['',[Validators.pattern(/[0-9\+\-]/)]],
-      VB_MalTDay: ['',[Validators.pattern(/[0-9\+\-]/)]],
-      VB_MalTMonth: ['',[Validators.pattern(/[0-9\+\-]/)]],
-      VB_MalTYear: ['',[Validators.pattern(/[0-9\+\-]/)]]
+      VB_MalFDay: ['',[Validators.pattern('^[1-9][0-9]*$')]],
+      VB_MalFMonth: ['',[Validators.pattern('^[1-9][0-9]*$')]],
+      VB_MalFYear: ['',[Validators.pattern('^[1-9][0-9]*$')]],
+      VB_MalTDay: ['',[Validators.pattern('^[1-9][0-9]*$')]],
+      VB_MalTMonth: ['',[Validators.pattern('^[1-9][0-9]*$')]],
+      VB_MalTYear: ['',[Validators.pattern('^[1-9][0-9]*$')]]
     })
   }
 

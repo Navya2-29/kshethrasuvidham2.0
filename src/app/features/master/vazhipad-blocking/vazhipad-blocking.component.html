@@ -18,7 +18,7 @@
             <table class="table">
               <tr>
                 <td>
-                  Vazhipad Code<input
+                  Vazhipad Code<span class="text-danger">*</span><input
                     type="text"
                     [readonly]="updateFlag"
                     class="form-control sps"
@@ -58,7 +58,7 @@
               </tr>
 
               <tr>
-                <td>Blocking Category</td>
+                <td>Blocking Category<span class="text-danger">*</span></td>
               </tr>
               <tr>
                 <td colspan="3">
@@ -107,7 +107,7 @@
                   <label class="font-weight:bold"
                     ><b>{{ VB_category }} Blocking</b></label
                   ><br />
-                  Date Category
+                  Date Category<span class="text-danger">*</span>
                 </td>
               </tr>
               <tr>
@@ -146,7 +146,7 @@
               </div>
               <tr *ngIf="dateType != 'Malayalam'">
                 <td>
-                  From date<input
+                  From date<span class="text-danger">*</span><input
                     required
                     type="date"
                     [min]="today"
@@ -157,7 +157,7 @@
                 
 
                 <td>
-                  To date<input
+                  To date<span class="text-danger">*</span><input
                     required
                     type="date"
                     class="form-control sps"
@@ -202,31 +202,53 @@
               </div>
               <tr *ngIf="dateType == 'Malayalam'">
                 <td>
-                  From date
+                  From date<span class="text-danger">*</span>
                   <input
                     type="text"
                     class="form-control sps"
                     formControlName="VB_MalFDay"
                   />
                 </td>
+                <div
+                *ngIf="vazhipadBlockingControl['VB_MalFDay'].invalid && (vazhipadBlockingControl['VB_MalFDay'].dirty || vazhipadBlockingControl['VB_MalFDay'].touched)"
+                class="pl-1 text-danger">
+                <div *ngIf="vazhipadBlockingControl['VB_MalFDay'].hasError('pattern')">
+                  <small>only numbers are allowed</small>
+                </div>
+              </div>
                 <td>
-                  Month<input
+                  Month<span class="text-danger">*</span><input
                     type="text"
                     class="form-control sps"
                     formControlName="VB_MalFMonth"
                   />
                 </td>
+                <div
+                      *ngIf="vazhipadBlockingControl['VB_MalFMonth'].invalid && (vazhipadBlockingControl['VB_MalFMonth'].dirty || vazhipadBlockingControl['VB_MalFMonth'].touched)"
+                      class="pl-1 text-danger">
+                      <div *ngIf="vazhipadBlockingControl['VB_MalFMonth'].hasError('pattern')">
+                        <small>only numbers are allowed</small>
+                      </div>
+                    </div>
                 <td>
-                  Year<input
+                  Year<span class="text-danger">*</span><input
                     type="text"
                     class="form-control sps"
                     formControlName="VB_MalFYear"
                   />
                 </td>
+                
+                <div
+                      *ngIf="vazhipadBlockingControl['VB_MalFYear'].invalid && (vazhipadBlockingControl['VB_MalFYear'].dirty || vazhipadBlockingControl['VB_MalFYear'].touched)"
+                      class="pl-1 text-danger">
+                      <div *ngIf="vazhipadBlockingControl['VB_MalFYear'].hasError('pattern')">
+                        <small>only numbers are allowed</small>
+                      </div>
+                    </div>
               </tr>
               <tr *ngIf="dateType == 'Malayalam'">
                 <td>
-                  To date
+                  To date<span class="text-danger">*</span>
                   <input
                     type="text"
                     class="form-control sps"
@@ -241,7 +263,7 @@
                       </div>
                     </div>
                 <td>
-                  month<input
+                  month<span class="text-danger">*</span><input
                     type="text"
                     class="form-control sps"
                     formControlName="VB_MalTMonth"
@@ -255,20 +277,20 @@
                       </div>
                     </div>
                 <td>
-                  year<input
+                  year<span class="text-danger">*</span><input
                     type="text"
                     class="form-control sps"
                     formControlName="VB_MalTYear"
                   />
                 </td>
-                <div
-                      *ngIf="vazhipadBlockingControl['VB_MalTYear'].invalid && (vazhipadBlockingControl['VB_MalTYear'].dirty || vazhipadBlockingControl['VB_MalTYear'].touched)"
+                
+              </tr>
+              <div *ngIf="vazhipadBlockingControl['VB_MalTYear'].invalid && (vazhipadBlockingControl['VB_MalTYear'].dirty || vazhipadBlockingControl['VB_MalTYear'].touched)"
                       class="pl-1 text-danger">
                       <div *ngIf="vazhipadBlockingControl['VB_MalTYear'].hasError('pattern')">
                         <small>only numbers are allowed</small>
                       </div>
                     </div>
-              </tr>
               <tr *ngIf="blockingFlag">
                 <td colspan="3">
                   Nakshathra
