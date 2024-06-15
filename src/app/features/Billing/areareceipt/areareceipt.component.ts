@@ -16,7 +16,6 @@ import { MultidayComponent } from '../multiday/multiday.component';
 export interface vazhipad {
  name: string;
 }
-
 @Component({
   selector: 'app-areareceipt',
   standalone: true,
@@ -24,7 +23,6 @@ export interface vazhipad {
   templateUrl: './areareceipt.component.html',
   styleUrl: './areareceipt.component.css'
 })
-
 export class AreareceiptComponent {
   rows: any[] = [];
   vazhipadCtrl = new FormControl('');

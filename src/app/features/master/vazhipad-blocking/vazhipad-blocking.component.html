@@ -56,7 +56,6 @@
                   />
                 </td>
               </tr>
-
               <tr>
                 <td>Blocking Category<span class="text-danger">*</span></td>
               </tr>
@@ -154,8 +153,6 @@
                     formControlName="VB_FromDate"
                   />
                 </td>
-                
-
                 <td>
                   To date<span class="text-danger">*</span><input
                     required
@@ -164,8 +161,6 @@
                     formControlName="VB_ToDate"
                   />
                 </td>
-                
-
               </tr>
               <div
                 *ngIf="
@@ -282,8 +277,7 @@
                     class="form-control sps"
                     formControlName="VB_MalTYear"
                   />
-                </td>
-                
+                </td>           
               </tr>
               <div *ngIf="vazhipadBlockingControl['VB_MalTYear'].invalid && (vazhipadBlockingControl['VB_MalTYear'].dirty || vazhipadBlockingControl['VB_MalTYear'].touched)"
                       class="pl-1 text-danger">

@@ -73,7 +73,7 @@ export class VmasterComponent implements OnInit {
       ],
       VM_Name: ["", [Validators.required, Validators.maxLength(100),Validators.pattern('^[a-zA-Z0-9/][a-zA-Z0-9./ ]*$')]],
       VM_RName: ["", [Validators.required]],
-      VM_Amt: [0, [Validators.required, Validators.pattern('^[1-9][0-9]*$')]],
+      VM_Amt: [0, [Validators.required, Validators.pattern('^[0-9][0-9]*$')]],
       VM_MaxNo: [0, [Validators.pattern('^[0-9][0-9]*$')]],
       VM_Receipt: [false],
       VM_Booking: [false],
