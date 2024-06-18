@@ -8,5 +8,6 @@ export interface DayMaster{
 export interface VMList{
  VM_Id:number;
  VM_Name:string;
+ VM_Code:string;
 
 }

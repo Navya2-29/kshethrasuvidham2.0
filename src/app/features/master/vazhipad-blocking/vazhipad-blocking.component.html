@@ -68,14 +68,14 @@
                     formControlName="VB_radio"
                     class="m-2"
                   />
-                  Yearly
+                  Weakly
                   <input
                     type="radio"
                     name="VB_radio"
                     formControlName="VB_radio"
                     value="M"
                   />
-                  Monthly
+                  Date wise
                   <input
                     type="radio"
                     formControlName="VB_radio"
@@ -101,7 +101,7 @@
                   <small>Blocking category is required.</small>
                 </div>
               </div>
-              <tr>
+              <tr  *ngIf="VB_category!='Yearly'">
                 <td>
                   <label class="font-weight:bold"
                     ><b>{{ VB_category }} Blocking</b></label
@@ -109,7 +109,7 @@
                   Date Category<span class="text-danger">*</span>
                 </td>
               </tr>
-              <tr>
+              <tr  *ngIf="VB_category!='Yearly'">
                 <td colspan="3">
                   <input
                     type="radio"
@@ -143,7 +143,18 @@
                   <small>Date type is required.</small>
                 </div>
               </div>
-              <tr *ngIf="dateType != 'Malayalam'">
+
+              <tr *ngIf="VB_category==='Yearly'">
+                <td >
+                  <input type="checkbox" style="padding-right:  30px;"> &nbsp; Sunday &nbsp;
+                  <input type="checkbox">  &nbsp;Monday &nbsp; <input type="checkbox"> &nbsp;Tuesday 
+                 &nbsp;<input type="checkbox"> Wednesday &nbsp;
+                  <input type="checkbox"> &nbsp;Thursday &nbsp;
+                  <input type="checkbox"> &nbsp;Friday&nbsp;
+                  <input type="checkbox"> &nbsp;Saturday
+                </td>
+              </tr>
+              <tr *ngIf="VB_category != 'Yearly'">
                 <td>
                   From date<span class="text-danger">*</span><input
                     required

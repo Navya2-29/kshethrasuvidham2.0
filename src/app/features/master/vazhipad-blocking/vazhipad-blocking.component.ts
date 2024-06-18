@@ -137,18 +137,15 @@ export class VazhipadBlockingComponent {
       fromDateControl!.clearValidators();
       toDateControl!.clearValidators();
     }
-
   }
 
-  getDteTpe(dateType: string) {
+   getDteTpe(dateType: string) {
     if (dateType === "M" ) {
       this.dateType = "Malayalam";
         this.vazhipadBlockingForm.patchValue({
           VB_FromDate:"",
           VB_ToDate:""
         })
-      
-      
     }
     else {
       this.dateType = "English";

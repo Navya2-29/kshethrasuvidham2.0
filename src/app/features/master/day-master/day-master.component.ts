@@ -120,7 +120,7 @@ export class DayMasterComponent implements OnInit {
     this.masterService.getVmaster().subscribe({
       next: (data) => {
         console.log(data);
-        this.VMList = data.map(item => ({ VM_Id: item.VM_Id, VM_Name: item.VM_Name }));
+        this.VMList = data.map(item => ({ VM_Id: item.VM_Id, VM_Name: item.VM_Name ,VM_Code:item.VM_Code}));
         this.VMList.forEach(item => {
           this.vazhipadMap[item.VM_Id] = item.VM_Name;
           this.loading = false;

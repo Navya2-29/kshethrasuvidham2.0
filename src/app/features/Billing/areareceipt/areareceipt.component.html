@@ -1,99 +1,113 @@
-
 <div class="row nowrap">
-  <div class="col-md-12 ">
-        <div class="card-body fixitems" id="details" >
-          <div style="display:flex;flex-wrap: wrap;">
-            <table class="table" >
-              <thead>
-                <tr style="background:#223d61;color:white;">
-                  <td style="width:2%;"></td>
-                  <th style="width:18%;">Vazhipad</th>
-                  <th style="width:12%;">Name</th>
-                  <th style="width:8%;">Star</th>
-                  <th style="width:8%;">Dietee</th>
-                  <th style="width:4%;text-align:center;">Qty</th>
-                  <th style="width:7%;text-align:center;">Rate</th>
-                  <th style="width:7%;text-align:center;">Amount</th>
-                  <th style="width:9%;text-align:center;">Date</th>
-                  <td style="width:7%;text-align:center;">Single/Multi</td>
-                  <th style="width:10%;text-align:center;">Time</th>
-                  <th></th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let row of rows; let i = index">
-                  <td style="padding:10px;"> <a *ngIf="i !== 0" (click)="deleteRow(i)">
-                    <mat-icon><span class="icons">delete</span></mat-icon>
-                  </a></td>
-                 <td>
-                  <!-- <input matInput
-                      aria-label="vazhipad"
-                      [matAutocomplete]="auto"
-                      [formControl]="vazhipadCtrl" autofocus class="form-control sps" placeholder="Select Vazhipad">
-                        <mat-autocomplete #auto="matAutocomplete">
-                          @for (vazhipad of filteredvazhipad | async; track vazhipad) {
-                            <mat-option [value]="vazhipad.name" style="padding-left:15px;padding-top:0px;">
-                              <span style="font-size:11pt;color:rgb(10, 10, 10);margin:0px;padding:0px;">{{vazhipad.name}}</span> 
-                            </mat-option>
-                          }
-                        </mat-autocomplete> -->
-                        <input type="text" matInput class="form-control sps">
-                 
-                 </td>
-                  <td>
-                    <input type="text" class="form-control" placeholder="Enter Name">
-                  </td>
-                  <td>
-                    <select class="form-control" style="width:100%;height:30.6px;">
-                      <option>Select Star</option>
-                      <option>Aswathy</option>
-                      <option>Bharany</option>
-                      <option>Makayiram</option>
-                      <option>Karthika</option>
-                      <option>Thiruvathira</option>
-                      <option>Punartham</option>
-                      <option>Pooyam</option>
+  <div class="col-md-12">
+    <div class="card-body fixitems" id="details">
+      <div style="display: flex; flex-wrap: wrap">
+        <form [formGroup]="form" (ngSubmit)="save()">
+          <table class="table">
+            <thead>
+              <tr style="background: #223d61; color: white">
+                <td style="width: 2%"></td>
+                <th style="width: 18%">Vazhipad</th>
+                <th style="width: 12%">Name</th>
+                <th style="width: 8%">Star</th>
+                <th style="width: 8%">Dietee</th>
+                <th style="width: 4%; text-align: center">Qty</th>
+                <th style="width: 7%; text-align: center">Rate</th>
+                <th style="width: 7%; text-align: center">Amount</th>
+                <th style="width: 9%; text-align: center">Date</th>
+                <th style="width: 10%; text-align: center">Time</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody formArrayName="rows">
+              <tr *ngFor="let row of formArray.controls; let i = index" [formGroupName]="i">
+                <td style="padding: 10px">
+                  <a (click)="removeRow(i)" *ngIf="i > 0">
+                    <mat-icon>delete</mat-icon>
+                  </a>
+                </td>
+                <td>
+                    <select formControlName="vazhipad">
+                      <option *ngFor="let option of VMList" [value]="option.VM_Name">
+                        {{ option.VM_Name }}
+                      </option>
                     </select>
-                  </td>
-                  <td >
-                    <select class="form-control" style="width:100%;height:30.6px;">
-                      <option>Select Diety</option>
-                      <option>Siva</option>
-                      <option>Vishnu</option>
-                      <option>Ganapathy</option>
-                    </select>
-                  </td>
-                  <td style="vertical-align: middle;text-align:center;">
-                    <input type="number" class="form-control" placeholder="Qty" value="1" style="vertical-align: middle;text-align:center;">
-                  </td>
-                  <td style="vertical-align: middle;text-align:center;">
-                    <label class="form-control spsr">&#8377; 2500</label>
-                  </td>
-                  <td style="vertical-align: middle;text-align:center;">
-                    <label class="form-control spsr">&#8377; 2500</label>
-                  </td>
-                  <td style="vertical-align: middle;text-align:center;">
-                    <p class="form-control" contenteditable style="font-size:10pt;background:none;">10-04-2024</p>
-                  </td>
-                  <td style="text-align:center;vertical-align:middle;">
-                    <app-multiday></app-multiday>
-                  </td>
-                  <td>
-                    <select class="form-control" style="width:80%;height:30.6px;">
-                      <option>രാവിലെ</option>
-                      <option>​വൈകുന്നേരം</option>
-                    </select>
-                  </td>
-                  <td *ngIf="i === rows.length - 1">
-                  <a (click)="addRow()"><mat-icon><span class="icons">add_comment</span></mat-icon></a>
-                  </td>
-                  <td>
-                  </td>
-                </tr> 
-              </tbody>
-            </table>
-          </div> 
-      </div>   
-  </div> 
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    formControlName="name"
+                    class="form-control"
+                    placeholder="Enter Name"
+                  />
+                </td>
+                <td>
+                  <select
+                    formControlName="star"
+                    class="form-control"
+                    style="width: 100%; height: 30.6px"
+                  >
+                    <option [value]="item.id" *ngFor="let item of nakshatham">
+                      {{ item.name }}
+                    </option>
+                  </select>
+                </td>
+                <td>
+                  <select
+                    formControlName="dietee"
+                    class="form-control"
+                    style="width: 100%; height: 30.6px"
+                  >
+                    <option>Select Diety</option>
+                    <option>Siva</option>
+                    <option>Vishnu</option>
+                    <option>Ganapathy</option>
+                  </select>
+                </td>
+                <td style="vertical-align: middle; text-align: center">
+                  <input
+                    type="number"
+                    formControlName="qty"
+                    class="form-control"
+                    placeholder="Qty"
+                    style="vertical-align: middle; text-align: center"
+                  />
+                </td>
+                <td style="vertical-align: middle; text-align: center">
+                  <input type="text" class="form-control spsr" formControlName="rate" />
+                </td>
+                <td style="vertical-align: middle; text-align: center">
+                  <input type="text" class="form-control spsr" formControlName="amount" />
+                </td>
+                <td style="vertical-align: middle; text-align: center">
+                  <input
+                    type="text"
+                    formControlName="date"
+                    class="form-control"
+                    style="font-size: 10pt; background: none"
+                    
+                  />
+                </td>
+                <td>
+                  <select
+                    formControlName="time"
+                    class="form-control"
+                    style="width: 80%; height: 30.6px"
+                  >
+                    <option>രാവിലെ</option>
+                    <option>​വൈകുന്നേരം</option>
+                  </select>
+                </td>
+                <td>
+                  <a (click)="addRow()" *ngIf="i === formArray.length - 1">
+                    <mat-icon><span class="icons">add_comment</span></mat-icon>
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
