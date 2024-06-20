@@ -27,7 +27,7 @@
                   </a>
                 </td>
                 <td>
-                    <select formControlName="vazhipad">
+                    <select formControlName="vazhipad" class="form-control sps" style="width: 100%;height: 33px;">
                       <option *ngFor="let option of VMList" [value]="option.VM_Name">
                         {{ option.VM_Name }}
                       </option>
@@ -58,11 +58,8 @@
                     class="form-control"
                     style="width: 100%; height: 30.6px"
                   >
-                    <option>Select Diety</option>
-                    <option>Siva</option>
-                    <option>Vishnu</option>
-                    <option>Ganapathy</option>
-                  </select>
+                   <option *ngFor="let diety of row.get('dieties')!.value" [value]="diety">{{ diety.PM_Name }}</option> 
+                   </select> 
                 </td>
                 <td style="vertical-align: middle; text-align: center">
                   <input
@@ -70,32 +67,34 @@
                     formControlName="qty"
                     class="form-control"
                     placeholder="Qty"
+                    [min]="1"
                     style="vertical-align: middle; text-align: center"
                   />
                 </td>
                 <td style="vertical-align: middle; text-align: center">
-                  <input type="text" class="form-control spsr" formControlName="rate" />
+                  <input type="text" class="form-control spsr"  formControlName="rate" />
                 </td>
                 <td style="vertical-align: middle; text-align: center">
                   <input type="text" class="form-control spsr" formControlName="amount" />
                 </td>
                 <td style="vertical-align: middle; text-align: center">
                   <input
-                    type="text"
+                    type="date"
                     formControlName="date"
                     class="form-control"
+                    [min]="bookingFlag?tomarrow:today"
                     style="font-size: 10pt; background: none"
-                    
                   />
                 </td>
                 <td>
-                  <select
+                  <select 
+                  (keyup.enter)="addRow()" 
                     formControlName="time"
                     class="form-control"
                     style="width: 80%; height: 30.6px"
                   >
-                    <option>രാവിലെ</option>
-                    <option>​വൈകുന്നേരം</option>
+                    <option *ngFor="let time of vazhipadtime" [value]="time.id">{{time.name}}</option>
+                    
                   </select>
                 </td>
                 <td>

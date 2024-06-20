@@ -10,6 +10,7 @@ import { MasterService } from '../../../services/master/master.service';
 import { SeasonalMaster } from '../../../models/season-master.model';
 import { debounceTime, switchMap } from 'rxjs';
 import { NotificationService } from '../../../services/notification/notification.service';
+import { Vmaster } from '../../../models/vmaster.model';
 
 @Component({
   selector: 'app-seasonal-master',
@@ -24,6 +25,7 @@ export class SeasonalMasterComponent implements OnInit {
   seasonalMaster: SeasonalMaster[] = [];
   filteredSeasonalMaster: SeasonalMaster[] = [];
   showNoRecordsMessage: boolean = false;
+  seasonalCode:any;
   updateFlag: boolean = false;
   searchQuery: string = '';
   loading: boolean = false;
@@ -47,6 +49,8 @@ export class SeasonalMasterComponent implements OnInit {
   }
   ngOnInit(): void {
     this.loading = true;
+    this.getAllSeasonalisedVazhipad();
+console.log(this.seasonalBlockingForm.get('VS_code'))
     this.getSeasonalMaster();
     this.seasonalBlockingForm.get('VS_code')!.valueChanges.pipe(
       debounceTime(300),
@@ -230,4 +234,12 @@ export class SeasonalMasterComponent implements OnInit {
     });
   }
 
+  getAllSeasonalisedVazhipad(){
+    this.masterService.getSeasonalisedVazhipad().subscribe({
+      next:(data:Vmaster[])=>{
+this.seasonalCode=data.map(item => item.VM_Code);
+        console.log(data);
+      }
+    })
+  }
 }

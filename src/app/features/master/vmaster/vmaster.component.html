@@ -202,10 +202,9 @@
                       <small>category is required.</small>
                     </div>
                   </div>
-                  <!-- <tr>
+                 <!-- <tr>
                     <td colspan="3">
                                     Select Prethishta <br>
-                        
                                         <mat-select [formControl]="toppings" formControlName="VP_Name"  class="form-control sps" placeholder="Select Prathishta" multiple>
                                           <mat-select-trigger>
                                             {{toppings.value?.[0] || ''}}
@@ -220,7 +219,14 @@
                                       }
                                         </mat-select>
                                 </td> -->
-                  <!-- </tr> -->
+                  <!-- </tr> --> 
+                  <!-- <mat-form-field>
+                    <mat-select placeholder="Select Deities" [formControlName]="'deities'" multiple>
+                      <mat-option *ngFor="let deity of deities; let i = index" [value]="deity">
+                        <mat-checkbox [formControlName]="i">{{ deity.name }}</mat-checkbox>
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field> -->
                   <tr>
                     <td>
                       Rate<span class="text-danger">*</span
@@ -279,7 +285,7 @@
                       <input
                         type="checkbox"
                         formControlName="VM_Booking"
-                      />&nbsp;&nbsp; Blocking
+                      />&nbsp;&nbsp;Booking 
                     </td>
                     <td>
                       <input
@@ -313,7 +319,7 @@
                       <input
                         type="checkbox"
                         formControlName="VM_Blocking"
-                      />&nbsp;&nbsp; Booking
+                      />&nbsp;&nbsp; Blocking
                     </td>
                     <td>
                       <input

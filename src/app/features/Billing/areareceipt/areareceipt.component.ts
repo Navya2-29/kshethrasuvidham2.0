@@ -2,11 +2,11 @@ import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
+import { DatePipe } from '@angular/common';
+
 import {
-  AbstractControl,
   FormArray,
   FormBuilder,
-  FormControl,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
@@ -20,9 +20,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MobserachbtnComponent } from '../../../mobserachbtn/mobserachbtn.component';
 import { MultidayComponent } from '../multiday/multiday.component';
 import { MasterService } from '../../../services/master/master.service';
-import { Observable, map, startWith } from 'rxjs';
 import { VMList } from '../../../models/day-master.model';
-import { Vmaster } from '../../../models/vmaster.model';
 import { TotalAmountService } from '../../../shared/service/total-amount.service';
 
 @Component({
@@ -45,21 +43,28 @@ import { TotalAmountService } from '../../../shared/service/total-amount.service
   ],
   templateUrl: './areareceipt.component.html',
   styleUrl: './areareceipt.component.css',
+  providers: [DatePipe]
 })
 
 
 export class AreareceiptComponent implements OnInit {
-  @Output() totalAmountChange = new EventEmitter<number>();
+ 
   form: FormGroup;
   nakshatham: any[];
   VMList: VMList[];
-  today:Date;
+  today:string;
+  tomarrow:string;
+  bookingFlag:boolean=false;
   private masterService = inject(MasterService);
   private totalAmountService = inject(TotalAmountService); 
-  constructor(private fb: FormBuilder) {
-    
-    this.today=new Date();
-
+  constructor(private fb: FormBuilder,private datePipe: DatePipe) {
+    const currentDate=new Date();
+    this.today=currentDate.toISOString().split('T')[0];
+    const nextDate=new Date(currentDate);
+    nextDate.setDate(currentDate.getDate() +1);
+    console.log(nextDate)
+    this.tomarrow=nextDate.toISOString().split('T')[0]
+      console.log(currentDate)
     this.form = this.fb.group({
       rows: this.fb.array([this.createRow()]),
       totalAmount: [{ value: 0, disabled: true }],
@@ -67,8 +72,6 @@ export class AreareceiptComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
-  
     this.getNakshthram();
     this.getAllVazhipad();
   }
@@ -78,7 +81,9 @@ export class AreareceiptComponent implements OnInit {
       this.nakshatham = res;
     });
   }
-
+  formatDate(date: Date): string {
+    return this.datePipe.transform(date, 'dd-MM-yyyy') || '';
+  }
   getAllVazhipad() {
     this.masterService.getVmaster().subscribe({
       next: (data) => {
@@ -109,13 +114,12 @@ export class AreareceiptComponent implements OnInit {
       qty: [1, [Validators.required, Validators.min(1)]],
       rate: ['', Validators.required],
       amount: [{ value: '', disabled: true }, Validators.required],
-      date: ['', Validators.required],
+      date: [this.today, Validators.required],
       time: ['', Validators.required],
+      dieties:[[]]
     });
-
     // Subscribe to qty and rate changes to calculate the amount
     this.subscribeToAmountCalculation(row);
-
     return row;
   }
 
@@ -156,6 +160,7 @@ export class AreareceiptComponent implements OnInit {
           this.masterService.getVazhipadeByCode(selectedOption.VM_Code).subscribe({
             next: (data) => {
               this.updateRowWithApiResponse(data, row);
+              this.callAnotherApi(selectedOption.VM_Code, row);
             },
             error: (err) => {
               console.error(err);
@@ -169,7 +174,6 @@ export class AreareceiptComponent implements OnInit {
   subscribeToAmountCalculation(row: FormGroup) {
     const qtyControl = row.get('qty');
     const rateControl = row.get('rate');
-
     const calculateAmount = () => {
       const qty = qtyControl?.value;
       const rate = rateControl?.value;
@@ -185,10 +189,26 @@ export class AreareceiptComponent implements OnInit {
   }
 
   private updateRowWithApiResponse(response: any, row: FormGroup): void {
-    const data = response[0]; // Assuming response is an array
+    const data = response[0];
+if(data.VM_Blocking==="Y"){
+  this.bookingFlag=true
+}
+    console.log(data); 
     row.patchValue({
-      rate: data.VM_Amt, // Update this based on the actual response structure
+      rate: data.VM_Amt, 
+      time:data.VM_Time,
+       date:data.VM_Booking==="Y"?this.tomarrow:this.today
     });
+    const rateControl = row.get('rate')!;
+    if (data.ratechange === 'Y') {
+      rateControl.enable();
+      rateControl.setValidators([Validators.required]);
+    } else {
+      rateControl.disable();
+      rateControl.clearValidators();
+    }
+    rateControl.updateValueAndValidity()
+
   }
 
   private updateTotalAmount(): void {
@@ -201,5 +221,37 @@ export class AreareceiptComponent implements OnInit {
     this.totalAmountService.setTotalAmount(total); // Update the service
   }
   
+
+  private updateRowWithPrathishta(response: any, row: FormGroup): void {
+    // Assuming response contains the array of dieties
+    row.patchValue({
+      dieties: response,
+    });
+    console.log(row);
+  }
+  private callAnotherApi(vmCode: string, row: FormGroup): void {
+    this.masterService.getVazhipadByCodeForDiety(vmCode).subscribe({
+      next: (response) => {
+        console.log(response);
+        this.updateRowWithPrathishta(response, row);
+      },
+      error: (err) => {
+        console.error(err);
+      }
+    });
+  }
+  
+  vazhipadtime=[{
+    "id":"0",
+    "name":"Any Time"
+  },{
+    "id":"2",
+    "name":"​വൈകുന്നേരം"
+  },
+  {
+    "id":"1",
+    "name":"രാവിലെ"
+  }
+]
 
 }

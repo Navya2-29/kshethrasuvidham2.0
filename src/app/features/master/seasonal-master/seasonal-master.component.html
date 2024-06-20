@@ -14,8 +14,16 @@
           <form [formGroup]="seasonalBlockingForm">
             <table class="table">
               <tr>
-                <td> Vazhipad Code<span class="text-danger" *ngIf="!updateFlag">*</span><input type="text"  [readonly]="updateFlag" formControlName="VS_code" class="form-control sps"
-                    placeholder="Enter Code"> </td>
+                <td>Vazhipad Code<span class="text-danger" *ngIf="!updateFlag">*</span>
+                  
+                  <select  formControlName="VS_code" class="form-control sps" style="width: 100%;height: 33px;" aria-placeholder="please select" >
+                    <option value="" disabled selected>-Select a VM Code-</option>
+
+                    <option  [value]="data"  *ngFor="let data of seasonalCode">{{data}}</option>
+                  </select>
+                  <!-- <input type="text"  [readonly]="updateFlag" formControlName="VS_code" class="form-control sps"
+                    placeholder="Enter Code">  -->
+                  </td>
                 <td></td>
               </tr>
               <div
@@ -36,7 +44,6 @@
                 <td></td>
                 <td>To date<span class="text-danger">*</span> <br>
                   <input type="date" class="form-control sps" formControlName="VS_ToDate" [min]="today">
-                  
                 </td>
               </tr>
              

@@ -5,6 +5,7 @@ import { MatInputModule } from '@angular/material/input';
 import { HeaderComponent } from '../../../core/layout/header/header.component';
 import {
   AbstractControl,
+  FormArray,
   FormBuilder,
   FormGroup,
   FormsModule,
@@ -54,6 +55,7 @@ export class VmasterComponent implements OnInit {
   updateFlag: boolean = false;
   Id: number;
   searchQuery: string = '';
+  deities :any [];
   showNoRecordsMessage: boolean = false;
   private formBuilder = inject(FormBuilder);
   private masterService = inject(MasterService);
@@ -95,13 +97,14 @@ export class VmasterComponent implements OnInit {
       VC_Name: ["", [Validators.required]],
       Whatsapp: [""],
       VM_Time: ['1'],
+        //  deities: this.formBuilder.array([]),
     });
   }
 
   ngOnInit(): void {
     this.getVmaster();
     this.getCategory();
-
+    this.fetchDeities();
     // filter for autocompleate category
     this.filteredCategory = this.vazhipadMasterForm
       .get('VC_Name')!
@@ -159,7 +162,6 @@ export class VmasterComponent implements OnInit {
 
   // submit form
   onSubmit(data: Vmaster) {
-   
     console.log(data);
     if (this.vazhipadMasterForm.valid) {
       this.loading = true;
@@ -261,7 +263,9 @@ export class VmasterComponent implements OnInit {
       ACHeadCode: data.ACHeadCode,
       ACSubCode: data.ACSubCode,
       VC_Name: VCName,
-      VM_Time:data.VM_Time
+      VM_Time:data.VM_Time,
+      
+      
     });
 
     this.loading = false;
@@ -373,4 +377,24 @@ export class VmasterComponent implements OnInit {
       "name":"Night"
     }
     ];
+
+    fetchDeities(): void {
+      this.masterService.getPmaster().subscribe({
+       next: (data: any[]) => {
+          this.deities = data;
+          this.addDeitiesCheckboxes();
+        },
+        error:(error) => {
+          console.error('Error fetching deities', error);
+        }}
+      );
+    }
+    addDeitiesCheckboxes(): void {
+      const deitiesFormArray = this.vazhipadMasterForm.get('deities') as FormArray;
+      this.deities.forEach(() => deitiesFormArray.push(this.formBuilder.control(false)));
+    }
+  
+    get deitiesFormArray() {
+      return this.vazhipadMasterForm.get('deities') as FormArray;
+    }
 }

@@ -266,7 +266,30 @@ export class MasterService {
     );
   }
 
-getSeasonalVazhipadeByCode(code: any) {
+  getVazhipadByCodeForDiety(code: any) {
+    const payLoad = {
+      Type: 'VazhipadDiety',
+      Code: code,
+    };
+    return this.http.post(
+      Constant.BASE_URL + Constant.METHODS.GET_MASTER,
+      payLoad
+    );
+  }
+
+  // getseasonalised vazhipad
+  getSeasonalisedVazhipad():Observable<Vmaster[] >{
+    const payLoad = {
+      Type: 'VazhipadSeasonal',
+      Code: '',
+    };
+    return this.http.post<Vmaster[]>(
+      Constant.BASE_URL + Constant.METHODS.GET_MASTER,
+      payLoad
+    );
+  }
+
+  getSeasonalVazhipadeByCode(code: any) {
     const payLoad = {
       Type: 'Seasonal',
       Code: code,
@@ -276,6 +299,7 @@ getSeasonalVazhipadeByCode(code: any) {
       payLoad
     );
   }
+
   // // seasonal  master
   // get list  seasonl master vazhipad
   getAllSeasonalMasterVazhipadList(): Observable<any[]> {
