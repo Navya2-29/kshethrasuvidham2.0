@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { DatePipe } from '@angular/common';
 
 import {
+  AbstractControl,
   FormArray,
   FormBuilder,
   FormGroup,
@@ -43,28 +44,29 @@ import { TotalAmountService } from '../../../shared/service/total-amount.service
   ],
   templateUrl: './areareceipt.component.html',
   styleUrl: './areareceipt.component.css',
-  providers: [DatePipe]
+  providers: [DatePipe],
 })
-
-
 export class AreareceiptComponent implements OnInit {
- 
   form: FormGroup;
   nakshatham: any[];
   VMList: VMList[];
-  today:string;
-  tomarrow:string;
-  bookingFlag:boolean=false;
+  today: string;
+  tomarrow: string;
+  bookingFlag: boolean = false;
+  prathishta: any[];
+  defaultPrathishta: string;
+  ratchangeFlag: boolean = false;
   private masterService = inject(MasterService);
-  private totalAmountService = inject(TotalAmountService); 
-  constructor(private fb: FormBuilder,private datePipe: DatePipe) {
-    const currentDate=new Date();
-    this.today=currentDate.toISOString().split('T')[0];
-    const nextDate=new Date(currentDate);
-    nextDate.setDate(currentDate.getDate() +1);
-    console.log(nextDate)
-    this.tomarrow=nextDate.toISOString().split('T')[0]
-      console.log(currentDate)
+  private totalAmountService = inject(TotalAmountService);
+  constructor(private fb: FormBuilder, private datePipe: DatePipe) {
+    const currentDate = new Date();
+    this.today = currentDate.toISOString().split('T')[0];
+    const nextDate = new Date(currentDate);
+    nextDate.setDate(currentDate.getDate() + 1);
+    console.log(nextDate);
+    this.tomarrow = nextDate.toISOString().split('T')[0];
+    console.log(currentDate);
+
     this.form = this.fb.group({
       rows: this.fb.array([this.createRow()]),
       totalAmount: [{ value: 0, disabled: true }],
@@ -79,14 +81,19 @@ export class AreareceiptComponent implements OnInit {
   getNakshthram() {
     this.masterService.getNakshthra().subscribe((res) => {
       this.nakshatham = res;
+      if (this.nakshatham.length > 0) {
+        this.updateDefaultNakshathraValue();
+      }
     });
   }
   formatDate(date: Date): string {
     return this.datePipe.transform(date, 'dd-MM-yyyy') || '';
   }
+
   getAllVazhipad() {
-    this.masterService.getVmaster().subscribe({
+    this.masterService.getActiveVazhipad().subscribe({
       next: (data) => {
+        console.log(data);
         this.VMList = data.map((item) => ({
           VM_Id: item.VM_Id,
           VM_Name: item.VM_Name,
@@ -105,29 +112,43 @@ export class AreareceiptComponent implements OnInit {
     return this.form.get('rows') as FormArray;
   }
 
-  createRow(): FormGroup {
+  createRow(initialData: any = {}): FormGroup {
+    console.log(initialData);
     const row = this.fb.group({
-      vazhipad: ['', Validators.required],
-      name: ['', Validators.required],
-      star: ['', Validators.required],
-      dietee: ['', Validators.required],
-      qty: [1, [Validators.required, Validators.min(1)]],
-      rate: ['', Validators.required],
-      amount: [{ value: '', disabled: true }, Validators.required],
-      date: [this.today, Validators.required],
-      time: ['', Validators.required],
-      dieties:[[]]
+      vazhipad: [initialData.vazhipad, Validators.required],
+      name: [initialData.name || '', Validators.required],
+      star: [initialData.star],
+      dietee: [initialData.dietee || '', Validators.required],
+      qty: [initialData.qty || 1, [Validators.required, Validators.min(1)]],
+      rate: [initialData.rate || 0, Validators.required],
+      amount: [{ value: initialData.amount || '', disabled: true }],
+      date: [initialData.date || this.today],
+      time: [initialData.time || ''],
+      rateChangeable: [false]
+      // dieties: [initialData.dieties || []],
+      // dateDisabled: [initialData.dateDisabled || false]
     });
+    console.log(row);
     // Subscribe to qty and rate changes to calculate the amount
     this.subscribeToAmountCalculation(row);
     return row;
   }
 
   addRow() {
-    const row = this.createRow();
-    this.formArray.push(row);
-    this.subscribeToVazhipadChanges(row);
-    this.updateTotalAmount(); // Update total amount when a new row is added
+    const lastRow = this.formArray.at(this.formArray.length - 1) as FormGroup;
+    const lastRowValue = this.formArray.at(this.formArray.length - 1).value;
+    console.log("last:");
+    console.log(lastRow)
+    if (lastRow.valid) {
+      const newRow = this.createRow(lastRowValue);
+      this.formArray.push(newRow);
+      this.subscribeToVazhipadChanges(newRow);
+      this.updateTotalAmount();
+      console.log('Last row validity:', lastRow.valid);
+    } else {
+      console.log('Last row is invalid. Cannot add new row.');
+      lastRow.markAllAsTouched(); // Optionally mark as touched to display validation errors
+    }
   }
 
   removeRow(index: number) {
@@ -155,17 +176,21 @@ export class AreareceiptComponent implements OnInit {
     const vazhipadControl = row.get('vazhipad');
     if (vazhipadControl) {
       vazhipadControl.valueChanges.subscribe((value) => {
-        const selectedOption = this.VMList.find(option => option.VM_Name === value);
+        const selectedOption = this.VMList.find(
+          (option) => option.VM_Name === value
+        );
         if (selectedOption) {
-          this.masterService.getVazhipadeByCode(selectedOption.VM_Code).subscribe({
-            next: (data) => {
-              this.updateRowWithApiResponse(data, row);
-              this.callAnotherApi(selectedOption.VM_Code, row);
-            },
-            error: (err) => {
-              console.error(err);
-            }
-          });
+          this.masterService
+            .getVazhipadeByCode(selectedOption.VM_Code)
+            .subscribe({
+              next: (data) => {
+                this.updateRowWithSelectedVazhipadDetails(data, row);
+                this.getPrathishta(selectedOption.VM_Code, row);
+              },
+              error: (err) => {
+                console.error(err);
+              },
+            });
         }
       });
     }
@@ -188,27 +213,29 @@ export class AreareceiptComponent implements OnInit {
     rateControl?.valueChanges.subscribe(calculateAmount);
   }
 
-  private updateRowWithApiResponse(response: any, row: FormGroup): void {
+  private updateRowWithSelectedVazhipadDetails(
+    response: any,
+    row: FormGroup
+  ): void {
     const data = response[0];
-if(data.VM_Blocking==="Y"){
-  this.bookingFlag=true
-}
-    console.log(data); 
+    // if (data.VM_Boocking === 'Y') {
+    //   this.bookingFlag = true;
+    // } else {
+    //   this.bookingFlag = false;
+    // }
+    // if (data.VM_Rate_Change==='N') {
+    //   this.ratchangeFlag = true;
+    // } else {
+    //   this.ratchangeFlag = false;
+    // }
+    console.log(data);
+    // const rateChangeable = data.VM_Rate_Change === 'Y';
     row.patchValue({
-      rate: data.VM_Amt, 
-      time:data.VM_Time,
-       date:data.VM_Booking==="Y"?this.tomarrow:this.today
+      rate: data.VM_Amt,
+      time: data.VM_Time,
+      date: data.VM_Booking === 'Y' ? this.tomarrow : this.today,
+      rateChangeable: data.VM_Rate_Change==='Y'?true:false
     });
-    const rateControl = row.get('rate')!;
-    if (data.ratechange === 'Y') {
-      rateControl.enable();
-      rateControl.setValidators([Validators.required]);
-    } else {
-      rateControl.disable();
-      rateControl.clearValidators();
-    }
-    rateControl.updateValueAndValidity()
-
   }
 
   private updateTotalAmount(): void {
@@ -220,16 +247,19 @@ if(data.VM_Blocking==="Y"){
     this.form.get('totalAmount')?.setValue(total, { emitEvent: false });
     this.totalAmountService.setTotalAmount(total); // Update the service
   }
-  
 
   private updateRowWithPrathishta(response: any, row: FormGroup): void {
-    // Assuming response contains the array of dieties
+   
+    this.prathishta = response;
+    console.log(this.prathishta);
+    console.log(row);
     row.patchValue({
-      dieties: response,
+      dietee: this.prathishta[0].PM_Name,
     });
+    // this.updateDefaultPrathishtaValue()
     console.log(row);
   }
-  private callAnotherApi(vmCode: string, row: FormGroup): void {
+  private getPrathishta(vmCode: string, row: FormGroup): void {
     this.masterService.getVazhipadByCodeForDiety(vmCode).subscribe({
       next: (response) => {
         console.log(response);
@@ -237,21 +267,48 @@ if(data.VM_Blocking==="Y"){
       },
       error: (err) => {
         console.error(err);
+      },
+    });
+  }
+
+  vazhipadtime = [
+    {
+      id: '0',
+      name: 'Any Time',
+    },
+    {
+      id: '2',
+      name: '​വൈകുന്നേരം',
+    },
+    {
+      id: '1',
+      name: 'രാവിലെ',
+    },
+  ];
+
+  private updateDefaultNakshathraValue() {
+    const rows = this.formArray.controls as FormGroup[];
+    console.log(rows);
+    rows.forEach((row) => {
+      const starControl = row.get('star');
+      console.log(starControl);
+      console.log(starControl?.value);
+      if (starControl && !starControl.value) {
+        starControl.setValue(this.nakshatham[0].id);
       }
     });
   }
-  
-  vazhipadtime=[{
-    "id":"0",
-    "name":"Any Time"
-  },{
-    "id":"2",
-    "name":"​വൈകുന്നേരം"
-  },
-  {
-    "id":"1",
-    "name":"രാവിലെ"
-  }
-]
 
+  handleTimeFieldKeyPress(event: KeyboardEvent, row: AbstractControl) {
+    if (event.key === 'Enter') {
+      const formGroupRow = row as FormGroup;
+      if (formGroupRow.valid) {
+        this.addRow();
+      } else {
+        alert(
+          'Please fill in all required fields in the current row before adding a new row.'
+        );
+      }
+    }
+  }
 }
