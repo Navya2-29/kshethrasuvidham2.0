@@ -163,8 +163,14 @@ export class MasterService {
       .post<Vmaster[]>(Constant.BASE_URL + Constant.METHODS.GET_MASTER, payLoad)
       .pipe(catchError(this.errorHandler));
   }
-  getActiveVazhipad(): Observable<Vmaster[]> {
+  getActiveVazhipadName(): Observable<Vmaster[]> {
     const payLoad = { Type: 'ActiveVazhipad', Code: '' };
+    return this.http
+      .post<Vmaster[]>(Constant.BASE_URL + Constant.METHODS.GET_MASTER, payLoad)
+      .pipe(catchError(this.errorHandler));
+  }
+  getAllActiveVazhipad(): Observable<Vmaster[]> {
+    const payLoad = { Type: 'ListVazhipad', Code: '' };
     return this.http
       .post<Vmaster[]>(Constant.BASE_URL + Constant.METHODS.GET_MASTER, payLoad)
       .pipe(catchError(this.errorHandler));
