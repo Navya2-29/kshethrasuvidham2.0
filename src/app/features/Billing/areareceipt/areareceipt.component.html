@@ -29,7 +29,7 @@
                 <td>
                     <select formControlName="vazhipad" class="form-control sps" style="width: 100%;height: 33px;">
                       <option *ngFor="let option of VMList" [value]="option.VM_Name">
-                        {{ option.VM_Name }}
+                       {{option.VM_Code}}-{{ option.VM_Name }}
                       </option>
                     </select>
                     <div *ngIf="row.get('vazhipad')?.invalid && row.get('vazhipad')?.touched">
@@ -64,8 +64,8 @@
                     class="form-control"
                     style="width: 100%; height: 30.6px"
                   >
-                   <option *ngFor="let diety of prathishta" [value]="diety.PM_Name">{{ diety.PM_Name }}</option> 
-                   </select> 
+                   <option *ngFor="let diety of row.get('dieties')!.value;" [value]="diety.PM_Name">{{ diety.PM_Name }}</option>
+                   </select>
                 </td>
                 <td style="vertical-align: middle; text-align: center">
                   <input
@@ -93,18 +93,18 @@
                     style="font-size: 10pt; background: none"
                   />
                 </td>
-                
+
                 <td>
-                  <select 
+                  <select
                     formControlName="time"
                     class="form-control"
                     style="width: 80%; height: 30.6px"
                     (keypress)="handleTimeFieldKeyPress($event, row)"
                   >
                     <option *ngFor="let time of vazhipadtime" [value]="time.id">{{time.name}}</option>
-                    
+
                   </select>
-                  
+
                 </td>
                 <td>
                   <a (click)="addRow()" *ngIf="i === formArray.length - 1">

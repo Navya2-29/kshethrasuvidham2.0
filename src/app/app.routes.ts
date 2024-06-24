@@ -18,6 +18,7 @@ import { ComboMasterComponent } from './features/master/combo-master/combo-maste
 import { ItemMAterComponent } from './features/master/item-mater/item-mater.component';
 import { LoginComponent } from './core/auth/login/login.component';
 import { authGuard } from './core/auth/guard/auth.guard';
+import { StarMasterComponent } from './features/master/star-master/star-master.component';
 
 
 
@@ -42,6 +43,9 @@ export const routes: Routes = [
   },
   {
     path:'item-master',component:ItemMAterComponent,canActivate:[authGuard]
+  },
+  {
+    path:'star-master',component:StarMasterComponent,canActivate:[authGuard]
   }
 ];
 

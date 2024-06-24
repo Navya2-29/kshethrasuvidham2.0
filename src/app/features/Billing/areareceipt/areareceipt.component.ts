@@ -124,13 +124,21 @@ export class AreareceiptComponent implements OnInit {
       amount: [{ value: initialData.amount || '', disabled: true }],
       date: [initialData.date || this.today],
       time: [initialData.time || ''],
-      rateChangeable: [false]
-      // dieties: [initialData.dieties || []],
+      rateChangeable: [false],
+      dieties: [initialData.dieties || []],
       // dateDisabled: [initialData.dateDisabled || false]
     });
     console.log(row);
     // Subscribe to qty and rate changes to calculate the amount
     this.subscribeToAmountCalculation(row);
+// Calculate amount immediately if rate and qty are present
+const qtyControl = row.get('qty');
+const rateControl = row.get('rate');
+if (qtyControl?.value && rateControl?.value) {
+  const amount = qtyControl.value * rateControl.value;
+  row.get('amount')?.setValue(amount, { emitEvent: false });
+  this.updateTotalAmount(); // Update total amount immediately
+}
     return row;
   }
 
@@ -249,12 +257,13 @@ export class AreareceiptComponent implements OnInit {
   }
 
   private updateRowWithPrathishta(response: any, row: FormGroup): void {
-   
-    this.prathishta = response;
-    console.log(this.prathishta);
-    console.log(row);
+
+    const dieteeValue = response.length > 0 ? response[0].value : null;
+
     row.patchValue({
-      dietee: this.prathishta[0].PM_Name,
+      dieties: response,
+      dietee: dieteeValue,
+
     });
     // this.updateDefaultPrathishtaValue()
     console.log(row);
@@ -278,11 +287,11 @@ export class AreareceiptComponent implements OnInit {
     },
     {
       id: '2',
-      name: '​വൈകുന്നേരം',
+      name: 'Evening',
     },
     {
       id: '1',
-      name: 'രാവിലെ',
+      name: 'Morning',
     },
   ];
 

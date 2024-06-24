@@ -51,7 +51,7 @@
                 <div *ngIf="cmasterFormControl['VC_Name'].hasError('pattern')">
                   Name include only numbers,english alphabat,spaces .
                 </div>
-                
+
                 <!-- <div *ngIf="cmasterFormControl['VC_Name'].hasError('duplicateName')" class="text-danger">
                   Name already exists.
                 </div> -->
@@ -97,14 +97,14 @@
           <div class="fixitems prathishta">
             <table class="table">
               <thead style="border-bottom: 2px solid #223d61;">
-                <th>Id</th>
+                <!-- <th>Id</th> -->
                 <th>code</th>
                 <th>Name</th>
                 <th></th>
               </thead>
               <tbody *ngIf="cmaster && cmaster.length > 0">
                 <tr *ngFor="let data of filteredCmaster ; let i=index">
-                  <td>{{data.VC_ID}}</td>
+                  <!-- <td>{{data.VC_ID}}</td> -->
                   <td>{{data.VC_Code}}</td>
                   <td style="text-align:left;">{{data.VC_Name}}</td>
                   <td>
