@@ -202,31 +202,39 @@
                       <small>category is required.</small>
                     </div>
                   </div>
-                 <!-- <tr>
-                    <td colspan="3">
-                                    Select Prethishta <br>
-                                        <mat-select [formControl]="toppings" formControlName="VP_Name"  class="form-control sps" placeholder="Select Prathishta" multiple>
-                                          <mat-select-trigger>
-                                            {{toppings.value?.[0] || ''}}
-                                            @if ((toppings.value?.length || 0) > 1) {
-                                              <span class="example-additional-selection">
-                                                (+{{(toppings.value?.length || 0) - 1}} {{toppings.value?.length === 2 ? 'other' : 'others'}})
-                                              </span>
-                                            }
-                                          </mat-select-trigger>
-                                          @for (topping of toppingList; track topping) {
-                                        <mat-option [value]="topping" class="" style="line-height:14pt;margin-top:-10px;margin-bottom:-10px;">{{topping}}</mat-option>
-                                      }
-                                        </mat-select>
-                                </td> -->
-                  <!-- </tr> -->
-                  <!-- <mat-form-field>
-                    <mat-select placeholder="Select Deities" [formControlName]="'deities'" multiple>
-                      <mat-option *ngFor="let deity of deities; let i = index" [value]="deity">
-                        <mat-checkbox [formControlName]="i">{{ deity.name }}</mat-checkbox>
-                      </mat-option>
-                    </mat-select>
-                  </mat-form-field> -->
+<tr>
+
+  <td colspan="3">Prathishta<span class="text-danger">*</span>
+  <!-- <mat-select [formControl]="toppings" multiple style="background-color: white;width: 100%;">
+    @for (topping of deities; track topping) {
+      <mat-option [value]="topping">{{topping.PM_Name}}</mat-option>
+    }
+  </mat-select> -->
+
+  <mat-select [formControl]="toppings" placeholder="Select Prathista" multiple style="background-color: white;" class="form-control sps">
+    <mat-select-trigger>
+      {{toppings.value?.[0] || ''}}
+      @if ((toppings.value?.length || 0) > 1) {
+        <span class="example-additional-selection">
+          (+{{(toppings.value?.length || 0) - 1}} {{toppings.value?.length === 2 ? 'other' : 'others'}})
+        </span>
+      }
+    </mat-select-trigger>
+    @for (topping of deities; track topping.PM_Name) {
+  <mat-option [value]="topping.PM_Name">{{topping.PM_Name}}</mat-option>
+}
+  </mat-select>
+</td>
+</tr>
+<tr>
+<td colspan="3">
+  <div class="selected-items">
+    <ng-container *ngFor="let topping of toppings.value">
+      <span class="badge bg-primary">{{topping}} </span>
+    </ng-container>
+  </div>
+</td>
+</tr>
                   <tr>
                     <td>
                       Rate<span class="text-danger">*</span
@@ -272,8 +280,6 @@
                       <small>Invalid rate</small>
                     </div>
                   </div>
-
-
                   <tr>
                     <td>
                       <input
@@ -483,25 +489,28 @@
           <div class="fixitems prathishta">
             <table class="table">
               <thead style="border-bottom: 2px solid #223d61">
-                <th>Code</th>
-                <th>Name</th>
+
+                <th style="text-align: left; padding-left: 10px;">Code</th>
+                <th style="text-align: left; padding-left: 10px;width: 40%;" >Name</th>
                 <th>Rate</th>
-                <th></th>
+                <th>
+                </th>
+
               </thead>
 
               <tbody
                 *ngIf="!showNoRecordsMessage && Vmaster && Vmaster.length > 0"
               >
                 <tr *ngFor="let data of filteredVmaster; let i = index">
-                  <td>
+                  <td style="text-align: left; padding-left: 10px;">
                     {{ data.VM_Code }}
                   </td>
-                  <td style="text-align: left; padding-left: 10px">
+                  <td style="text-align: left; padding-left: 10px;width: 40%;" class="wrap-text" >
                     {{ data.VM_Name }}
                   </td>
-                  <td>{{ data.VM_Amt }}</td>
-                  <td></td>
-                  <td>
+                  <td style="text-align: right;">{{ data.VM_Amt }}</td>
+
+                  <td >
                     <mat-icon
                       title="Edit"
                       class="small"

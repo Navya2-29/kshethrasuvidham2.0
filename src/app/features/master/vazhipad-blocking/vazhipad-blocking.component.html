@@ -18,7 +18,8 @@
             <table class="table">
               <tr>
                 <td>
-                  Vazhipad Code<span class="text-danger">*</span><input
+                  Vazhipad Code<span class="text-danger">*</span
+                  ><input
                     type="text"
                     [readonly]="updateFlag"
                     class="form-control sps"
@@ -101,7 +102,7 @@
                   <small>Blocking category is required.</small>
                 </div>
               </div>
-              <tr  *ngIf="VB_category!='Yearly'">
+              <tr *ngIf="VB_category != 'Yearly'">
                 <td>
                   <label class="font-weight:bold"
                     ><b>{{ VB_category }} Blocking</b></label
@@ -109,7 +110,7 @@
                   Date Category<span class="text-danger">*</span>
                 </td>
               </tr>
-              <tr  *ngIf="VB_category!='Yearly'">
+              <tr *ngIf="VB_category != 'Yearly'">
                 <td colspan="3">
                   <input
                     type="radio"
@@ -144,19 +145,27 @@
                 </div>
               </div>
 
-              <tr *ngIf="VB_category==='Yearly'">
-                <td >
-                  <input type="checkbox" style="padding-right:  30px;"> &nbsp; Sunday &nbsp;
-                  <input type="checkbox">  &nbsp;Monday &nbsp; <input type="checkbox"> &nbsp;Tuesday 
-                 &nbsp;<input type="checkbox"> Wednesday &nbsp;
-                  <input type="checkbox"> &nbsp;Thursday &nbsp;
-                  <input type="checkbox"> &nbsp;Friday&nbsp;
-                  <input type="checkbox"> &nbsp;Saturday
+              <tr *ngIf="VB_category === 'Yearly'">
+                <td>
+                  <mat-label>Days</mat-label>
+
+                  <mat-select
+                    [formControl]="toppings"
+                    multiple
+                    style="background-color: white"
+                    class="form-control sps placeholder"
+placeholder="Select Days"
+                  >
+                    @for (topping of toppingList; track topping) {
+                    <mat-option [value]="topping">{{ topping }}</mat-option>
+                    }
+                  </mat-select>
                 </td>
               </tr>
               <tr *ngIf="VB_category != 'Yearly'">
                 <td>
-                  From date<span class="text-danger">*</span><input
+                  From date<span class="text-danger">*</span
+                  ><input
                     required
                     type="date"
                     [min]="today"
@@ -165,7 +174,8 @@
                   />
                 </td>
                 <td>
-                  To date<span class="text-danger">*</span><input
+                  To date<span class="text-danger">*</span
+                  ><input
                     required
                     type="date"
                     class="form-control sps"
@@ -188,23 +198,22 @@
                 >
                   <small>from date is required.</small>
                 </div>
-              <div
-              *ngIf="
-                vazhipadBlockingControl['VB_ToDate'].invalid &&
-                (vazhipadBlockingControl['VB_ToDate'].dirty ||
-                  vazhipadBlockingControl['VB_ToDate'].touched)
-              "
-              class="pl-1 text-danger"
-            >
-              <div
-                *ngIf="
-                  vazhipadBlockingControl['VB_ToDate'].hasError('required')
-                "
-              >
-                <small>To Date is required.</small>
-              </div>
-            </div>
-            
+                <div
+                  *ngIf="
+                    vazhipadBlockingControl['VB_ToDate'].invalid &&
+                    (vazhipadBlockingControl['VB_ToDate'].dirty ||
+                      vazhipadBlockingControl['VB_ToDate'].touched)
+                  "
+                  class="pl-1 text-danger"
+                >
+                  <div
+                    *ngIf="
+                      vazhipadBlockingControl['VB_ToDate'].hasError('required')
+                    "
+                  >
+                    <small>To Date is required.</small>
+                  </div>
+                </div>
               </div>
               <tr *ngIf="dateType == 'Malayalam'">
                 <td>
@@ -216,41 +225,72 @@
                   />
                 </td>
                 <div
-                *ngIf="vazhipadBlockingControl['VB_MalFDay'].invalid && (vazhipadBlockingControl['VB_MalFDay'].dirty || vazhipadBlockingControl['VB_MalFDay'].touched)"
-                class="pl-1 text-danger">
-                <div *ngIf="vazhipadBlockingControl['VB_MalFDay'].hasError('pattern')">
-                  <small>only numbers are allowed</small>
+                  *ngIf="
+                    vazhipadBlockingControl['VB_MalFDay'].invalid &&
+                    (vazhipadBlockingControl['VB_MalFDay'].dirty ||
+                      vazhipadBlockingControl['VB_MalFDay'].touched)
+                  "
+                  class="pl-1 text-danger"
+                >
+                  <div
+                    *ngIf="
+                      vazhipadBlockingControl['VB_MalFDay'].hasError('pattern')
+                    "
+                  >
+                    <small>only numbers are allowed</small>
+                  </div>
                 </div>
-              </div>
                 <td>
-                  Month<span class="text-danger">*</span><input
+                  Month<span class="text-danger">*</span
+                  ><input
                     type="text"
                     class="form-control sps"
                     formControlName="VB_MalFMonth"
                   />
                 </td>
                 <div
-                      *ngIf="vazhipadBlockingControl['VB_MalFMonth'].invalid && (vazhipadBlockingControl['VB_MalFMonth'].dirty || vazhipadBlockingControl['VB_MalFMonth'].touched)"
-                      class="pl-1 text-danger">
-                      <div *ngIf="vazhipadBlockingControl['VB_MalFMonth'].hasError('pattern')">
-                        <small>only numbers are allowed</small>
-                      </div>
-                    </div>
+                  *ngIf="
+                    vazhipadBlockingControl['VB_MalFMonth'].invalid &&
+                    (vazhipadBlockingControl['VB_MalFMonth'].dirty ||
+                      vazhipadBlockingControl['VB_MalFMonth'].touched)
+                  "
+                  class="pl-1 text-danger"
+                >
+                  <div
+                    *ngIf="
+                      vazhipadBlockingControl['VB_MalFMonth'].hasError(
+                        'pattern'
+                      )
+                    "
+                  >
+                    <small>only numbers are allowed</small>
+                  </div>
+                </div>
                 <td>
-                  Year<span class="text-danger">*</span><input
+                  Year<span class="text-danger">*</span
+                  ><input
                     type="text"
                     class="form-control sps"
                     formControlName="VB_MalFYear"
                   />
                 </td>
-                
+
                 <div
-                      *ngIf="vazhipadBlockingControl['VB_MalFYear'].invalid && (vazhipadBlockingControl['VB_MalFYear'].dirty || vazhipadBlockingControl['VB_MalFYear'].touched)"
-                      class="pl-1 text-danger">
-                      <div *ngIf="vazhipadBlockingControl['VB_MalFYear'].hasError('pattern')">
-                        <small>only numbers are allowed</small>
-                      </div>
-                    </div>
+                  *ngIf="
+                    vazhipadBlockingControl['VB_MalFYear'].invalid &&
+                    (vazhipadBlockingControl['VB_MalFYear'].dirty ||
+                      vazhipadBlockingControl['VB_MalFYear'].touched)
+                  "
+                  class="pl-1 text-danger"
+                >
+                  <div
+                    *ngIf="
+                      vazhipadBlockingControl['VB_MalFYear'].hasError('pattern')
+                    "
+                  >
+                    <small>only numbers are allowed</small>
+                  </div>
+                </div>
               </tr>
               <tr *ngIf="dateType == 'Malayalam'">
                 <td>
@@ -262,40 +302,72 @@
                   />
                 </td>
                 <div
-                      *ngIf="vazhipadBlockingControl['VB_MalTDay'].invalid && (vazhipadBlockingControl['VB_MalTDay'].dirty || vazhipadBlockingControl['VB_MalTDay'].touched)"
-                      class="pl-1 text-danger">
-                      <div *ngIf="vazhipadBlockingControl['VB_MalTDay'].hasError('pattern')">
-                        <small>only numbers are allowed</small>
-                      </div>
-                    </div>
+                  *ngIf="
+                    vazhipadBlockingControl['VB_MalTDay'].invalid &&
+                    (vazhipadBlockingControl['VB_MalTDay'].dirty ||
+                      vazhipadBlockingControl['VB_MalTDay'].touched)
+                  "
+                  class="pl-1 text-danger"
+                >
+                  <div
+                    *ngIf="
+                      vazhipadBlockingControl['VB_MalTDay'].hasError('pattern')
+                    "
+                  >
+                    <small>only numbers are allowed</small>
+                  </div>
+                </div>
                 <td>
-                  month<span class="text-danger">*</span><input
+                  month<span class="text-danger">*</span
+                  ><input
                     type="text"
                     class="form-control sps"
                     formControlName="VB_MalTMonth"
                   />
                 </td>
                 <div
-                      *ngIf="vazhipadBlockingControl['VB_MalTMonth'].invalid && (vazhipadBlockingControl['VB_MalTMonth'].dirty || vazhipadBlockingControl['VB_MalTDay'].touched)"
-                      class="pl-1 text-danger">
-                      <div *ngIf="vazhipadBlockingControl['VB_MalTMonth'].hasError('pattern')">
-                        <small>only numbers are allowed</small>
-                      </div>
-                    </div>
+                  *ngIf="
+                    vazhipadBlockingControl['VB_MalTMonth'].invalid &&
+                    (vazhipadBlockingControl['VB_MalTMonth'].dirty ||
+                      vazhipadBlockingControl['VB_MalTDay'].touched)
+                  "
+                  class="pl-1 text-danger"
+                >
+                  <div
+                    *ngIf="
+                      vazhipadBlockingControl['VB_MalTMonth'].hasError(
+                        'pattern'
+                      )
+                    "
+                  >
+                    <small>only numbers are allowed</small>
+                  </div>
+                </div>
                 <td>
-                  year<span class="text-danger">*</span><input
+                  year<span class="text-danger">*</span
+                  ><input
                     type="text"
                     class="form-control sps"
                     formControlName="VB_MalTYear"
                   />
-                </td>           
+                </td>
               </tr>
-              <div *ngIf="vazhipadBlockingControl['VB_MalTYear'].invalid && (vazhipadBlockingControl['VB_MalTYear'].dirty || vazhipadBlockingControl['VB_MalTYear'].touched)"
-                      class="pl-1 text-danger">
-                      <div *ngIf="vazhipadBlockingControl['VB_MalTYear'].hasError('pattern')">
-                        <small>only numbers are allowed</small>
-                      </div>
-                    </div>
+              <div
+                *ngIf="
+                  vazhipadBlockingControl['VB_MalTYear'].invalid &&
+                  (vazhipadBlockingControl['VB_MalTYear'].dirty ||
+                    vazhipadBlockingControl['VB_MalTYear'].touched)
+                "
+                class="pl-1 text-danger"
+              >
+                <div
+                  *ngIf="
+                    vazhipadBlockingControl['VB_MalTYear'].hasError('pattern')
+                  "
+                >
+                  <small>only numbers are allowed</small>
+                </div>
+              </div>
               <tr *ngIf="blockingFlag">
                 <td colspan="3">
                   Nakshathra
@@ -378,28 +450,41 @@
           </div>
           <div class="fixitems prathishta">
             <table class="table blocking">
-              <tr style="border-bottom: 2px solid #223d61">
-                <th>Id</th>
-                <th>Vazhipad Name</th>
+              <thead style="border-bottom: 2px solid #223d61">
+                <th style="text-align: left">Id</th>
+                <th style="text-align: left">Vazhipad Name</th>
+
+                <th style="text-align: left">From date</th>
+                <th style="text-align: left">To date</th>
+                <th style="text-align: left">Reason</th>
                 <th></th>
-                <th>From date</th>
-                <th>To date</th>
-                <th>Reason</th>
-                <th></th>
-              </tr>
+              </thead>
               <tbody>
                 <tr *ngFor="let data of filteredBlockingMater">
-                  <td>{{ data.VB_ID }}</td>
-                  <td>{{ data.VM_Code }}-{{ data.VM_Name }}-{{data.VM_ID}}</td>
-                  <td></td>
+                  <td
+                    class="table-cell-left"
+                    style="text-align: left; padding-left: 10px"
+                  >
+                    {{ data.VB_ID }}
+                  </td>
+                  <td
+                    class="table-cell-left"
+                    style="text-align: left; width: 30%"
+                    class="wrap-text"
+                  >
+                    {{ data.VM_Code }}-{{ data.VM_Name }}-{{ data.VM_ID }}
+                  </td>
+
                   <!-- <td *ngIf="data.VB_DateType!='M'">{{data.VB_FromDate | date:'dd-MM-yyyy'}}</td> -->
                   <ng-container
                     *ngIf="data.VB_DateType !== 'M'; else otherContent"
                   >
-                    <td>{{ data.VB_FromDate | date : "dd-MM-yyyy" }}</td>
+                    <td style="text-align: left">
+                      {{ data.VB_FromDate | date : "dd-MM-yyyy" }}
+                    </td>
                   </ng-container>
                   <ng-template #otherContent>
-                    <td>
+                    <td style="text-align: left">
                       {{ data.VB_MalFDay }}-{{ data.VB_MalFMonth }}-{{
                         data.VB_MalFYear
                       }}
@@ -408,18 +493,22 @@
                   <ng-container
                     *ngIf="data.VB_DateType !== 'M'; else otherToDate"
                   >
-                    <td>{{ data.VB_ToDate | date : "dd-MM-yyyy" }}</td>
+                    <td style="text-align: left; width: 15%">
+                      {{ data.VB_ToDate | date : "dd-MM-yyyy" }}
+                    </td>
                   </ng-container>
                   <ng-template #otherToDate>
-                    <td>
+                    <td style="text-align: left">
                       {{ data.VB_MalTDay }}-{{ data.VB_MalTMonth }}-{{
                         data.VB_MalTYear
                       }}
                     </td>
                   </ng-template>
                   <!-- <td>{{data.VB_ToDate | date :'dd-MM-yyyy'}}</td> -->
-                  <td>{{ data.VB_Reasion }}</td>
-                  <td>
+                  <td style="text-align: left; width: 20%" class="wrap-text">
+                    {{ data.VB_Reasion }}
+                  </td>
+                  <td style="text-align: left; padding-left: 3px">
                     <mat-icon
                       title="Edit"
                       class="small pt-2"

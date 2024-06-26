@@ -78,10 +78,10 @@
                   />
                 </td>
                 <td style="vertical-align: middle; text-align: center">
-                  <input type="number" class="form-control spsr" [readonly]="!row.get('rateChangeable')?.value"  formControlName="rate" />
+                  <input type="number" class="form-control spsr" style="background: white" [readonly]="!row.get('rateChangeable')?.value"  formControlName="rate" />
                 {{row.get('rateChangeable')?.value}}
                 </td>
-                <td style="vertical-align: middle; text-align: center">
+                <td style="vertical-align: middle; text-align: center; ">
                   <input type="number" class="form-control spsr" readonly formControlName="amount" />
                 </td>
                 <td style="vertical-align: middle; text-align: center">
@@ -90,7 +90,7 @@
                     formControlName="date"
                     class="form-control"
                     [min]="bookingFlag?tomarrow:today"
-                    style="font-size: 10pt; background: none"
+                    style="font-size: 10pt; background: white"
                   />
                 </td>
 

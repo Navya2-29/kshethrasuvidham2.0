@@ -1,8 +1,22 @@
-import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+  inject,
+} from '@angular/core';
 import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
-import { FormsModule, ReactiveFormsModule, FormBuilder, Validators, FormGroup, AbstractControl, ValidationErrors } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  FormBuilder,
+  Validators,
+  FormGroup,
+  AbstractControl,
+  ValidationErrors,
+} from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { Pmaster } from '../../../models/pmaster.model';
@@ -18,7 +32,8 @@ import { NotificationService } from '../../../services/notification/notification
 @Component({
   selector: 'app-pmaster',
   standalone: true,
-  imports: [HeaderComponent,
+  imports: [
+    HeaderComponent,
     MatIconModule,
     RouterModule,
     FormsModule,
@@ -29,14 +44,12 @@ import { NotificationService } from '../../../services/notification/notification
     UpperCaseDirective,
     MatTableModule,
     SpinnerComponent,
-    MatCheckboxModule
+    MatCheckboxModule,
   ],
   templateUrl: './pmaster.component.html',
   styleUrl: './pmaster.component.css',
 })
-
 export class PmasterComponent implements OnInit {
-  
   pmaster: Pmaster[] = [];
   filteredPmaster: Pmaster[] = [];
   showNoRecordsMessage: boolean = false;
@@ -51,6 +64,7 @@ export class PmasterComponent implements OnInit {
   loading: boolean = false;
   errorMessage: string = '';
   Id: string = '';
+  code: string;
   private masterService = inject(MasterService);
   private formBuilder = inject(FormBuilder);
   private notification = inject(NotificationService);
@@ -60,23 +74,33 @@ export class PmasterComponent implements OnInit {
     this.loading = true;
     // form model
     this.pmasterForm = this.formBuilder.group({
-      PM_Code: ['', [
-        Validators.required,
-        Validators.maxLength(10),
-        Validators.pattern('^[a-zA-Z0-9]+$'),
-        this.duplicateCodeValidator.bind(this),
-      ]],
-      PM_Name: ['', [Validators.required,
-      Validators.pattern('[a-zA-Z\\s]*'),
-      Validators.maxLength(100),
-      ]],
-      PM_RegName: ['', Validators.required],
+      PM_Code: [
+        '',
+        [
+          Validators.required,
+          Validators.maxLength(10),
+          Validators.pattern('^[a-zA-Z0-9]+$'),
+          this.duplicateCodeValidator.bind(this),
+        ],
+      ],
+      PM_Name: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern('[a-zA-Z\\s]*'),
+          Validators.maxLength(100),
+          this.duplicateNameValidator.bind(this),
+        ],
+      ],
+      PM_RegName: [
+        '',
+        [Validators.required,
+        this.duplicateRegionalNameValidator.bind(this),
+      ],],
       PM_Image: [''],
       PM_Active: [true],
-
     });
   }
-
 
   ngOnInit(): void {
     this.loading = true;
@@ -92,15 +116,15 @@ export class PmasterComponent implements OnInit {
           this.pmaster = data;
           this.filteredPmaster = this.pmaster;
           this.loading = false;
+     console.log(this.pmaster)
         }
       },
       error: (error) => {
         console.log(error);
         this.loading = true;
-      }
+      },
     });
   }
-
 
   // get pmaster form controls
   get pmasterFormFormControl() {
@@ -110,12 +134,14 @@ export class PmasterComponent implements OnInit {
   // submit pmasterform
   onSubmit() {
     this.loading = true;
-    console.log(this.pmasterForm.value)
+    console.log(this.pmasterForm.value);
     if (this.pmasterForm.valid) {
       this.masterService.createPmaster(this.pmasterForm.value).subscribe({
         next: (res) => {
           if (res) {
-            this.notification.showSuccess(" Prathishta Details created successfully");
+            this.notification.showSuccess(
+              ' Prathishta Details created successfully'
+            );
             this.onReset();
             this.ngOnInit();
             this.loading = false;
@@ -124,31 +150,27 @@ export class PmasterComponent implements OnInit {
         error: (error) => {
           this.loading = true;
           // console.log(error);
-        }
-      })
-    }
-    else {
+        },
+      });
+    } else {
       this.loading = false;
       this.markFormGroupTouched(this.pmasterForm);
-      this.notification.showWarning(" Please fill the  details");
-
+      this.notification.showSuccess(' Please fill the  details');
     }
   }
-
 
   // resetting form controls
   onReset() {
     this.loading = true;
     this.pmasterForm.reset({
       PM_Active: true,
-      PM_Image: ""
+      PM_Image: '',
     });
     this.updateFlag = false;
     this.fileInput.nativeElement.value = '';
     this.fileInputMessageFlag = true;
     this.imagePreview = '';
     this.loading = false;
-
   }
 
   //for editing the form fields
@@ -156,16 +178,17 @@ export class PmasterComponent implements OnInit {
     this.loading = true;
     this.updateFlag = true;
     this.Id = data.PM_ID;
+    this.code = data.PM_Code;
     this.pmasterForm.patchValue({
       PM_Code: data.PM_Code,
       PM_Name: data.PM_Name,
       PM_RegName: data.PM_RegName,
       PM_Image: data.PM_Image,
-      PM_Active: data.PM_Active == "Y" ? true : false,
+      PM_Active: data.PM_Active == 'Y' ? true : false,
     });
     console.log(this.pmasterForm);
     if (data.PM_Image) {
-      this.imagePreview = data.PM_Image
+      this.imagePreview = data.PM_Image;
     }
     this.loading = false;
   }
@@ -177,17 +200,16 @@ export class PmasterComponent implements OnInit {
     if (this.pmasterForm.valid) {
       this.masterService.updatePmaster(updatedata, this.Id).subscribe((res) => {
         this.loading = false;
-        this.notification.showSuccess(" Prathishta Details updated success fully");
+        this.notification.showSuccess(
+          ' Prathishta Details updated success fully'
+        );
         this.ngOnInit();
         this.onReset();
-      })
-    }
-
-    else {
-      this.markFormGroupTouched(this.pmasterForm)
+      });
+    } else {
+      this.markFormGroupTouched(this.pmasterForm);
       this.loading = false;
-      this.notification.showWarning(" Please Fill the  details");
-
+      this.notification.showSuccess(' Please Fill the  details');
     }
   }
 
@@ -196,26 +218,25 @@ export class PmasterComponent implements OnInit {
     this.loading = true;
     this.masterService.deletePmaster(Id).subscribe((res) => {
       this.loading = false;
-      this.notification.showError(" Prathishta Details deleted successfully");
+      this.notification.showSuccess(' Prathishta Details deleted successfully');
       this.ngOnInit();
-    })
+    });
   }
-
 
   // search functionality by name and code
   onSearch() {
-
     if (!this.searchQuery.trim()) {
       this.filteredPmaster = this.pmaster;
-    }
-
-    else {
+    } else {
       this.filteredPmaster = this.pmaster.filter((data) => {
-        console.log(data)
-        return data.PM_Name.toLowerCase().includes(this.searchQuery.toLowerCase()) || data.PM_Code.toLowerCase().includes(this.searchQuery.toLowerCase())
+        console.log(data);
+        return (
+          data.PM_Name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+          data.PM_Code.toLowerCase().includes(this.searchQuery.toLowerCase())
+        );
       });
     }
-    this.showNoRecordsMessage = this.filteredPmaster.length === 0
+    this.showNoRecordsMessage = this.filteredPmaster.length === 0;
   }
 
   //  preview  the image
@@ -232,7 +253,7 @@ export class PmasterComponent implements OnInit {
         this.fileInputMessageFlag = true;
         return;
       }
-// diamension check
+      // diamension check
       const maxSizeInBytes = 2 * 1024 * 1024; // 2MB
       if (file.size > maxSizeInBytes) {
         this.errorMessage = 'File size should not exceed 2MB.';
@@ -259,7 +280,6 @@ export class PmasterComponent implements OnInit {
             console.log(base64Image);
             this.imagePreview = base64Image;
             this.pmasterForm.patchValue({ PM_Image: base64Image });
-
           };
           reader.readAsDataURL(file);
         }
@@ -280,23 +300,24 @@ export class PmasterComponent implements OnInit {
     this.fileInputMessageFlag = true;
     this.imagePreview = '';
     this.errorMessage = '';
-    this.pmasterForm.patchValue({ PM_Image: "" });
+    this.pmasterForm.patchValue({ PM_Image: '' });
   }
 
   // validation
   markFormGroupTouched(formGroup: FormGroup) {
-    Object.values(formGroup.controls).forEach(control => {
+    Object.values(formGroup.controls).forEach((control) => {
       control.markAsTouched();
       if (control instanceof FormGroup) {
         this.markFormGroupTouched(control);
       }
     });
   }
+
   // duplicate code check validators
   duplicateCodeValidator(control: AbstractControl): ValidationErrors | null {
     const code = control.value;
     if (this.updateFlag) {
-      return null
+      return null;
     } else {
       if (this.duplicateCheck.checkDuplicateCode(code, this.pmaster)) {
         return { duplicateCode: true };
@@ -304,13 +325,50 @@ export class PmasterComponent implements OnInit {
       return null;
     }
   }
+  // duplicate name check validators
 
+  duplicateNameValidator(control: AbstractControl): ValidationErrors | null {
+    const name = control.value;
+    const code = this.code;
 
+    if (this.updateFlag) {
+      if (
+        this.duplicateCheck.checkDuplicateUpdatePname(name, this.pmaster, code)
+      ) {
+        return null;
+      } else if (this.duplicateCheck.checkDuplicateName(name, this.pmaster)) {
+        return { duplicateName: true };
+      } else {
+        return null;
+      }
+    } else {
+      if (this.duplicateCheck.checkDuplicateName(name, this.pmaster)) {
+        return { duplicateName: true };
+      }
+      return null;
+    }
+  }
 
+  // duplicate regional check validators
+  duplicateRegionalNameValidator(control: AbstractControl): ValidationErrors | null {
+    const name = control.value;
+    const code = this.code;
 
-
-
+    if (this.updateFlag) {
+      if (
+        this.duplicateCheck.checkDuplicateUpdateRegionalName(name, this.pmaster, code)
+      ) {
+        return null;
+      } else if (this.duplicateCheck.checkDuplicateRegionalName(name, this.pmaster)) {
+        return { duplicateRName: true };
+      } else {
+        return null;
+      }
+    } else {
+      if (this.duplicateCheck.checkDuplicateRegionalName(name, this.pmaster)) {
+        return { duplicateRName: true };
+      }
+      return null;
+    }
+  }
 }
-
-
-

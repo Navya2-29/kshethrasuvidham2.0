@@ -38,6 +38,7 @@ export class CmasterComponent implements OnInit {
   updateFlag: boolean = false;
   searchQuery: string = '';
   Id: string = '';
+code:string;
   loading: boolean = false;
   showMaxLengthError: boolean = false;
   private masterService = inject(MasterService);
@@ -53,10 +54,10 @@ export class CmasterComponent implements OnInit {
         Validators.pattern('^[a-zA-Z0-9]+$'),
         this.duplicateCodeValidator.bind(this),
       ]],
-      VC_Name: ['', [Validators.required,Validators.pattern('^[a-zA-Z0-9/][a-zA-Z0-9./ ]*$')
-      
+      VC_Name: ['', [Validators.required,Validators.pattern('^[a-zA-Z0-9/][a-zA-Z0-9./ ]*$'),
+        this.duplicateNameValidator.bind(this),
       ]],
-      VC_RegName: ['', [Validators.required]],
+      VC_RegName: ['', [Validators.required,this.duplicateRegionalNameValidator.bind(this),]],
       VC_Active: [true]
     });
   }
@@ -78,7 +79,7 @@ export class CmasterComponent implements OnInit {
         }
       },
       error: (error) => {
-        this.notifiacation.showError(error);
+        this.notifiacation.showSuccess(error);
         this.loading = true;
 
       }
@@ -95,7 +96,7 @@ export class CmasterComponent implements OnInit {
     this.loading = true;
     if (this.cmasterForm.valid) {
       this.masterService.createCmaster(data).subscribe({
-        next: (res) => { 
+        next: (res) => {
             this.notifiacation.showSuccess("Category details added successfully");
             this.onReset();
             this.ngOnInit();
@@ -107,7 +108,7 @@ export class CmasterComponent implements OnInit {
       })
     } else {
       this.markFormGroupTouched(this.cmasterForm);
-      this.notifiacation.showWarning("Please Fill the details");
+      this.notifiacation.showSuccess("Please Fill the details");
       this.loading = false;
     }
 
@@ -128,6 +129,7 @@ export class CmasterComponent implements OnInit {
   onEdit(data: Cmaster) {
     this.loading = true;
     this.Id = data.VC_ID;
+this.code=data.VC_Code;
     this.updateFlag = true;
     this.cmasterForm.patchValue({
       VC_Code: data.VC_Code,
@@ -152,7 +154,7 @@ export class CmasterComponent implements OnInit {
     }
     else {
       this.markFormGroupTouched(this.cmasterForm);
-      this.notifiacation.showWarning(" Please Fill the  details")
+      this.notifiacation.showSuccess(" Please Fill the  details")
       this.loading = false;
     }
   }
@@ -160,7 +162,7 @@ export class CmasterComponent implements OnInit {
   onDelete(id: string) {
     this.loading = true;
     this.masterService.deleteCmaster(id).subscribe((res) => {
-      this.notifiacation.showError(" Category Details deleted success fully")
+      this.notifiacation.showSuccess(" Category Details deleted success fully")
       this.ngOnInit();
       this.loading = false;
     })
@@ -178,7 +180,7 @@ export class CmasterComponent implements OnInit {
       });
     }
   }
-  
+
 
 
 
@@ -209,19 +211,53 @@ export class CmasterComponent implements OnInit {
 
   }
 
-  // duplicate name check validators
-  duplicateNameValidator(control: AbstractControl): ValidationErrors | null {
-    const name = control.value;
-    if (this.updateFlag) {
-      return null
+
+
+// duplicate name check validators
+duplicateNameValidator(control: AbstractControl): ValidationErrors | null {
+  const name = control.value;
+  const code = this.code;
+console.log({name,code,a:this.updateFlag})
+  if (this.updateFlag) {
+    if (
+      this.duplicateCheck.checkDuplicateCmsterUpdatePname(name, this.cmaster, code)
+    ) {
+      return null;
+    } else if (this.duplicateCheck.cmastercheckDuplicateName(name, this.cmaster)) {
+      return { duplicateName: true };
     } else {
-      if (this.duplicateCheck.cmastercheckDuplicateCode(name, this.cmaster)) {
-        return { duplicateName: true };
-      }
       return null;
     }
-
+  } else {
+    if (this.duplicateCheck.cmastercheckDuplicateName(name, this.cmaster)) {
+      return { duplicateName: true };
+    }
+    return null;
   }
+}
+
+// duplicate regional check validators
+duplicateRegionalNameValidator(control: AbstractControl): ValidationErrors | null {
+  const name = control.value;
+  const code = this.code;
+
+  if (this.updateFlag) {
+    if (
+      this.duplicateCheck.checkDuplicateCmasterUpdateRegionalName(name, this.cmaster, code)
+    ) {
+      return null;
+    } else if (this.duplicateCheck.checkDuplicateCmasterRegionalName(name, this.cmaster)) {
+      return { duplicateRName: true };
+    } else {
+      return null;
+    }
+  } else {
+    if (this.duplicateCheck.checkDuplicateCmasterRegionalName(name, this.cmaster)) {
+      return { duplicateRName: true };
+    }
+    return null;
+  }
+}
 
 
 

@@ -8,7 +8,7 @@
     align-items: center;
     height:100%;
     width:100%;
-    
+
 }
 
 .main {
@@ -25,7 +25,7 @@
 .card-body {
     height:auto;
     padding-bottom:36px;
-    
+
 }
 
 .fixitems {
@@ -103,7 +103,7 @@ td {
     vertical-align:middle;
     font-size:9pt;
     font-weight:600;
-    
+
 }
 
 .vazhlist {
@@ -113,16 +113,16 @@ td {
 .example-section {
     margin: 12px 0;
   }
-  
+
   .example-margin {
     margin: 0 12px;
   }
-  
+
   ul {
     list-style-type: none;
     margin-top: 4px;
   }
-  
+
 table tr td {
     padding:2px;
     vertical-align:middle;
@@ -134,7 +134,7 @@ table tr td {
     max-width: 500px;
     width: 100%;
   }
-  
+
   .example-full-width {
     width: 100%;
   }
@@ -152,10 +152,10 @@ table tr td {
   .addicon {
     padding:10px;border:1px solid blue;align-items: center;display:flex;justify-content: center;margin:5px;background:maroon;color:white;border:none;border-radius:15px;
   }
-  
+
   mat-form-field {
     margin-bottom:-400px;
-    
+
   }
 
   table tr th {
@@ -169,8 +169,8 @@ table tr td {
     background:rgba(98, 6, 202, .1);
     border-bottom:2px solid #223d61;
   }
-  
-  
+
+
   table tr {
     padding:0px;
   }
@@ -242,7 +242,7 @@ table tr td {
 input[type=text]:hover {
   background-color: white;
   color:black;
- 
+
 }
 
 input[type=text]:focus {
@@ -332,9 +332,18 @@ background-color: #f4f5f7 !important;
 mat-option {
   font-size:11pt;
   margin-bottom:0px;
-  margin-top:-20px;
+  margin-top:0px;
   margin-bottom:-8px;
   height:auto;
+
+}
+.mat-select-placeholder::after {
+  content: 'Days';
+  display: block;
+  color: rgba(0, 0, 0, 0.54); /* Match the default placeholder color */
+}
+.mat-select-placeholder {
+  color: rgba(0, 0, 0, 0.54); /* Match the default placeholder color */
 }
 
 
@@ -390,7 +399,7 @@ mat-option {
 }
 
 .master {
-    display:flex; 
+    display:flex;
     justify-content: center;
     flex-wrap: wrap;
 }
@@ -416,21 +425,21 @@ mat-option {
     display: flex;
     flex-direction: column;
   }
-  
+
   .demo-toggles * {
     margin-bottom: 16px;
   }
-  
+
   .demo-options {
     display: flex;
     flex-direction: column;
     width: 600px;
   }
-  
+
   .demo-data * {
     margin: 16px 0;
   }
-  
+
   .demo-paginator {
     width: 600px;
   }
@@ -439,7 +448,7 @@ mat-option {
     background:white;font-family:montserrat;font-weight:600;padding-left:10px;padding-right:10px;border-radius:9px 9px 0px 0px;color:#223d61;
   }
 
- 
+
 
   mat-select {
     font-size:10pt;
@@ -454,11 +463,11 @@ mat-option {
   .search-container {
     position: relative;
   }
-  
+
   .search-input {
     padding-right: 30px; /* Adjust the padding to make space for the icon */
   }
-  
+
   .search-icon {
     position: absolute;
     top: 50%;
@@ -466,4 +475,18 @@ mat-option {
     transform: translateY(-50%);
     color: #888; /* Adjust the color of the icon */
     cursor: pointer;
+  }
+
+
+  .wrap-text {
+    word-wrap: break-word; /* For older browsers */
+    white-space: normal;   /* Allow text to wrap */
+    word-break: break-all; /* Break long words */
+  }
+  thead th {
+    position: sticky;
+    top: 0;
+   background-color: #5d85b9;
+   color: #f1f1f1;
+    z-index: 1;
   }

@@ -46,6 +46,9 @@
                 <div *ngIf="pmasterFormFormControl['PM_Name'].hasError('required')">
                   Name is required.
                 </div>
+                <div *ngIf="pmasterFormFormControl['PM_Name'].hasError('duplicateName')" class="text-danger">
+                  Name already exists.
+                </div>
                 <div *ngIf="pmasterFormFormControl['PM_Name'].hasError('pattern')">
                   Name must be include english alphabat and spaces only.
                 </div>
@@ -59,6 +62,9 @@
                 class="pl-1 text-danger">
                 <div *ngIf="pmasterFormFormControl['PM_RegName'].hasError('required')">
                   Name in your regional language is required.
+                </div>
+                <div *ngIf="pmasterFormFormControl['PM_RegName'].hasError('duplicateRName')" class="text-danger">
+                  Name already exists.
                 </div>
               </div>
               <tr>
@@ -114,7 +120,7 @@
               <tbody *ngIf="!showNoRecordsMessage &&pmaster && pmaster.length > 0">
                 <tr *ngFor="let data of filteredPmaster ; let i=index">
                   <!-- <td contenteditable="">{{data.PM_ID}}</td> -->
-                  <td>{{data.PM_Code}}</td>
+                  <td style="text-align: left;padding-left: 20px;">{{data.PM_Code}}</td>
                   <td style="text-align:left;">{{data.PM_Name}}-{{data.PM_RegName}}</td>
                   <td>
                     <div *ngIf="!data.PM_Image">No image</div>
@@ -125,7 +131,6 @@
                     <mat-icon title="Delete" class="small" style="vertical-align: middle;"
                       (click)="onDelete(data.PM_ID)">delete</mat-icon>
                   </td>
-
                 </tr>
               </tbody>
 

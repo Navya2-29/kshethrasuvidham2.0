@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 import { Observable } from 'rxjs';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MasterService } from '../../../services/master/master.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -19,7 +19,7 @@ import { MatSelectModule } from '@angular/material/select';
 @Component({
   selector: 'app-vazhipad-blocking',
   standalone: true,
-  imports: [HeaderComponent, SpinnerComponent, MatIconModule,MatSelectModule, FormsModule, MatButtonModule, MatAutocompleteModule, AsyncPipe, CommonModule, ReactiveFormsModule, MatFormFieldModule],
+  imports: [HeaderComponent, SpinnerComponent,MatSelectModule, MatIconModule,MatSelectModule, FormsModule, MatButtonModule, MatAutocompleteModule, AsyncPipe, CommonModule, ReactiveFormsModule, MatFormFieldModule],
   templateUrl: './vazhipad-blocking.component.html',
   styleUrl: './vazhipad-blocking.component.css',
   providers: [DatePipe]
@@ -46,6 +46,9 @@ export class VazhipadBlockingComponent {
   private formBuilder = inject(FormBuilder);
   private masterService = inject(MasterService);
   private notification = inject(NotificationService);
+
+  toppings = new FormControl('');
+  toppingList: string[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Saturday'];
   constructor(private datePipe: DatePipe , private router:Router) {
     // form model
     this.vazhipadBlockingForm = this.formBuilder.group({
@@ -67,7 +70,7 @@ export class VazhipadBlockingComponent {
   }
 
     ngOnInit() {
-   
+
     this.getNakshthram();
 
     // get the radio button blocking values
@@ -96,7 +99,7 @@ export class VazhipadBlockingComponent {
         console.log(this.VM_Id)
       }
       else if (!response) {
-        this.notification.showError("Vazhipad is not exist for code");
+        this.notification.showSuccess("Vazhipad is not exist for code");
       }
       else {
         this.vazhipadBlockingForm.get('VM_name')?.setValue('');
@@ -106,7 +109,7 @@ export class VazhipadBlockingComponent {
     this.getVazhipadBlockingMaster();
   }
 
- 
+
   // get nakshthram
   getNakshthram() {
     this.masterService.getNakshthra().subscribe((res) => {
@@ -129,7 +132,7 @@ export class VazhipadBlockingComponent {
     else if (category == 'M') {
       this.VB_category = "Monthly";
       this.blockingFlag = false;
-     
+
     }
     else {
       this.VB_category = "Nakshthra";
@@ -202,7 +205,7 @@ export class VazhipadBlockingComponent {
       },
       error: (error) => {
         console.log(error);
-        
+
       }
     });
   }
@@ -219,7 +222,7 @@ export class VazhipadBlockingComponent {
     })
     this.loading = true;
     // console.log(data)
-   
+
     if (this.vazhipadBlockingForm.valid) {
       const payLoad = {
         "vazhId": `${this.VM_Id}`,
@@ -267,9 +270,9 @@ export class VazhipadBlockingComponent {
       VB_radio: "Y",
       VB_DateType: "E",
     }
-      
+
     );
-    
+
     this.ngOnInit();
     this.blockingFlag=false;
     this.VB_category = 'Yearly';
@@ -283,7 +286,7 @@ export class VazhipadBlockingComponent {
     this.updateFlag = true;
     this.Id = data.VB_ID;
     this.VM_Id=data.VM_ID
-   
+
     const fromDate = new Date(data.VB_FromDate);
     const toDate = new Date(data.VB_ToDate);
     this.vazhipadBlockingForm.patchValue({
@@ -300,7 +303,7 @@ export class VazhipadBlockingComponent {
       VB_MalFYear: data.VB_MalFYear,
       VB_MalTDay: data.VB_MalTDay,
       VB_MalTMonth: data.VB_MalTMonth,
-      VB_MalTYear: data.VB_MalTYear, 
+      VB_MalTYear: data.VB_MalTYear,
     });
     this.loading = false;
   }
@@ -327,7 +330,7 @@ export class VazhipadBlockingComponent {
         "VazhMalTMonth": this.vazhipadBlockingForm.value.VB_MalTMonth.toString(),
         "VazhMalTYear": this.vazhipadBlockingForm.value.VB_MalFYear.toString(),
         "Cuser": "2",
-        "Type": "UPDATE" 
+        "Type": "UPDATE"
     }
 
     console.log(payLoad)
@@ -372,8 +375,8 @@ updateFromDateAndToDateValidators() {
   const category = this.vazhipadBlockingForm.get('VB_radio')?.value;
   const dateType = this.vazhipadBlockingForm.get('VB_DateType')?.value;
 
-  if ((category === 'Y' && dateType === 'E') || 
-      (category === 'M' && dateType === 'E') || 
+  if ((category === 'Y' && dateType === 'E') ||
+      (category === 'M' && dateType === 'E') ||
       (category === 'N')) {
     fromDateControl?.setValidators([Validators.required]);
     toDateControl?.setValidators([Validators.required]);
@@ -385,5 +388,5 @@ updateFromDateAndToDateValidators() {
   fromDateControl?.updateValueAndValidity();
   toDateControl?.updateValueAndValidity();
 }
-  
+
 }

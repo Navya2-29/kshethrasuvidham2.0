@@ -4,7 +4,13 @@ import { SpinnerComponent } from '../../../shared/component/spinner/spinner.comp
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { AsyncPipe, CommonModule, DatePipe } from '@angular/common';
 import { MasterService } from '../../../services/master/master.service';
 import { SeasonalMaster } from '../../../models/season-master.model';
@@ -15,17 +21,27 @@ import { Vmaster } from '../../../models/vmaster.model';
 @Component({
   selector: 'app-seasonal-master',
   standalone: true,
-  imports: [HeaderComponent, SpinnerComponent, MatInputModule, CommonModule, AsyncPipe, MatIconModule, MatButtonModule, FormsModule, ReactiveFormsModule],
+  imports: [
+    HeaderComponent,
+    SpinnerComponent,
+    MatInputModule,
+    CommonModule,
+    AsyncPipe,
+    MatIconModule,
+    MatButtonModule,
+    FormsModule,
+    ReactiveFormsModule,
+  ],
   templateUrl: './seasonal-master.component.html',
   styleUrl: './seasonal-master.component.css',
-  providers: [DatePipe]
+  providers: [DatePipe],
 })
 export class SeasonalMasterComponent implements OnInit {
   seasonalBlockingForm: FormGroup;
   seasonalMaster: SeasonalMaster[] = [];
   filteredSeasonalMaster: SeasonalMaster[] = [];
   showNoRecordsMessage: boolean = false;
-  seasonalCode:any;
+  seasonalCode: any;
   updateFlag: boolean = false;
   searchQuery: string = '';
   loading: boolean = false;
@@ -42,39 +58,40 @@ export class SeasonalMasterComponent implements OnInit {
       VM_name: ['', [Validators.required]],
       VS_FromDate: [new Date(), [Validators.required]],
       VS_ToDate: [new Date(), [Validators.required]],
-      VS_Reasion: ['']
-    })
+      VS_Reasion: [''],
+    });
     const currentDate = new Date();
     this.today = this.datePipe.transform(currentDate, 'yyyy-MM-dd') || '';
   }
   ngOnInit(): void {
     this.loading = true;
     this.getAllSeasonalisedVazhipad();
-console.log(this.seasonalBlockingForm.get('VS_code'))
+    console.log(this.seasonalBlockingForm.get('VS_code'));
     this.getSeasonalMaster();
-    this.seasonalBlockingForm.get('VS_code')!.valueChanges.pipe(
-      debounceTime(300),
-      switchMap((code) =>
-        this.masterService.getSeasonalVazhipadeByCode(code)
+    this.seasonalBlockingForm
+      .get('VS_code')!
+      .valueChanges.pipe(
+        debounceTime(300),
+        switchMap((code) => this.masterService.getSeasonalVazhipadeByCode(code))
       )
-    ).subscribe((response: any) => {
-      if (response.length > 0) {
-        this.seasonalBlockingForm.get('VM_name')?.setValue(response[0].VM_Name);
-        this.VM_Id = response[0].VM_Id;
-        console.log(response);
-      }
-      
-      else {
-        if(this.seasonalBlockingForm.value.VS_code==="" || null){
-          this.seasonalBlockingForm.get('VM_name')?.setValue('');
-
-        }else{
-          this.seasonalBlockingForm.get('VM_name')?.setValue('');
-          this.notification.showWarning(`No  Seasonal vazhipad exist for this code ${this.seasonalBlockingForm.value.VS_code}`)
+      .subscribe((response: any) => {
+        if (response.length > 0) {
+          this.seasonalBlockingForm
+            .get('VM_name')
+            ?.setValue(response[0].VM_Name);
+          this.VM_Id = response[0].VM_Id;
+          console.log(response);
+        } else {
+          if (this.seasonalBlockingForm.value.VS_code === '' || null) {
+            this.seasonalBlockingForm.get('VM_name')?.setValue('');
+          } else {
+            this.seasonalBlockingForm.get('VM_name')?.setValue('');
+            this.notification.showSuccess(
+              `No  Seasonal vazhipad exist for this code ${this.seasonalBlockingForm.value.VS_code}`
+            );
+          }
         }
-        
-      }
-    });
+      });
   }
   // get form controls
   get SeasonalFormControl() {
@@ -94,8 +111,8 @@ console.log(this.seasonalBlockingForm.get('VS_code'))
         }
       },
       error: (error) => {
-        this.notification.showError(error);
-      }
+        this.notification.showSuccess(error);
+      },
     });
   }
 
@@ -108,31 +125,31 @@ console.log(this.seasonalBlockingForm.get('VS_code'))
     const toDateString = this.seasonalBlockingForm.value.VS_ToDate;
     this.seasonalBlockingForm.patchValue({
       VS_FromDate: this.formatDate(fromDateString),
-      VS_ToDate: this.formatDate(toDateString)
-    })
+      VS_ToDate: this.formatDate(toDateString),
+    });
     this.loading = true;
     if (this.seasonalBlockingForm.valid) {
-      this.masterService.createSeasonalMaster(this.VM_Id, this.seasonalBlockingForm.value).subscribe({
-        next: (res) => {
-
-          if (res.RespStatus === "I") {
-            this.notification.showSuccess("seasonal vazhipad added sussessfully");
-            this.onReset();
-            this.loading = false;
-            this.ngOnInit();
-          }
-
-        },
-        error: (error) => {
-          this.loading = true;
-          this.notification.showError(error);
-        }
-      })
-    }
-    else {
+      this.masterService
+        .createSeasonalMaster(this.VM_Id, this.seasonalBlockingForm.value)
+        .subscribe({
+          next: (res) => {
+            if (res.RespStatus === 'I') {
+              this.notification.showSuccess(
+                'seasonal vazhipad added sussessfully'
+              );
+              this.onReset();
+              this.loading = false;
+              this.ngOnInit();
+            }
+          },
+          error: (error) => {
+            this.loading = true;
+            this.notification.showSuccess(error);
+          },
+        });
+    } else {
       this.markFormGroupTouched(this.seasonalBlockingForm);
-      this.notification.showSuccess("Pleasefill the details");
-
+      this.notification.showSuccess('Pleasefill the details');
     }
   }
 
@@ -154,13 +171,13 @@ console.log(this.seasonalBlockingForm.get('VS_code'))
     // this.seasonalBlockingForm.get('VM_name')?.disable();
     const fromDate = new Date(data.VS_FromDate);
     const toDate = new Date(data.VS_ToDate);
-    console.log(this.vazhipadDetails)
+    console.log(this.vazhipadDetails);
     this.seasonalBlockingForm.patchValue({
       VS_code: data.VM_Code,
-      VM_name:data.VM_Name,
+      VM_name: data.VM_Name,
       VS_FromDate: this.datePipe.transform(fromDate, 'yyyy-MM-dd'),
       VS_ToDate: this.datePipe.transform(toDate, 'yyyy-MM-dd'),
-      VS_Reasion: data.VS_Reasion
+      VS_Reasion: data.VS_Reasion,
     });
     this.loading = false;
   }
@@ -172,61 +189,60 @@ console.log(this.seasonalBlockingForm.get('VS_code'))
     const toDateString = this.seasonalBlockingForm.value.VS_ToDate;
     this.seasonalBlockingForm.patchValue({
       VS_FromDate: this.formatDate(fromDateString),
-      VS_ToDate: this.formatDate(toDateString)
-    })
+      VS_ToDate: this.formatDate(toDateString),
+    });
 
     if (this.seasonalBlockingForm.valid) {
       console.log(this.seasonalBlockingForm.value);
       console.log(this.Id);
-      this.masterService.updateSeasonalMaster(this.Id, this.seasonalBlockingForm.value).subscribe((res) => {
-        if (res.RespStatus == 'U') {
-          this.notification.showSuccess('Seasonal details updated successfully');
-          this.loading = false;
-          this.getSeasonalMaster();
-          this.onReset();
-        }
-        else {
-          this.notification.showError("please try again")
-        }
-
-      })
-    }
-    else {
-      this.markFormGroupTouched(this.seasonalBlockingForm)
+      this.masterService
+        .updateSeasonalMaster(this.Id, this.seasonalBlockingForm.value)
+        .subscribe((res) => {
+          if (res.RespStatus == 'U') {
+            this.notification.showSuccess(
+              'Seasonal details updated successfully'
+            );
+            this.loading = false;
+            this.getSeasonalMaster();
+            this.onReset();
+          } else {
+            this.notification.showSuccess('please try again');
+          }
+        });
+    } else {
+      this.markFormGroupTouched(this.seasonalBlockingForm);
     }
   }
-
 
   // deleteData
   onDelete(id: string) {
     this.loading = true;
     this.masterService.deleteSeasonalMaster(id).subscribe((res) => {
       this.loading = false;
-      this.notification.showSuccess("deleted successfully");
+      this.notification.showSuccess('deleted successfully');
       this.getSeasonalMaster();
-    })
+    });
   }
-
 
   // search functionality by name and code
   onSearch(searchQuery: string) {
     if (!this.searchQuery.trim()) {
       this.filteredSeasonalMaster = this.seasonalMaster;
-    }
-
-    else {
+    } else {
       this.filteredSeasonalMaster = this.seasonalMaster.filter((data) => {
-        console.log(data)
-        return data.VM_Name.toLowerCase().includes(this.searchQuery.toLowerCase()) || data.VM_Code.toLowerCase().includes(this.searchQuery.toLowerCase())
+        console.log(data);
+        return (
+          data.VM_Name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+          data.VM_Code.toLowerCase().includes(this.searchQuery.toLowerCase())
+        );
       });
-
     }
-    this.showNoRecordsMessage = this.filteredSeasonalMaster.length === 0
+    this.showNoRecordsMessage = this.filteredSeasonalMaster.length === 0;
   }
 
   // validation
   markFormGroupTouched(formGroup: FormGroup) {
-    Object.values(formGroup.controls).forEach(control => {
+    Object.values(formGroup.controls).forEach((control) => {
       control.markAsTouched();
       if (control instanceof FormGroup) {
         this.markFormGroupTouched(control);
@@ -234,12 +250,12 @@ console.log(this.seasonalBlockingForm.get('VS_code'))
     });
   }
 
-  getAllSeasonalisedVazhipad(){
+  getAllSeasonalisedVazhipad() {
     this.masterService.getSeasonalisedVazhipad().subscribe({
-      next:(data:Vmaster[])=>{
-this.seasonalCode=data.map(item => item.VM_Code);
+      next: (data: Vmaster[]) => {
+        this.seasonalCode = data.map((item) => item.VM_Code);
         console.log(data);
-      }
-    })
+      },
+    });
   }
 }

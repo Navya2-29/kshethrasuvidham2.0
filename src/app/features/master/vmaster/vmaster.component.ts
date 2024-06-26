@@ -7,6 +7,7 @@ import {
   AbstractControl,
   FormArray,
   FormBuilder,
+  FormControl,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
@@ -23,6 +24,7 @@ import { DuplicatecheckService } from '../../../services/duplicateCheckValidator
 import { UpperCaseDirective } from '../../../shared/directives/upper-case.directive';
 import { NotificationService } from '../../../services/notification/notification.service';
 import { Router } from '@angular/router';
+import { MatSelectModule } from '@angular/material/select';
 @Component({
   selector: 'app-vmaster',
   standalone: true,
@@ -37,11 +39,15 @@ import { Router } from '@angular/router';
     MatAutocompleteModule,
     MatCheckboxModule,
     UpperCaseDirective,
+    MatSelectModule
   ],
   templateUrl: './vmaster.component.html',
   styleUrl: './vmaster.component.css',
 })
 export class VmasterComponent implements OnInit {
+
+  toppings = new FormControl('');
+  toppingList: string[] = ['Extra cheese', 'Mushroom', 'Onion', 'Pepperoni', 'Sausage', 'Tomato'];
   Vmaster: Vmaster[] = [];
   filteredVmaster: Vmaster[] = [];
   vazhipadMasterForm: FormGroup;
@@ -150,7 +156,7 @@ export class VmasterComponent implements OnInit {
         }
       },
       error: (error) => {
-        this.notification.showWarning("Try after some Time")
+        this.notification.showSuccess("Try after some Time")
       },
     });
   }
@@ -177,14 +183,14 @@ export class VmasterComponent implements OnInit {
             console.log(res);
             if(res.RespStatus==="I"){
               this.loading = false;
-              
+
               this.getVmaster();
               this.onReset();
               this.notification.showSuccess(
                 'vazhipad details added successfully'
               );
             }
-            
+
           },
           error: (error) => {
             this.loading = true;
@@ -194,7 +200,7 @@ export class VmasterComponent implements OnInit {
       }
     } else {
       this.markFormGroupTouched(this.vazhipadMasterForm);
-      this.notification.showWarning('Please Fill the Details');
+      this.notification.showSuccess('Please Fill the Details');
     }
   }
 
@@ -220,7 +226,7 @@ export class VmasterComponent implements OnInit {
       VM_TimeLimit:0,
       VM_Description: "",
       VM_AlertMsg: "",
-     
+
       DisplayMode: false,
       ACHeadCode: "",
       ACSubCode: "",
@@ -264,8 +270,8 @@ export class VmasterComponent implements OnInit {
       ACSubCode: data.ACSubCode,
       VC_Name: VCName,
       VM_Time:data.VM_Time,
-      
-      
+
+
     });
 
     this.loading = false;
@@ -296,13 +302,13 @@ export class VmasterComponent implements OnInit {
           },
           error: (error) => {
             this.loading = true;
-            this.notification.showError(error);
+            this.notification.showSuccess(error);
           },
         });
       }
     } else {
       this.markFormGroupTouched(this.vazhipadMasterForm);
-      this.notification.showWarning('please fill the details');
+      this.notification.showSuccess('please fill the details');
     }
   }
   // deleteData
@@ -314,7 +320,7 @@ export class VmasterComponent implements OnInit {
       this.getVmaster();
       this.notification.showSuccess(' Vazhipad Details deleted successfully');
     });
-    
+
   }
   // search functionality by name and code
   onSearch(searchQuery: string) {
@@ -393,7 +399,7 @@ export class VmasterComponent implements OnInit {
       const deitiesFormArray = this.vazhipadMasterForm.get('deities') as FormArray;
       this.deities.forEach(() => deitiesFormArray.push(this.formBuilder.control(false)));
     }
-  
+
     get deitiesFormArray() {
       return this.vazhipadMasterForm.get('deities') as FormArray;
     }

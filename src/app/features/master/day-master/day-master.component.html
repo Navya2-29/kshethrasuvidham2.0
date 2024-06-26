@@ -14,7 +14,7 @@
                     <form  [formGroup]="dayMasterForm">
                     <table class="table">
                         <tr>
-                           <td colspan="3"> Select Offering 
+                           <td colspan="3"> Select Offering
                            <input type="text"
                            placeholder="Select Vazhipad"
                            aria-label="Number"
@@ -35,14 +35,14 @@
                           <tr>
                             <td><input type="checkbox" (click)="toggle()"></td>
                              <td>Select All</td>
-        
-                          </tr> 
+
+                          </tr>
                           <tr *ngFor="let day of days; let i=index">
                             <td >&nbsp;&nbsp;&nbsp;<input type="Checkbox" [checked]="allSelected" (change)="onChange($event)" class="form-input-check"
                               style="vertical-align: middle;width:20px;"[value]="i+1" name="days"></td>
                              <td  style="padding-right: 100px;">{{day.name}}</td>
                              <td></td>
-                          </tr>    
+                          </tr>
                          <tr>
                           <td colspan="3"><button *ngIf="!updateFlag" class="btn btn-primary" (click)="onSubmit()"
                            >save</button>
@@ -56,9 +56,9 @@
                 </div>
                 <div class="col-md-8 search">
                   <div style="display:flex;" class="search-container mt-3">
-                    <!-- <input type="text" class="form-control sps search-input" 
+                    <input type="text" class="form-control sps search-input"
                       placeholder="Search by Name" style="width:36%;" [(ngModel)]="searchQuery">
-                    <mat-icon class="search-icon" >search</mat-icon> -->
+                    <mat-icon class="search-icon" >search</mat-icon>
                   </div>
                     <div class="fixitems prathishta">
                         <table class="table">
@@ -89,10 +89,10 @@
                                   </div>
                                 </td>
                               </tr>
-                            </tfoot>  
+                            </tfoot>
                           </table>
                     </div>
-                </div>   
+                </div>
             </div>
         </div>
     </div>

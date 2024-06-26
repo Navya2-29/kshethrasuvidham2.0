@@ -140,12 +140,12 @@ export class DayMasterComponent implements OnInit {
           this.getDayMster();
         }
         else {
-          this.notification.showError("An error occured try gain");
+          this.notification.showSuccess("An error occured try gain");
           this.loading = false
         }
       },
       error: (err) => {
-        this.notification.showError("server down please try after some time");
+        this.notification.showSuccess("server down please try after some time");
         this.loading = false
       }
     })
@@ -181,8 +181,8 @@ export class DayMasterComponent implements OnInit {
       const VMId = selectedVc.VM_Id;
       console.log(VMId)
       const selectedDays = formValue.day.map((dayIndex: string) => (Number(dayIndex) + 1).toString()); // Convert day index to string
-      // 
-      // const selectedDays = formValue.day.map((dayIndex: any) => dayIndex.toString());    
+      //
+      // const selectedDays = formValue.day.map((dayIndex: any) => dayIndex.toString());
       const payLoad = {
         "VazhId": VMId.toString(),
         "Day": selectedDays,

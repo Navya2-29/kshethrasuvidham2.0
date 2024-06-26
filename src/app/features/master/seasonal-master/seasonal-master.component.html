@@ -15,7 +15,7 @@
             <table class="table">
               <tr>
                 <td>Vazhipad Code<span class="text-danger" *ngIf="!updateFlag">*</span>
-                  
+
                   <select  formControlName="VS_code" class="form-control sps" style="width: 100%;height: 33px;" aria-placeholder="please select" >
                     <option value="" disabled selected>-Select a VM Code-</option>
 
@@ -36,7 +36,7 @@
               <tr>
                 <td colspan="3"> Vazhipad Name<input type="text" readonly formControlName="VM_name" class="form-control"
                     placeholder="Enter Name"> </td>
-              </tr>    
+              </tr>
               <tr>
                 <td>
                   From date<span class="text-danger">*</span><input type="date" class="form-control sps" formControlName="VS_FromDate" [min]="today" >
@@ -46,7 +46,7 @@
                   <input type="date" class="form-control sps" formControlName="VS_ToDate" [min]="today">
                 </td>
               </tr>
-             
+
               <tr>
                 <td colspan="3">Reason
                 <textarea name="" id="" rows="5" cols="50" formControlName="VS_Reasion"></textarea></td>
@@ -63,12 +63,12 @@
           </form>
         </div>
         <div class="col-md-8 search">
-           <div style="display:flex;" class="search-container mt-3"> 
-            <!-- <input type="text" class="form-control sps search-input" (input)="onSearch(searchQuery)" -->
-             <!-- placeholder="search by Code or Name" style="width:36%;" [(ngModel)]="searchQuery">  -->
-            <!-- <button class="btn btn-primary" (click)="onSearch(searchQuery)">Search</button> -->
-            <!-- <mat-icon class="search-icon" (click)="onSearch(searchQuery)">search</mat-icon> -->
-           </div>  
+           <div style="display:flex;" class="search-container mt-3">
+           <input type="text" class="form-control sps search-input" (input)="onSearch(searchQuery)"
+           placeholder="search by Code or Name" style="width:36%;" [(ngModel)]="searchQuery">
+
+          <mat-icon class="search-icon" (click)="onSearch(searchQuery)">search</mat-icon>
+           </div>
           <div class="fixitems prathishta">
             <table class="table">
                 <thead style="border-bottom: 2px solid #223d61; text-align: left;">
@@ -81,13 +81,12 @@
                 </thead>
               <tbody *ngIf="!showNoRecordsMessage &&seasonalMaster && seasonalMaster.length > 0" >
                 <tr *ngFor="let data of filteredSeasonalMaster" >
-                  <!-- <td style="background-color: #87b6f3;"><input type="Checkbox" style="vertical-align: middle;width:12px;" -->
-                  <!-- checked></td> -->
-                  <td>{{data.VS_ID}}</td>
-                  <td>{{data.VM_Code}}-{{data.VM_Name}}-{{data.VM_ID}}</td>
-                  <td>{{data.VS_FromDate | date:'dd-MM-yyyy'}}</td>
-                  <td>{{data.VS_ToDate | date:'dd-MM-yyyy'}}</td>
-                  <td>{{data.VS_Reasion}}</td>
+
+                  <td style="text-align: left; padding-left: 10px;">{{data.VS_ID}}</td>
+                  <td style="text-align: left; ">{{data.VM_Code}}-{{data.VM_Name}}-{{data.VM_ID}}</td>
+                  <td style="text-align: left; ">{{data.VS_FromDate | date:'dd-MM-yyyy'}}</td>
+                  <td style="text-align: left; ">{{data.VS_ToDate | date:'dd-MM-yyyy'}}</td>
+                  <td style="text-align: left; " class="wrap-text">{{data.VS_Reasion}}</td>
                   <td>
                     <mat-icon title="Edit" class="small" style="vertical-align: middle;" (click)="onEdit(data)">edit</mat-icon>
                     <mat-icon title="Delete" class="small" style="vertical-align: middle;" (click)="onDelete(data.VS_ID)">delete</mat-icon>
