@@ -143,6 +143,16 @@
                         >
                           <small> name is required.</small>
                         </div>
+                        <div
+                        *ngIf="
+                          vmasterFormControl['VM_RName'].hasError(
+                            'duplicateRName'
+                          )
+                        "
+                        class="text-danger"
+                      >
+                        <small> Name already exists.</small>
+                      </div>
                       </div>
                     </td>
                     <td colspan="1">

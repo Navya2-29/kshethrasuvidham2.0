@@ -5,7 +5,6 @@ import { Vmaster } from '../../models/vmaster.model';
 import { Cmaster } from '../../models/cmaster.model';
 import { ItemMaster } from '../../models/item-master.model';
 import { VihidhamMaster } from '../../models/vihidham-master.model';
-import { Observable, of } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
@@ -53,6 +52,8 @@ export class DuplicatecheckService {
     return false;
   }
 
+//vmaster
+
   vmastercheckDuplicateCode(code: string, vmasterData: Vmaster[]): boolean {
     return vmasterData.some((v) => v.VM_Code == code);
   }
@@ -61,6 +62,42 @@ export class DuplicatecheckService {
     return vmasterData.some((v) => v.VM_Name === name);
   }
 
+
+  vmastercheckDuplicateUpdateName(
+    name: string,
+    vmasterData: Vmaster[],
+    code: string
+  ): boolean {
+    const matchingPmaster = vmasterData.find((p) => p.VM_Name === name);
+    console.log(matchingPmaster);
+    if (matchingPmaster) {
+      return matchingPmaster.VM_Code === code;
+    }
+
+    return false;
+  }
+  //check regional namechck
+  vmastercheckDuplicateRegionalName(name: string, vmasterData: Vmaster[]): boolean {
+    return vmasterData.some((p) => p.VM_RName === name);
+  }
+  //updatenameduplicatecheck
+  vmastercheckDuplicateUpdateRegionalName(
+    name: string,
+    vmasterData: Vmaster[],
+    code: string
+  ): boolean {
+    const matchingPmaster = vmasterData.find((p) => p.VM_RName === name);
+    console.log(matchingPmaster);
+    if (matchingPmaster) {
+      return matchingPmaster.VM_Code === code;
+    }
+
+    return false;
+  }
+
+
+
+//cmaster
   cmastercheckDuplicateCode(
     code: string,
     cmasterData: Cmaster[],

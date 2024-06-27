@@ -62,6 +62,7 @@ export class VmasterComponent implements OnInit {
   Id: number;
   searchQuery: string = '';
   deities :any [];
+code:string;
   showNoRecordsMessage: boolean = false;
   private formBuilder = inject(FormBuilder);
   private masterService = inject(MasterService);
@@ -79,8 +80,8 @@ export class VmasterComponent implements OnInit {
           this.duplicateCodeValidator.bind(this),
         ],
       ],
-      VM_Name: ["", [Validators.required, Validators.maxLength(100),Validators.pattern('^[a-zA-Z0-9/][a-zA-Z0-9./ ]*$')]],
-      VM_RName: ["", [Validators.required]],
+      VM_Name: ["", [Validators.required, Validators.maxLength(100),Validators.pattern('^[a-zA-Z0-9/][a-zA-Z0-9./ ]*$'),this.duplicateNameValidator.bind(this),]],
+      VM_RName: ["", [Validators.required,this.duplicateRegionalNameValidator.bind(this),]],
       VM_Amt: [0, [Validators.required, Validators.pattern('^[0-9][0-9]*$')]],
       VM_MaxNo: [0, [Validators.pattern('^[0-9][0-9]*$')]],
       VM_Receipt: [false],
@@ -243,6 +244,7 @@ export class VmasterComponent implements OnInit {
     this.Id = data.VM_Id;
     this.loading = true;
     this.updateFlag = true;
+this.code=data.VM_Code;
     const id = data.VC_ID.toString();
     const selectedVc = this.category.find((vc) => vc.VC_Id == id);
     const VCName = selectedVc?.VC_Name;
@@ -403,4 +405,52 @@ export class VmasterComponent implements OnInit {
     get deitiesFormArray() {
       return this.vazhipadMasterForm.get('deities') as FormArray;
     }
+
+
+
+// duplicate name check validators
+duplicateNameValidator(control: AbstractControl): ValidationErrors | null {
+  const name = control.value;
+  const code = this.code;
+   console.log({name,code,a:this.updateFlag})
+  if (this.updateFlag) {
+    if (
+      this.duplicateCheck.vmastercheckDuplicateUpdateName(name, this.Vmaster, code)
+    ) {
+      return null;
+    } else if (this.duplicateCheck.vmastercheckDuplicateName(name, this.Vmaster)) {
+      return { duplicateName: true };
+    } else {
+      return null;
+    }
+  } else {
+    if (this.duplicateCheck.vmastercheckDuplicateName(name, this.Vmaster)) {
+      return { duplicateName: true };
+    }
+    return null;
+  }
+}
+
+// duplicate regional check validators
+duplicateRegionalNameValidator(control: AbstractControl): ValidationErrors | null {
+  const name = control.value;
+  const code = this.code;
+
+  if (this.updateFlag) {
+    if (
+      this.duplicateCheck.vmastercheckDuplicateUpdateRegionalName(name, this.Vmaster, code)
+    ) {
+      return null;
+    } else if (this.duplicateCheck.vmastercheckDuplicateRegionalName(name, this.Vmaster)) {
+      return { duplicateRName: true };
+    } else {
+      return null;
+    }
+  } else {
+    if (this.duplicateCheck.vmastercheckDuplicateRegionalName(name, this.Vmaster)) {
+      return { duplicateRName: true };
+    }
+    return null;
+  }
+}
 }
