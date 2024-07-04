@@ -632,6 +632,14 @@ export class MasterService {
     );
   }
 
+
+  // vazhipad booking
+
+  vazhipadBooking(data:any):Observable<any[]>{
+    return this.http
+    .post<any>(Constant.BASE_URL + Constant.METHODS.VAZHIPAD_BOOKING,data)
+    .pipe(catchError(this.errorHandler));
+  }
   // error handling
   private errorHandler(error: HttpErrorResponse) {
     //

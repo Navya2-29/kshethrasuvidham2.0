@@ -1,24 +1,65 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import {MatInputModule} from '@angular/material/input';
 import {MatButtonModule} from '@angular/material/button';
 import {MobserachbtnComponent} from '../../../mobserachbtn/mobserachbtn.component';
 import { TotalAmountService } from '../../../shared/service/total-amount.service';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule, formatDate } from '@angular/common';
 
 @Component({
   selector: 'app-fixedbottom',
   standalone: true,
-  imports: [MatInputModule, MatButtonModule,MobserachbtnComponent],
+  imports: [MatInputModule, MatButtonModule,MobserachbtnComponent,ReactiveFormsModule,CommonModule],
   templateUrl: './fixedbottom.component.html',
   styleUrl: './fixedbottom.component.css'
 })
 export class FixedbottomComponent implements OnInit {
-  totalAmount: number;
+  customerdetailsForBillingForm:FormGroup;
+totalAmount:number=0;
 
-  constructor(private totalAmountService: TotalAmountService) {}
 
-  ngOnInit() {
-    this.totalAmountService.totalAmount$.subscribe(amount => {
-      this.totalAmount = amount;
+private totalService=inject(TotalAmountService)
+  constructor(private fb:FormBuilder){
+    const today = formatDate(new Date(), 'dd-MM-yyyy', 'en');
+    const billNo = this.generateBillNumber(); // Generate bill number
+
+    this.customerdetailsForBillingForm = this.fb.group({
+     
+     
+        BillNo:[billNo],
+        Billdate:[today],
+        paymentNumber: [''],
+        Mobile: [''],
+        Address1: [''],
+        Address2: [''],
+        Address3: [''],
+        Email:[''],
+        Pincode:[''],
+        Userid:['0'],
+        CounterId:['1'],
+        Trnsmode: ['cs'],
+        Instno:[''],
+        Instdate:[''],
+        InstBank:[''],
+        Memberid:['1'],
+      
     });
+
   }
+  ngOnInit(): void {
+     this.totalService.totalAmount$.subscribe(amount => {
+    this.totalAmount = amount;
+  });
+  console.log(this.customerdetailsForBillingForm.value);
+  }
+ 
+  private generateBillNumber(): string {
+    // Simple example: "BILL" followed by current timestamp
+    return 'cbx' + Date.now();
+  }
+  onSubmit(){
+    this.totalService.setFirstComponentData(this.customerdetailsForBillingForm.value);
+    this.totalService.emitClickEvent();
+  }
+
 }

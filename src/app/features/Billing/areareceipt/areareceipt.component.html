@@ -2,7 +2,7 @@
   <div class="col-md-12">
     <div class="card-body fixitems" id="details">
       <div style="display: flex; flex-wrap: wrap">
-        <form [formGroup]="form" (ngSubmit)="save()">
+        <form [formGroup]="form">
           <table class="table">
             <thead>
               <tr style="background: #223d61; color: white">
@@ -15,101 +15,185 @@
                 <th style="width: 7%; text-align: center">Rate</th>
                 <th style="width: 7%; text-align: center">Amount</th>
                 <th style="width: 9%; text-align: center">Date</th>
+                <td style="width: 7%; text-align: center">Single/Multi</td>
                 <th style="width: 10%; text-align: center">Time</th>
+                <!-- <th> Name 2</th>
+                <th>Star 2</th> -->
+                <th></th>
                 <th></th>
               </tr>
             </thead>
-            <tbody formArrayName="rows">
-              <tr *ngFor="let row of formArray.controls; let i = index" [formGroupName]="i">
+            <tbody formArrayName="vazhipadinfo">
+              <tr
+                *ngFor="let row of vazhipadinfo.controls; let i = index"
+                [formGroupName]="i"
+              >
                 <td style="padding: 10px">
-                  <a (click)="removeRow(i)" *ngIf="i > 0">
+                  <a (click)="removeRow(i)">
                     <mat-icon>delete</mat-icon>
                   </a>
                 </td>
+                <td style="display: none">
+                  <input type="text" formControlName="Slno" [value]="i" />
+                </td>
+
                 <td>
-                    <select formControlName="vazhipad" class="form-control sps" style="width: 100%;height: 33px;">
-                      <option *ngFor="let option of VMList" [value]="option.VM_Name">
-                       {{option.VM_Code}}-{{ option.VM_Name }}
-                      </option>
-                    </select>
-                    <div *ngIf="row.get('vazhipad')?.invalid && row.get('vazhipad')?.touched">
-                      <small class="text-danger">Vazhipad is required</small>
-                    </div>
+                  <input
+                    type="text"
+                    placeholder="Select vazhipad"
+                    matInput
+                    class="form-control sps"
+                    formControlName="Vazhipad"
+                    [matAutocomplete]="auto"
+                  />
+                  <mat-autocomplete
+                    autoActiveFirstOption
+                    #auto="matAutocomplete"
+                    (optionSelected)="onSelect($event, i)"
+                  >
+                    <mat-option
+                      *ngFor="let option of filteredOptions[i]"
+                      [value]="option.VM_Name"
+                    >
+                      {{ option.VM_Name }}
+                    </mat-option>
+                  </mat-autocomplete>
                 </td>
                 <td>
                   <input
                     type="text"
-                    formControlName="name"
                     class="form-control"
                     placeholder="Enter Name"
+                    formControlName="Name"
                   />
                 </td>
-                <div *ngIf="row.get('name')?.invalid && row.get('name')?.touched">
-                  <small class="text-danger">Name is required</small>
-                </div>
                 <td>
                   <select
-                    formControlName="star"
+                    formControlName="Star"
                     class="form-control"
                     style="width: 100%; height: 30.6px"
                   >
-                    <option [value]="item.id" *ngFor="let item of nakshatham">
+                    <option *ngFor="let item of nakshatham" [value]="item.id">
                       {{ item.name }}
                     </option>
                   </select>
                 </td>
                 <td>
                   <select
-                    formControlName="dietee"
                     class="form-control"
+                    formControlName="Prethista"
                     style="width: 100%; height: 30.6px"
                   >
-                   <option *ngFor="let diety of row.get('dieties')!.value;" [value]="diety.PM_Name">{{ diety.PM_Name }}</option>
-                   </select>
+                    <option *ngFor="let prathishta of prathishtaOptions[i]" [value]="prathishta.name" >{{prathishta.name}}</option>
+                    
+                  </select>
                 </td>
                 <td style="vertical-align: middle; text-align: center">
                   <input
                     type="number"
-                    formControlName="qty"
                     class="form-control"
                     placeholder="Qty"
-                    [min]="1"
+                    formControlName="Qty"
                     style="vertical-align: middle; text-align: center"
                   />
                 </td>
                 <td style="vertical-align: middle; text-align: center">
-                  <input type="number" class="form-control spsr" style="background: white" [readonly]="!row.get('rateChangeable')?.value"  formControlName="rate" />
-                {{row.get('rateChangeable')?.value}}
+                  <input
+                    type="text"
+                    placeholder="Rate"
+                    class="form-control"
+                    formControlName="Rate"
+                    [readOnly]="row.get('ratechange')?.value ==='N'"
+                  />
                 </td>
-                <td style="vertical-align: middle; text-align: center; ">
-                  <input type="number" class="form-control spsr" readonly formControlName="amount" />
+                <td style="vertical-align: middle; text-align: center">
+                  <input
+                    type="text"
+                    placeholder="Amount"
+                    class="form-control"
+                    formControlName="Amount"
+                    readonly
+                  />
                 </td>
                 <td style="vertical-align: middle; text-align: center">
                   <input
                     type="date"
-                    formControlName="date"
-                    class="form-control"
-                    [min]="bookingFlag?tomarrow:today"
-                    style="font-size: 10pt; background: white"
+                    class="form-control sps"
+                    formControlName="VazhipadDate"
+                    [readOnly]="row.get('booking')?.value ==='N'"
+                    [min]="today"
+                   
                   />
                 </td>
-
-                <td>
-                  <select
-                    formControlName="time"
-                    class="form-control"
-                    style="width: 80%; height: 30.6px"
-                    (keypress)="handleTimeFieldKeyPress($event, row)"
-                  >
-                    <option *ngFor="let time of vazhipadtime" [value]="time.id">{{time.name}}</option>
-
-                  </select>
-
+                <td style="text-align: center; vertical-align: middle">
+                  <input
+                    type="radio"
+                    name="singleMulti_{{ i }}"
+                    value="s"
+                    checked
+                  /><span style="margin-left: 5px">S</span>
+                  <input
+                    type="radio"
+                    name="singleMulti_{{ i }}"
+                    value="m"
+                    
+                    (click)="openMultiDayDialog(i)"
+                    style="padding: 5px; font-size: 9pt"
+                  />
+                  <span style="margin-left: 5px">M</span>
                 </td>
                 <td>
-                  <a (click)="addRow()" *ngIf="i === formArray.length - 1">
+                  <select
+                    class="form-control"
+                    formControlName="time"
+                    style="width: 80%; height: 30.6px"
+                    (keypress)="handleTimeFieldKeyPress($event, row,i)"
+                  >
+                    <option *ngFor="let time of vazhipadtime" [value]="time.id">{{time.name}}</option>
+                    
+                  </select>
+                </td>
+                <td
+                  [ngStyle]="{
+                    display:
+                      row.get('multiname')?.value === 'Y' ? 'block' : 'none'
+                  }"
+                >
+                  <input
+                    type="text"
+                    class="form-control"
+                    style="width: 60px"
+                    formControlName="Name2"
+                    placeholder="Name 2"
+                  />
+                </td>
+                <td
+                  [ngStyle]="{
+                    display:
+                      row.get('multiname')?.value === 'Y' ? 'block' : 'none'
+                  }"
+                >
+                  <input
+                    type="text"
+                    class="form-control"
+                    style="width: 60px"
+                    formControlName="Star2"
+                    placeholder="star2"
+                  />
+                </td>
+                <td>
+                  <a (click)="addRow(i)">
                     <mat-icon><span class="icons">add_comment</span></mat-icon>
                   </a>
+                </td>
+                <td>
+                  <a color="accent" (click)="openMultiDayBookedDetails(i)"
+                    ><mat-icon
+                      class="icons"
+                      style="color: #223d61; cursor: pointer"
+                      >more</mat-icon
+                    ></a
+                  >
                 </td>
               </tr>
             </tbody>

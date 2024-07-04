@@ -77,9 +77,10 @@ export const Constant = {
 
         // commen
         GET_ACCOUNTHEAD: "getAccountHead",
-        GET_SUBACCOUNTHEAD: "getAccountSubHead"
+        GET_SUBACCOUNTHEAD: "getAccountSubHead",
 
-        // request body
+        // vazhipad booking
+        VAZHIPAD_BOOKING:'VazhipadBooking'
 
 
     }
