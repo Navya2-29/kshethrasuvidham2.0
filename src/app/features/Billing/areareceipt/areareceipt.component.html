@@ -55,9 +55,10 @@
                       *ngFor="let option of filteredOptions[i]"
                       [value]="option.VM_Name"
                     >
-                      {{ option.VM_Name }}
+                      {{option.VM_Code}}-{{ option.VM_Name }}
                     </mat-option>
                   </mat-autocomplete>
+                 
                 </td>
                 <td>
                   <input
@@ -66,6 +67,7 @@
                     placeholder="Enter Name"
                     formControlName="Name"
                   />
+                 
                 </td>
                 <td>
                   <select
@@ -77,6 +79,7 @@
                       {{ item.name }}
                     </option>
                   </select>
+                 
                 </td>
                 <td>
                   <select
@@ -87,15 +90,18 @@
                     <option *ngFor="let prathishta of prathishtaOptions[i]" [value]="prathishta.name" >{{prathishta.name}}</option>
                     
                   </select>
+                 
                 </td>
                 <td style="vertical-align: middle; text-align: center">
                   <input
+                  [min]="1"
                     type="number"
                     class="form-control"
                     placeholder="Qty"
                     formControlName="Qty"
                     style="vertical-align: middle; text-align: center"
                   />
+                  
                 </td>
                 <td style="vertical-align: middle; text-align: center">
                   <input
@@ -105,6 +111,7 @@
                     formControlName="Rate"
                     [readOnly]="row.get('ratechange')?.value ==='N'"
                   />
+                  
                 </td>
                 <td style="vertical-align: middle; text-align: center">
                   <input
@@ -121,9 +128,10 @@
                     class="form-control sps"
                     formControlName="VazhipadDate"
                     [readOnly]="row.get('booking')?.value ==='N'"
-                    [min]="today"
+                    [min]="dateToSet"
                    
                   />
+                  
                 </td>
                 <td style="text-align: center; vertical-align: middle">
                   <input

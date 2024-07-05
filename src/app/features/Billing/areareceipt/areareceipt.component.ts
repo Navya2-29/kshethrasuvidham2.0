@@ -1,3 +1,4 @@
+import { ToastrService } from 'ngx-toastr';
 import { VMList } from './../../../models/day-master.model';
 import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
@@ -14,7 +15,11 @@ import {
   Validators,
 } from '@angular/forms';
 import { AsyncPipe, CommonModule } from '@angular/common';
-import { MatAutocomplete, MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import {
+  MatAutocomplete,
+  MatAutocompleteModule,
+  MatAutocompleteSelectedEvent,
+} from '@angular/material/autocomplete';
 import { MorebuttonComponent } from '../../../morebutton/morebutton.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatRadioModule } from '@angular/material/radio';
@@ -50,7 +55,6 @@ import { MultidaybookeddetailsComponent } from '../multidaybookeddetails/multida
   providers: [DatePipe],
 })
 export class AreareceiptComponent implements OnInit {
- 
   // private multidayService = inject(MultidayService);
   form: FormGroup;
   row: FormArray;
@@ -60,21 +64,26 @@ export class AreareceiptComponent implements OnInit {
   totalAmount: number = 0;
   autoCompleteFields: MatAutocomplete[] = [];
   clickReceived = false;
-  today: string;
+  today: Date;
+  currentDate = new Date();
   prathishtaOptions: any[] = [];
+  tomorrowDate:Date;
+  dateToSet: string | null;
   private subscription: Subscription;
   private masterservice = inject(MasterService);
   private eventService = inject(TotalAmountService);
-  constructor(private fb: FormBuilder, public dialog: MatDialog,private datePipe: DatePipe) {
-    const currentDate = new Date();
-    this.today = currentDate.toISOString().slice(0, 10);
+  private notification = inject(ToastrService);
+  constructor(
+    private fb: FormBuilder,
+    public dialog: MatDialog,
+    private datePipe: DatePipe
+  ) {
+    
+  
     this.form = this.fb.group({
       vazhipadinfo: this.fb.array([]),
     });
   }
-
-
- 
 
   ngOnInit(): void {
     this.getAllvazhipad();
@@ -89,7 +98,7 @@ export class AreareceiptComponent implements OnInit {
       this.eventService.setSecondComponentData(this.form.value);
       const combinedData = this.eventService.getAllData();
       // this.sendDataToApi(combinedData);
-      this.sendDataToApi(combinedData)
+      this.sendDataToApi(combinedData);
     });
   }
 
@@ -103,18 +112,18 @@ export class AreareceiptComponent implements OnInit {
   createRow(): FormGroup {
     const row = this.fb.group({
       Slno: [''],
-      Vazhipad: [''],
+      Vazhipad: ['', [Validators.required]],
       Vazhid: [''],
-      Name: ['',[Validators.required]],
-      Star: ['',[Validators.required]],
-      Prethista: [''],
-      Qty: [1],
-      Rate: [''],
+      Name: ['', [Validators.required]],
+      Star: ['', [Validators.required]],
+      Prethista: ['', [Validators.required]],
+      Qty: [1, [Validators.required]],
+      Rate: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
       Amount: [''],
-      VazhipadDate: [this.today,[Validators.required]],
-      
+      VazhipadDate: ['', [Validators.required]],
+
       TotalAmt: [this.totalAmount],
-      time: [{ disabled: true, value: '' }],
+      time: [''],
       // multidaybookedDetails: this.fb.array([]),
       Name2: [''],
       Star2: [''],
@@ -123,14 +132,15 @@ export class AreareceiptComponent implements OnInit {
       Mday: [''],
       NalBy: [''],
       Mmonth: [''],
-      multiname: [{disabled:true,value:''}],
-      booking:[{disabled:true,value:''}],
-      ratechange:[{disabled:true,value:''}],
-
+      multiname: [{ disabled: true, value: '' }],
+      booking: [''],
+      ratechange: [{ disabled: true, value: '' }],
     });
     row.get('Qty')?.valueChanges.subscribe(() => this.updateAmount(row));
     row.get('Rate')?.valueChanges.subscribe(() => this.updateAmount(row));
-
+    row.get('VazhipadDate')?.valueChanges.subscribe(() => {
+      this.checkVazhipadDate(row);
+    });
     return row;
   }
 
@@ -138,11 +148,62 @@ export class AreareceiptComponent implements OnInit {
     return this.form.get('vazhipadinfo') as FormArray;
   }
 
-  addRow(index: number): void {
 
-    if (this.vazhipadinfo.length > 0 && !this.vazhipadinfo.at(this.vazhipadinfo.length - 1).valid) {
-      console.error('The last row is not valid. Please complete it before adding a new row.');
-      return;
+  checkVazhipadDate(row: FormGroup) {
+    
+    const vmBooking = row.get('booking')?.value === 'Y' ? 'Y' : 'N';
+    console.log(vmBooking)
+    const enteredDate = new Date(row.get('VazhipadDate')?.value);
+    console.log('ffff')
+    console.log(this.today);
+    console.log(this.tomorrowDate)
+    const currentDate = new Date(); // Current date without time
+    const tomorrowDate = new Date(currentDate);
+    tomorrowDate.setDate(currentDate.getDate() + 1);
+    if (vmBooking === 'N' && enteredDate < currentDate) {
+      this.notification.error('The Vazhipad date must be today or a future date.');
+    } else if (vmBooking === 'Y' && enteredDate < tomorrowDate) {
+      this.notification.error('The Vazhipad date must be tomorrow or a future date.');
+    }
+  }
+
+  addRow(index: number): void {
+    if (
+      this.vazhipadinfo.length > 0 &&
+      !this.vazhipadinfo.at(this.vazhipadinfo.length - 1 ).valid
+    ) {
+      //  this.notification.success("Plese fill the details");
+      const row = this.vazhipadinfo.at(index) as FormGroup;
+      //  row.markAllAsTouched();
+      //   return;
+
+      if (row.invalid) {
+        if (row.get('Vazhipad')?.errors?.['required']) {
+          this.notification.success('Please select a vazhipad');
+        } else if (row.get('Name')?.errors?.['required']) {
+          this.notification.success('Please enter the Name');
+        } else if (row.get('Star')?.errors?.['required']) {
+          this.notification.success('Please select a Star');
+        }
+        else if (row.get('Prethista')?.errors?.['required']) {
+          this.notification.success('Please select a Prethista');
+        }
+        else if (row.get('Qty')?.errors?.['required']) {
+          this.notification.success('Please select a Qty');
+        }
+        else if (row.get('Rate')?.errors?.['required']) {
+          this.notification.success('Please select a Rate');
+        }
+        else if (row.get('Rate')?.errors?.['pattern']) {
+          this.notification.success('Enter a valid rate');
+        }
+        
+        else if (row.get('VazhipadDate')?.errors?.['required']) {
+          this.notification.success('Please select a VazhipadDate');
+        }
+        
+        return; // Stop adding new row if current row is invalid
+      }
     }
     console.log(index);
     this.vazhipadinfo.insert(index + 1, this.createRow());
@@ -180,8 +241,10 @@ export class AreareceiptComponent implements OnInit {
 
   private _filter(value: string): any[] {
     const filterValue = value.toLowerCase();
-    return this.VMList.filter((option) =>
-      option.VM_Name.toLowerCase().includes(filterValue)
+    return this.VMList.filter(
+      (option) =>
+        option.VM_Name.toLowerCase().includes(filterValue) ||
+        option.VM_Code.toLowerCase().includes(filterValue)
     );
   }
 
@@ -247,44 +310,76 @@ export class AreareceiptComponent implements OnInit {
         const selectedRow = this.vazhipadinfo.at(index) as FormGroup;
         console.log(selectedRow);
         selectedRow.get('Rate')?.setValue(res[0].VM_Amt);
-          selectedRow.get('multiname')?.setValue(res[0].VM_MultiName);
-          selectedRow.get('booking')?.setValue(res[0].VM_Booking);
-          selectedRow.get('ratechange')?.setValue(res[0].VM_Rate_Change);
+        selectedRow.get('multiname')?.setValue(res[0].VM_MultiName);
+        selectedRow.get('booking')?.setValue(res[0].VM_Booking);
+        selectedRow.get('ratechange')?.setValue(res[0].VM_Rate_Change);
+        selectedRow.get('time')?.setValue(res[0].VM_Time);
+        const isVMBooking = selectedRow.get('booking')?.value;
+        this.tomorrowDate = new Date(this.currentDate);
+        this.tomorrowDate.setDate(this.currentDate.getDate() + 1);
+         this.dateToSet = isVMBooking==='Y'? this.datePipe.transform(this.tomorrowDate, 'yyyy-MM-dd'): this.datePipe.transform(this.currentDate, 'yyyy-MM-dd');
 
-          this.selectedVazhipadPrathistaDetails(vazhipadcode,index);
+        selectedRow
+          .get('VazhipadDate')
+          ?.setValue(this.dateToSet);
+
+          // if (isVMBooking==='Y') {
+           
+          //   selectedRow.get('minDate')?.setValue(this.tomorrowDate);
+          // } else {
+          //   selectedRow.get('VazhipadDate')?.disable();
+          //   selectedRow.get('minDate')?.setValue(this.today);
+          // }
+        this.selectedVazhipadPrathistaDetails(vazhipadcode, index);
         //   selectedRow.get('rate')?.setValue(res.rate);
         console.log(selectedRow);
       });
   }
 
+  // fetch parthishta details
 
-// fetch parthishta details
+  selectedVazhipadPrathistaDetails(vazhipadcode: any, index: number) {
+    this.masterservice.getVazhipadByCodeForDiety(vazhipadcode).subscribe({
+      next: (res: any) => {
+        console.log(res);
+        this.prathishtaOptions[index] = res.map((item: any) => ({
+          id: item.PM_ID,
+          name: item.PM_Name,
+        }));
+        const selectedRow = this.vazhipadinfo.at(index) as FormGroup;
+        if (this.prathishtaOptions[index].length > 0) {
+          console.log(this.prathishtaOptions[index]);
+          const defaultPrathishta = this.prathishtaOptions[index][0].name;
+          const defaultPrathishtaId = this.prathishtaOptions[index][0].id;
+          console.log(defaultPrathishta);
+          this.vazhipadinfo
+            .at(index)
+            .get('Prethista')
+            ?.setValue(defaultPrathishta);
+          this.vazhipadinfo
+            .at(index)
+            .get('PMid')
+            ?.setValue(defaultPrathishtaId);
 
-selectedVazhipadPrathistaDetails(vazhipadcode:any,index:number){
-  this.masterservice.getVazhipadByCodeForDiety(vazhipadcode).subscribe({
-    next:(res:any)=>{
-      console.log(res);
-      this.prathishtaOptions[index] = res.map((item:any) => ({
-        id: item.PM_ID,
-        name: item.PM_Name
-      }));
-
-      if (this.prathishtaOptions[index].length > 0) {
-        console.log(this.prathishtaOptions[index])
-        const defaultPrathishta = this.prathishtaOptions[index][0].name;
-        const defaultPrathishtaId = this.prathishtaOptions[index][0].id;
-        console.log(defaultPrathishta)
-        this.vazhipadinfo.at(index).get('Prethista')?.setValue(defaultPrathishta);
-        this.vazhipadinfo.at(index).get('PMid')?.setValue(defaultPrathishtaId);
-      }
-      // const selectedRow = this.vazhipadinfo.at(index);
-      // selectedRow.get('Prathishta')?.setValue(res[0].PM_Name);
-    },
-    error:(err)=>{
-      console.log("error in getting prathishta")
-    }
-  })
-}
+          selectedRow
+            .get('Prethista')
+            ?.valueChanges.subscribe((selectedPrathishta) => {
+              const selectedPrathishtaObj = this.prathishtaOptions[index].find(
+                (option: any) => option.name === selectedPrathishta
+              );
+              if (selectedPrathishtaObj) {
+                selectedRow.get('PMid')?.setValue(selectedPrathishtaObj.id); // Set PMid based on selected Prathishta
+              }
+            });
+        }
+        // const selectedRow = this.vazhipadinfo.at(index);
+        // selectedRow.get('Prathishta')?.setValue(res[0].PM_Name);
+      },
+      error: (err) => {
+        console.log('error in getting prathishta');
+      },
+    });
+  }
 
   // opne multiday open dialog box
 
@@ -394,15 +489,14 @@ selectedVazhipadPrathistaDetails(vazhipadcode:any,index:number){
   }
 
   sendDataToApi(data: any) {
-    console.log(data)
+    console.log(data);
     const formattedData = this.formatDateFields(data);
     console.log(formattedData);
-    this.masterservice.vazhipadBooking(formattedData).subscribe((res)=>{
+    this.masterservice.vazhipadBooking(formattedData).subscribe((res) => {
       console.log(res);
-    })
-   
+    });
   }
-  
+
   private formatDateFields(data: any): any {
     // if (data.vazhipadinfo && Array.isArray(data.vazhipadinfo)) {
     //   data.vazhipadinfo = data.vazhipadinfo.map((item:any) => {
@@ -416,44 +510,46 @@ selectedVazhipadPrathistaDetails(vazhipadcode:any,index:number){
 
     const formattedData = { ...data };
 
-    if (formattedData.vazhipadinfo && Array.isArray(formattedData.vazhipadinfo)) {
-      formattedData.vazhipadinfo = formattedData.vazhipadinfo.map((item: any) => {
-        return {
-          ...item,
-          Slno: String(item.Slno),
-          Vazhipad: String(item.Vazhipad),
-          Vazhid: String(item.Vazhid),
-          Name: String(item.Name),
-          Star: String(item.Star),
-          Prethista: String(item.Prethista),
-          Qty: String(item.Qty),
-          Rate: String(item.Rate),
-          Amount: String(item.Amount),
-          VazhipadDate: this.dateFormat(new Date(item.VazhipadDate)),
-          TotalAmt: String(item.TotalAmt),
-          
-          Name2: String(item.Name2),
-          Star2: String(item.Star2),
-          Postal: String(item.Postal),
-          PMid: String(item.PMid),
-          Mday: String(item.Mday),
-          NalBy: String(item.NalBy),
-          Mmonth: String(item.Mmonth),
-          
-        };
-      });
+    if (
+      formattedData.vazhipadinfo &&
+      Array.isArray(formattedData.vazhipadinfo)
+    ) {
+      formattedData.vazhipadinfo = formattedData.vazhipadinfo.map(
+        (item: any) => {
+          return {
+            ...item,
+            Slno: String(item.Slno),
+            Vazhipad: String(item.Vazhipad),
+            Vazhid: String(item.Vazhid),
+            Name: String(item.Name),
+            Star: String(item.Star),
+            Prethista: String(item.Prethista),
+            Qty: String(item.Qty),
+            Rate: String(item.Rate),
+            Amount: String(item.Amount),
+            VazhipadDate: this.dateFormat(new Date(item.VazhipadDate)),
+            TotalAmt: String(item.TotalAmt),
+            Name2: String(item.Name2),
+            Star2: String(item.Star2),
+            Postal: String(item.Postal),
+            PMid: String(item.PMid),
+            Mday: String(item.Mday),
+            NalBy: String(item.NalBy),
+            Mmonth: String(item.Mmonth),
+          };
+        }
+      );
     }
-
     return formattedData;
-
-
-
   }
-
 
   // add row by key press
 
-  handleTimeFieldKeyPress(event: KeyboardEvent, row: AbstractControl,i:number) {
+  handleTimeFieldKeyPress(
+    event: KeyboardEvent,
+    row: AbstractControl,
+    i: number
+  ) {
     if (event.key === 'Enter') {
       const formGroupRow = row as FormGroup;
       if (formGroupRow.valid) {
