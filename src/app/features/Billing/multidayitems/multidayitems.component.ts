@@ -40,9 +40,11 @@ export class MultidayitemsComponent implements OnInit {
   initialRowData: any;
   generatedRows: any[] = [];
   DevoteeRows: any[] = [];
+  MultinameRows:any[]=[];
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private dialogRef: MatDialogRef<MultidayitemsComponent>
   ) {
     this.multiDayForm = this.fb.group({
       startDate: ['', [Validators.required]],
@@ -52,6 +54,8 @@ export class MultidayitemsComponent implements OnInit {
         [Validators.required, Validators.min(1)],
       ],
       endDate: ['', [Validators.required]],
+      name2:[''],
+      star2:[''],
       devotees: this.fb.array([]),
     });
   }
@@ -123,14 +127,15 @@ export class MultidayitemsComponent implements OnInit {
   }
   private createDevoteeFormGroup(): FormGroup {
     return this.fb.group({
-      name: ['', Validators.required],
-      star: ['', Validators.required],
+      name: [''],
+      star: [''],
     });
   }
   onSubmit() {
     console.log(this.multiDayForm.value);
-    const allGeneratedRows = [...this.generatedRows, ...this.DevoteeRows];
+    const allGeneratedRows = [...this.generatedRows, ...this.DevoteeRows,...this.MultinameRows];
     console.log(allGeneratedRows);
+    this.dialogRef.close({ formData: this.multiDayForm.value, generatedRows: allGeneratedRows });
   }
 
   private generateDayList(startDate: Date, endDate: Date): void {
@@ -205,6 +210,7 @@ export class MultidayitemsComponent implements OnInit {
   }
 
 
+
   initDevoteeFormListener(): void {
     // Listen for changes in each devotee form group
     this.devotees.controls.forEach(devoteeControl => {
@@ -215,7 +221,54 @@ export class MultidayitemsComponent implements OnInit {
       devoteeControl.get('star')?.valueChanges.subscribe(() => {
         this.generateDevoteeRows();
       });
+
     });
+
+
+    this.multiDayForm.get('name2')?.valueChanges.subscribe(() => {
+      this.generateMultinameRows();
+    });
+
+    this.multiDayForm.get('star2')?.valueChanges.subscribe(() => {
+      this.generateMultinameRows();
+    });
+
+
   }
+
+
+
+  private generateMultinameRows(): void {
+    this.MultinameRows = [];
+
+    const startDate = this.multiDayForm.get('startDate')?.value;
+    const endDate = this.multiDayForm.get('endDate')?.value;
+    const name2 = this.multiDayForm.get('name2')?.value;
+    const star2 = this.multiDayForm.get('star2')?.value;
+
+    if (startDate && endDate && name2 && star2) {
+      const startDateObj = new Date(startDate);
+      const endDateObj = new Date(endDate);
+
+      let currentDate = new Date(startDateObj);
+
+      while (currentDate <= endDateObj) {
+        const row = {
+          ...this.initialRowData,
+          VazhipadDate: currentDate.toISOString().split('T')[0],
+          Name: name2,
+          Star: star2
+        };
+        this.MultinameRows.push(row);
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+    }
+
+    console.log(this.MultinameRows);
+  }
+
+
+  
+
 
 }

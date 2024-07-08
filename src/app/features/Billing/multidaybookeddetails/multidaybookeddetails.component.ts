@@ -25,7 +25,7 @@ export class MultidaybookeddetailsComponent implements OnInit {
   
   ) {
     // Access the passed data here
-    console.log(data.devoteedetails)
+    console.log(data)
     console.log("hai");
   }
 ngOnInit() {

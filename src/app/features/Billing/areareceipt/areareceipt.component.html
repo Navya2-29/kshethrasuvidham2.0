@@ -191,7 +191,7 @@
                     <mat-icon><span class="icons">add_comment</span></mat-icon>
                   </a>
                 </td>
-                <td>
+                <td  *ngIf="multidayBooking[i]">
                   <a color="accent" (click)="openMultiDayBookedDetails(i)"
                     ><mat-icon
                       class="icons"

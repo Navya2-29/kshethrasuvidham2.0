@@ -12,6 +12,7 @@ import {
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
+  ValidationErrors,
   Validators,
 } from '@angular/forms';
 import { AsyncPipe, CommonModule } from '@angular/common';
@@ -69,6 +70,8 @@ export class AreareceiptComponent implements OnInit {
   prathishtaOptions: any[] = [];
   tomorrowDate:Date;
   dateToSet: string | null;
+  singleMultiSelection: string[] = []; // To hold the radio button values
+  multidayBooking:any[]=[];
   private subscription: Subscription;
   private masterservice = inject(MasterService);
   private eventService = inject(TotalAmountService);
@@ -379,6 +382,13 @@ export class AreareceiptComponent implements OnInit {
 
   // opne multiday open dialog box
   openMultiDayDialog(rowIndex: number): void {
+
+    const row = this.vazhipadinfo.at(rowIndex) as FormGroup;
+
+    if (row.invalid) {
+      this.showValidationErrors(row);
+      return;
+    }
     const rowData = (this.form.get('vazhipadinfo') as FormArray).controls[rowIndex].value;
     const dialogRef = this.dialog.open(MultidayitemsComponent, {
       width: '80%',
@@ -389,51 +399,26 @@ export class AreareceiptComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       console.log('Dialog closed with result:', result);
-      // Handle any further actions upon dialog close if needed
+      if(result){
+        const multidayFormData=result.formData;
+        const multiDayBookedDetails=result.generatedRows
+        this.multidayBooking[rowIndex]=multiDayBookedDetails;
+        console.log(multidayFormData)
+        const selectedRow = this.vazhipadinfo.at(rowIndex) as FormGroup;
+        const newQuantity=multidayFormData.numberOfDays *multidayFormData.quantity
+        selectedRow.get('Qty')?.setValue(newQuantity);
+      }
     });
   }
 
-  addMultiDayBookedDetails(combinedData: any[], rowIndex: number): void {
-    const selectedRow = this.vazhipadinfo.at(rowIndex) as FormGroup;
-    let multidaybookedDetailsArray = selectedRow.get(
-      'multidaybookedDetails'
-    ) as FormArray;
-
-    // Check if multidaybookedDetailsArray is null and initialize if necessary
-    // if (!multidaybookedDetailsArray) {
-    //   multidaybookedDetailsArray = this.fb.array([]);
-    //   selectedRow.setControl('multidaybookedDetails', multidaybookedDetailsArray);
-    // }
-
-    combinedData.forEach((item) => {
-      const itemGroup = this.fb.group(item); // Create a FormGroup from the item object
-      multidaybookedDetailsArray.push(itemGroup);
-    });
-
-    console.log(multidaybookedDetailsArray);
-    console.log(this.form);
-  }
-
-  createMultiDayBookedDetailFormGroup(item: any): FormGroup {
-    return this.fb.group({
-      name: [item.name],
-      star: [item.star],
-      date: [item.date],
-    });
-  }
+  // to show multi day booked details
 
   openMultiDayBookedDetails(rowIndex: number) {
-    const selectedRow = this.vazhipadinfo.at(rowIndex) as FormGroup;
-    const multidaybookedDetailsArray = selectedRow.get(
-      'multidaybookedDetails'
-    ) as FormArray;
-    console.log('arrrr' + multidaybookedDetailsArray.value);
-    console.log(multidaybookedDetailsArray.value);
-    console.log('arrrr');
+   
     const dialogRef = this.dialog.open(MultidaybookeddetailsComponent, {
       width: '80vh',
       maxWidth: '50vw',
-      data: { devoteedetails: multidaybookedDetailsArray.value }, // Pass the array values
+      data: this.multidayBooking[rowIndex], // Pass the array values
 
       // Optionally, you can pass data to the dialog component using the 'data' property
       // data: { anyData: 'you want to pass' }
@@ -466,7 +451,7 @@ export class AreareceiptComponent implements OnInit {
       row.get('TotalAmt')?.setValue(this.totalAmount);
     });
   }
-
+// api data send
   sendDataToApi(data: any) {
     console.log(data);
     const formattedData = this.formatDateFields(data);
@@ -475,6 +460,9 @@ export class AreareceiptComponent implements OnInit {
       console.log(res);
     });
   }
+
+
+
 
   private formatDateFields(data: any): any {
     // if (data.vazhipadinfo && Array.isArray(data.vazhipadinfo)) {
@@ -539,4 +527,31 @@ export class AreareceiptComponent implements OnInit {
       }
     }
   }
+
+
+  showValidationErrors(row: FormGroup): void {
+    Object.keys(row.controls).forEach(key => {
+      const controlErrors: ValidationErrors = row.get(key)?.errors || {};
+      if (controlErrors) {
+        Object.keys(controlErrors).forEach(errorKey => {
+          switch (errorKey) {
+            case 'required':
+              this.notification.error(`${key} is required.`);
+              break;
+            case 'pattern':
+              this.notification.error(`Invalid pattern for ${key}.`);
+              break;
+            // Add more cases as needed for other validators
+          }
+        });
+      }
+    });
+  }
+  onSingleMultiChange(index: number, value: string): void {
+    this.singleMultiSelection[index] = value;
+    if (value === 'm') {
+      this.openMultiDayDialog(index);
+    }
+  }
+
 }
