@@ -121,7 +121,6 @@ export class AreareceiptComponent implements OnInit {
       Rate: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
       Amount: [''],
       VazhipadDate: ['', [Validators.required]],
-
       TotalAmt: [this.totalAmount],
       time: [''],
       // multidaybookedDetails: this.fb.array([]),
@@ -132,15 +131,15 @@ export class AreareceiptComponent implements OnInit {
       Mday: [''],
       NalBy: [''],
       Mmonth: [''],
-      multiname: [{ disabled: true, value: '' }],
+      multiname: [''],
       booking: [''],
       ratechange: [{ disabled: true, value: '' }],
     });
     row.get('Qty')?.valueChanges.subscribe(() => this.updateAmount(row));
     row.get('Rate')?.valueChanges.subscribe(() => this.updateAmount(row));
-    row.get('VazhipadDate')?.valueChanges.subscribe(() => {
-      this.checkVazhipadDate(row);
-    });
+    // row.get('VazhipadDate')?.valueChanges.subscribe(() => {
+      // this.checkVazhipadDate(row);
+    // });
     return row;
   }
 
@@ -149,23 +148,20 @@ export class AreareceiptComponent implements OnInit {
   }
 
 
-  checkVazhipadDate(row: FormGroup) {
+  // checkVazhipadDate(row: FormGroup) {
     
-    const vmBooking = row.get('booking')?.value === 'Y' ? 'Y' : 'N';
-    console.log(vmBooking)
-    const enteredDate = new Date(row.get('VazhipadDate')?.value);
-    console.log('ffff')
-    console.log(this.today);
-    console.log(this.tomorrowDate)
-    const currentDate = new Date(); // Current date without time
-    const tomorrowDate = new Date(currentDate);
-    tomorrowDate.setDate(currentDate.getDate() + 1);
-    if (vmBooking === 'N' && enteredDate < currentDate) {
-      this.notification.error('The Vazhipad date must be today or a future date.');
-    } else if (vmBooking === 'Y' && enteredDate < tomorrowDate) {
-      this.notification.error('The Vazhipad date must be tomorrow or a future date.');
-    }
-  }
+  //   const vmBooking = row.get('booking')?.value === 'Y' ? 'Y' : 'N';
+  //   console.log(vmBooking)
+  //   const enteredDate = new Date(row.get('VazhipadDate')?.value);
+  //   const currentDate = new Date(); // Current date without time
+  //   const tomorrowDate = new Date(currentDate);
+  //   tomorrowDate.setDate(currentDate.getDate() + 1);
+  //   if (vmBooking === 'N' && enteredDate < currentDate) {
+  //     this.notification.error('The Vazhipad date must be today or a future date.');
+  //   } else if (vmBooking === 'Y' && enteredDate < tomorrowDate) {
+  //     this.notification.error('The Vazhipad date must be tomorrow or a future date.');
+  //   }
+  // }
 
   addRow(index: number): void {
     if (
@@ -382,35 +378,18 @@ export class AreareceiptComponent implements OnInit {
   }
 
   // opne multiday open dialog box
-
   openMultiDayDialog(rowIndex: number): void {
-    const selectedRow = this.vazhipadinfo.at(rowIndex) as FormGroup;
-    const name = selectedRow.get('name')?.value || ''; // Get name from selected row
-    const star = selectedRow.get('star')?.value || '';
+    const rowData = (this.form.get('vazhipadinfo') as FormArray).controls[rowIndex].value;
     const dialogRef = this.dialog.open(MultidayitemsComponent, {
       width: '80%',
       maxWidth: '60vw',
-      data: { rowIndex, name, star },
-      // Optionally, you can pass data to the dialog component using the 'data' property
-      // data: { anyData: 'you want to pass' }
+      data: rowData
+    
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      console.log(result);
-      const combinedData = result.combinedData;
-      const formData = result.formData;
-      if (formData) {
-        const newQty = formData.days * formData.qty;
-        const vazhDate = formData.startDate;
-        this.vazhipadinfo.at(rowIndex).get('Qty')!.setValue(newQty);
-        this.vazhipadinfo.at(rowIndex).get('VazhipadDate')!.setValue(vazhDate);
-        // Check if devotees array has any items
-        if (result.combinedData) {
-          console.log(result.combinedData);
-          this.addMultiDayBookedDetails(result.combinedData, rowIndex);
-          // this.openMultiDayBookedDetails(combinedData);
-        }
-      }
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('Dialog closed with result:', result);
+      // Handle any further actions upon dialog close if needed
     });
   }
 
@@ -509,7 +488,6 @@ export class AreareceiptComponent implements OnInit {
     // return data;
 
     const formattedData = { ...data };
-
     if (
       formattedData.vazhipadinfo &&
       Array.isArray(formattedData.vazhipadinfo)

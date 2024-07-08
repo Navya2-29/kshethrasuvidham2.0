@@ -46,6 +46,9 @@ export const routes: Routes = [
   },
   {
     path:'star-master',component:StarMasterComponent,canActivate:[authGuard]
+  },
+  {
+    path:'**',pathMatch:'full', redirectTo:'/dashboard'
   }
 ];
 
