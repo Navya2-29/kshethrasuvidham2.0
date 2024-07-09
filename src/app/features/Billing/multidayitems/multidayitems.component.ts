@@ -41,13 +41,20 @@ export class MultidayitemsComponent implements OnInit {
   generatedRows: any[] = [];
   DevoteeRows: any[] = [];
   MultinameRows:any[]=[];
+  todayDate: string;
+
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<MultidayitemsComponent>
   ) {
+
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    this.todayDate = new Date().toISOString().split('T')[0];
+
     this.multiDayForm = this.fb.group({
-      startDate: ['', [Validators.required]],
+      startDate: [tomorrow.toISOString().split('T')[0], [Validators.required]],
       numberOfDays: ['1', [Validators.required, Validators.min(1)]],
       quantity: [
         this.data.Qty || '1',
@@ -141,12 +148,10 @@ export class MultidayitemsComponent implements OnInit {
   private generateDayList(startDate: Date, endDate: Date): void {
     const dayList = [];
     let currentDate = new Date(startDate);
-
-    while (currentDate <= endDate) {
+    while (currentDate < endDate) {
       dayList.push(currentDate.toISOString().split('T')[0]);
       currentDate.setDate(currentDate.getDate() + 1);
     }
-
     this.dayList = dayList;
   }
 
@@ -160,7 +165,7 @@ export class MultidayitemsComponent implements OnInit {
 
     let currentDate = new Date(startDate);
 
-    while (currentDate <= endDate) {
+    while (currentDate <endDate) {
       initialRow.VazhipadDate = currentDate.toISOString().split('T')[0];
       const row = {
         ...initialRow,
@@ -192,7 +197,7 @@ export class MultidayitemsComponent implements OnInit {
 
         if (name && star) {
           let currentDate = new Date(startDate);
-          while (currentDate <= endDate) {
+          while (currentDate < endDate) {
             const row = {
               ...this.initialRowData,
               VazhipadDate: currentDate.toISOString().split('T')[0],
@@ -252,7 +257,7 @@ export class MultidayitemsComponent implements OnInit {
 
       let currentDate = new Date(startDateObj);
 
-      while (currentDate <= endDateObj) {
+      while (currentDate < endDateObj) {
         const row = {
           ...this.initialRowData,
           VazhipadDate: currentDate.toISOString().split('T')[0],

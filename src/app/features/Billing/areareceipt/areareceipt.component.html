@@ -105,7 +105,7 @@
                 </td>
                 <td style="vertical-align: middle; text-align: center">
                   <input
-                    type="text"
+                    type="number"
                     placeholder="Rate"
                     class="form-control"
                     formControlName="Rate"
@@ -178,13 +178,15 @@
                       row.get('multiname')?.value === 'Y' ? 'block' : 'none'
                   }"
                 >
-                  <input
-                    type="text"
-                    class="form-control"
-                    style="width: 60px"
-                    formControlName="Star2"
-                    placeholder="star2"
-                  />
+                <select
+                formControlName="Star2"
+                class="form-control"
+                style="width: 100%; height: 30.6px"
+              >
+                <option *ngFor="let item of nakshatham" [value]="item.id">
+                  {{ item.name }}
+                </option>
+              </select>
                 </td>
                 <td>
                   <a (click)="addRow(i)">

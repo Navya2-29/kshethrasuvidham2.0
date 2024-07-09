@@ -26,6 +26,7 @@
                         formControlName="startDate"
                         style="width: 90px"
                         (change)="calculateEndDate()"
+                        [min]="todayDate"
                       />
                     </td>
                     <td>

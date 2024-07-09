@@ -92,12 +92,11 @@ export class AreareceiptComponent implements OnInit {
     this.getAllvazhipad();
     this.getNakshthram();
     // this.addRow(0);
-
+    this.dateToSet = this.datePipe.transform(this.tomorrowDate, 'yyyy-MM-dd')
     this.subscription = this.eventService.clickEvent$.subscribe(() => {
       this.clickReceived = true;
       // Handle the event here
       console.log('Click event received!');
-
       this.eventService.setSecondComponentData(this.form.value);
       const combinedData = this.eventService.getAllData();
       // this.sendDataToApi(combinedData);
@@ -118,17 +117,17 @@ export class AreareceiptComponent implements OnInit {
       Vazhipad: ['', [Validators.required]],
       Vazhid: [''],
       Name: ['', [Validators.required]],
-      Star: ['', [Validators.required]],
+      Star: ['0', [Validators.required]],
       Prethista: ['', [Validators.required]],
       Qty: [1, [Validators.required]],
-      Rate: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
+      Rate: ['', [Validators.required, Validators.pattern('^[0-9]+$'),this.zeroRateValidator]],
       Amount: [''],
       VazhipadDate: ['', [Validators.required]],
       TotalAmt: [this.totalAmount],
       time: [''],
       // multidaybookedDetails: this.fb.array([]),
       Name2: [''],
-      Star2: [''],
+      Star2: ['0'],
       Postal: ['10'],
       PMid: ['1'],
       Mday: [''],
@@ -166,7 +165,18 @@ export class AreareceiptComponent implements OnInit {
   //   }
   // }
 
+  zeroRateValidator(control: AbstractControl): ValidationErrors | null {
+    const rate = control.value;
+    if (rate === 0) {
+      return { zeroRate: true };
+    }
+    return null;
+  }
+
   addRow(index: number): void {
+
+   
+
     if (
       this.vazhipadinfo.length > 0 &&
       !this.vazhipadinfo.at(this.vazhipadinfo.length - 1 ).valid
@@ -195,6 +205,8 @@ export class AreareceiptComponent implements OnInit {
         }
         else if (row.get('Rate')?.errors?.['pattern']) {
           this.notification.success('Enter a valid rate');
+        }else if (row.get('Rate')?.errors?.['zeroRate']) {
+          this.notification.success('Rate cannot be zero');
         }
         
         else if (row.get('VazhipadDate')?.errors?.['required']) {
@@ -316,7 +328,7 @@ export class AreareceiptComponent implements OnInit {
         const isVMBooking = selectedRow.get('booking')?.value;
         this.tomorrowDate = new Date(this.currentDate);
         this.tomorrowDate.setDate(this.currentDate.getDate() + 1);
-         this.dateToSet = isVMBooking==='Y'? this.datePipe.transform(this.tomorrowDate, 'yyyy-MM-dd'): this.datePipe.transform(this.currentDate, 'yyyy-MM-dd');
+        this.dateToSet = isVMBooking==='Y'? this.datePipe.transform(this.tomorrowDate, 'yyyy-MM-dd'): this.datePipe.transform(this.currentDate, 'yyyy-MM-dd');
 
         selectedRow
           .get('VazhipadDate')
@@ -536,11 +548,14 @@ export class AreareceiptComponent implements OnInit {
         Object.keys(controlErrors).forEach(errorKey => {
           switch (errorKey) {
             case 'required':
-              this.notification.error(`${key} is required.`);
+              this.notification.success(`${key} is required.`);
               break;
             case 'pattern':
-              this.notification.error(`Invalid pattern for ${key}.`);
+              this.notification.success(`Invalid pattern for ${key}.`);
               break;
+              case 'zeroRate':
+                this.notification.success(`Rate cant be Zero`);
+                break;
             // Add more cases as needed for other validators
           }
         });
