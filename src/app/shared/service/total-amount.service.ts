@@ -54,5 +54,15 @@ export class TotalAmountService {
       ...this.secondComponentData
     };
   }
+
+  private billNumberSubject = new BehaviorSubject<string | null>(null);
+   setBillNumber(billNumber: any): void {
+    this.billNumberSubject.next(billNumber);
+  }
+
+  getBillNumber() {
+    return this.billNumberSubject.asObservable();
+  }
+  
   
 }

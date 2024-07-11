@@ -22,6 +22,7 @@ import { CommonModule, formatDate } from '@angular/common';
 export class FixedbottomComponent implements OnInit {
   customerdetailsForBillingForm: FormGroup;
   totalAmount: number = 0;
+  LastBillNo:any='No bill No';
   private totalService = inject(TotalAmountService);
   constructor(private fb: FormBuilder) {
     const today = formatDate(new Date(), 'dd-MM-yyyy', 'en');
@@ -40,7 +41,7 @@ export class FixedbottomComponent implements OnInit {
       CounterId: ['1'],
       Trnsmode: ['cs'],
       Instno: [''],
-      Instdate: [''],
+      Instdate: ['10-07-2024'],
       InstBank: [''],
       Memberid: ['1'],
     });
@@ -50,6 +51,8 @@ export class FixedbottomComponent implements OnInit {
       this.totalAmount = amount;
     });
     console.log(this.customerdetailsForBillingForm.value);
+
+    this.getLastBillNo();
   }
 
   private generateBillNumber(): string {
@@ -61,5 +64,17 @@ export class FixedbottomComponent implements OnInit {
       this.customerdetailsForBillingForm.value
     );
     this.totalService.emitClickEvent();
+    
   }
+
+
+  getLastBillNo(){
+    const lastBillNumber = localStorage.getItem('lastBillNumber');
+    this.LastBillNo = lastBillNumber ? JSON.parse(lastBillNumber) : null;
+
+    // this.totalService.getBillNumber().subscribe((billNumber) => {
+    //   this.LastBillNo = billNumber;
+    // });
+  }
+  
 }

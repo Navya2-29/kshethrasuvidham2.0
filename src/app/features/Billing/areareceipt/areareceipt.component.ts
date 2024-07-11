@@ -1,6 +1,6 @@
 import { ToastrService } from 'ngx-toastr';
 import { VMList } from './../../../models/day-master.model';
-import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild, inject } from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
@@ -72,6 +72,9 @@ export class AreareceiptComponent implements OnInit {
   dateToSet: string | null;
   singleMultiSelection: string[] = []; // To hold the radio button values
   multidayBooking:any[]=[];
+  LastBillNumber:any;
+  indexForAutoComplete:number;
+ 
   private subscription: Subscription;
   private masterservice = inject(MasterService);
   private eventService = inject(TotalAmountService);
@@ -124,7 +127,7 @@ export class AreareceiptComponent implements OnInit {
       Amount: [''],
       VazhipadDate: ['', [Validators.required]],
       TotalAmt: [this.totalAmount],
-      time: [''],
+      time: [{ disabled: true, value: '' }],
       // multidaybookedDetails: this.fb.array([]),
       Name2: [''],
       Star2: ['0'],
@@ -133,8 +136,8 @@ export class AreareceiptComponent implements OnInit {
       Mday: [''],
       NalBy: [''],
       Mmonth: [''],
-      multiname: [''],
-      booking: [''],
+      multiname: [{ disabled: true, value: '' }],
+      booking: [{ disabled: true, value: '' }],
       ratechange: [{ disabled: true, value: '' }],
     });
     row.get('Qty')?.valueChanges.subscribe(() => this.updateAmount(row));
@@ -175,7 +178,7 @@ export class AreareceiptComponent implements OnInit {
 
   addRow(index: number): void {
 
-   
+   this.indexForAutoComplete=index;
 
     if (
       this.vazhipadinfo.length > 0 &&
@@ -228,7 +231,8 @@ export class AreareceiptComponent implements OnInit {
       this.vazhipadinfo.removeAt(index);
       this.updateTotalAmount();
       this.updateSlno();
-      // this.setAutocompleteFilteredOption();
+      this.notification.success("Data deleted successfully")
+      this.setupAutocomplete(this.indexForAutoComplete);
     }
   }
 
@@ -395,31 +399,31 @@ export class AreareceiptComponent implements OnInit {
   // opne multiday open dialog box
   openMultiDayDialog(rowIndex: number): void {
 
-    const row = this.vazhipadinfo.at(rowIndex) as FormGroup;
+    // const row = this.vazhipadinfo.at(rowIndex) as FormGroup;
 
-    if (row.invalid) {
-      this.showValidationErrors(row);
-      return;
-    }
-    const rowData = (this.form.get('vazhipadinfo') as FormArray).controls[rowIndex].value;
+    // if (row.invalid) {
+    //   this.showValidationErrors(row);
+    //   return;
+    // }
+    // const rowData = (this.form.get('vazhipadinfo') as FormArray).controls[rowIndex].value;
     const dialogRef = this.dialog.open(MultidayitemsComponent, {
       width: '80%',
       maxWidth: '60vw',
-      data: rowData
+    
     
     });
 
     dialogRef.afterClosed().subscribe(result => {
       console.log('Dialog closed with result:', result);
-      if(result){
-        const multidayFormData=result.formData;
-        const multiDayBookedDetails=result.generatedRows
-        this.multidayBooking[rowIndex]=multiDayBookedDetails;
-        console.log(multidayFormData)
-        const selectedRow = this.vazhipadinfo.at(rowIndex) as FormGroup;
-        const newQuantity=multidayFormData.numberOfDays *multidayFormData.quantity
-        selectedRow.get('Qty')?.setValue(newQuantity);
-      }
+      // if(result){
+      //   const multidayFormData=result.formData;
+      //   const multiDayBookedDetails=result.generatedRows
+      //   this.multidayBooking[rowIndex]=multiDayBookedDetails;
+      //   console.log(multidayFormData)
+      //   const selectedRow = this.vazhipadinfo.at(rowIndex) as FormGroup;
+      //   const newQuantity=multidayFormData.numberOfDays *multidayFormData.quantity
+      //   selectedRow.get('Qty')?.setValue(newQuantity);
+      // }
     });
   }
 
@@ -468,13 +472,31 @@ export class AreareceiptComponent implements OnInit {
     console.log(data);
     const formattedData = this.formatDateFields(data);
     console.log(formattedData);
-    this.masterservice.vazhipadBooking(formattedData).subscribe((res) => {
-      console.log(res);
+    this.masterservice.vazhipadBooking(formattedData).subscribe((res:any) => {
+      console.log(res)
+      if(res){
+        this.notification.success(res.RespMsg);
+        if(res.RespStatus==='I'){
+          this.LastBillNumber=res.BillNo;
+          localStorage.setItem('lastBillNumber', JSON.stringify(  this.LastBillNumber));
+          this.resetForm();
+          this.eventService.setBillNumber(res);
+        }else{
+          this.LastBillNumber=this.LastBillNumber;
+        }
+       
+      }
     });
   }
 
 
-
+  resetForm() {
+    this.form.reset();
+    this.vazhipadinfo.clear();
+    this.addRow(-1); // Add an initial row after resetting
+    this.updateTotalAmount();
+    this.updateSlno();
+  }
 
   private formatDateFields(data: any): any {
     // if (data.vazhipadinfo && Array.isArray(data.vazhipadinfo)) {
@@ -562,11 +584,30 @@ export class AreareceiptComponent implements OnInit {
       }
     });
   }
-  onSingleMultiChange(index: number, value: string): void {
-    this.singleMultiSelection[index] = value;
-    if (value === 'm') {
-      this.openMultiDayDialog(index);
+
+  
+  
+  // onSingleMultiChange(index: number, value: string): void {
+  //   this.singleMultiSelection[index] = value;
+  //   if (value === 'm') {
+  //     this.openMultiDayDialog(index);
+  //   }
+  // }
+
+  restrictRateInput(event: KeyboardEvent): void {
+    const charCode = event.which ? event.which : event.keyCode;
+    const char = String.fromCharCode(charCode);
+  
+    // Allow only numbers and one decimal point
+    if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
+      event.preventDefault();
+    }
+  
+    // Prevent multiple decimal points
+    if (char === '.' && (event.target as HTMLInputElement).value.includes('.')) {
+      event.preventDefault();
     }
   }
+  
 
 }

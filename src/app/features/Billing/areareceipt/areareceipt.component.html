@@ -11,9 +11,9 @@
                 <th style="width: 12%">Name</th>
                 <th style="width: 8%">Star</th>
                 <th style="width: 8%">Dietee</th>
-                <th style="width: 4%; text-align: center">Qty</th>
-                <th style="width: 7%; text-align: center">Rate</th>
-                <th style="width: 7%; text-align: center">Amount</th>
+                <th style="width: 3%; text-align: center">Qty</th>
+                <th style="width: 4%; text-align: center">Rate</th>
+                <th style="width: 4%; text-align: center">Amount</th>
                 <th style="width: 9%; text-align: center">Date</th>
                 <td style="width: 7%; text-align: center">Single/Multi</td>
                 <th style="width: 10%; text-align: center">Time</th>
@@ -135,13 +135,15 @@
                     type="radio"
                     name="singleMulti_{{ i }}"
                     value="s"
+                  
                     checked
                   /><span style="margin-left: 5px">S</span>
                   <input
+                 
                     type="radio"
                     name="singleMulti_{{ i }}"
                     value="m"
-                    
+                   
                     (click)="openMultiDayDialog(i)"
                     style="padding: 5px; font-size: 9pt"
                   />

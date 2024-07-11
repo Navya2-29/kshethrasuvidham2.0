@@ -1,39 +1,60 @@
 <h2 mat-dialog-title style="background: #223d61; color: white">
-  Multi day Booking - {{data.Vazhipad}}
+  Multi day Booking 
 </h2>
-<mat-dialog-content class="high">
-  <div class="container" style="width: 100%">
+<mat-dialog-content class="high" style="width: 100%">
+  <div class="container" >
     <div class="row">
-      <form [formGroup]="multiDayForm">
-        <div class="col-md-6">
+      <form>
+        <div class="col-md-4">
           <div>
             <div style="padding: 0px; margin-bottom: 18px">
               <table class="">
-                <thead>
+                <tr><td>Vazhipad</td>
+                <td>Name</td>
+                    <td>Star</td>
+                    <td>Rate</td></tr>
+                    <tr>
+                      <td><input
+                        type="text"
+                        class="form-control formdate"
+                        placeholder="Vazhipad"
+                      /></td>
+                      <td><input
+                        type="text"
+                        class="form-control formdate" 
+                        placeholder="Name"
+                      /></td>
+                      <td><input
+                        type="text"
+                        class="form-control formdate"
+                        placeholder="Star"
+                      /></td>
+                      <td><input
+                        type="text"
+                        class="form-control formdate"
+                        placeholder="Rate"
+                      /></td>
+                    </tr>
                   <tr>
                     <th>Starting Date</th>
                     <th>No. of Days</th>
                     <th>Qty</th>
                     <th>End Date</th>
                   </tr>
-                </thead>
-                <tbody>
                   <tr>
                     <td>
                       <input
                         type="date"
                         class="form-control formdate"
                         formControlName="startDate"
-                        style="width: 90px"
-                        (change)="calculateEndDate()"
-                        [min]="todayDate"
+                        style="width: 90px" 
                       />
                     </td>
                     <td>
                       <input
                         type="number"
                         class="form-control formdate"
-                        (input)="calculateEndDate()"
+                        
                         formControlName="numberOfDays"
                         [min]="1"
                       />
@@ -52,44 +73,12 @@
                       <input
                         type="date"
                         class="form-control formdate"
-                        style="width: 90px"
+                        
                         formControlName="endDate"
                         readonly
                       />
                     </td>
                   </tr>
-                  <tr *ngIf="data.multiname === 'Y'">
-                    <td>Multi-Name</td>
-                  </tr>
-                  <tr *ngIf="data.multiname === 'Y'">
-                    <td>
-                    
-                      <input
-                        type="text"
-                        class="form-control"
-                        placeholder="Multiname"
-                        formControlName="name2"
-                      />
-                    </td>
-                    <td>
-                      <select
-                        class="form-control select-star"
-                        style="width: fit-content; height: 30.6px"
-                        [formControlName]="'star2'"
-                      >
-                        <option>Select Star</option>
-                        <option>Select Star</option>
-                        <option>Aswathy</option>
-                        <option>Bharany</option>
-                        <option>Makayiram</option>
-                        <option>Karthika</option>
-                        <option>Thiruvathira</option>
-                        <option>Punartham</option>
-                        <option>Pooyam</option>
-                      </select>
-                    </td>
-                  </tr>
-                </tbody>
               </table>
             </div>
 
@@ -101,7 +90,7 @@
                 height: auto;
               "
             >
-              <button class="btn btn-primary" (click)="addDevotee()">
+              <button class="btn btn-primary" >
                 Add Devotee
               </button>
             </div>
@@ -109,12 +98,12 @@
               <table class="table">
                 <tbody formArrayName="devotees">
                   <tr
-                    *ngFor="let devotee of devotees.controls; let i = index"
-                    [formGroupName]="i"
+                  
+                    
                   >
                     <td>
                       <a color="accent"
-                        ><mat-icon class="icons" (click)="removeDevotee(i)"
+                        ><mat-icon class="icons" 
                           >delete</mat-icon
                         ></a
                       >
@@ -157,9 +146,9 @@
         </div>
       </form>
 
-      <div class="col-md-3">
+      <div class="col-md-4">
         <div>
-          <table class="table" style="width: 100%">
+          <table class="table" >
             <thead>
               <tr style="background-color: #223d61; color: white">
                 <th colspan="2">Filter Options</th>
@@ -231,14 +220,27 @@
                   </select>
                 </td>
               </tr>
+              <tr>
+                <td style="line-height: 11.7pt"> Thidhi</td>
+                <td>
+                  <select>
+                    <option>Aswathy</option>
+                    <option>Bharani</option>
+                    <option>Karthika</option>
+                    <option>Rohini</option>
+                    <option>Makayiram</option>
+                    <option>Thiruvathira</option>
+                  </select>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
       </div>
 
-      <div class="col-md-3">
+      <div class="col-md-4">
         <div>
-          <table class="table" style="width: 100%">
+          <table class="table" >
             <thead>
               <tr style="background-color: #223d61; color: white">
                 <th colspan="2">Day List</th>
@@ -249,10 +251,10 @@
         <div class="daylist">
           <table class="table" style="width: 100%">
             <tbody>
-              <tr *ngFor="let day of dayList">
-                <td><input type="checkbox" checked />&nbsp; {{ day }}</td>
+              <tr >
+                <td><input type="checkbox" checked />&nbsp; </td>
               </tr>
-              <tr *ngIf="dayList.length === 0">
+              <tr >
                 <td>No day found</td>
               </tr>
             </tbody>
@@ -265,5 +267,5 @@
 
 <mat-dialog-actions class="menuend">
   <button mat-button [mat-dialog-close]="true" class="close">Cancel</button>
-  <button mat-button class="proceed" (click)="onSubmit()">Proceed</button>
+  <button mat-button class="proceed" >Proceed</button>
 </mat-dialog-actions>
