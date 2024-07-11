@@ -340,9 +340,10 @@ background-color: #f4f5f7 !important;
 mat-option {
   font-size:11pt;
   margin-bottom:0px;
-  margin-top:-20px;
-  margin-bottom:-8px;
+  margin-top:0px;
+  margin-bottom:0px;
   height:auto;
+ 
 }
 
 .formdate {
