@@ -67,7 +67,6 @@ export class FixedbottomComponent implements OnInit {
     
   }
 
-
   getLastBillNo(){
     const lastBillNumber = localStorage.getItem('lastBillNumber');
     this.LastBillNo = lastBillNumber ? JSON.parse(lastBillNumber) : null;

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import {MatIconModule} from '@angular/material/icon';
 import {MatTabsModule} from '@angular/material/tabs';
 import { AreareceiptComponent } from '../areareceipt/areareceipt.component';
-import { AreaothersComponent } from '../../../areaothers/areaothers.component';
+import { AreaothersComponent } from '../areaothers/areaothers.component';
 import { PanjankamComponent } from '../../../panjankam/panjankam.component';
 
 @Component({

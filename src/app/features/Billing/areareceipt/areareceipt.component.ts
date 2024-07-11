@@ -469,6 +469,13 @@ export class AreareceiptComponent implements OnInit {
   }
 // api data send
   sendDataToApi(data: any) {
+
+    if (this.form.invalid) {
+      this.notification.error('Please fill out all required fields correctly.');
+      // this.markAllAsTouched();
+      // this.showValidationErrors();
+      return;
+    }
     console.log(data);
     const formattedData = this.formatDateFields(data);
     console.log(formattedData);
@@ -489,6 +496,15 @@ export class AreareceiptComponent implements OnInit {
     });
   }
 
+  // markAllAsTouched() {
+  //   this.form.markAllAsTouched();
+  //   this.vazhipadinfo.controls.forEach((row) => {
+  //     (row as FormGroup).markAllAsTouched();
+  //   });
+  // }
+
+
+ 
 
   resetForm() {
     this.form.reset();

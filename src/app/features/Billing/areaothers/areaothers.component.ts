@@ -6,9 +6,9 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {provideNativeDateAdapter} from '@angular/material/core';
-import { NadavaravuComponent } from '../nadavaravu/nadavaravu.component';
-import { OthervazhipadComponent } from '../othervazhipad/othervazhipad.component';
-import { CreditcollectionComponent } from '../creditcollection/creditcollection.component';
+import { NadavaravuComponent } from '../../../nadavaravu/nadavaravu.component';
+import { OthervazhipadComponent } from '../../../othervazhipad/othervazhipad.component';
+import { CreditcollectionComponent } from '../../../creditcollection/creditcollection.component';
 
 
 import {MatTabsModule} from '@angular/material/tabs';
