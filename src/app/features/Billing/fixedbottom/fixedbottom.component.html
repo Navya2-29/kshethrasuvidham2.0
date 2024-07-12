@@ -39,7 +39,13 @@
                         <input type="text" formControlName="Mobile"  placeholder="Enter Phone Number" class="form-control phone">
                         
                         <input type="text" formControlName="Email" placeholder="Enter email" class="form-control phone">
+                       
+                     </div>
+                     <div style="display:flex;flex-direction:column;align-items: center; gap:6px;flex-wrap: wrap;" *ngIf="customerdetailsForBillingForm.get('Trnsmode')?.value === 'check'">
                         
+                        <input type="text" formControlName="Instno" placeholder="Enter Inst No" class="form-control phone">
+                        <input type="text" formControlName="Instdate" placeholder="Enter Bank Name" class="form-control phone">
+                        <input type="text" formControlName="InstBank" placeholder="Enter Check Date" class="form-control phone">
                      </div>
                      <div style="display:flex;flex-direction:column;gap:0px;">
                         <div class="method" style="padding-top:35px;">
@@ -49,6 +55,7 @@
                                 <option value="upi">UPI</option>
                                 <option value="debit">Debit Card</option>
                                 <option value="credit">Credit</option>
+                                <option value="check">Check</option>
                             </select>
                         </div>
                         <button class="btn btn-primary" (click)="onSubmit()" style="font-size:12pt;background-color:#046ef8;color:white;font-weight:500;width:auto;border:none;margin-bottom:30px;"><span style="padding:5px;border:0px solid maroon;margin-right:5%;background:white;border-radius:5px;box-shadow:0px 0px 8px white inset;color:black; ">&#8377; {{totalAmount}}</span >Pay</button>
@@ -57,7 +64,7 @@
                 </div>
             </form>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-4">
                 
             </div>
     </div>

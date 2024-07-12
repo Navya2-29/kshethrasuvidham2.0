@@ -12,7 +12,8 @@
                 <tr><td>Vazhipad</td>
                 <td>Name</td>
                     <td>Star</td>
-                    <td>Rate</td></tr>
+                    <td>Rate</td>
+                  <td>Prathista</td></tr>
                     <tr>
                       <td>  <input
                         type="text"
@@ -46,8 +47,8 @@
                       /></td>
                       <td> <input
                         type="text"
-                        style="width: 200px;"
-                        placeholder="Vazhipad"
+                        style="width: 100px;"
+                        placeholder="Star"
                         matInput
                         class="form-control sps"
                         formControlName="Star"
@@ -55,13 +56,14 @@
                         
                       />
                       <mat-autocomplete
+                     
                         autoActiveFirstOption
                         #star="matAutocomplete"
-                        (optionSelected)="onSelect($event)"
+                        (optionSelected)="onSelectStar($event)"
                       >
                       @for (option of starData | async; track option) {
                         <mat-option
-                         
+                        
                           [value]="option.name"
                         >
                       
@@ -75,6 +77,18 @@
                         placeholder="Rate"
                         formControlName="Rate"
                       /></td>
+                      <td>
+                        <select
+                          class="form-control"
+                          formControlName="Prethista"
+                          style="width: 200px; height: 30.6px"
+                          placeholder="Prathista"
+                        >
+                          <option *ngFor="let prathishta of prathishtaOptions" [value]="prathishta.name" >{{prathishta.name}}</option>
+                          
+                        </select>
+                       
+                      </td>
                     </tr>
                   <tr>
                     <th>Starting Date</th>
@@ -117,9 +131,15 @@
                       />
                     </td>
                   </tr>
+                  <tr *ngIf="form.get('multiName')?.value === 'Y'">
+                    <td>Multi Name</td>
+                    <td>Star</td>
+                  </tr>
+                  <tr *ngIf="form.get('multiName')?.value === 'Y'">
+                  <td><input type="text" placeholder="Name" class="form-control formdate"></td>
+                  <td><input type="text" placeholder="Star" class="form-control formdate"></td></tr>
               </table>
             </div>
-
             <div
               style="
                 margin-bottom: 11px;
@@ -169,12 +189,33 @@
                         <option>Pooyam</option>
                       </select>
                     </td>
-                    <!-- <td style="vertical-align: center">
-                        <a (click)="addRow()" color="accent"
-                          ><mat-icon class="icons">add_comment</mat-icon></a
-                        >
-                      </td> -->
+                    <td *ngIf="form.get('multiName')?.value === 'Y'">
+                      <input
+                        type="text"
+                        
+                        placeholder="Enter 2nd Name"
+                        style="border: none"
+                      />
+                    </td>
+                    <td *ngIf="form.get('multiName')?.value === 'Y'">
+                      <select
+                        class="form-control select-star"
+                        style="width: fit-content; height: 30.6px"
+                        
+                      >
+                        <option>Select Star</option>
+                        <option>Select Star</option>
+                        <option>Aswathy</option>
+                        <option>Bharany</option>
+                        <option>Makayiram</option>
+                        <option>Karthika</option>
+                        <option>Thiruvathira</option>
+                        <option>Punartham</option>
+                        <option>Pooyam</option>
+                      </select>
+                    </td>
                   </tr>
+                  
                 </tbody>
               </table>
             </div>

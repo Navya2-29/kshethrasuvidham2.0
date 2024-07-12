@@ -117,7 +117,7 @@ export class AreareceiptComponent implements OnInit {
   createRow(): FormGroup {
     const row = this.fb.group({
       Slno: [''],
-      Vazhipad: ['', [Validators.required]],
+      Vazhipad: ['', [Validators.required,this.vazhipadValidator.bind(this)]],
       Vazhid: [''],
       Name: ['', [Validators.required]],
       Star: ['0', [Validators.required]],
@@ -178,8 +178,13 @@ export class AreareceiptComponent implements OnInit {
 
   addRow(index: number): void {
 
+    if (index === -1 && this.vazhipadinfo.length === 0) {
+      this.vazhipadinfo.push(this.createRow());
+      this.setupAutocomplete(0);
+      this.updateTotalAmount();
+      return;
+    }
    this.indexForAutoComplete=index;
-
     if (
       this.vazhipadinfo.length > 0 &&
       !this.vazhipadinfo.at(this.vazhipadinfo.length - 1 ).valid
@@ -192,7 +197,10 @@ export class AreareceiptComponent implements OnInit {
       if (row.invalid) {
         if (row.get('Vazhipad')?.errors?.['required']) {
           this.notification.success('Please select a vazhipad');
-        } else if (row.get('Name')?.errors?.['required']) {
+        }else if(row.get('Vazhipad')?.errors?.['invalidVazhipad']){
+          this.notification.success('Please select a Valid vazhipad');
+        }
+         else if (row.get('Name')?.errors?.['required']) {
           this.notification.success('Please enter the Name');
         } else if (row.get('Star')?.errors?.['required']) {
           this.notification.success('Please select a Star');
@@ -220,10 +228,20 @@ export class AreareceiptComponent implements OnInit {
       }
     }
     console.log(index);
-    this.vazhipadinfo.insert(index + 1, this.createRow());
+    
+    const currentRow = this.vazhipadinfo.at(index) as FormGroup;
+    const currentName = currentRow.get('Name')?.value;
+    const currentStar = currentRow.get('Star')?.value;
+
+    const newRow = this.createRow();
+    newRow.patchValue({
+      Name: currentName,
+      Star: currentStar,
+    });
+
+    this.vazhipadinfo.insert(index + 1, newRow);
     this.setupAutocomplete(index + 1);
     this.updateTotalAmount();
-    this.updateSlno();
   }
 
   removeRow(index: number) {
@@ -280,6 +298,16 @@ export class AreareceiptComponent implements OnInit {
     });
   }
 
+
+  vazhipadValidator(control: AbstractControl): ValidationErrors | null {
+    const vazhipad = control.value;
+    const vmExists = this.VMList.some(vm => vm.VM_Name === vazhipad);
+    if (!vmExists) {
+      return { invalidVazhipad: true };
+    }
+    return null;
+  }
+
   updateSlno(): void {
     this.vazhipadinfo.controls.forEach((row, index) => {
       row.get('Slno')?.setValue(index + 1);
@@ -324,7 +352,12 @@ export class AreareceiptComponent implements OnInit {
         console.log(res);
         const selectedRow = this.vazhipadinfo.at(index) as FormGroup;
         console.log(selectedRow);
-        selectedRow.get('Rate')?.setValue(res[0].VM_Amt);
+        if(res[0].VM_Amt!=0){
+          selectedRow.get('Rate')?.setValue(res[0].VM_Amt);  
+        }else{
+          selectedRow.get('Rate')?.setValue('');
+        }
+        // selectedRow.get('Rate')?.setValue(res[0].VM_Amt);
         selectedRow.get('multiname')?.setValue(res[0].VM_MultiName);
         selectedRow.get('booking')?.setValue(res[0].VM_Booking);
         selectedRow.get('ratechange')?.setValue(res[0].VM_Rate_Change);
@@ -409,8 +442,6 @@ export class AreareceiptComponent implements OnInit {
     const dialogRef = this.dialog.open(MultidayitemsComponent, {
       width: '80%',
       maxWidth: '60vw',
-    
-    
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -502,9 +533,6 @@ export class AreareceiptComponent implements OnInit {
   //     (row as FormGroup).markAllAsTouched();
   //   });
   // }
-
-
- 
 
   resetForm() {
     this.form.reset();
