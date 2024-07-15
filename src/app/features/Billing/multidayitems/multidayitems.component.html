@@ -102,6 +102,7 @@
                         type="date"
                         class="form-control formdate"
                         style="width: 90px" 
+                        [min]="tomorrowDate"
                         formControlName="StartDate"
                       />
                     </td>
@@ -148,18 +149,18 @@
                 height: auto;
               "
             >
-              <button class="btn btn-primary" >
+              <button class="btn btn-primary" (click)="addDevotee()">
                 Add Devotee
-              </button>
+              </button>  <br> Total amount = {{totalAmount}}
             </div>
             <div>
               <table class="table">
-                <tbody >
+                <tbody formArrayName="devotees" *ngFor="let devotee of devotees.controls; let i = index" [formGroupName]="i">
                   <tr
                   >
                     <td>
                       <a color="accent"
-                        ><mat-icon class="icons" 
+                        ><mat-icon class="icons" (click)="removeDevotee(i)"
                           >delete</mat-icon
                         ></a
                       >

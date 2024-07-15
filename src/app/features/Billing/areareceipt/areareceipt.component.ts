@@ -282,7 +282,7 @@ export class AreareceiptComponent implements OnInit {
   }
 
   getAllvazhipad() {
-    this.masterservice.getVmaster().subscribe((data) => {
+    this.masterservice.getAllActiveVazhipad().subscribe((data) => {
       this.VMList = data.map((item) => ({
         VM_Id: item.VM_Id,
         VM_Name: item.VM_Name,
