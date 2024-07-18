@@ -32,6 +32,7 @@ import { Observable, Subscription, map, of, startWith } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MultidayitemsComponent } from '../multidayitems/multidayitems.component';
 import { MultidaybookeddetailsComponent } from '../multidaybookeddetails/multidaybookeddetails.component';
+import { NumberDirective } from '../../../shared/directives/number/number.directive';
 
 @Component({
   selector: 'app-areareceipt',
@@ -50,6 +51,7 @@ import { MultidaybookeddetailsComponent } from '../multidaybookeddetails/multida
     MobserachbtnComponent,
     MultidayComponent,
     MorebuttonComponent,
+    NumberDirective
   ],
   templateUrl: './areareceipt.component.html',
   styleUrl: './areareceipt.component.css',

@@ -19,6 +19,7 @@ import { ItemMAterComponent } from './features/master/item-mater/item-mater.comp
 import { LoginComponent } from './core/auth/login/login.component';
 import { authGuard } from './core/auth/guard/auth.guard';
 import { StarMasterComponent } from './features/master/star-master/star-master.component';
+import { CalendarComponent } from './calendar/calendar.component';
 
 
 
@@ -46,6 +47,9 @@ export const routes: Routes = [
   },
   {
     path:'star-master',component:StarMasterComponent,canActivate:[authGuard]
+  },
+  {
+    path:'calander',component:CalendarComponent,canActivate:[authGuard]
   },
   {
     path:'**',pathMatch:'full', redirectTo:'/dashboard'

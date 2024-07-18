@@ -212,6 +212,7 @@ amountPerDevotee: number = 0;
       const vazhipadCode = selectedVazhipadItem.VM_Code;
       console.log(vazhipadCode);
       this.fetchVazhipadDetails(vazhipadCode);
+      
     } else {
       console.error('Selected vazhipad item not found in VMList');
       // Handle error or feedback if needed
@@ -226,16 +227,20 @@ amountPerDevotee: number = 0;
 
         this.form.get('Rate')?.setValue(res[0].VM_Amt);
         this.form.get('multiName')?.setValue(res[0].VM_MultiName);
-        // if (isVMBooking==='Y') {
+       
           this.calculateTotalAmount();
-        //   selectedRow.get('minDate')?.setValue(this.tomorrowDate);
-        // } else {
-        //   selectedRow.get('VazhipadDate')?.disable();
-        //   selectedRow.get('minDate')?.setValue(this.today);
-        // }
-        // this.selectedVazhipadPrathistaDetails(vazhipadcode);
-        // //   selectedRow.get('rate')?.setValue(res.rate);
-        // console.log(selectedRow);
+          this.masterservice.getVazhipadByCodeForDiety(vazhipadcode).subscribe((data:any)=>{
+            this.prathishtaOptions = data;
+           
+            this.prathishtaOptions = data;
+            console.log(this.prathishtaOptions);
+            if (this.prathishtaOptions.length > 0) {
+              const defaultPrathishta = this.prathishtaOptions[0].PM_Name;
+              console.log(this.prathishtaOptions[0].PM_Name)
+              this.form.get('Prathista')?.setValue(defaultPrathishta);
+            }
+          })
+        
       });
   }
 

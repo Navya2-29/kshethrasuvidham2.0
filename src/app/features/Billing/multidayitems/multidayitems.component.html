@@ -10,8 +10,7 @@
             <div style="padding: 0px; margin-bottom: 18px">
               <table class="">
                 <tr><td>Vazhipad</td>
-                <td>Name</td>
-                    <td>Star</td>
+              
                     <td>Rate</td>
                   <td>Prathista</td></tr>
                     <tr>
@@ -40,37 +39,8 @@
                         </mat-option>
                       }
                       </mat-autocomplete></td>
-                      <td><input
-                        type="text"
-                        class="form-control formdate" 
-                        placeholder="Name"
-                      /></td>
-                      <td> <input
-                        type="text"
-                        style="width: 100px;"
-                        placeholder="Star"
-                        matInput
-                        class="form-control sps"
-                        formControlName="Star"
-                        [matAutocomplete]="star"
-                        
-                      />
-                      <mat-autocomplete
                      
-                        autoActiveFirstOption
-                        #star="matAutocomplete"
-                        (optionSelected)="onSelectStar($event)"
-                      >
-                      @for (option of starData | async; track option) {
-                        <mat-option
-                        
-                          [value]="option.name"
-                        >
                       
-                          {{ option.name }}
-                        </mat-option>
-                      }
-                      </mat-autocomplete></td>
                       <td><input
                         type="text"
                         class="form-control formdate"
@@ -84,14 +54,19 @@
                           style="width: 200px; height: 30.6px"
                           placeholder="Prathista"
                         >
-                          <option *ngFor="let prathishta of prathishtaOptions" [value]="prathishta.name" >{{prathishta.name}}</option>
+                        <option
+                        *ngFor="let prathishta of prathishtaOptions"
+                        value="prathishta.PM_Name"
+                      >
+                        {{prathishta.PM_Name}}
+                      </option>
                           
                         </select>
                        
                       </td>
                     </tr>
                   <tr>
-                    <th>Starting Date</th>
+                    <th >Starting Date</th>
                     <th>No. of Days</th>
                     <th>Qty</th>
                     <th>End Date</th>
@@ -132,13 +107,41 @@
                       />
                     </td>
                   </tr>
-                  <tr *ngIf="form.get('multiName')?.value === 'Y'">
-                    <td>Multi Name</td>
-                    <td>Star</td>
-                  </tr>
-                  <tr *ngIf="form.get('multiName')?.value === 'Y'">
-                  <td><input type="text" placeholder="Name" class="form-control formdate"></td>
-                  <td><input type="text" placeholder="Star" class="form-control formdate"></td></tr>
+                 
+                  <tr >
+                    <td><input
+                      type="text"
+                      class="form-control formdate" 
+                      placeholder="Name"
+                    /></td>
+                    <td> <input
+                      type="text"
+                      style="width: 100px;"
+                      placeholder="Star"
+                      matInput
+                      class="form-control sps"
+                      formControlName="Star"
+                      [matAutocomplete]="star"
+                      
+                    />
+                    <mat-autocomplete
+                   
+                      autoActiveFirstOption
+                      #star="matAutocomplete"
+                      (optionSelected)="onSelectStar($event)"
+                    >
+                    @for (option of starData | async; track option) {
+                      <mat-option
+                      
+                        [value]="option.name"
+                      >
+                    
+                        {{ option.name }}
+                      </mat-option>
+                    }
+                    </mat-autocomplete></td>
+                  <td  *ngIf="form.get('multiName')?.value === 'Y'"><input type="text" placeholder="Multi Name" class="form-control formdate"></td>
+                  <td  *ngIf="form.get('multiName')?.value === 'Y'"><input type="text" placeholder="Star" class="form-control formdate"></td></tr>
               </table>
             </div>
             <div
