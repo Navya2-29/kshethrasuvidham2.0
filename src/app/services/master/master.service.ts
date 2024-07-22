@@ -640,9 +640,17 @@ export class MasterService {
     .post<any>(Constant.BASE_URL + Constant.METHODS.VAZHIPAD_BOOKING,data)
     .pipe(catchError(this.errorHandler));
   }
+
+
+
+  kollavarashamData():Observable<string[]> {
+      return this.http.get<string[]>('assets/data/kollavarsham.json');
+  }
   // error handling
   private errorHandler(error: HttpErrorResponse) {
     //
     return throwError(() => new Error('Error occurred'));
   }
+
+
 }

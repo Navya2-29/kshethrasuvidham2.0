@@ -1,3 +1,4 @@
+import { vazhipad } from './../../../othervazhipad/othervazhipad.component';
 import { ToastrService } from 'ngx-toastr';
 import { VMList } from './../../../models/day-master.model';
 import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild, inject } from '@angular/core';
@@ -138,6 +139,7 @@ export class AreareceiptComponent implements OnInit {
       Mday: [''],
       NalBy: [''],
       Mmonth: [''],
+      toDate:[{ disabled: true, value: '' }],
       multiname: [{ disabled: true, value: '' }],
       booking: [{ disabled: true, value: '' }],
       ratechange: [{ disabled: true, value: '' }],
@@ -260,7 +262,13 @@ export class AreareceiptComponent implements OnInit {
   dateFormat(date: Date): any {
     return this.datePipe.transform(date, 'dd-MM-yyyy') || '';
   }
+  private dateFormatd(date: Date): string {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
 
+    return `${day}-${month}-${year}`;
+  }
   setupAutocomplete(index: number): void {
     const row = this.vazhipadinfo.at(index) as FormGroup;
     const control = row.get('Vazhipad');
@@ -299,7 +307,6 @@ export class AreareceiptComponent implements OnInit {
       this.nakshatham = res;
     });
   }
-
 
   vazhipadValidator(control: AbstractControl): ValidationErrors | null {
     const vazhipad = control.value;
@@ -387,7 +394,9 @@ export class AreareceiptComponent implements OnInit {
   }
 
   // fetch parthishta details
-
+  private formatDate(date: Date): string {
+    return date.toISOString().split('T')[0];
+  }
   selectedVazhipadPrathistaDetails(vazhipadcode: any, index: number) {
     this.masterservice.getVazhipadByCodeForDiety(vazhipadcode).subscribe({
       next: (res: any) => {
@@ -434,29 +443,19 @@ export class AreareceiptComponent implements OnInit {
   // opne multiday open dialog box
   openMultiDayDialog(rowIndex: number): void {
 
-    // const row = this.vazhipadinfo.at(rowIndex) as FormGroup;
-
-    // if (row.invalid) {
-    //   this.showValidationErrors(row);
-    //   return;
-    // }
-    // const rowData = (this.form.get('vazhipadinfo') as FormArray).controls[rowIndex].value;
     const dialogRef = this.dialog.open(MultidayitemsComponent, {
       width: '80%',
-      maxWidth: '60vw',
+      maxWidth: '90vw',
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('Dialog closed with result:', result);
-      // if(result){
-      //   const multidayFormData=result.formData;
-      //   const multiDayBookedDetails=result.generatedRows
-      //   this.multidayBooking[rowIndex]=multiDayBookedDetails;
-      //   console.log(multidayFormData)
-      //   const selectedRow = this.vazhipadinfo.at(rowIndex) as FormGroup;
-      //   const newQuantity=multidayFormData.numberOfDays *multidayFormData.quantity
-      //   selectedRow.get('Qty')?.setValue(newQuantity);
-      // }
+      if (result) {
+        console.log('Dialog closed with data:', result);
+        // this.handleDialogData(result);
+       
+          this.handleMultiDayBookingResult(result, rowIndex);
+        
+      }
     });
   }
 
@@ -475,12 +474,52 @@ export class AreareceiptComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        // Handle result if necessary
-        console.log('Dialog result:', result);
+        this.handleMultiDayBookingResult(result, rowIndex);
       }
     });
   }
 
+
+  private handleMultiDayBookingResult(result: any, rowIndex: number): void {
+    const row = this.vazhipadinfo.at(rowIndex) as FormGroup;
+    console.log(row);
+    console.log(result[0]);
+  
+    let lastIndex = result.length - 1;
+const data=result[0]
+this.multidayBooking[rowIndex] = result;
+    row.patchValue({
+      Vazhipad:data.Vazhipad,
+      Vazhid:data.Vazhid,
+      Prethista: data.Prethista,
+      Qty: data.Qty*result.length,
+      Rate:data.Rate,
+      VazhipadDate:data.VazhipadDate,
+      TotalAmt: data.TotalAmt,
+      toDate:result[lastIndex].VazhipadDate,
+      PMid:data.PMid,
+      Mday: data.Mday,
+      NalBy:data.NalBy,
+      Mmonth: data.Mmonth,
+      Name: data.Name,
+      Star: data.Star,
+      Name2: data.Name2,
+      Star2: data.Star2,
+      // Add other fields if needed
+    });
+  }
+
+  convertToDate(dateStr: string): Date {
+    const [day, month, year] = dateStr.split('-').map(Number);
+    return new Date(year, month - 1, day); // Months are 0-based in JavaScript
+  }
+  
+  // Function to format the date
+  formatDates(dateStr: string): string {
+    const date = this.convertToDate(dateStr);
+    return this.datePipe.transform(date, 'yyyy-mm-dd') || '';
+  }
+  
   // calculate amount
   updateAmount(row: FormGroup): void {
     const qty = row.get('Qty')?.value || 0;
@@ -500,17 +539,33 @@ export class AreareceiptComponent implements OnInit {
       row.get('TotalAmt')?.setValue(this.totalAmount);
     });
   }
+
+  private flattenMultiDayBooking(): any[] {
+    return this.multidayBooking.flat();
+  }
 // api data send
   sendDataToApi(data: any) {
-
     if (this.form.invalid) {
       this.notification.error('Please fill out all required fields correctly.');
-      // this.markAllAsTouched();
-      // this.showValidationErrors();
+     
       return;
     }
+console.log("ffffffffffffffffffff")
+    console.log(this.multidayBooking )
     console.log(data);
-    const formattedData = this.formatDateFields(data);
+    
+    const flattenedData = this.flattenMultiDayBooking();
+    console.log('Flattened Data:', flattenedData);
+
+    const vazhipadinfo = data.vazhipadinfo || []; // Ensure vazhipadinfo is an array
+    const combinedVazhipadinfo = [...vazhipadinfo, ...flattenedData];
+
+    const updatedData = {
+      ...data,
+      vazhipadinfo: combinedVazhipadinfo
+    };
+console.log(updatedData)
+    const formattedData = this.formatDateFields(updatedData);
     console.log(formattedData);
     this.masterservice.vazhipadBooking(formattedData).subscribe((res:any) => {
       console.log(res)
@@ -524,7 +579,6 @@ export class AreareceiptComponent implements OnInit {
         }else{
           this.LastBillNumber=this.LastBillNumber;
         }
-       
       }
     });
   }
@@ -538,6 +592,7 @@ export class AreareceiptComponent implements OnInit {
 
   resetForm() {
     this.form.reset();
+    
     this.vazhipadinfo.clear();
     this.addRow(-1); // Add an initial row after resetting
     this.updateTotalAmount();

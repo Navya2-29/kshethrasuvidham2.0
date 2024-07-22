@@ -7,14 +7,15 @@
             <thead>
               <tr style="background: #223d61; color: white">
                 <td style="width: 2%"></td>
-                <th style="width: 18%">Vazhipad</th>
-                <th style="width: 12%">Name</th>
+                <th style="width: 14%">Vazhipad</th>
+                <th style="width: 8%">Name</th>
                 <th style="width: 8%">Star</th>
                 <th style="width: 8%">Diety</th>
-                <th style="width: 3%; text-align: center">Qty</th>
+                <th style="width: 2%; text-align: center">Qty</th>
                 <th style="width: 4%; text-align: center">Rate</th>
                 <th style="width: 4%; text-align: center">Amount</th>
                 <th style="width: 9%; text-align: center">Date</th>
+                <th style="width: 6%; text-align: center">To Date</th>
                 <td style="width: 7%; text-align: center">Single/Multi</td>
                 <th style="width: 10%; text-align: center">Time</th>
                 <!-- <th> Name 2</th>
@@ -45,6 +46,7 @@
                     class="form-control sps"
                     formControlName="Vazhipad"
                     [matAutocomplete]="auto"
+                    
                   />
                   <mat-autocomplete
                     autoActiveFirstOption
@@ -99,7 +101,7 @@
                     class="form-control"
                     placeholder="Qty"
                     formControlName="Qty"
-                    style="vertical-align: middle; text-align: center"
+                
                   />
                   
                 </td>
@@ -130,6 +132,18 @@
                     formControlName="VazhipadDate"
                     [readOnly]="row.get('booking')?.value ==='N'"
                     [min]="dateToSet"
+                    style="width: 100px;"
+                  />
+                </td>
+                <td style="vertical-align: middle; text-align: center">
+                  <input
+                    type="text"
+                    class="form-control sps"
+                  formControlName="toDate"
+                    readonly
+
+                  
+style="width: 100px;"
                   />
                 </td>
                 <td style="text-align: center; vertical-align: middle">

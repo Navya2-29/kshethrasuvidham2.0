@@ -2,21 +2,22 @@
   Multi day Booking 
 </h2>
 <mat-dialog-content class="high" style="width: 100%">
+  
   <div class="container" >
     <div class="row">
       <form [formGroup]="form">
-        <div class="col-md-4">
-          <div>
+        <div class="col-md-6">
+       
             <div style="padding: 0px; margin-bottom: 18px">
               <table class="">
-                <tr><td>Vazhipad</td>
+                <tr><td style="width: 100px;">Vazhipad</td>
               
                     <td>Rate</td>
                   <td>Prathista</td></tr>
                     <tr>
                       <td>  <input
                         type="text"
-                        style="width: 200px;"
+                        style="width: 100px;"
                         placeholder="Vazhipad"
                         matInput
                         class="form-control sps"
@@ -39,8 +40,7 @@
                         </mat-option>
                       }
                       </mat-autocomplete></td>
-                     
-                      
+
                       <td><input
                         type="text"
                         class="form-control formdate"
@@ -51,8 +51,8 @@
                         <select
                           class="form-control"
                           formControlName="Prethista"
-                          style="width: 200px; height: 30.6px"
-                          placeholder="Prathista"
+                          style="width: 100px; height: 30.6px"
+                          placeholder="Prethista"
                         >
                         <option
                         *ngFor="let prathishta of prathishtaOptions"
@@ -76,9 +76,9 @@
                       <input
                         type="date"
                         class="form-control formdate"
-                        style="width: 90px" 
+                        style="width: 100px" 
                         [min]="tomorrowDate"
-                        formControlName="StartDate"
+                        formControlName="VazhipadDate"
                       />
                     </td>
                     <td>
@@ -104,46 +104,13 @@
                         class="form-control formdate"
                         formControlName="EndDate"
                         readonly
+                        style="width: 100px;"
                       />
                     </td>
                   </tr>
-                 
-                  <tr >
-                    <td><input
-                      type="text"
-                      class="form-control formdate" 
-                      placeholder="Name"
-                    /></td>
-                    <td> <input
-                      type="text"
-                      style="width: 100px;"
-                      placeholder="Star"
-                      matInput
-                      class="form-control sps"
-                      formControlName="Star"
-                      [matAutocomplete]="star"
-                      
-                    />
-                    <mat-autocomplete
-                   
-                      autoActiveFirstOption
-                      #star="matAutocomplete"
-                      (optionSelected)="onSelectStar($event)"
-                    >
-                    @for (option of starData | async; track option) {
-                      <mat-option
-                      
-                        [value]="option.name"
-                      >
-                    
-                        {{ option.name }}
-                      </mat-option>
-                    }
-                    </mat-autocomplete></td>
-                  <td  *ngIf="form.get('multiName')?.value === 'Y'"><input type="text" placeholder="Multi Name" class="form-control formdate"></td>
-                  <td  *ngIf="form.get('multiName')?.value === 'Y'"><input type="text" placeholder="Star" class="form-control formdate"></td></tr>
-              </table>
-            </div>
+                 </table>
+                  
+          
             <div
               style="
                 margin-bottom: 11px;
@@ -152,14 +119,15 @@
                 height: auto;
               "
             >
-              <button class="btn btn-primary" (click)="addDevotee()">
+              <button class="btn btn-primary" (click)=" addDevotee()" >
                 Add Devotee
               </button>  <br> Total amount = {{totalAmount}}
             </div>
             <div>
               <table class="table">
-                <tbody formArrayName="devotees" *ngFor="let devotee of devotees.controls; let i = index" [formGroupName]="i">
+                <tbody    formArrayName="devotees" >
                   <tr
+                  *ngFor="let devotee of devotees.controls; let i = index" [formGroupName]="i"
                   >
                     <td>
                       <a color="accent"
@@ -171,7 +139,7 @@
                     <td>
                       <input
                         type="text"
-                        
+                        formControlName="Name"
                         placeholder="Enter Name"
                         style="border: none"
                       />
@@ -180,23 +148,15 @@
                       <select
                         class="form-control select-star"
                         style="width: fit-content; height: 30.6px"
-                        
+                        formControlName="Star"
                       >
-                        <option>Select Star</option>
-                        <option>Select Star</option>
-                        <option>Aswathy</option>
-                        <option>Bharany</option>
-                        <option>Makayiram</option>
-                        <option>Karthika</option>
-                        <option>Thiruvathira</option>
-                        <option>Punartham</option>
-                        <option>Pooyam</option>
+                       <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.name}}</option>
                       </select>
                     </td>
                     <td *ngIf="form.get('multiName')?.value === 'Y'">
                       <input
                         type="text"
-                        
+                      formControlName="Name2"
                         placeholder="Enter 2nd Name"
                         style="border: none"
                       />
@@ -205,17 +165,9 @@
                       <select
                         class="form-control select-star"
                         style="width: fit-content; height: 30.6px"
-                        
+                        formControlName="Star2"
                       >
-                        <option>Select Star</option>
-                        <option>Select Star</option>
-                        <option>Aswathy</option>
-                        <option>Bharany</option>
-                        <option>Makayiram</option>
-                        <option>Karthika</option>
-                        <option>Thiruvathira</option>
-                        <option>Punartham</option>
-                        <option>Pooyam</option>
+                      <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.name}}</option>
                       </select>
                     </td>
                   </tr>
@@ -224,11 +176,37 @@
               </table>
             </div>
           </div>
+
+
+
         </div>
+ 
       </form>
 
-      <div class="col-md-4">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      <div class="col-md-3">
         <div>
+          <form>
           <table class="table" >
             <thead>
               <tr style="background-color: #223d61; color: white">
@@ -240,38 +218,40 @@
                 <td>Starvise</td>
                 <td>
                   <select>
-                    <option>Aswathy</option>
-                    <option>Bharani</option>
-                    <option>Karthika</option>
-                    <option>Rohini</option>
-                    <option>Makayiram</option>
-                    <option>Thiruvathira</option>
+                    <option value="Aswathy">Aswathy</option>
+                    <option value="Bharani">Bharani</option>
+                    <option value="Karthika">Karthika</option>
+                    <option value="Rohini">Rohini</option>
+                    <option value="Makayiram"> Makayiram</option>
+                    <option value="Thiruvathira">Thiruvathira</option>
+                    <option value="Ohm">Ohm</option>
                   </select>
                 </td>
               </tr>
               <tr>
                 <td style="line-height: 11.7pt">Malayalam Monthwise</td>
                 <td>
-                  <select>
-                    <option>Aswathy</option>
-                    <option>Bharani</option>
-                    <option>Karthika</option>
-                    <option>Rohini</option>
-                    <option>Makayiram</option>
-                    <option>Thiruvathira</option>
+                  <select >
+                    <option value="Chingam">Chingam</option>
+                    <option value="Kanni">Kanni</option>
+                    <option value="Thulam">Thulam</option>
+                    <option value="Vrishchikam">Vrishchikam</option>
+                    <option value="Makaram">Makaram</option>
+                    <option value="Kumbam">Kumbam</option>
                   </select>
                 </td>
               </tr>
               <tr>
                 <td>Daywise</td>
                 <td>
-                  <select>
-                    <option>Aswathy</option>
-                    <option>Bharani</option>
-                    <option>Karthika</option>
-                    <option>Rohini</option>
-                    <option>Makayiram</option>
-                    <option>Thiruvathira</option>
+                  <select >
+                    <option value="Sunday">Sunday</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="wednesday">wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="saturday">saturday</option>
                   </select>
                 </td>
               </tr>
@@ -316,10 +296,11 @@
               </tr>
             </tbody>
           </table>
+          </form>
         </div>
       </div>
 
-      <div class="col-md-4">
+      <div class="col-md-3">
         <div>
           <table class="table" >
             <thead>
@@ -332,10 +313,10 @@
         <div class="daylist">
           <table class="table" style="width: 100%">
             <tbody>
-              <tr >
-                <td><input type="checkbox" checked />&nbsp; </td>
+              <tr *ngFor="let day of dayList">
+                <td><input type="checkbox" checked />&nbsp;{{ day.kollavarshamData?.date }}  </td>
               </tr>
-              <tr >
+              <tr *ngIf="dayList.length==0">
                 <td>No day found</td>
               </tr>
             </tbody>
@@ -344,9 +325,10 @@
       </div>
     </div>
   </div>
+
 </mat-dialog-content>
 
 <mat-dialog-actions class="menuend">
   <button mat-button [mat-dialog-close]="true" class="close">Cancel</button>
-  <button mat-button class="proceed" >Proceed</button>
+  <button mat-button class="proceed" (click)="onSubmit()" >Proceed</button>
 </mat-dialog-actions>

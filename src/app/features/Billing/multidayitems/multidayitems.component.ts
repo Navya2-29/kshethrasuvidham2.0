@@ -19,7 +19,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { TotalAmountService } from '../../../shared/service/total-amount.service';
-import { AsyncPipe, CommonModule } from '@angular/common';
+import { AsyncPipe, CommonModule, DatePipe, formatDate } from '@angular/common';
 import {
   MatAutocompleteModule,
   MatAutocompleteSelectedEvent,
@@ -46,104 +46,85 @@ import { MasterService } from '../../../services/master/master.service';
   ],
   templateUrl: './multidayitems.component.html',
   styleUrl: './multidayitems.component.css',
+  providers: [DatePipe],
 })
 export class MultidayitemsComponent implements OnInit {
   form: FormGroup;
-
   filteredOptions: Observable<any[]>;
   starData: Observable<any[]>;
   VMList: any[] = [];
   nakshatham: any[];
   prathishtaOptions: any[] = [];
-totalAmount:number=0;
-tomorrowDate: string;
-amountPerDevotee: number = 0;
+  totalAmount: number = 0;
+  tomorrowDate: Date;
+  amountPerDevotee: number = 0;
+  dayList: { date: string; kollavarshamData: any }[] = [];
+  kollavarsham: any[] = [];
+  daysList:any[]=[];
+  devotees: FormArray;
   private readonly masterservice = inject(MasterService);
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder,public dialogRef: MatDialogRef<MultidayitemsComponent>,private datePipe: DatePipe) {
     this.form = this.fb.group({
       Vazhipad: [''],
-      Rate: [''],
+      Rate: ['1'],
       Qty: ['1'],
-      Star: [''],
+   
       NoOfDays: ['1'],
-      StartDate: [''],
-      EndDate: [''],
-      Prathista: [''],
+    
+      EndDate: [{disabled:true,value:''}],
+      Prethista: [''],
       PMid: [''],
       multiName: [''],
-      devotees: this.fb.array([]) 
+      // devotees: this.fb.array([]),
+      Slno: [''],
+      Vazhid: [''],
+      
+      
+      Amount: [''],
+      VazhipadDate: [''],
+      time: [{ disabled: true, value: '' }],
+      
+      Postal: ['10'],
+      Mday: ['Sunday'],
+      NalBy: ['Ohm'],
+      Mmonth: ['Chingam'],
+      multiname: [{ disabled: true, value: '' }],
+      booking: [{ disabled: true, value: '' }],
+      ratechange: [{ disabled: true, value: '' }],
+      devotees: this.fb.array([this.createDevotee()])
     });
+    this.devotees = this.form.get('devotees') as FormArray;
   }
 
-
-  get devotees(): FormArray {
-    return this.form.get('devotees') as FormArray;
+  // get devotees(): FormArray {
+  //   return this.form.get('devotees') as FormArray;
+  // }
+  createDevotee(): FormGroup {
+    return this.fb.group({
+      Name: [''],
+      Star: [''],
+      Name2: [''],
+      Star2: ['']
+    });
   }
 
   addDevotee() {
-    const devoteeGroup = this.fb.group({
-      name: ['', Validators.required],
-      star: ['', Validators.required],
-      name2: this.form.get('multiName')?.value === 'Y' ? ['', Validators.required] : null,
-      star2: this.form.get('multiName')?.value === 'Y' ? ['', Validators.required] : null
-    });
-    this.devotees.push(devoteeGroup);
-    // Calculate the amount for this devotee
-    
-
-    // Add this amount to the totalAmount
-    this.updateTotalAmount();
+    this.devotees.push(this.createDevotee());
   }
 
   removeDevotee(index: number) {
-    this.updateTotalAmount();
     this.devotees.removeAt(index);
   }
+ 
+
   ngOnInit() {
     this.getAllvazhipad();
     this.setupAutocomplete();
     this.getNakshthram();
     this.watchDateChanges();
     this.setDefaultDates();
-   
+    this.getKollavarasham();
     this.subscribeToQtyAndRateChanges();
-  }
-
-  selectedVazhipadPrathistaDetails(vazhipadcode: any, index: number) {
-    this.masterservice.getVazhipadByCodeForDiety(vazhipadcode).subscribe({
-      next: (res: any) => {
-        console.log(res);
-        this.prathishtaOptions = res.map((item: any) => ({
-          id: item.PM_ID,
-          name: item.PM_Name,
-        }));
-
-        if (this.prathishtaOptions.length > 0) {
-          console.log(this.prathishtaOptions[index]);
-          const defaultPrathishta = this.prathishtaOptions[0].name;
-          const defaultPrathishtaId = this.prathishtaOptions[0].id;
-          console.log(defaultPrathishta);
-          this.form.get('Prethista')?.setValue(defaultPrathishta);
-          this.form.get('PMid')?.setValue(defaultPrathishtaId);
-
-          this.form
-            .get('Prethista')
-            ?.valueChanges.subscribe((selectedPrathishta) => {
-              const selectedPrathishtaObj = this.prathishtaOptions.find(
-                (option: any) => option.name === selectedPrathishta
-              );
-              if (selectedPrathishtaObj) {
-                this.form.get('PMid')?.setValue(selectedPrathishtaObj.id); // Set PMid based on selected Prathishta
-              }
-            });
-        }
-        // const selectedRow = this.vazhipadinfo.at(index);
-        // selectedRow.get('Prathishta')?.setValue(res[0].PM_Name);
-      },
-      error: (err) => {
-        console.log('error in getting prathishta');
-      },
-    });
   }
 
   private _filter(value: string): any[] {
@@ -165,7 +146,7 @@ amountPerDevotee: number = 0;
     this.masterservice.getNakshthra().subscribe((res) => {
       this.nakshatham = res;
       console.log(this.nakshatham);
-      this.autoCompleteForStar();
+      // this.autoCompleteForStar();
     });
   }
   getAllvazhipad() {
@@ -179,6 +160,8 @@ amountPerDevotee: number = 0;
       }));
     });
   }
+
+
   setupAutocomplete() {
     this.filteredOptions = this.form.get('Vazhipad')!.valueChanges.pipe(
       startWith(''),
@@ -200,9 +183,7 @@ amountPerDevotee: number = 0;
 
   onSelect(event: MatAutocompleteSelectedEvent): void {
     const selectedVazhipad = event.option.value;
-
     this.form.get('Vazhipad')?.setValue(selectedVazhipad);
-
     const selectedVazhipadItem = this.VMList.find(
       (item) => item.VM_Name === selectedVazhipad
     );
@@ -212,35 +193,35 @@ amountPerDevotee: number = 0;
       const vazhipadCode = selectedVazhipadItem.VM_Code;
       console.log(vazhipadCode);
       this.fetchVazhipadDetails(vazhipadCode);
-      
     } else {
       console.error('Selected vazhipad item not found in VMList');
       // Handle error or feedback if needed
     }
   }
 
+
   fetchVazhipadDetails(vazhipadcode: string): void {
     this.masterservice
       .getVazhipadeByCode(vazhipadcode)
       .subscribe((res: any) => {
         console.log(res);
-
         this.form.get('Rate')?.setValue(res[0].VM_Amt);
         this.form.get('multiName')?.setValue(res[0].VM_MultiName);
-       
-          this.calculateTotalAmount();
-          this.masterservice.getVazhipadByCodeForDiety(vazhipadcode).subscribe((data:any)=>{
-            this.prathishtaOptions = data;
-           
-            this.prathishtaOptions = data;
+        this.calculateTotalAmount();
+        this.masterservice
+          .getVazhipadByCodeForDiety(vazhipadcode)
+          .subscribe((data: any) => {
+            this.prathishtaOptions = data; 
             console.log(this.prathishtaOptions);
             if (this.prathishtaOptions.length > 0) {
               const defaultPrathishta = this.prathishtaOptions[0].PM_Name;
-              console.log(this.prathishtaOptions[0].PM_Name)
-              this.form.get('Prathista')?.setValue(defaultPrathishta);
+              const defaultPrathishtaId=this.prathishtaOptions[0].PM_ID;
+              console.log(this.prathishtaOptions[0].PM_Name);
+
+              this.form.get('Prethista')?.setValue(defaultPrathishta);
+              this.form.get('PMid')?.setValue(defaultPrathishtaId);
             }
-          })
-        
+          });
       });
   }
 
@@ -248,43 +229,45 @@ amountPerDevotee: number = 0;
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
-    this.tomorrowDate = this.formatDate(tomorrow);
-    this.form.get('StartDate')?.setValue(this.tomorrowDate);
+    this.tomorrowDate = tomorrow
+    this.form.get('VazhipadDate')?.setValue(this.tomorrowDate);
     this.calculateEndDate();
+    this.generateDayList();
   }
 
-  private formatDate(date: Date): string {
-    return date.toISOString().split('T')[0];
+
+  private formatDate(date: Date): any {
+    return this.datePipe.transform(date, 'dd-MM-yyyy') || '';
   }
+  
 
   watchDateChanges() {
-    this.form.get('StartDate')?.valueChanges.subscribe(() => {
+    this.form.get('VazhipadDate')?.valueChanges.subscribe(() => {
+     
       this.calculateEndDate();
+      this.generateDayList();
     });
 
     this.form.get('NoOfDays')?.valueChanges.subscribe(() => {
       this.calculateEndDate();
+      this.generateDayList();
     });
   }
 
   calculateEndDate() {
-    const startDate = new Date(this.form.get('StartDate')?.value);
-    let noOfDays = this.form.get('NoOfDays')?.value || 0;
-
-    if (noOfDays < 1) {
-      noOfDays = 1; // Ensure minimum 1 day
-    } else if (noOfDays == 1) {
-      noOfDays = 1;
-      const today = new Date();
-      const tomorrow = new Date(today);
-      tomorrow.setDate(today.getDate() + 1);
-      this.form.get('EndDate')?.setValue(tomorrow.toISOString().split('T')[0]);
-    } else if (noOfDays > 1) {
-      const endDate = new Date(startDate);
-      endDate.setDate(startDate.getDate() + noOfDays - 1);
-      this.form.get('EndDate')?.setValue(endDate.toISOString().split('T')[0]);
+    const VazhipadDate = this.form.get('VazhipadDate')?.value;
+    const noOfDays = +this.form.get('NoOfDays')?.value || 1;
+    console.log(typeof noOfDays);
+    if (VazhipadDate) {
+      const start = new Date(VazhipadDate);
+      const end = new Date(start);
+      end.setDate(start.getDate() + noOfDays - 1);
+      this.form.get('EndDate')?.setValue(end);
+      console.log(end +"end")
     }
   }
+
+
   subscribeToQtyAndRateChanges() {
     this.form.get('Rate')?.valueChanges.subscribe(() => {
       this.calculateTotalAmount();
@@ -298,6 +281,8 @@ amountPerDevotee: number = 0;
       this.calculateTotalAmount();
     });
   }
+
+
   calculateTotalAmount() {
     const qty = parseInt(this.form.get('Qty')!.value, 10);
     const rate = parseInt(this.form.get('Rate')!.value, 10);
@@ -313,7 +298,134 @@ amountPerDevotee: number = 0;
     const noOfDays = this.form.get('NoOfDays')?.value || 0;
     const calculatedQty = qty * noOfDays;
     const initialAmount = rate * calculatedQty;
+    // this.totalAmount = initialAmount + this.devotees.length * initialAmount;
+  }
 
-    this.totalAmount = initialAmount + (this.devotees.length * initialAmount);
+
+  getKollavarasham() {
+    this.masterservice.kollavarashamData().subscribe((res) => {
+      console.log(res);
+      this.kollavarsham = res;
+      this.generateDayList()
+    });
+  }
+
+
+  private formatDated(date: Date): string {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  }
+  private dateFormat(date: Date): string {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+
+    return `${day}-${month}-${year}`;
+  }
+
+
+  generateDayList() {
+    const VazhipadDate = new Date(this.form.get('VazhipadDate')?.value);
+    const endDate = new Date(this.form.get('EndDate')?.value);
+    this.dayList = [];
+    if (VazhipadDate && endDate) {
+      let currentDate = new Date(VazhipadDate);
+      while (currentDate <= endDate) {
+        console.log(currentDate <= endDate)
+        const formattedDate = this.formatDated(currentDate);
+        const kollavarshamData =this.kollavarsham.find((k) => k.disdate === formattedDate) || {}; // Adjust as needed
+        this.dayList.push({ date: formattedDate, kollavarshamData });
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+    }
+  }
+
+  generateArrayOfFormValues() {
+    const VazhipadDate = new Date(this.form.get('VazhipadDate')?.value);
+    const noOfDays = +this.form.get('NoOfDays')?.value || 1;
+    const formValuesArray = [];
+
+    for (let i = 0; i < noOfDays; i++) {
+      const currentDay = new Date(VazhipadDate);
+      currentDay.setDate(VazhipadDate.getDate() + i);
+
+      const formValue = {
+        ...this.form.value,
+        VazhipadDate: currentDay,
+      };
+
+      formValuesArray.push(formValue);
+    }
+
+    return formValuesArray;
+  }
+
+  
+  onSubmit() {
+    // if (this.form.valid) {
+    //   const generatedArray = this.generateArrayOfFormValues();
+    //   this.dialogRef.close(generatedArray);
+    //   console.log(generatedArray);
+     
+      
+    // } else {
+    //   console.error('Form is invalid');
+    //   this.logValidationErrors();
+
+    // }
+
+
+    const formValues = this.form.value;
+    const devoteeArray = formValues.devotees.map((devotee: any) => {
+      return {
+        Slno: '',
+        PMid: formValues.PMid,
+        Vazhid: '1',
+        Prethista: formValues.Prethista,
+        Vazhipad: formValues.Vazhipad,
+        Name: devotee.Name,
+        Star: devotee.Star,
+        Name2:  devotee.Name2,
+        Star2: devotee.Star2,
+        Qty: formValues.Qty,
+        Rate: formValues.Rate,
+        Amount: (formValues.Qty * formValues.Rate).toString(),
+        TotalAmt: (formValues.Qty * formValues.Rate * formValues.NoOfDays).toString(),
+        Postal: '10',
+        VazhipadDate: formValues.VazhipadDate,
+        Mday: 'Sunday',
+        NalBy: 'Ohm',
+        Mmonth: 'Chingam'
+      };
+    });
+console.log(devoteeArray);
+
+const startDate = new Date(formValues.VazhipadDate);
+    const noOfDays = formValues.NoOfDays;
+    const finalArray:any[] = [];
+
+    for (let i = 0; i < noOfDays; i++) {
+      const currentDate = new Date(startDate);
+      currentDate.setDate(startDate.getDate() + i);
+      const vachipadDate= currentDate
+
+      devoteeArray.forEach((devotee:any) => {
+        finalArray.push({ ...devotee, VazhipadDate: vachipadDate });
+      });
+    }
+
+    console.log(finalArray);
+    this.dialogRef.close(finalArray);
+  }
+  logValidationErrors() {
+    Object.keys(this.form.controls).forEach(key => {
+      const controlErrors = this.form.get(key)?.errors;
+      if (controlErrors) {
+        console.error(`Validation errors in ${key}:`, controlErrors);
+      }
+    });
   }
 }

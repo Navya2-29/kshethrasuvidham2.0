@@ -40,7 +40,7 @@ export class FixedbottomComponent implements OnInit {
     this.customerdetailsForBillingForm = this.fb.group({
       BillNo: [billNo, [Validators.required]],
       Billdate: [today, [Validators.required]],
-      paymentNumber: [''],
+      
       Mobile: ['', [Validators.pattern('^[0-9]{10}$')]],
       Address1: [''],
       Address2: [''],
