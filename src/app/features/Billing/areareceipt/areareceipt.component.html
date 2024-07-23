@@ -15,7 +15,7 @@
                 <th style="width: 4%; text-align: center">Rate</th>
                 <th style="width: 4%; text-align: center">Amount</th>
                 <th style="width: 9%; text-align: center">Date</th>
-                <th style="width: 6%; text-align: center">To Date</th>
+                
                 <td style="width: 7%; text-align: center">Single/Multi</td>
                 <th style="width: 10%; text-align: center">Time</th>
                 <!-- <th> Name 2</th>
@@ -132,20 +132,20 @@
                     formControlName="VazhipadDate"
                     [readOnly]="row.get('booking')?.value ==='N'"
                     [min]="dateToSet"
-                    style="width: 100px;"
-                  />
-                </td>
-                <td style="vertical-align: middle; text-align: center">
-                  <input
-                    type="text"
-                    class="form-control sps"
-                  formControlName="toDate"
-                    readonly
+                    
+                  /><span style="vertical-align: middle; text-align: center"  *ngIf="multidayBooking[i]">
+                    <input
+                      type="date"
+                      class="form-control sps"
+                    formControlName="toDate"
+                      readonly
+  
+                    
 
-                  
-style="width: 100px;"
-                  />
+                    />
+                  </span>
                 </td>
+                
                 <td style="text-align: center; vertical-align: middle">
                   <input
                     type="radio"

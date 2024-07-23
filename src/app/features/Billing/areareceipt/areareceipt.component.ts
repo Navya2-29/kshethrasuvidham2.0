@@ -467,9 +467,6 @@ export class AreareceiptComponent implements OnInit {
       width: '80vh',
       maxWidth: '50vw',
       data: this.multidayBooking[rowIndex], // Pass the array values
-
-      // Optionally, you can pass data to the dialog component using the 'data' property
-      // data: { anyData: 'you want to pass' }
     });
 
     dialogRef.afterClosed().subscribe((result) => {
@@ -487,6 +484,8 @@ export class AreareceiptComponent implements OnInit {
   
     let lastIndex = result.length - 1;
 const data=result[0]
+console.log(data.Prethista);
+// this.prathishtaOptions[rowIndex]=data.Prethista
 this.multidayBooking[rowIndex] = result;
     row.patchValue({
       Vazhipad:data.Vazhipad,
@@ -494,9 +493,9 @@ this.multidayBooking[rowIndex] = result;
       Prethista: data.Prethista,
       Qty: data.Qty*result.length,
       Rate:data.Rate,
-      VazhipadDate:data.VazhipadDate,
-      TotalAmt: data.TotalAmt,
-      toDate:result[lastIndex].VazhipadDate,
+      VazhipadDate:this.formatDate(data.VazhipadDate),
+      TotalAmt: this.totalAmount,
+      toDate:this.formatDate(result[lastIndex].VazhipadDate),
       PMid:data.PMid,
       Mday: data.Mday,
       NalBy:data.NalBy,
@@ -583,33 +582,17 @@ console.log(updatedData)
     });
   }
 
-  // markAllAsTouched() {
-  //   this.form.markAllAsTouched();
-  //   this.vazhipadinfo.controls.forEach((row) => {
-  //     (row as FormGroup).markAllAsTouched();
-  //   });
-  // }
 
   resetForm() {
     this.form.reset();
-    
     this.vazhipadinfo.clear();
     this.addRow(-1); // Add an initial row after resetting
     this.updateTotalAmount();
     this.updateSlno();
+    this.multidayBooking=[]
   }
 
   private formatDateFields(data: any): any {
-    // if (data.vazhipadinfo && Array.isArray(data.vazhipadinfo)) {
-    //   data.vazhipadinfo = data.vazhipadinfo.map((item:any) => {
-    //     if (item.VazhipadDate) {
-    //       item.VazhipadDate = this.dateFormat(new Date(item.VazhipadDate));
-    //     }
-    //     return item;
-    //   });
-    // }
-    // return data;
-
     const formattedData = { ...data };
     if (
       formattedData.vazhipadinfo &&
@@ -688,27 +671,6 @@ console.log(updatedData)
 
   
   
-  // onSingleMultiChange(index: number, value: string): void {
-  //   this.singleMultiSelection[index] = value;
-  //   if (value === 'm') {
-  //     this.openMultiDayDialog(index);
-  //   }
-  // }
-
-  restrictRateInput(event: KeyboardEvent): void {
-    const charCode = event.which ? event.which : event.keyCode;
-    const char = String.fromCharCode(charCode);
-  
-    // Allow only numbers and one decimal point
-    if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
-      event.preventDefault();
-    }
-  
-    // Prevent multiple decimal points
-    if (char === '.' && (event.target as HTMLInputElement).value.includes('.')) {
-      event.preventDefault();
-    }
-  }
   
 
 }

@@ -5,7 +5,7 @@
         <div class="row">
            <div class="col-md-12">
                <div style="padding:0px;margin-bottom:18px;">
-                    <h2>Pushpanjali From 01-03-2024 to 30-08-2024</h2>
+                    <h2>{{vazhipad}} From {{starDate |date:'dd-MMM-YYYY'}} to {{lastDAte |date:'dd-MMM-YYYY'}}</h2>
                     <table class="table" >
                         <thead>
                             <tr>
@@ -18,7 +18,7 @@
                             <tr *ngFor="let devottee of data">
                                 <td>{{devottee.Name}}</td>
                                 <td>{{devottee.Star}}</td>
-                                <td>{{devottee.VazhipadDate}}</td>
+                                <td>{{devottee.VazhipadDate | date:'dd-MMM-yyyy'}}</td>
                             </tr>
                             </tbody>
                         </table>
@@ -33,5 +33,5 @@
 </mat-dialog-content>
 <mat-dialog-actions  class="menuend">
     <button mat-button [mat-dialog-close]="true" class="close">Cancel</button>
-    <button mat-button class="proceed">Print</button> 
+    <button mat-button class="proceed" (click)="onSubmit()">Print</button> 
 </mat-dialog-actions>
