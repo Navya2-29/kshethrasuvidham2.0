@@ -75,9 +75,10 @@ export class MultidayitemsComponent implements OnInit {
     public dialogRef: MatDialogRef<MultidayitemsComponent>,
     private datePipe: DatePipe
   ) {
-    
+    this.tomorrowDate = new Date();
+   
     this.form = this.fb.group({
-      Vazhipad: ['', Validators.required],
+      Vazhipad: ['', Validators.required,],
       Rate: ['1', Validators.required],
       Qty: ['1', Validators.required],
       NoOfDays: ['1', Validators.required],
@@ -89,7 +90,7 @@ export class MultidayitemsComponent implements OnInit {
       Slno: [''],
       Vazhid: [''],
       Amount: [''],
-      VazhipadDate: ['', [Validators.required]],
+      VazhipadDate: ['', [Validators.required,minDateValidator(this.tomorrowDate)]],
       time: [{ disabled: true, value: '' }],
       Postal: ['10'],
       Mday: ['Sunday'],
@@ -130,13 +131,16 @@ export class MultidayitemsComponent implements OnInit {
   private showValidationErrors() {
     if (this.form.get('VazhipadDate')?.invalid) {
       this.notification.showError(
-        'Vazhipad Date is required',
+        'Enter a valid date',
         'Validation Error'
       );
     }
     const vazhipadDateControl = this.form.get('VazhipadDate');
     if (vazhipadDateControl?.errors?.['minDate']) {
-      this.notification.showError('The date must be on or after tomorrow.', 'Validation Error');
+      this.notification.showError(
+        'The date must be on or after tomorrow.',
+        'Validation Error'
+      );
     }
     if (this.form.get('Vazhipad')?.invalid) {
       this.notification.showError(
@@ -470,9 +474,11 @@ export class MultidayitemsComponent implements OnInit {
       console.log(finalArray);
       this.dialogRef.close(finalArray);
     } else {
-      this.notification.showError('Plese fill the all the details');
+      this.showValidationErrors();
     }
   }
-
+  cancel(){
+    this.dialogRef.close();
+  }
   
 }

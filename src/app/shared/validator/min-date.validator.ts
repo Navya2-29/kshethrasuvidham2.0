@@ -1,16 +1,17 @@
 import { AbstractControl, ValidatorFn } from '@angular/forms';
 
+// Custom validator function
 export function minDateValidator(minDate: Date): ValidatorFn {
-  return (control: AbstractControl): { [key: string]: any } | null => {
+  return (control: AbstractControl) => {
     if (!control.value) {
-      return null;
+      return null; // No value, so return null
     }
     
-    const inputDate = new Date(control.value);
-    if (inputDate < minDate) {
-      return { 'minDate': { value: control.value } };
+    const selectedDate = new Date(control.value);
+    if (selectedDate <= minDate) {
+      return { invalidDate: true }; // Return invalid date error
     }
     
-    return null;
+    return null; // Return null if valid
   };
 }

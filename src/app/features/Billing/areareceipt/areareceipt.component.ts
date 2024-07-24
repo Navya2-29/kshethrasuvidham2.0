@@ -256,6 +256,9 @@ export class AreareceiptComponent implements OnInit {
       this.notification.success("Data deleted successfully")
       this.setupAutocomplete(this.indexForAutoComplete);
     }
+    if (this.vazhipadinfo.length == 1) {
+      this.resetForm()
+    }
   }
 
   // formatting date in dd-mm-yyyy
@@ -484,7 +487,8 @@ export class AreareceiptComponent implements OnInit {
   
     let lastIndex = result.length - 1;
 const data=result[0]
-console.log(data.Prethista);
+// console.log(data.Prethista);
+// row.get('Prethista')?.setValue(data.Prethista)
 // this.prathishtaOptions[rowIndex]=data.Prethista
 this.multidayBooking[rowIndex] = result;
     row.patchValue({
