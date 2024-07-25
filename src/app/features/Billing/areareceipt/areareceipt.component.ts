@@ -249,16 +249,26 @@ export class AreareceiptComponent implements OnInit {
   }
 
   removeRow(index: number) {
+    console.log(index +"Sssssssssssssssssssss");
+     
     if (this.vazhipadinfo.length > 1) {
       this.vazhipadinfo.removeAt(index);
       this.updateTotalAmount();
       this.updateSlno();
       this.notification.success("Data deleted successfully")
       this.setupAutocomplete(this.indexForAutoComplete);
+      this.removeMultidayData(index)
     }
-    if (this.vazhipadinfo.length == 1) {
-      this.resetForm()
+   else  {
+      this.resetForm();
+      this.removeMultidayData(index)
     }
+  }
+  removeMultidayData(index: number): void {
+    if (index >= 0 && index < this.multidayBooking.length) {
+      this.multidayBooking.splice(index, 1);
+      // this.notification.success("Multiday booking data deleted successfully");
+    } 
   }
 
   // formatting date in dd-mm-yyyy
@@ -593,7 +603,7 @@ console.log(updatedData)
     this.addRow(-1); // Add an initial row after resetting
     this.updateTotalAmount();
     this.updateSlno();
-    this.multidayBooking=[]
+    
   }
 
   private formatDateFields(data: any): any {

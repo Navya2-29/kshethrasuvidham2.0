@@ -42,5 +42,9 @@ this.vazhipad=this.data[0].Vazhipad;
 onSubmit(){
 this.dialogRef.close()
 }
+cancel(){
+  this.dialogRef.close()
+
+}
  
 }
