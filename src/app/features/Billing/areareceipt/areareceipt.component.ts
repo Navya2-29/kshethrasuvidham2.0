@@ -297,10 +297,12 @@ export class AreareceiptComponent implements OnInit {
 
   private _filter(value: string): any[] {
     const filterValue = value.toLowerCase();
+    const normalizedVazhipadMal = value.normalize("NFC");
     return this.VMList.filter(
       (option) =>
         option.VM_Name.toLowerCase().includes(filterValue) ||
-        option.VM_Code.toLowerCase().includes(filterValue)
+        option.VM_Code.toLowerCase().includes(filterValue)||
+        option.VM_RName?.normalize("NFC").includes(normalizedVazhipadMal) 
     );
   }
 
@@ -310,6 +312,7 @@ export class AreareceiptComponent implements OnInit {
         VM_Id: item.VM_Id,
         VM_Name: item.VM_Name,
         VM_Code: item.VM_Code,
+        VM_RName:item.VM_RName
       }));
     });
     this.addRow(-1);

@@ -69,6 +69,7 @@ code:string;
   private duplicateCheck = inject(DuplicatecheckService);
   private notification = inject(NotificationService);
   private router = inject(Router);
+  sortAscending: boolean = true;
   constructor() {
     this.vazhipadMasterForm = this.formBuilder.group({
       VM_Code: [
@@ -80,7 +81,7 @@ code:string;
           this.duplicateCodeValidator.bind(this),
         ],
       ],
-      VM_Name: ["", [Validators.required, Validators.maxLength(100),Validators.pattern('^[a-zA-Z0-9/][a-zA-Z0-9./ ]*$'),this.duplicateNameValidator.bind(this),]],
+      VM_Name: ["", [Validators.required, Validators.maxLength(100),Validators.pattern('^[a-zA-Z0-9/()\\-\\s]+$'),this.duplicateNameValidator.bind(this),]],
       VM_RName: ["", [Validators.required,this.duplicateRegionalNameValidator.bind(this),]],
       VM_Amt: [0, [Validators.required, Validators.pattern('^[0-9][0-9]*$')]],
       VM_MaxNo: [0, [Validators.pattern('^[0-9][0-9]*$')]],
@@ -153,6 +154,7 @@ code:string;
           this.Vmaster = data;
           console.log(this.Vmaster);
           this.filteredVmaster = this.Vmaster;
+          this.sortByVMCode();
           this.loading = false;
         }
       },
@@ -161,7 +163,17 @@ code:string;
       },
     });
   }
-
+  sortByVMCode() {
+    this.Vmaster.sort((a, b) => {
+      const codeA = parseInt(a.VM_Code, 10);
+      const codeB = parseInt(b.VM_Code, 10);
+      
+      if (isNaN(codeA)) return 1; // Consider NaN as the highest value if sorting
+      if (isNaN(codeB)) return -1;
+      
+      return this.sortAscending ? codeA - codeB : codeB - codeA;
+    });
+  }
   // get vmaster form controls
   get vmasterFormControl() {
     return this.vazhipadMasterForm.controls;

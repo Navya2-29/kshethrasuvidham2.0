@@ -500,7 +500,12 @@
             <table class="table">
               <thead style="border-bottom: 2px solid #223d61">
 
-                <th style="text-align: left; padding-left: 10px;">Code</th>
+                <th style="text-align: left; padding-left: 10px;" >Code 
+                  <!-- <mat-icon *ngIf="sortField === 'VM_Code'" style="font-size: 16px; vertical-align: middle;">
+                    {{ sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward' }}
+                  </mat-icon> -->
+
+                </th>
                 <th style="text-align: left; padding-left: 10px;width: 40%;" >Name</th>
                 <th>Rate</th>
                 <th>
@@ -516,7 +521,7 @@
                     {{ data.VM_Code }}
                   </td>
                   <td style="text-align: left; padding-left: 10px;width: 40%;" class="wrap-text" >
-                    {{ data.VM_Name }}
+                    {{ data.VM_Name }}-{{ data.VM_RName }}
                   </td>
                   <td style="text-align: right;">{{ data.VM_Amt }}</td>
 

@@ -7,7 +7,7 @@
             <thead>
               <tr style="background: #223d61; color: white">
                 <td style="width: 2%"></td>
-                <th style="width: 14%">Vazhipad</th>
+                <th style="width: 18%">Vazhipad</th>
                 <th style="width: 8%">Name</th>
                 <th style="width: 8%">Star</th>
                 <th style="width: 8%">Diety</th>
@@ -57,7 +57,7 @@
                       *ngFor="let option of filteredOptions[i]"
                       [value]="option.VM_Name"
                     >
-                      {{option.VM_Code}}-{{ option.VM_Name }}
+                      {{option.VM_Code}}-{{ option.VM_Name }}-{{option.VM_RName}}
                     </mat-option>
                   </mat-autocomplete>
                  
