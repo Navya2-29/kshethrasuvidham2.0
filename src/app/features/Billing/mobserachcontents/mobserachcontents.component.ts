@@ -119,11 +119,12 @@ export class MobserachcontentsComponent implements OnInit {
     return this.starData[id] || 'Unknown'; // Return 'Unknown' if ID not found
   }
     loadStarData(): void {
-      this.masterService.getNakshthra().subscribe({
+      const payLoad={"Type":"ListStar","Code":""}
+      this.masterService.getStarData(payLoad).subscribe({
         next: (data: any[]) => { 
           console.log(data)// Specify that data is an array of Star
           this.starData = data.reduce((acc: { [id: string]: string }, star:any) => {
-            acc[star.id] = star.name;
+            acc[star.id] = star.SM_NameEng;
             return acc;
           }, {});
   

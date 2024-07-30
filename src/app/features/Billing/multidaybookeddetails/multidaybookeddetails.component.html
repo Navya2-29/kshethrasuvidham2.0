@@ -12,13 +12,17 @@
                             <th >Name</th>
                             <th >Star</th>
                             <th >Vazhipad Date</th>
+                            <th>MultiName</th>
+                            <th>Star</th>
                         </tr>
                         </thead>
                         <tbody>
                             <tr *ngFor="let devottee of data">
                                 <td>{{devottee.Name}}</td>
-                                <td>{{devottee.Star}}</td>
+                                <td>{{getNakshthram(devottee.Star)}}</td>
                                 <td>{{devottee.VazhipadDate | date:'dd-MMM-yyyy'}}</td>
+                                <td *ngIf="devottee.Star2.length>0">{{devottee.Name2}}</td>
+                                <td *ngIf="devottee.Star2.length>0">{{getNakshthram(devottee.Star2)}}</td>
                             </tr>
                             </tbody>
                         </table>

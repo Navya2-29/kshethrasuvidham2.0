@@ -107,7 +107,7 @@ export class MultidayitemsComponent implements OnInit {
   createDevotee(): FormGroup {
     return this.fb.group({
       Name: ['', [Validators.required]],
-      Star: ['0', [Validators.required]],
+      Star: ['28', [Validators.required]],
       Name2: [''],
       Star2: [''],
     });
@@ -223,7 +223,8 @@ export class MultidayitemsComponent implements OnInit {
   }
 
   getNakshthram() {
-    this.masterservice.getNakshthra().subscribe((res) => {
+    const payLoad={"Type":"ListStar","Code":""};
+    this.masterservice.getStarData(payLoad).subscribe((res) => {
       this.nakshatham = res;
       console.log(this.nakshatham);
       // this.autoCompleteForStar();

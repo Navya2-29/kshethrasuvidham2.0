@@ -154,7 +154,7 @@
                         style="width: fit-content; height: 30.6px"
                         formControlName="Star"
                       >
-                       <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.name}}</option>
+                       <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_NameEng}}</option>
                       </select>
                     </td>
                     <td *ngIf="form.get('multiName')?.value === 'Y'">
@@ -171,7 +171,7 @@
                         style="width: fit-content; height: 30.6px"
                         formControlName="Star2"
                       >
-                      <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.name}}</option>
+                      <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_NameEng}}</option>
                       </select>
                     </td>
                   </tr>

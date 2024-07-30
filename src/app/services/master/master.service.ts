@@ -657,7 +657,7 @@ export class MasterService {
   
   getStarData(payLoad: any): Observable<any[]> {
     return this.http.post<any>(
-      Constant.BASE_URL + Constant.METHODS.STARDATA,
+      Constant.BASE_URL + Constant.METHODS.SEARCHBYMOBILENUMBER,
       payLoad
     );
   }
