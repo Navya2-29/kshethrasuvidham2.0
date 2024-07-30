@@ -176,7 +176,6 @@ export class MasterService {
       .pipe(catchError(this.errorHandler));
   }
 
-  
   // create vamster
   createVmaster(id: string, obj: Vmaster): Observable<Vmaster> {
     const Id = `${id}`;
@@ -291,7 +290,7 @@ export class MasterService {
   }
 
   // getseasonalised vazhipad
-  getSeasonalisedVazhipad():Observable<Vmaster[] >{
+  getSeasonalisedVazhipad(): Observable<Vmaster[]> {
     const payLoad = {
       Type: 'VazhipadSeasonal',
       Code: '',
@@ -632,25 +631,45 @@ export class MasterService {
     );
   }
 
-
   // vazhipad booking
 
-  vazhipadBooking(data:any):Observable<any[]>{
+  vazhipadBooking(data: any): Observable<any[]> {
     return this.http
-    .post<any>(Constant.BASE_URL + Constant.METHODS.VAZHIPAD_BOOKING,data)
-    .pipe(catchError(this.errorHandler));
+      .post<any>(Constant.BASE_URL + Constant.METHODS.VAZHIPAD_BOOKING, data)
+      .pipe(catchError(this.errorHandler));
+  }
+
+  SearchByMobileNo(payLoad: any): Observable<any[]> {
+    return this.http.post<any>(
+      Constant.BASE_URL + Constant.METHODS.SEARCHBYMOBILENUMBER,
+      payLoad
+    );
+  }
+
+  SearchByBillNo(payLoad: any): Observable<any[]> {
+    return this.http.post<any>(
+      Constant.BASE_URL + Constant.METHODS.GET_MASTER,
+      payLoad
+    );
   }
 
 
-
-  kollavarashamData():Observable<string[]> {
-      return this.http.get<string[]>('assets/data/kollavarsham.json');
+  
+  getStarData(payLoad: any): Observable<any[]> {
+    return this.http.post<any>(
+      Constant.BASE_URL + Constant.METHODS.STARDATA,
+      payLoad
+    );
   }
+
+
+  kollavarashamData(): Observable<string[]> {
+    return this.http.get<string[]>('assets/data/kollavarsham.json');
+  }
+
   // error handling
   private errorHandler(error: HttpErrorResponse) {
     //
     return throwError(() => new Error('Error occurred'));
   }
-
-
 }

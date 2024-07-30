@@ -80,8 +80,9 @@ export const Constant = {
         GET_SUBACCOUNTHEAD: "getAccountSubHead",
 
         // vazhipad booking
-        VAZHIPAD_BOOKING:'VazhipadBooking'
-
+        VAZHIPAD_BOOKING:'VazhipadBooking',
+SEARCHBYMOBILENUMBER:'ViewMasters',
+STARDATA:'ListStar'
 
     }
 }

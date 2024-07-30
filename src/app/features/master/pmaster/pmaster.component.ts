@@ -65,6 +65,7 @@ export class PmasterComponent implements OnInit {
   errorMessage: string = '';
   Id: string = '';
   code: string;
+  sortAscending: boolean = true;
   private masterService = inject(MasterService);
   private formBuilder = inject(FormBuilder);
   private notification = inject(NotificationService);
@@ -94,9 +95,8 @@ export class PmasterComponent implements OnInit {
       ],
       PM_RegName: [
         '',
-        [Validators.required,
-        this.duplicateRegionalNameValidator.bind(this),
-      ],],
+        [Validators.required, this.duplicateRegionalNameValidator.bind(this)],
+      ],
       PM_Image: [''],
       PM_Active: [true],
     });
@@ -115,14 +115,27 @@ export class PmasterComponent implements OnInit {
         if (data && data.length > 0) {
           this.pmaster = data;
           this.filteredPmaster = this.pmaster;
+          this.sortByCMCode();
           this.loading = false;
-     console.log(this.pmaster)
+          console.log(this.pmaster);
         }
       },
       error: (error) => {
         console.log(error);
         this.loading = true;
       },
+    });
+  }
+
+  sortByCMCode() {
+    this.pmaster.sort((a, b) => {
+      const codeA = parseInt(a.PM_Code, 10);
+      const codeB = parseInt(b.PM_Code, 10);
+
+      if (isNaN(codeA)) return 1; // Consider NaN as the highest value if sorting
+      if (isNaN(codeB)) return -1;
+
+      return this.sortAscending ? codeA - codeB : codeB - codeA;
     });
   }
 
@@ -350,16 +363,24 @@ export class PmasterComponent implements OnInit {
   }
 
   // duplicate regional check validators
-  duplicateRegionalNameValidator(control: AbstractControl): ValidationErrors | null {
+  duplicateRegionalNameValidator(
+    control: AbstractControl
+  ): ValidationErrors | null {
     const name = control.value;
     const code = this.code;
 
     if (this.updateFlag) {
       if (
-        this.duplicateCheck.checkDuplicateUpdateRegionalName(name, this.pmaster, code)
+        this.duplicateCheck.checkDuplicateUpdateRegionalName(
+          name,
+          this.pmaster,
+          code
+        )
       ) {
         return null;
-      } else if (this.duplicateCheck.checkDuplicateRegionalName(name, this.pmaster)) {
+      } else if (
+        this.duplicateCheck.checkDuplicateRegionalName(name, this.pmaster)
+      ) {
         return { duplicateRName: true };
       } else {
         return null;

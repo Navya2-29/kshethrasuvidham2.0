@@ -1,3 +1,4 @@
+import { Cmaster } from './../../../models/cmaster.model';
 import { Component, OnInit, inject } from '@angular/core';
 import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,7 +12,7 @@ import { CommonModule } from '@angular/common';
 import { UpperCaseDirective } from '../../../shared/directives/upper-case.directive';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
-import { Cmaster, VCMRequestBody } from '../../../models/cmaster.model';
+import {  VCMRequestBody } from '../../../models/cmaster.model';
 import { DuplicatecheckService } from '../../../services/duplicateCheckValidator/duplicatecheck.service';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
@@ -44,7 +45,8 @@ code:string;
   private masterService = inject(MasterService);
   private formBuilder = inject(FormBuilder);
   private notifiacation = inject(NotificationService);
-  private duplicateCheck = inject(DuplicatecheckService)
+  private duplicateCheck = inject(DuplicatecheckService);
+  sortAscending:boolean=true;
   constructor() {
     this.loading = true;
     this.cmasterForm = this.formBuilder.group({
@@ -75,7 +77,8 @@ code:string;
         if (data && data.length > 0) {
           this.cmaster = data;
           this.filteredCmaster = this.cmaster;
-          this.loading = false
+          this.loading = false;
+          this.sortByCMCode()
         }
       },
       error: (error) => {
@@ -86,6 +89,17 @@ code:string;
     });
   }
 
+  sortByCMCode() {
+    this.cmaster.sort((a, b) => {
+      const codeA = parseInt(a.VC_Code, 10);
+      const codeB = parseInt(b.VC_Code, 10);
+      
+      if (isNaN(codeA)) return 1; // Consider NaN as the highest value if sorting
+      if (isNaN(codeB)) return -1;
+      
+      return this.sortAscending ? codeA - codeB : codeB - codeA;
+    });
+  }
   // get pmaster form controls
   get cmasterFormControl() {
     return this.cmasterForm.controls;

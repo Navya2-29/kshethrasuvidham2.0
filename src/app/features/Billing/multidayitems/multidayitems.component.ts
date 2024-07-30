@@ -135,6 +135,12 @@ export class MultidayitemsComponent implements OnInit {
         'Validation Error'
       );
     }
+    if (this.form.get('Rate')?.invalid) {
+      this.notification.showError(
+        'Enter a valid Rate',
+        'Validation Error'
+      );
+    }
     const vazhipadDateControl = this.form.get('VazhipadDate');
     if (vazhipadDateControl?.errors?.['minDate']) {
       this.notification.showError(

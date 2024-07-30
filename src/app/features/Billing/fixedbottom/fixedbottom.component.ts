@@ -1,4 +1,5 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { MasterService } from './../../../services/master/master.service';
+import { Component, inject, OnInit, Type } from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MobserachbtnComponent } from '../../../mobserachbtn/mobserachbtn.component';
@@ -6,11 +7,15 @@ import { TotalAmountService } from '../../../shared/service/total-amount.service
 import {
   FormBuilder,
   FormGroup,
+  FormsModule,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 import { CommonModule, formatDate } from '@angular/common';
 import { NotificationService } from '../../../services/notification/notification.service';
+import { MatDialog } from '@angular/material/dialog';
+import { MobserachcontentsComponent } from '../mobserachcontents/mobserachcontents.component';
+import { v4 as uuidv4 } from 'uuid';
 
 @Component({
   selector: 'app-fixedbottom',
@@ -21,6 +26,7 @@ import { NotificationService } from '../../../services/notification/notification
     MobserachbtnComponent,
     ReactiveFormsModule,
     CommonModule,
+    FormsModule
   ],
   templateUrl: './fixedbottom.component.html',
   styleUrl: './fixedbottom.component.css',
@@ -29,16 +35,18 @@ export class FixedbottomComponent implements OnInit {
   customerdetailsForBillingForm: FormGroup;
   totalAmount: number = 0;
   LastBillNo: any = 'No bill No';
+  mobileNumber: string = '';
   private totalService = inject(TotalAmountService);
   private notiication = inject(NotificationService);
+private masterService=inject(MasterService)
 
 
-
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder,public dialog: MatDialog,) {
     const today = this.getFormattedDate(new Date());
-        const billNo = this.generateBillNumber(); // Generate bill number
+    
+
     this.customerdetailsForBillingForm = this.fb.group({
-      BillNo: [billNo, [Validators.required]],
+      BillNo: ['', ],
       Billdate: [today, [Validators.required]],
       
       Mobile: ['', [Validators.pattern('^[0-9]{10}$')]],
@@ -67,7 +75,8 @@ export class FixedbottomComponent implements OnInit {
 
   private generateBillNumber(): string {
     // Simple example: "BILL" followed by current timestamp
-    return 'cbx' + Date.now();
+    // return 'CBX-' + uuidv4();
+    return 'CBX-'+(Math.floor(Math.random() * 90000) + 10000).toString();
   }
   private subscribeToTrnsmodeChanges() {
     this.customerdetailsForBillingForm.get('Trnsmode')?.valueChanges.subscribe((value) => {
@@ -87,7 +96,8 @@ export class FixedbottomComponent implements OnInit {
       this.markAllFieldsAsTouched();
       return;
     }
-
+    const newBillNo = this.generateBillNumber();
+    this.customerdetailsForBillingForm.patchValue({ BillNo: newBillNo });
     const formData = { ...this.customerdetailsForBillingForm.value };
     formData.Billdate = this.formatToDDMMYYYY(new Date(formData.Billdate));
     formData.Instdate = this.formatToDDMMYYYY(new Date(formData.Instdate));
@@ -151,5 +161,33 @@ export class FixedbottomComponent implements OnInit {
     const month = ('0' + (date.getMonth() + 1)).slice(-2);
     const year = date.getFullYear();
     return `${day}-${month}-${year}`;
+  }
+  openDialog(data:any) {
+    
+      this.dialog.open(MobserachcontentsComponent, {
+        width: '80vw', // Set the width of the dialog
+        data: data
+      }); 
+  }
+
+  onFind() {
+    if (this.mobileNumber.length !== 10) {
+      // Display a toaster or any other form of error message
+     this.notiication.showError("Please enter Valid Mobile number")
+      return;
+    }
+    // Call the API to get details by mobile number
+    const payLoad={"Type":"SearchMobile","Code":this.mobileNumber}
+    this.masterService.SearchByMobileNo(payLoad).subscribe({
+     next: (data) => {
+console.log(data);
+        this.openDialog(data);
+      },
+     error: (error) => {
+        // Handle error
+        alert('Error fetching data. Please try again later.');
+        console.error('Error fetching data:', error);
+      }
+  });
   }
 }

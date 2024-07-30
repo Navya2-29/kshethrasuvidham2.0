@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import { MatDialogModule } from '@angular/material/dialog';
 import {MatButtonModule} from '@angular/material/button';
-import { MobserachcontentsComponent } from '../mobserachcontents/mobserachcontents.component';
+import { MobserachcontentsComponent } from '../features/Billing/mobserachcontents/mobserachcontents.component';
 
 
 @Component({

@@ -8,7 +8,8 @@
                         </button>
                     </div>
                     <div>
-                        <input  type="text" placeholder="Search by Mob Number"  style="width:150px;"> <app-mobserachbtn></app-mobserachbtn>
+                        <input  type="text" placeholder="Search by Mob Number" [(ngModel)]="mobileNumber"  style="width:150px;"> 
+                        <button  class="btn btn-secondary"  (click)="onFind()" style="padding:5px;font-size:9pt;background-color:#223d61;">Find</button>
                     </div>
             </div>
         </div>
