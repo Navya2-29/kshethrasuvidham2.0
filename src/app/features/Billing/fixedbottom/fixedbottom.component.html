@@ -3,8 +3,8 @@
         <div class="col-md-2">
             <div class="btmsearch">
                     <div >
-                        <input   type="text" placeholder="Search by Bill Number" style="width:150px;"> 
-                        <button class="btn btn-primary" style="padding:5px;border-radius:0px;font-size:9pt;background: #223d61;border-radius:3px;border:none;">Find
+                        <input   type="text" placeholder="Search by Bill Number" [(ngModel)]="billNumber" style="width:150px;"> 
+                        <button class="btn btn-primary" (click)="onFindBillNumber()" style="padding:5px;border-radius:0px;font-size:9pt;background: #223d61;border-radius:3px;border:none;">Find
                         </button>
                     </div>
                     <div>
@@ -18,7 +18,7 @@
                 <div style="display:flex;align-items:center;justify-content:center;flex-direction:column;column-gap:0px;">
                     <p style="font-weight:800;">Collection - Today</p>
                     <p style="font-size:12pt;font-weight:800;margin-top:-9px;">Rs. 123456789</p>
-                    <p style="border:1px solid silver;padding:5px;">Last Bill No. <span style="color:#3f51b5;font-weight:800;">{{LastBillNo}} </span></p>
+                    <p style="border:1px solid silver;padding:5px;">Last Bill No. <span style="color:#3f51b5;font-weight:800;"> </span></p>
                 </div>
                 
             </div>

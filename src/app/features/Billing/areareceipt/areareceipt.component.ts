@@ -34,6 +34,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MultidayitemsComponent } from '../multidayitems/multidayitems.component';
 import { MultidaybookeddetailsComponent } from '../multidaybookeddetails/multidaybookeddetails.component';
 import { NumberDirective } from '../../../shared/directives/number/number.directive';
+import { ReceiptPrintService } from '../../../shared/service/receipt-print.service';
 
 @Component({
   selector: 'app-areareceipt',
@@ -75,13 +76,14 @@ export class AreareceiptComponent implements OnInit {
   dateToSet: string | null;
   singleMultiSelection: string[] = []; // To hold the radio button values
   multidayBooking:any[]=[];
-  LastBillNumber:any;
+  
   indexForAutoComplete:number;
  
   private subscription: Subscription;
   private masterservice = inject(MasterService);
   private eventService = inject(TotalAmountService);
   private notification = inject(ToastrService);
+  private receiptPrintService=inject(ReceiptPrintService)
   constructor(
     private fb: FormBuilder,
     public dialog: MatDialog,
@@ -583,17 +585,17 @@ console.log("ffffffffffffffffffff")
 console.log(updatedData)
     const formattedData = this.formatDateFields(updatedData);
     console.log(formattedData);
+    this.receiptPrintService.sendData(formattedData);
     this.masterservice.vazhipadBooking(formattedData).subscribe((res:any) => {
       console.log(res)
       if(res){
         this.notification.success(res.RespMsg);
         if(res.RespStatus==='I'){
-          this.LastBillNumber=res.BillNo;
-          localStorage.setItem('lastBillNumber', JSON.stringify(  this.LastBillNumber));
+          
           this.resetForm();
-          this.eventService.setBillNumber(res);
+          this.eventService.getLastBillnumber();
         }else{
-          this.LastBillNumber=this.LastBillNumber;
+          this.notification.error("Please check your connection and try agin");
         }
       }
     });

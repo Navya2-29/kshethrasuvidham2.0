@@ -1,13 +1,20 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
+import { MasterService } from '../../services/master/master.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TotalAmountService {
-
-  constructor() { }
   private multidayDataSubject = new BehaviorSubject<any>(null);
+  private totalAmountSubject = new BehaviorSubject<number>(0);
+  private clickSubject = new Subject<void>();
+  private firstComponentData: any;
+  private secondComponentData: any;
+  lastBillNumber:number=0;
+  constructor(private masterService:MasterService) { }
+  
   multidayData$ = this.multidayDataSubject.asObservable();
 
   setMultidayData(data: any) {
@@ -15,16 +22,14 @@ export class TotalAmountService {
   }
 
 
-  private totalAmountSubject = new BehaviorSubject<number>(0);
+ 
   totalAmount$ = this.totalAmountSubject.asObservable();
 
   setTotalAmount(amount: number) {
     this.totalAmountSubject.next(amount);
   }
 
-  private clickSubject = new Subject<void>();
-  private firstComponentData: any;
-  private secondComponentData: any;
+ 
 
   clickEvent$ = this.clickSubject.asObservable();
 
@@ -55,14 +60,16 @@ export class TotalAmountService {
     };
   }
 
-  private billNumberSubject = new BehaviorSubject<string | null>(null);
-   setBillNumber(billNumber: any): void {
-    this.billNumberSubject.next(billNumber);
-  }
+  
+getLastBillnumber(){
+  const payLoad={"Type":"Maxbillno","Code":""}
+  this.masterService.getLastBillNumber(payLoad).subscribe({
+    next:(data)=>{
+      this.lastBillNumber=data[0].Billno;
+      console.log(this.lastBillNumber)
+    }
+  })
+}
+  
 
-  getBillNumber() {
-    return this.billNumberSubject.asObservable();
-  }
-  
-  
 }

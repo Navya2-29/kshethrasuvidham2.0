@@ -39,15 +39,21 @@ import { MatSelectModule } from '@angular/material/select';
     MatAutocompleteModule,
     MatCheckboxModule,
     UpperCaseDirective,
-    MatSelectModule
+    MatSelectModule,
   ],
   templateUrl: './vmaster.component.html',
   styleUrl: './vmaster.component.css',
 })
 export class VmasterComponent implements OnInit {
-
   toppings = new FormControl('');
-  toppingList: string[] = ['Extra cheese', 'Mushroom', 'Onion', 'Pepperoni', 'Sausage', 'Tomato'];
+  toppingList: string[] = [
+    'Extra cheese',
+    'Mushroom',
+    'Onion',
+    'Pepperoni',
+    'Sausage',
+    'Tomato',
+  ];
   Vmaster: Vmaster[] = [];
   filteredVmaster: Vmaster[] = [];
   vazhipadMasterForm: FormGroup;
@@ -61,8 +67,8 @@ export class VmasterComponent implements OnInit {
   updateFlag: boolean = false;
   Id: number;
   searchQuery: string = '';
-  deities :any [];
-code:string;
+  deities: any[];
+  code: string;
   showNoRecordsMessage: boolean = false;
   private formBuilder = inject(FormBuilder);
   private masterService = inject(MasterService);
@@ -81,8 +87,19 @@ code:string;
           this.duplicateCodeValidator.bind(this),
         ],
       ],
-      VM_Name: ["", [Validators.required, Validators.maxLength(100),Validators.pattern('^[a-zA-Z0-9/()\\-\\s]+$'),this.duplicateNameValidator.bind(this),]],
-      VM_RName: ["", [Validators.required,this.duplicateRegionalNameValidator.bind(this),]],
+      VM_Name: [
+        '',
+        [
+          Validators.required,
+          Validators.maxLength(100),
+          Validators.pattern('^[a-zA-Z0-9/()\\-\\s]+$'),
+          this.duplicateNameValidator.bind(this),
+        ],
+      ],
+      VM_RName: [
+        '',
+        [Validators.required, this.duplicateRegionalNameValidator.bind(this)],
+      ],
       VM_Amt: [0, [Validators.required, Validators.pattern('^[0-9][0-9]*$')]],
       VM_MaxNo: [0, [Validators.pattern('^[0-9][0-9]*$')]],
       VM_Receipt: [false],
@@ -95,17 +112,17 @@ code:string;
       VM_Special: [false],
       VM_Rate_Change: [false],
       SMS: [false],
-      VM_TimeLimit: [0,[Validators.pattern('^[0-9][0-9]*$')]],
+      VM_TimeLimit: [0, [Validators.pattern('^[0-9][0-9]*$')]],
       VM_Description: [''],
       VM_AlertMsg: [''],
       VM_Active: [true],
       DisplayMode: [false],
-      ACHeadCode: [""],
-      ACSubCode: [""],
-      VC_Name: ["", [Validators.required]],
-      Whatsapp: [""],
+      ACHeadCode: [''],
+      ACSubCode: [''],
+      VC_Name: ['', [Validators.required]],
+      Whatsapp: [''],
       VM_Time: ['1'],
-        //  deities: this.formBuilder.array([]),
+      //  deities: this.formBuilder.array([]),
     });
   }
 
@@ -159,7 +176,7 @@ code:string;
         }
       },
       error: (error) => {
-        this.notification.showSuccess("Try after some Time")
+        this.notification.showSuccess('Try after some Time');
       },
     });
   }
@@ -167,10 +184,10 @@ code:string;
     this.Vmaster.sort((a, b) => {
       const codeA = parseInt(a.VM_Code, 10);
       const codeB = parseInt(b.VM_Code, 10);
-      
+
       if (isNaN(codeA)) return 1; // Consider NaN as the highest value if sorting
       if (isNaN(codeB)) return -1;
-      
+
       return this.sortAscending ? codeA - codeB : codeB - codeA;
     });
   }
@@ -194,7 +211,7 @@ code:string;
         this.masterService.createVmaster(VCId, data).subscribe({
           next: (res) => {
             console.log(res);
-            if(res.RespStatus==="I"){
+            if (res.RespStatus === 'I') {
               this.loading = false;
 
               this.getVmaster();
@@ -203,7 +220,6 @@ code:string;
                 'vazhipad details added successfully'
               );
             }
-
           },
           error: (error) => {
             this.loading = true;
@@ -221,9 +237,9 @@ code:string;
   onReset() {
     this.vazhipadMasterForm.reset({
       VM_Active: true,
-      VM_Code:"" ,
-      VM_Name: "",
-      VM_RName: "",
+      VM_Code: '',
+      VM_Name: '',
+      VM_RName: '',
       VM_Amt: 0,
       VM_MaxNo: 0,
       VM_Receipt: false,
@@ -236,19 +252,19 @@ code:string;
       VM_Special: false,
       VM_Rate_Change: false,
       SMS: false,
-      VM_TimeLimit:0,
-      VM_Description: "",
-      VM_AlertMsg: "",
+      VM_TimeLimit: 0,
+      VM_Description: '',
+      VM_AlertMsg: '',
 
       DisplayMode: false,
-      ACHeadCode: "",
-      ACSubCode: "",
-      VC_Name: "",
-      Whatsapp:"",
+      ACHeadCode: '',
+      ACSubCode: '',
+      VC_Name: '',
+      Whatsapp: '',
       VM_Time: '1',
     });
     this.updateFlag = false;
-    this.loading=false;
+    this.loading = false;
   }
 
   // for editing the form fields
@@ -256,7 +272,7 @@ code:string;
     this.Id = data.VM_Id;
     this.loading = true;
     this.updateFlag = true;
-this.code=data.VM_Code;
+    this.code = data.VM_Code;
     const id = data.VC_ID.toString();
     const selectedVc = this.category.find((vc) => vc.VC_Id == id);
     const VCName = selectedVc?.VC_Name;
@@ -283,9 +299,7 @@ this.code=data.VM_Code;
       ACHeadCode: data.ACHeadCode,
       ACSubCode: data.ACSubCode,
       VC_Name: VCName,
-      VM_Time:data.VM_Time,
-
-
+      VM_Time: data.VM_Time,
     });
 
     this.loading = false;
@@ -334,7 +348,6 @@ this.code=data.VM_Code;
       this.getVmaster();
       this.notification.showSuccess(' Vazhipad Details deleted successfully');
     });
-
   }
   // search functionality by name and code
   onSearch(searchQuery: string) {
@@ -353,13 +366,12 @@ this.code=data.VM_Code;
   }
   // validation
   markFormGroupTouched(formGroup: FormGroup) {
-
     Object.values(formGroup.controls).forEach((control) => {
       control.markAsTouched();
 
       if (control instanceof FormGroup) {
         this.markFormGroupTouched(control);
-        this.loading=false;
+        this.loading = false;
       }
     });
   }
@@ -381,88 +393,112 @@ this.code=data.VM_Code;
   }
   vazhipadTime = [
     {
-      "id":"0",
-      "name":'Any time'
+      id: '0',
+      name: 'Any time',
     },
     {
-      "id":"1",
-      "name":"Morning",
+      id: '1',
+      name: 'Morning',
     },
     {
-      "id":"2",
-      "name":"Evening"
+      id: '2',
+      name: 'Evening',
     },
     {
-      "id":"3",
-      "name":"Night"
-    }
-    ];
+      id: '3',
+      name: 'Night',
+    },
+  ];
 
-    fetchDeities(): void {
-      this.masterService.getPmaster().subscribe({
-       next: (data: any[]) => {
-          this.deities = data;
-          this.addDeitiesCheckboxes();
-        },
-        error:(error) => {
-          console.error('Error fetching deities', error);
-        }}
-      );
-    }
-    addDeitiesCheckboxes(): void {
-      const deitiesFormArray = this.vazhipadMasterForm.get('deities') as FormArray;
-      this.deities.forEach(() => deitiesFormArray.push(this.formBuilder.control(false)));
-    }
-
-    get deitiesFormArray() {
-      return this.vazhipadMasterForm.get('deities') as FormArray;
-    }
-
-
-
-// duplicate name check validators
-duplicateNameValidator(control: AbstractControl): ValidationErrors | null {
-  const name = control.value;
-  const code = this.code;
-   console.log({name,code,a:this.updateFlag})
-  if (this.updateFlag) {
-    if (
-      this.duplicateCheck.vmastercheckDuplicateUpdateName(name, this.Vmaster, code)
-    ) {
-      return null;
-    } else if (this.duplicateCheck.vmastercheckDuplicateName(name, this.Vmaster)) {
-      return { duplicateName: true };
-    } else {
-      return null;
-    }
-  } else {
-    if (this.duplicateCheck.vmastercheckDuplicateName(name, this.Vmaster)) {
-      return { duplicateName: true };
-    }
-    return null;
+  fetchDeities(): void {
+    this.masterService.getPmaster().subscribe({
+      next: (data: any[]) => {
+        this.deities = data;
+        this.addDeitiesCheckboxes();
+      },
+      error: (error) => {
+        console.error('Error fetching deities', error);
+      },
+    });
   }
-}
-
-// duplicate regional check validators
-duplicateRegionalNameValidator(control: AbstractControl): ValidationErrors | null {
-  const name = control.value;
-  const code = this.code;
-
-  if (this.updateFlag) {
-    if (
-      this.duplicateCheck.vmastercheckDuplicateUpdateRegionalName(name, this.Vmaster, code)
-    ) {
-      return null;
-    } else if (this.duplicateCheck.vmastercheckDuplicateRegionalName(name, this.Vmaster)) {
-      return { duplicateRName: true };
-    } else {
-      return null;
-    }
-  } else {
-    if (this.duplicateCheck.vmastercheckDuplicateRegionalName(name, this.Vmaster)) {
-      return { duplicateRName: true };
-    }
-    return null;
+  addDeitiesCheckboxes(): void {
+    const deitiesFormArray = this.vazhipadMasterForm.get(
+      'deities'
+    ) as FormArray;
+    this.deities.forEach(() =>
+      deitiesFormArray.push(this.formBuilder.control(false))
+    );
   }
-}
+
+  get deitiesFormArray() {
+    return this.vazhipadMasterForm.get('deities') as FormArray;
+  }
+
+  // duplicate name check validators
+  duplicateNameValidator(control: AbstractControl): ValidationErrors | null {
+    const name = control.value;
+    const code = this.code;
+    console.log({ name, code, a: this.updateFlag });
+    if (this.updateFlag) {
+      if (
+        this.duplicateCheck.vmastercheckDuplicateUpdateName(
+          name,
+          this.Vmaster,
+          code
+        )
+      ) {
+        return null;
+      } else if (
+        this.duplicateCheck.vmastercheckDuplicateName(name, this.Vmaster)
+      ) {
+        return { duplicateName: true };
+      } else {
+        return null;
+      }
+    } else {
+      if (this.duplicateCheck.vmastercheckDuplicateName(name, this.Vmaster)) {
+        return { duplicateName: true };
+      }
+      return null;
+    }
+  }
+
+  // duplicate regional check validators
+  duplicateRegionalNameValidator(
+    control: AbstractControl
+  ): ValidationErrors | null {
+    const name = control.value;
+    const code = this.code;
+
+    if (this.updateFlag) {
+      if (
+        this.duplicateCheck.vmastercheckDuplicateUpdateRegionalName(
+          name,
+          this.Vmaster,
+          code
+        )
+      ) {
+        return null;
+      } else if (
+        this.duplicateCheck.vmastercheckDuplicateRegionalName(
+          name,
+          this.Vmaster
+        )
+      ) {
+        return { duplicateRName: true };
+      } else {
+        return null;
+      }
+    } else {
+      if (
+        this.duplicateCheck.vmastercheckDuplicateRegionalName(
+          name,
+          this.Vmaster
+        )
+      ) {
+        return { duplicateRName: true };
+      }
+      return null;
+    }
+  }
 }

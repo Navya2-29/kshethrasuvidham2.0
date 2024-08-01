@@ -653,9 +653,13 @@ export class MasterService {
     );
   }
 
-
-  
   getStarData(payLoad: any): Observable<any[]> {
+    return this.http.post<any>(
+      Constant.BASE_URL + Constant.METHODS.SEARCHBYMOBILENUMBER,
+      payLoad
+    );
+  }
+  getLastBillNumber(payLoad: any): Observable<any[]> {
     return this.http.post<any>(
       Constant.BASE_URL + Constant.METHODS.SEARCHBYMOBILENUMBER,
       payLoad
