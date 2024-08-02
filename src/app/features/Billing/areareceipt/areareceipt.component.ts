@@ -1,7 +1,15 @@
 import { vazhipad } from './../../../othervazhipad/othervazhipad.component';
 import { ToastrService } from 'ngx-toastr';
 import { VMList } from './../../../models/day-master.model';
-import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild, inject } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  OnInit,
+  Output,
+  ViewChild,
+  inject,
+} from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
@@ -35,6 +43,7 @@ import { MultidayitemsComponent } from '../multidayitems/multidayitems.component
 import { MultidaybookeddetailsComponent } from '../multidaybookeddetails/multidaybookeddetails.component';
 import { NumberDirective } from '../../../shared/directives/number/number.directive';
 import { ReceiptPrintService } from '../../../shared/service/receipt-print.service';
+import { NgxPrintModule } from 'ngx-print';
 
 @Component({
   selector: 'app-areareceipt',
@@ -53,7 +62,8 @@ import { ReceiptPrintService } from '../../../shared/service/receipt-print.servi
     MobserachbtnComponent,
     MultidayComponent,
     MorebuttonComponent,
-    NumberDirective
+    NumberDirective,
+    NgxPrintModule,
   ],
   templateUrl: './areareceipt.component.html',
   styleUrl: './areareceipt.component.css',
@@ -72,25 +82,23 @@ export class AreareceiptComponent implements OnInit {
   today: Date;
   currentDate = new Date();
   prathishtaOptions: any[] = [];
-  tomorrowDate:Date;
+  tomorrowDate: Date;
   dateToSet: string | null;
   singleMultiSelection: string[] = []; // To hold the radio button values
-  multidayBooking:any[]=[];
-  
-  indexForAutoComplete:number;
- 
+  multidayBooking: any[] = [];
+  isDataSaved: boolean = false;
+  indexForAutoComplete: number;
+printData:any;
   private subscription: Subscription;
   private masterservice = inject(MasterService);
   private eventService = inject(TotalAmountService);
   private notification = inject(ToastrService);
-  private receiptPrintService=inject(ReceiptPrintService)
+  private receiptPrintService = inject(ReceiptPrintService);
   constructor(
     private fb: FormBuilder,
     public dialog: MatDialog,
     private datePipe: DatePipe
   ) {
-    
-  
     this.form = this.fb.group({
       vazhipadinfo: this.fb.array([]),
     });
@@ -100,7 +108,7 @@ export class AreareceiptComponent implements OnInit {
     this.getAllvazhipad();
     this.getNakshthram();
     // this.addRow(0);
-    this.dateToSet = this.datePipe.transform(this.tomorrowDate, 'yyyy-MM-dd')
+    this.dateToSet = this.datePipe.transform(this.tomorrowDate, 'yyyy-MM-dd');
     this.subscription = this.eventService.clickEvent$.subscribe(() => {
       this.clickReceived = true;
       // Handle the event here
@@ -122,13 +130,20 @@ export class AreareceiptComponent implements OnInit {
   createRow(): FormGroup {
     const row = this.fb.group({
       Slno: [''],
-      Vazhipad: ['', [Validators.required,this.vazhipadValidator.bind(this)]],
+      Vazhipad: ['', [Validators.required, this.vazhipadValidator.bind(this)]],
       Vazhid: [''],
       Name: ['', [Validators.required]],
       Star: ['0', [Validators.required]],
       Prethista: ['', [Validators.required]],
       Qty: [1, [Validators.required]],
-      Rate: ['', [Validators.required, Validators.pattern('^[0-9]+$'),this.zeroRateValidator]],
+      Rate: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern('^[0-9]+$'),
+          this.zeroRateValidator,
+        ],
+      ],
       Amount: [''],
       VazhipadDate: ['', [Validators.required]],
       TotalAmt: [this.totalAmount],
@@ -141,7 +156,7 @@ export class AreareceiptComponent implements OnInit {
       Mday: [''],
       NalBy: [''],
       Mmonth: [''],
-      toDate:[{ disabled: true, value: '' }],
+      toDate: [{ disabled: true, value: '' }],
       multiname: [{ disabled: true, value: '' }],
       booking: [{ disabled: true, value: '' }],
       ratechange: [{ disabled: true, value: '' }],
@@ -149,7 +164,7 @@ export class AreareceiptComponent implements OnInit {
     row.get('Qty')?.valueChanges.subscribe(() => this.updateAmount(row));
     row.get('Rate')?.valueChanges.subscribe(() => this.updateAmount(row));
     // row.get('VazhipadDate')?.valueChanges.subscribe(() => {
-      // this.checkVazhipadDate(row);
+    // this.checkVazhipadDate(row);
     // });
     return row;
   }
@@ -158,9 +173,8 @@ export class AreareceiptComponent implements OnInit {
     return this.form.get('vazhipadinfo') as FormArray;
   }
 
-
   // checkVazhipadDate(row: FormGroup) {
-    
+
   //   const vmBooking = row.get('booking')?.value === 'Y' ? 'Y' : 'N';
   //   console.log(vmBooking)
   //   const enteredDate = new Date(row.get('VazhipadDate')?.value);
@@ -183,17 +197,16 @@ export class AreareceiptComponent implements OnInit {
   }
 
   addRow(index: number): void {
-
     if (index === -1 && this.vazhipadinfo.length === 0) {
       this.vazhipadinfo.push(this.createRow());
       this.setupAutocomplete(0);
       this.updateTotalAmount();
       return;
     }
-   this.indexForAutoComplete=index;
+    this.indexForAutoComplete = index;
     if (
       this.vazhipadinfo.length > 0 &&
-      !this.vazhipadinfo.at(this.vazhipadinfo.length - 1 ).valid
+      !this.vazhipadinfo.at(this.vazhipadinfo.length - 1).valid
     ) {
       //  this.notification.success("Plese fill the details");
       const row = this.vazhipadinfo.at(index) as FormGroup;
@@ -203,38 +216,31 @@ export class AreareceiptComponent implements OnInit {
       if (row.invalid) {
         if (row.get('Vazhipad')?.errors?.['required']) {
           this.notification.success('Please select a vazhipad');
-        }else if(row.get('Vazhipad')?.errors?.['invalidVazhipad']){
+        } else if (row.get('Vazhipad')?.errors?.['invalidVazhipad']) {
           this.notification.success('Please select a Valid vazhipad');
-        }
-         else if (row.get('Name')?.errors?.['required']) {
+        } else if (row.get('Name')?.errors?.['required']) {
           this.notification.success('Please enter the Name');
         } else if (row.get('Star')?.errors?.['required']) {
           this.notification.success('Please select a Star');
-        }
-        else if (row.get('Prethista')?.errors?.['required']) {
+        } else if (row.get('Prethista')?.errors?.['required']) {
           this.notification.success('Please select a Prethista');
-        }
-        else if (row.get('Qty')?.errors?.['required']) {
+        } else if (row.get('Qty')?.errors?.['required']) {
           this.notification.success('Please select a Qty');
-        }
-        else if (row.get('Rate')?.errors?.['required']) {
+        } else if (row.get('Rate')?.errors?.['required']) {
           this.notification.success('Please select a Rate');
-        }
-        else if (row.get('Rate')?.errors?.['pattern']) {
+        } else if (row.get('Rate')?.errors?.['pattern']) {
           this.notification.success('Enter a valid rate');
-        }else if (row.get('Rate')?.errors?.['zeroRate']) {
+        } else if (row.get('Rate')?.errors?.['zeroRate']) {
           this.notification.success('Rate cannot be zero');
-        }
-        
-        else if (row.get('VazhipadDate')?.errors?.['required']) {
+        } else if (row.get('VazhipadDate')?.errors?.['required']) {
           this.notification.success('Please select a VazhipadDate');
         }
-        
+
         return; // Stop adding new row if current row is invalid
       }
     }
     console.log(index);
-    
+
     const currentRow = this.vazhipadinfo.at(index) as FormGroup;
     const currentName = currentRow.get('Name')?.value;
     const currentStar = currentRow.get('Star')?.value;
@@ -251,26 +257,25 @@ export class AreareceiptComponent implements OnInit {
   }
 
   removeRow(index: number) {
-    console.log(index +"Sssssssssssssssssssss");
-     
+    console.log(index + 'Sssssssssssssssssssss');
+
     if (this.vazhipadinfo.length > 1) {
       this.vazhipadinfo.removeAt(index);
       this.updateTotalAmount();
       this.updateSlno();
-      this.notification.success("Data deleted successfully")
+      this.notification.success('Data deleted successfully');
       this.setupAutocomplete(this.indexForAutoComplete);
-      this.removeMultidayData(index)
-    }
-   else  {
+      this.removeMultidayData(index);
+    } else {
       this.resetForm();
-      this.removeMultidayData(index)
+      this.removeMultidayData(index);
     }
   }
   removeMultidayData(index: number): void {
     if (index >= 0 && index < this.multidayBooking.length) {
       this.multidayBooking.splice(index, 1);
       // this.notification.success("Multiday booking data deleted successfully");
-    } 
+    }
   }
 
   // formatting date in dd-mm-yyyy
@@ -299,12 +304,12 @@ export class AreareceiptComponent implements OnInit {
 
   private _filter(value: string): any[] {
     const filterValue = value.toLowerCase();
-    const normalizedVazhipadMal = value.normalize("NFC");
+    const normalizedVazhipadMal = value.normalize('NFC');
     return this.VMList.filter(
       (option) =>
         option.VM_Name.toLowerCase().includes(filterValue) ||
-        option.VM_Code.toLowerCase().includes(filterValue)||
-        option.VM_RName?.normalize("NFC").includes(normalizedVazhipadMal) 
+        option.VM_Code.toLowerCase().includes(filterValue) ||
+        option.VM_RName?.normalize('NFC').includes(normalizedVazhipadMal)
     );
   }
 
@@ -314,7 +319,7 @@ export class AreareceiptComponent implements OnInit {
         VM_Id: item.VM_Id,
         VM_Name: item.VM_Name,
         VM_Code: item.VM_Code,
-        VM_RName:item.VM_RName
+        VM_RName: item.VM_RName,
       }));
     });
     this.addRow(-1);
@@ -328,7 +333,7 @@ export class AreareceiptComponent implements OnInit {
 
   vazhipadValidator(control: AbstractControl): ValidationErrors | null {
     const vazhipad = control.value;
-    const vmExists = this.VMList.some(vm => vm.VM_Name === vazhipad);
+    const vmExists = this.VMList.some((vm) => vm.VM_Name === vazhipad);
     if (!vmExists) {
       return { invalidVazhipad: true };
     }
@@ -379,9 +384,9 @@ export class AreareceiptComponent implements OnInit {
         console.log(res);
         const selectedRow = this.vazhipadinfo.at(index) as FormGroup;
         console.log(selectedRow);
-        if(res[0].VM_Amt!=0){
-          selectedRow.get('Rate')?.setValue(res[0].VM_Amt);  
-        }else{
+        if (res[0].VM_Amt != 0) {
+          selectedRow.get('Rate')?.setValue(res[0].VM_Amt);
+        } else {
           selectedRow.get('Rate')?.setValue('');
         }
         // selectedRow.get('Rate')?.setValue(res[0].VM_Amt);
@@ -392,19 +397,20 @@ export class AreareceiptComponent implements OnInit {
         const isVMBooking = selectedRow.get('booking')?.value;
         this.tomorrowDate = new Date(this.currentDate);
         this.tomorrowDate.setDate(this.currentDate.getDate() + 1);
-        this.dateToSet = isVMBooking==='Y'? this.datePipe.transform(this.tomorrowDate, 'yyyy-MM-dd'): this.datePipe.transform(this.currentDate, 'yyyy-MM-dd');
+        this.dateToSet =
+          isVMBooking === 'Y'
+            ? this.datePipe.transform(this.tomorrowDate, 'yyyy-MM-dd')
+            : this.datePipe.transform(this.currentDate, 'yyyy-MM-dd');
 
-        selectedRow
-          .get('VazhipadDate')
-          ?.setValue(this.dateToSet);
+        selectedRow.get('VazhipadDate')?.setValue(this.dateToSet);
 
-          // if (isVMBooking==='Y') {
-           
-          //   selectedRow.get('minDate')?.setValue(this.tomorrowDate);
-          // } else {
-          //   selectedRow.get('VazhipadDate')?.disable();
-          //   selectedRow.get('minDate')?.setValue(this.today);
-          // }
+        // if (isVMBooking==='Y') {
+
+        //   selectedRow.get('minDate')?.setValue(this.tomorrowDate);
+        // } else {
+        //   selectedRow.get('VazhipadDate')?.disable();
+        //   selectedRow.get('minDate')?.setValue(this.today);
+        // }
         this.selectedVazhipadPrathistaDetails(vazhipadcode, index);
         //   selectedRow.get('rate')?.setValue(res.rate);
         console.log(selectedRow);
@@ -460,19 +466,17 @@ export class AreareceiptComponent implements OnInit {
 
   // opne multiday open dialog box
   openMultiDayDialog(rowIndex: number): void {
-
     const dialogRef = this.dialog.open(MultidayitemsComponent, {
       width: '80%',
       maxWidth: '90vw',
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         console.log('Dialog closed with data:', result);
         // this.handleDialogData(result);
-       
-          this.handleMultiDayBookingResult(result, rowIndex);
-        
+
+        this.handleMultiDayBookingResult(result, rowIndex);
       }
     });
   }
@@ -480,7 +484,6 @@ export class AreareceiptComponent implements OnInit {
   // to show multi day booked details
 
   openMultiDayBookedDetails(rowIndex: number) {
-   
     const dialogRef = this.dialog.open(MultidaybookeddetailsComponent, {
       width: '80vh',
       maxWidth: '50vw',
@@ -494,30 +497,29 @@ export class AreareceiptComponent implements OnInit {
     });
   }
 
-
   private handleMultiDayBookingResult(result: any, rowIndex: number): void {
     const row = this.vazhipadinfo.at(rowIndex) as FormGroup;
     console.log(row);
     console.log(result[0]);
-  
+
     let lastIndex = result.length - 1;
-const data=result[0]
-// console.log(data.Prethista);
-// row.get('Prethista')?.setValue(data.Prethista)
-// this.prathishtaOptions[rowIndex]=data.Prethista
-this.multidayBooking[rowIndex] = result;
+    const data = result[0];
+    // console.log(data.Prethista);
+    // row.get('Prethista')?.setValue(data.Prethista)
+    // this.prathishtaOptions[rowIndex]=data.Prethista
+    this.multidayBooking[rowIndex] = result;
     row.patchValue({
-      Vazhipad:data.Vazhipad,
-      Vazhid:data.Vazhid,
+      Vazhipad: data.Vazhipad,
+      Vazhid: data.Vazhid,
       Prethista: data.Prethista,
-      Qty: data.Qty*result.length,
-      Rate:data.Rate,
-      VazhipadDate:this.formatDate(data.VazhipadDate),
+      Qty: data.Qty * result.length,
+      Rate: data.Rate,
+      VazhipadDate: this.formatDate(data.VazhipadDate),
       TotalAmt: this.totalAmount,
-      toDate:this.formatDate(result[lastIndex].VazhipadDate),
-      PMid:data.PMid,
+      toDate: this.formatDate(result[lastIndex].VazhipadDate),
+      PMid: data.PMid,
       Mday: data.Mday,
-      NalBy:data.NalBy,
+      NalBy: data.NalBy,
       Mmonth: data.Mmonth,
       Name: data.Name,
       Star: data.Star,
@@ -531,13 +533,13 @@ this.multidayBooking[rowIndex] = result;
     const [day, month, year] = dateStr.split('-').map(Number);
     return new Date(year, month - 1, day); // Months are 0-based in JavaScript
   }
-  
+
   // Function to format the date
   formatDates(dateStr: string): string {
     const date = this.convertToDate(dateStr);
     return this.datePipe.transform(date, 'yyyy-mm-dd') || '';
   }
-  
+
   // calculate amount
   updateAmount(row: FormGroup): void {
     const qty = row.get('Qty')?.value || 0;
@@ -561,54 +563,63 @@ this.multidayBooking[rowIndex] = result;
   private flattenMultiDayBooking(): any[] {
     return this.multidayBooking.flat();
   }
-// api data send
+  // api data send
   sendDataToApi(data: any) {
     if (this.form.invalid) {
       this.notification.error('Please fill out all required fields correctly.');
-     
+
       return;
     }
-console.log("ffffffffffffffffffff")
-    console.log(this.multidayBooking )
+    console.log('ffffffffffffffffffff');
+    console.log(this.multidayBooking);
     console.log(data);
-    
+
     const flattenedData = this.flattenMultiDayBooking();
     console.log('Flattened Data:', flattenedData);
 
     const vazhipadinfo = data.vazhipadinfo || []; // Ensure vazhipadinfo is an array
     const combinedVazhipadinfo = [...vazhipadinfo, ...flattenedData];
-
+this.printData=vazhipadinfo
     const updatedData = {
       ...data,
-      vazhipadinfo: combinedVazhipadinfo
+      vazhipadinfo: combinedVazhipadinfo,
     };
-console.log(updatedData)
+    console.log(updatedData);
     const formattedData = this.formatDateFields(updatedData);
     console.log(formattedData);
-    this.receiptPrintService.sendData(formattedData);
-    this.masterservice.vazhipadBooking(formattedData).subscribe((res:any) => {
-      console.log(res)
-      if(res){
-        this.notification.success(res.RespMsg);
-        if(res.RespStatus==='I'){
-          
+    
+    this.masterservice.vazhipadBooking(formattedData).subscribe((res: any) => {
+      console.log(res);
+      if (res) {
+        
+        if (res.RespStatus === 'I') {
+
+          this.notification.success(res.RespMsg);
+          this.receiptPrintService.setReceiptData(formattedData);
           this.resetForm();
-          this.eventService.getLastBillnumber();
-        }else{
-          this.notification.error("Please check your connection and try agin");
-        }
+          
+          this.isDataSaved = true;
+          // this.printReceipt();
+        } 
+      }else {
+        this.notification.error('Please check your connection and try agin');
       }
     });
   }
 
 
+  // printReceipt() {
+  //   // Use ngx-print to print the receipt
+  //   if (this.receiptPrintComponent) {
+  //     this.receiptPrintComponent.triggerPrint();
+  //   }
+  // }
   resetForm() {
     this.form.reset();
     this.vazhipadinfo.clear();
     this.addRow(-1); // Add an initial row after resetting
     this.updateTotalAmount();
     this.updateSlno();
-    
   }
 
   private formatDateFields(data: any): any {
@@ -665,12 +676,11 @@ console.log(updatedData)
     }
   }
 
-
   showValidationErrors(row: FormGroup): void {
-    Object.keys(row.controls).forEach(key => {
+    Object.keys(row.controls).forEach((key) => {
       const controlErrors: ValidationErrors = row.get(key)?.errors || {};
       if (controlErrors) {
-        Object.keys(controlErrors).forEach(errorKey => {
+        Object.keys(controlErrors).forEach((errorKey) => {
           switch (errorKey) {
             case 'required':
               this.notification.success(`${key} is required.`);
@@ -678,18 +688,15 @@ console.log(updatedData)
             case 'pattern':
               this.notification.success(`Invalid pattern for ${key}.`);
               break;
-              case 'zeroRate':
-                this.notification.success(`Rate cant be Zero`);
-                break;
+            case 'zeroRate':
+              this.notification.success(`Rate cant be Zero`);
+              break;
             // Add more cases as needed for other validators
           }
         });
       }
     });
   }
-
-  
-  
-  
-
 }
+
+

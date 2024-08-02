@@ -17,6 +17,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MobserachcontentsComponent } from '../mobserachcontents/mobserachcontents.component';
 import { v4 as uuidv4 } from 'uuid';
 import { SearchByBillNumberComponent } from '../search-by-bill-number/search-by-bill-number.component';
+import { ReceiptPrintService } from '../../../shared/service/receipt-print.service';
 
 @Component({
   selector: 'app-fixedbottom',
@@ -38,15 +39,17 @@ export class FixedbottomComponent implements OnInit {
  
   mobileNumber: string = '';
   billNumber: string = '';
+  lastBillnumber:number=101;
   private totalService = inject(TotalAmountService);
   private notiication = inject(NotificationService);
   private masterService = inject(MasterService);
 
-  constructor(private fb: FormBuilder, public dialog: MatDialog) {
+  constructor(private fb: FormBuilder, public dialog: MatDialog,private receiptPrinrservice:ReceiptPrintService) {
+    this.getLastBillNumber()
     const today = this.getFormattedDate(new Date());
 
     this.customerdetailsForBillingForm = this.fb.group({
-      BillNo: [''],
+      BillNo: [this.lastBillnumber+1],
       Billdate: [today, [Validators.required]],
 
       Mobile: ['', [Validators.pattern('^[0-9]{10}$')]],
@@ -65,15 +68,164 @@ export class FixedbottomComponent implements OnInit {
     });
   }
   ngOnInit(): void {
-    this.getLastBillNo();
+    
     this.totalService.totalAmount$.subscribe((amount) => {
       this.totalAmount = amount;
     });
     console.log(this.customerdetailsForBillingForm.value);
-    this.getLastBillNo();
+   
     this.subscribeToTrnsmodeChanges();
+    this.printReceipt()
   }
 
+  getLastBillNumber(){
+    const payLoad={"Type":"Maxbillno","Code":""};
+    this.masterService.getLastBillNumber(payLoad).subscribe({
+      next:(data)=>{
+        console.log(data[0].
+          billno
+          )
+          this.lastBillnumber=data[0].billno
+      }
+    })
+  }
+  printReceipt(){
+    this.receiptPrinrservice.receiptData$.subscribe(data => {
+      this.printReceipts(data);
+      console.log(data)
+    });
+  }
+
+
+  private printReceipts(data: any) {
+    // Extract details from data
+    const {
+      BillNo,
+      Billdate,
+      Mobile,
+      Address1,
+      Address2,
+      Address3,
+      Email,
+      Pincode,
+      vazhipadinfo
+    } = data;
+  
+    // Calculate the total amount
+    const totalAmount = vazhipadinfo.reduce((total: number, item: any) => total + parseFloat(item.Amount || '0'), 0);
+  
+    // Handle multiple vazhipadinfo entries if present
+    const vazhipadRows = vazhipadinfo.map((item: any) => `
+      <tr>
+        <td>${item.Vazhipad}</td>
+        <td>${item.Prethista}</td>
+        <td>${item.Name}</td>
+        <td>${item.Star}</td>
+       
+        <td>${item.Qty}</td>
+        <td>${item.Rate}</td>
+        <td>${item.Amount}</td>
+        
+      </tr>
+    `).join('');
+  
+    // Prepare HTML content for the receipt
+    const receiptContent = `
+      <html>
+        <head>
+          <title>Receipt</title>
+          <style>
+            @media print {
+              @page {
+                size: 3in 4in; /* Set the paper size */
+                margin: 0; /* Remove default margins */
+              }
+              body {
+                width: 3in; /* Set the width to match the paper size */
+                height: 4in; /* Set the height to match the paper size */
+                margin: 0; /* Remove default margins */
+                font-family: Arial, sans-serif;
+                font-size: 12px; /* Adjust font size as needed */
+              }
+              table {
+                width: 100%; /* Full width for table */
+                border-collapse: collapse; /* Remove gaps between cells */
+              }
+              th, td {
+                border: 1px solid black; /* Border style */
+                padding: 2px; /* Adjust padding as needed */
+                text-align: left;
+                font-size: 10px; /* Adjust font size for table cells */
+              }
+              th {
+                background-color: #f2f2f2; /* Header background color */
+              }
+              p {
+                margin: 2px 0; /* Adjust margin for paragraph elements */
+                font-size: 10px; /* Adjust font size for paragraphs */
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <h1>Receipt</h1>
+          <p><strong>Bill Number:</strong> ${BillNo}</p>
+          <p><strong>Bill Date:</strong> ${Billdate}</p>
+          <p><strong>Mobile:</strong> ${Mobile}</p>
+          <p><strong>Address:</strong> ${Address1}, ${Address2}, ${Address3}</p>
+          <p><strong>Email:</strong> ${Email}</p>
+          <p><strong>Pincode:</strong> ${Pincode}</p>
+          
+          <table>
+            <thead>
+              <tr>
+                <th>Vazhipad</th>
+                <th>Prethista</th>
+                <th>Name</th>
+                <th>Star</th>
+                
+                <th>Qty</th>
+                <th>Rate</th>
+                <th>Amount</th>
+                
+              </tr>
+            </thead>
+            <tbody>
+              ${vazhipadRows}
+              <tr>
+                <td colspan="6" style="text-align: right;"><strong>Total Amount:</strong></td>
+                <td><strong>${totalAmount.toFixed(2)}</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </body>
+      </html>
+    `;
+  
+    // Print the content
+    this.printContent(receiptContent);
+  }
+  
+
+  private printContent(content: string) {
+    this.getLastBillNumber();
+    // this.resetForm()
+    const printWindow = window.open('', '', 'height=600,width=800');
+    if (printWindow) {
+      printWindow.document.open();
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Print Receipt</title>
+          </head>
+          <body onload="window.print(); window.close();">
+            ${content}
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+    }
+  }
   // private generateBillNumber(): number {
     // Simple example: "BILL" followed by current timestamp
     // return 'CBX-' + uuidv4();
@@ -109,15 +261,7 @@ export class FixedbottomComponent implements OnInit {
     this.totalService.emitClickEvent();
   }
 
-  getLastBillNo() {
-    const payLoad={"Type":"Maxbillno","Code":""}
-    this.masterService.getLastBillNumber(payLoad).subscribe({
-      next:(data)=>{
-        // this.LastBillNo=data[0]
-        console.log(data);
-      }
-    })
-  }
+ 
 
   private markAllFieldsAsTouched() {
     this.customerdetailsForBillingForm.markAllAsTouched();
@@ -204,6 +348,7 @@ export class FixedbottomComponent implements OnInit {
       next: (data) => {
         console.log(data);
         this.openDialog(data);
+        this.mobileNumber='';
       },
       error: (error) => {
         // Handle error
@@ -226,6 +371,7 @@ export class FixedbottomComponent implements OnInit {
         console.log(data);
         if(data.length>0){
           this.openDialogBillNumber(data);
+          this.billNumber='';
         }else{
           this.notiication.showError("enter valid billnumber")
         }
@@ -245,6 +391,22 @@ export class FixedbottomComponent implements OnInit {
         data: data
       });
   }
+// resetForm(){
+// this.customerdetailsForBillingForm.reset();
+// const today = this.getFormattedDate(new Date());
+// this.customerdetailsForBillingForm.patchValue({
+//   BillNo:this.lastBillnumber+1,
+//       Billdate: today,
 
+     
+//       Userid: '0',
+//       CounterId: '1',
+//       Trnsmode: 'cs',
+//       Instno: '',
+//       Instdate: today,
+//       InstBank: '',
+//       Memberid: '1',
+// })
+// }
 
 }

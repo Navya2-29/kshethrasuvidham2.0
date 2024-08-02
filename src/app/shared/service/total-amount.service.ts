@@ -61,15 +61,8 @@ export class TotalAmountService {
   }
 
   
-getLastBillnumber(){
-  const payLoad={"Type":"Maxbillno","Code":""}
-  this.masterService.getLastBillNumber(payLoad).subscribe({
-    next:(data)=>{
-      this.lastBillNumber=data[0].Billno;
-      console.log(this.lastBillNumber)
-    }
-  })
-}
+
+
   
 
 }

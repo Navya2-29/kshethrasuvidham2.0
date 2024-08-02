@@ -6,6 +6,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MasterService } from '../../../services/master/master.service';
+import { CommonModule } from '@angular/common';
 export interface Data {
   vazhipad: string;
   name: string;
@@ -23,7 +24,7 @@ export interface Data {
   imports: [MatButtonModule,
     MatDialogModule,
     MatTableModule,
-    MatCheckboxModule],
+    MatCheckboxModule,CommonModule],
   templateUrl: './search-by-bill-number.component.html',
   styleUrl: './search-by-bill-number.component.css'
 })
@@ -33,6 +34,7 @@ export class SearchByBillNumberComponent {
     'Name',
     'Star',
     'Diety',
+    'Date',
     'Qty',
     'Rate',
     'Amount',
