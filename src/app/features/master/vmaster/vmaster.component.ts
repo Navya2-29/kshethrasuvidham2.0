@@ -1,3 +1,4 @@
+import { PrathistaInfo } from './../../../models/vmaster.model';
 import { Component, OnInit, inject } from '@angular/core';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 import { MatIconModule } from '@angular/material/icon';
@@ -25,6 +26,11 @@ import { UpperCaseDirective } from '../../../shared/directives/upper-case.direct
 import { NotificationService } from '../../../services/notification/notification.service';
 import { Router } from '@angular/router';
 import { MatSelectModule } from '@angular/material/select';
+interface Deity {
+  PM_ID: string;
+  PM_Name: string;
+  PM_RegName: string;
+}
 @Component({
   selector: 'app-vmaster',
   standalone: true,
@@ -45,15 +51,8 @@ import { MatSelectModule } from '@angular/material/select';
   styleUrl: './vmaster.component.css',
 })
 export class VmasterComponent implements OnInit {
-  toppings = new FormControl('');
-  toppingList: string[] = [
-    'Extra cheese',
-    'Mushroom',
-    'Onion',
-    'Pepperoni',
-    'Sausage',
-    'Tomato',
-  ];
+  toppings = new FormControl<string[]>([]);
+ 
   Vmaster: Vmaster[] = [];
   filteredVmaster: Vmaster[] = [];
   vazhipadMasterForm: FormGroup;
@@ -65,6 +64,7 @@ export class VmasterComponent implements OnInit {
   filteredAccountSubHead: Observable<string[]>;
   loading: boolean = false;
   updateFlag: boolean = false;
+  editDeity: Deity[] = [];
   Id: number;
   searchQuery: string = '';
   deities: any[];
@@ -111,7 +111,7 @@ export class VmasterComponent implements OnInit {
       VM_Mobileapp: [false],
       VM_Special: [false],
       VM_Rate_Change: [false],
-      SMS: [false],
+      
       VM_TimeLimit: [0, [Validators.pattern('^[0-9][0-9]*$')]],
       VM_Description: [''],
       VM_AlertMsg: [''],
@@ -120,8 +120,11 @@ export class VmasterComponent implements OnInit {
       ACHeadCode: [''],
       ACSubCode: [''],
       VC_Name: ['', [Validators.required]],
-      Whatsapp: [''],
+      
       VM_Time: ['1'],
+      VM_SMS:[false],
+      VM_Whatsapp:[false],
+      prathistainfo: this.formBuilder.array([]),
       //  deities: this.formBuilder.array([]),
     });
   }
@@ -198,17 +201,42 @@ export class VmasterComponent implements OnInit {
 
   // submit form
   onSubmit(data: Vmaster) {
+    console.log(this.toppings)
     console.log(data);
     if (this.vazhipadMasterForm.valid) {
       this.loading = true;
       const formValue = this.vazhipadMasterForm.value;
+      const selectedPrathistaNames: string[] = Array.isArray(this.toppings.value)
+      ? this.toppings.value
+      : [];
+
+  // Step 1: Create prathistainfo array from selected prathista names
+  const prathistainfo = selectedPrathistaNames.map((name) => {
+      const prathista = this.deities.find((deity) => deity.PM_Name === name);
+
+      // Check if prathista is found before accessing its properties
+      if (prathista) {
+          return { PMId: prathista.PM_ID.toString() };
+      } else {
+          console.warn(`Prathista with name "${name}" not found in deities array.`);
+          return null; // Handle missing prathista case
+      }
+  }).filter(item => item !== null) as { PMId: string }[];
+
+  // Add prathistainfo to formValue
+  formValue.prathistainfo = prathistainfo;
+
+  console.log('Form value with prathistainfo:', formValue);
+
+
+
       const selectedVc = this.category.find(
         (vc) => vc.VC_Name === formValue.VC_Name
       );
       console.log(selectedVc);
       if (selectedVc) {
         const VCId = selectedVc.VC_Id;
-        this.masterService.createVmaster(VCId, data).subscribe({
+        this.masterService.createVmaster(VCId, formValue).subscribe({
           next: (res) => {
             console.log(res);
             if (res.RespStatus === 'I') {
@@ -251,7 +279,7 @@ export class VmasterComponent implements OnInit {
       VM_Mobileapp: false,
       VM_Special: false,
       VM_Rate_Change: false,
-      SMS: false,
+      VM_SMS: false,
       VM_TimeLimit: 0,
       VM_Description: '',
       VM_AlertMsg: '',
@@ -260,11 +288,15 @@ export class VmasterComponent implements OnInit {
       ACHeadCode: '',
       ACSubCode: '',
       VC_Name: '',
-      Whatsapp: '',
+      VM_Whatsapp: '',
       VM_Time: '1',
+      PrathistaInfo:''
+      // prathistainfo:this.toppings
     });
+    this.toppings.reset();
     this.updateFlag = false;
     this.loading = false;
+    this.prathistainfo.clear()
   }
 
   // for editing the form fields
@@ -276,6 +308,15 @@ export class VmasterComponent implements OnInit {
     const id = data.VC_ID.toString();
     const selectedVc = this.category.find((vc) => vc.VC_Id == id);
     const VCName = selectedVc?.VC_Name;
+    this.masterService.getVazhipadByCodeForDiety(data.VM_Code).subscribe({
+      next:(diety:Deity[])=>{
+        console.log(diety);
+this.editDeity=diety
+        const preSelectedNames = this.editDeity.map(deity => deity.PM_Name);
+        console.log(preSelectedNames)
+      this.toppings.setValue(preSelectedNames);
+      }
+    })
     this.vazhipadMasterForm.patchValue({
       VM_Code: data.VM_Code,
       VM_Name: data.VM_Name,
@@ -296,8 +337,10 @@ export class VmasterComponent implements OnInit {
       VM_AlertMsg: data.VM_AlertMsg,
       DisplayMode: data.DisplayMode == 'Y' ? true : false,
       VM_Active: data.VM_Active == 'Y' ? true : false,
+      VM_SMS:data.VM_SMS== 'Y' ? true : false,
       ACHeadCode: data.ACHeadCode,
       ACSubCode: data.ACSubCode,
+      VM_Whatsapp:data.VM_Whatsapp== 'Y' ? true : false,
       VC_Name: VCName,
       VM_Time: data.VM_Time,
     });
@@ -309,35 +352,47 @@ export class VmasterComponent implements OnInit {
   onUpdate(updatedata: Vmaster) {
     console.log(updatedata);
     this.loading = true;
+    this.deleteForUpdate(this.Id);
+    this.onSubmit(updatedata)
     // console.log(updatedata, this.Id);
-    if (this.vazhipadMasterForm.valid) {
-      const formValue = this.vazhipadMasterForm.value;
-      const selectedVc = this.category.find(
-        (vc) => vc.VC_Name === formValue.VC_Name
-      );
+    // if (this.vazhipadMasterForm.valid) {
+    //   const formValue = this.vazhipadMasterForm.value;
+    //   const selectedVc = this.category.find(
+    //     (vc) => vc.VC_Name === formValue.VC_Name
+    //   );
 
-      if (selectedVc) {
-        const VCId = selectedVc.VC_Id;
-        this.masterService.updateVmaster(VCId, updatedata, this.Id).subscribe({
-          next: (res) => {
-            this.getVmaster();
-            this.loading = false;
+    //   if (selectedVc) {
+    //     const VCId = selectedVc.VC_Id;
+    //     this.masterService.updateVmaster(VCId, updatedata, this.Id).subscribe({
+    //       next: (res) => {
+    //         this.getVmaster();
+    //         this.loading = false;
 
-            this.onReset();
-            this.notification.showSuccess(
-              'Vazhipad details updated suceesfully'
-            );
-          },
-          error: (error) => {
-            this.loading = true;
-            this.notification.showSuccess(error);
-          },
-        });
-      }
-    } else {
-      this.markFormGroupTouched(this.vazhipadMasterForm);
-      this.notification.showSuccess('please fill the details');
-    }
+    //         this.onReset();
+    //         this.notification.showSuccess(
+    //           'Vazhipad details updated suceesfully'
+    //         );
+    //       },
+    //       error: (error) => {
+    //         this.loading = true;
+    //         this.notification.showSuccess(error);
+    //       },
+    //     });
+    //   }
+    // } else {
+    //   this.markFormGroupTouched(this.vazhipadMasterForm);
+    //   this.notification.showSuccess('please fill the details');
+    // }
+  }
+
+  deleteForUpdate(id: number) {
+    this.loading = true;
+    const Id = id + '';
+    this.masterService.deleteVmaster(Id).subscribe((res) => {
+      this.loading = false;
+      this.getVmaster();
+      // this.notification.showSuccess(' Vazhipad Details deleted successfully');
+    });
   }
   // deleteData
   onDelete(id: number) {
@@ -414,25 +469,27 @@ export class VmasterComponent implements OnInit {
     this.masterService.getPmaster().subscribe({
       next: (data: any[]) => {
         this.deities = data;
-        this.addDeitiesCheckboxes();
+        console.log(this.deities);
+        //  this.addDeitiesCheckboxes();
       },
       error: (error) => {
         console.error('Error fetching deities', error);
       },
     });
   }
-  addDeitiesCheckboxes(): void {
-    const deitiesFormArray = this.vazhipadMasterForm.get(
-      'deities'
-    ) as FormArray;
-    this.deities.forEach(() =>
-      deitiesFormArray.push(this.formBuilder.control(false))
-    );
+  // addDeitiesCheckboxes(): void {
+  //   const deitiesFormArray = this.vazhipadMasterForm.get(
+  //     'prathistainfo'
+  //   ) as FormArray;
+  //   this.deities.forEach(() =>
+  //     deitiesFormArray.push(this.formBuilder.control(false))
+  //   );
+  // }
+
+  get prathistainfo() {
+    return this.vazhipadMasterForm.get('prathistainfo') as FormArray;
   }
 
-  get deitiesFormArray() {
-    return this.vazhipadMasterForm.get('deities') as FormArray;
-  }
 
   // duplicate name check validators
   duplicateNameValidator(control: AbstractControl): ValidationErrors | null {

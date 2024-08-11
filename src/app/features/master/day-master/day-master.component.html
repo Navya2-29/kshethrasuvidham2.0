@@ -29,26 +29,40 @@
                     </mat-autocomplete>
                   </td>
                           </tr>
+
+                          <div
+                *ngIf="daymasterControl['VM_Name'].invalid && (daymasterControl['VM_Name'].dirty || daymasterControl['VM_Name'].touched)"
+                class="pl-1 text-danger">
+                <div *ngIf="daymasterControl['VM_Name'].hasError('required')">
+                  Name is required.
+                </div>
+              </div>
+                          <!-- <div *ngIf="dayMasterForm.get('VM_Name')?.hasError('required')">
+                            Vazhipad Name is required.
+                          </div> -->
                          <tr>
                             <td>Days</td>
                           </tr>
-                          <tr>
-                            <td><input type="checkbox" (click)="toggle()"></td>
+                          <!-- <tr>
+                            <td><input type="checkbox" ></td>
                              <td>Select All</td>
 
-                          </tr>
-                          <tr *ngFor="let day of days; let i=index">
-                            <td >&nbsp;&nbsp;&nbsp;<input type="Checkbox" [checked]="allSelected" (change)="onChange($event)" class="form-input-check"
-                              style="vertical-align: middle;width:20px;"[value]="i+1" name="days"></td>
-                             <td  style="padding-right: 100px;">{{day.name}}</td>
-                             <td></td>
-                          </tr>
+                          </tr> -->
+                          <div formArrayName="selectedDays" style="margin-left: 10px;">
+                            
+                            <div *ngFor="let day of days; let i = index">
+                              <label>
+                                <input type="checkbox" [formControlName]="i" />
+                                {{ day.name }}
+                              </label>
+                            </div>
+                          </div>
                          <tr>
                           <td colspan="3"><button *ngIf="!updateFlag" class="btn btn-primary" (click)="onSubmit()"
                            >save</button>
                           <button *ngIf="updateFlag" class="btn btn-primary"
-                            >Update</button>
-                          <button class="btn btn-secondary ml-1">Cancel</button>
+                          (click)="update()" >Update</button>
+                          <button class="btn btn-secondary ml-1" (click)="resetForm()">Cancel</button>
                         </td>
                          </tr>
                        </table>
@@ -74,7 +88,7 @@
                               <td>{{dayMap[item.Day]}}</td>
                               <td>{{ vazhipadMap[item.VazhId]}}</td>
                               <td>
-                                <mat-icon title="Edit" class="small" style="vertical-align: middle;"
+                                <mat-icon title="Edit" class="small" style="vertical-align: middle;" (click)="onEdit(item)"
                                  >edit</mat-icon>
                                 <mat-icon title="Delete" class="small" (click)="onDelete(item.Day_id)" style="vertical-align: middle;"
                                   >delete</mat-icon>

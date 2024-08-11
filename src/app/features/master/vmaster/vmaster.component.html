@@ -215,11 +215,6 @@
 <tr>
 
   <td colspan="3">Prathishta<span class="text-danger">*</span>
-  <!-- <mat-select [formControl]="toppings" multiple style="background-color: white;width: 100%;">
-    @for (topping of deities; track topping) {
-      <mat-option [value]="topping">{{topping.PM_Name}}</mat-option>
-    }
-  </mat-select> -->
 
   <mat-select [formControl]="toppings" placeholder="Select Prathista" multiple style="background-color: white;" class="form-control sps">
     <mat-select-trigger>
@@ -230,7 +225,7 @@
         </span>
       }
     </mat-select-trigger>
-    @for (topping of deities; track topping.PM_Name) {
+    @for (topping of deities; track topping) {
   <mat-option [value]="topping.PM_Name">{{topping.PM_Name}}</mat-option>
 }
   </mat-select>
@@ -314,13 +309,13 @@
                     <td>
                       <input
                         type="checkbox"
-                        formControlName="SMS"
+                        formControlName="VM_SMS"
                       />&nbsp;&nbsp; SMS
                     </td>
                     <td>
                       <input
                         type="checkbox"
-                        formControlName="Whatsapp"
+                        formControlName="VM_Whatsapp"
                       />&nbsp;&nbsp; Whatsapp
                     </td>
                     <td>

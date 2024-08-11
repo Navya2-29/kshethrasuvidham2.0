@@ -178,6 +178,7 @@ export class MasterService {
 
   // create vamster
   createVmaster(id: string, obj: Vmaster): Observable<Vmaster> {
+    console.log(obj);
     const Id = `${id}`;
     const payLoad = {
       vazhId: '',
@@ -206,6 +207,9 @@ export class MasterService {
       VazhBlocking: obj.VM_Blocking ? 'Y' : 'N',
       Type: 'INSERT',
       DisplayMode: obj.DisplayMode ? 'Y' : 'N',
+      VM_SMS:obj.VM_SMS?'Y' : 'N',
+      VM_Whatsapp:obj.VM_Whatsapp?'Y' : 'N',
+      prathistainfo:obj.prathistainfo
     };
     return this.http
       .post<Vmaster>(
@@ -246,6 +250,9 @@ export class MasterService {
       VazhBlocking: obj.VM_Blocking ? 'Y' : 'N',
       Type: 'UPDATE',
       DisplayMode: obj.DisplayMode ? 'Y' : 'N',
+      VM_SMS:obj.VM_SMS?'Y' : 'N',
+      VM_Whatsapp:obj.VM_Whatsapp?'Y' : 'N',
+
     };
     console.log(payLoad);
     return this.http
@@ -283,7 +290,7 @@ export class MasterService {
       Type: 'VazhipadDiety',
       Code: code,
     };
-    return this.http.post(
+    return this.http.post<any[]>(
       Constant.BASE_URL + Constant.METHODS.GET_MASTER,
       payLoad
     );
@@ -347,7 +354,7 @@ export class MasterService {
   }
 
   // update  seasonal master
-  updateSeasonalMaster(id: number, data: SeasonalMaster): Observable<any> {
+  updateSeasonalMaster(id: string, data: SeasonalMaster): Observable<any> {
     const payLoad = {
       VazhId: `${id}`,
       Fdate: data.VS_FromDate,

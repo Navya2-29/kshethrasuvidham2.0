@@ -2,7 +2,7 @@ export interface Vmaster{
 ACHeadCode:string;
 ACSubCode:string;
 DisplayMode:string;
-SMS:string;
+VM_SMS:string;
 VC_ID:number;
 VM_Active:string;
 VM_AlertMsg:string;
@@ -24,8 +24,9 @@ VM_Seasonal:string;
 VM_Special:string;
 VM_Time:string;
 VM_TimeLimit:number
-Whatsapp:string
-RespStatus:string
+VM_Whatsapp:string
+RespStatus:string,
+prathistainfo?: PrathistaInfo[];
 }
 export  interface AccountHead{
 	id:number;
@@ -39,3 +40,6 @@ export interface VcList{
 	VC_Id:string,
 	VC_Name:string;
 }
+export interface PrathistaInfo {
+	PMId: string;
+  }

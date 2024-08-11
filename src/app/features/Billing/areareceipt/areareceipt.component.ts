@@ -147,7 +147,7 @@ printData:any;
       Amount: [''],
       VazhipadDate: ['', [Validators.required]],
       TotalAmt: [this.totalAmount],
-      time: [{ disabled: true, value: '' }],
+      VTime: ['',[Validators.required]],
       // multidaybookedDetails: this.fb.array([]),
       Name2: [''],
       Star2: ['0'],
@@ -393,7 +393,7 @@ printData:any;
         selectedRow.get('multiname')?.setValue(res[0].VM_MultiName);
         selectedRow.get('booking')?.setValue(res[0].VM_Booking);
         selectedRow.get('ratechange')?.setValue(res[0].VM_Rate_Change);
-        selectedRow.get('time')?.setValue(res[0].VM_Time);
+        selectedRow.get('VTime')?.setValue(res[0].VM_Time);
         const isVMBooking = selectedRow.get('booking')?.value;
         this.tomorrowDate = new Date(this.currentDate);
         this.tomorrowDate.setDate(this.currentDate.getDate() + 1);

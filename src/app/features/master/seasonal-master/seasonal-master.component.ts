@@ -45,7 +45,7 @@ export class SeasonalMasterComponent implements OnInit {
   updateFlag: boolean = false;
   searchQuery: string = '';
   loading: boolean = false;
-  Id: number;
+  Id: string;
   VM_Id: number;
   today: string;
   vazhipadDetails: any;
@@ -104,13 +104,14 @@ export class SeasonalMasterComponent implements OnInit {
     this.masterService.getSeasonalMaster().subscribe({
       next: (data) => {
         console.log(data);
-        if (data && data.length > 0) {
+        if (data) {
           this.seasonalMaster = data;
           this.filteredSeasonalMaster = this.seasonalMaster;
           this.loading = false;
         }
       },
       error: (error) => {
+        this.loading = false;
         this.notification.showSuccess(error);
       },
     });
@@ -166,7 +167,7 @@ export class SeasonalMasterComponent implements OnInit {
     this.loading = true;
     console.log(data);
     this.updateFlag = true;
-    this.Id = data.VM_ID;
+    this.Id = data.VS_ID;
     // this.seasonalBlockingForm.get('VS_code')?.disable();
     // this.seasonalBlockingForm.get('VM_name')?.disable();
     const fromDate = new Date(data.VS_FromDate);
