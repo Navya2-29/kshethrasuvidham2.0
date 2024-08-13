@@ -12,7 +12,10 @@
                   
                   <div class="mat-elevation-z8">
                     <table mat-table [dataSource]="dataSource" matSort>
-                  
+                      <ng-container matColumnDef="Diety" style="width: 250px;">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Diety </th>
+                        <td mat-cell *matCellDef="let row"> {{row.Prathista}} </td>
+                      </ng-container>
                       <!-- ID Column -->
                       <ng-container matColumnDef="Vazhipad">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header> Vazhipad </th>
@@ -32,10 +35,7 @@
                       </ng-container>
                   
                       <!-- Fruit Column -->
-                      <ng-container matColumnDef="Diety" style="width: 250px;">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Diety </th>
-                        <td mat-cell *matCellDef="let row"> {{row.Prathista}} </td>
-                      </ng-container>
+                      
                       <ng-container matColumnDef="Date" style="width: 250px;">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header> Date </th>
                         <td mat-cell *matCellDef="let row"> {{row.EvazDate|  date:'dd-MM-yyyy'}} </td>

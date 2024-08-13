@@ -39,10 +39,11 @@ export interface Data {
 })
 export class MobserachcontentsComponent implements OnInit {
   displayedColumns: string[] = [
+    'Diety',
     'Vazhipad',
     'Name',
     'Star',
-    'Diety',
+    
     'Date',
     'Qty',
     'Rate',

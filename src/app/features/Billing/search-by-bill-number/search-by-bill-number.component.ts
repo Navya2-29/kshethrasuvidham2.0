@@ -30,10 +30,11 @@ export interface Data {
 })
 export class SearchByBillNumberComponent {
   displayedColumns: string[] = [
+    'Diety',
     'Vazhipad',
     'Name',
     'Star',
-    'Diety',
+   
     'Date',
     'Qty',
     'Rate',
@@ -81,5 +82,10 @@ export class SearchByBillNumberComponent {
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+  }
+  getTotalAmount(): number {
+    const total = this.dataSource.data.reduce((total, item) => total + (item.amount || 0), 0);
+    console.log('Total Amount:', total);
+    return total;
   }
 }

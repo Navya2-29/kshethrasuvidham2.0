@@ -6,7 +6,7 @@
           <table class="table">
             <thead>
               <tr style="background: #223d61; color: white">
-                <td style="width: 2%"></td>
+                <td style="width: 2%"><select (change)="onLanguageChange($event)"><option *ngFor="let lan of language" [value]="lan">{{lan}}</option></select></td>
                 <th style="width: 18%">Vazhipad</th>
                 <th style="width: 8%">Name</th>
                 <th style="width: 8%">Star</th>
@@ -37,7 +37,6 @@
                 <td style="display: none">
                   <input type="text" formControlName="Slno" [value]="i" />
                 </td>
-
                 <td>
                   <input
                     type="text"

@@ -60,9 +60,12 @@ export class TotalAmountService {
     };
   }
 
-  
+  private updateLastBillNumber = new Subject<void>();
+  dataSubmitted$ = this.updateLastBillNumber.asObservable();
 
 
-  
+  notifytheupdateLastbillnumber() {
+    this.updateLastBillNumber.next();
+  }
 
 }

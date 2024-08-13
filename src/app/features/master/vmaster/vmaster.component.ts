@@ -52,7 +52,6 @@ interface Deity {
 })
 export class VmasterComponent implements OnInit {
   toppings = new FormControl<string[]>([]);
- 
   Vmaster: Vmaster[] = [];
   filteredVmaster: Vmaster[] = [];
   vazhipadMasterForm: FormGroup;
@@ -111,7 +110,6 @@ export class VmasterComponent implements OnInit {
       VM_Mobileapp: [false],
       VM_Special: [false],
       VM_Rate_Change: [false],
-      
       VM_TimeLimit: [0, [Validators.pattern('^[0-9][0-9]*$')]],
       VM_Description: [''],
       VM_AlertMsg: [''],
@@ -120,7 +118,6 @@ export class VmasterComponent implements OnInit {
       ACHeadCode: [''],
       ACSubCode: [''],
       VC_Name: ['', [Validators.required]],
-      
       VM_Time: ['1'],
       VM_SMS:[false],
       VM_Whatsapp:[false],

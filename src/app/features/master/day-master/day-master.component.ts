@@ -328,13 +328,13 @@ export class DayMasterComponent implements OnInit {
   }
 
   update(){
-this.onDeleteforUpdate(this.dayId);
+this.onDeleteforUpdate(this.vazhid);
 // this.onSubmit();
   }
 
   onDeleteforUpdate(id: number) {
     this.loading = true;
-    this.masterService.deleteDay(id).subscribe({
+    this.masterService.deleteDayByVazhipadId(id).subscribe({
       next: (res) => {
         if (res) {
           this.loading = false;

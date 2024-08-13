@@ -18,6 +18,7 @@ import { MobserachcontentsComponent } from '../mobserachcontents/mobserachconten
 import { v4 as uuidv4 } from 'uuid';
 import { SearchByBillNumberComponent } from '../search-by-bill-number/search-by-bill-number.component';
 import { ReceiptPrintService } from '../../../shared/service/receipt-print.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-fixedbottom',
@@ -36,20 +37,27 @@ import { ReceiptPrintService } from '../../../shared/service/receipt-print.servi
 export class FixedbottomComponent implements OnInit {
   customerdetailsForBillingForm: FormGroup;
   totalAmount: number = 0;
- 
+  currentDate: string;
   mobileNumber: string = '';
   billNumber: string = '';
-  lastBillnumber:number=101;
+  lastBillnumber: number;
+  currentBillNumber: string;
+  private subscription: Subscription = new Subscription();
   private totalService = inject(TotalAmountService);
   private notiication = inject(NotificationService);
   private masterService = inject(MasterService);
-
-  constructor(private fb: FormBuilder, public dialog: MatDialog,private receiptPrinrservice:ReceiptPrintService) {
-    this.getLastBillNumber()
+  theLastBillNo: string;
+  constructor(
+    private fb: FormBuilder,
+    public dialog: MatDialog,
+    private receiptPrinrservice: ReceiptPrintService
+  ) {
+    this.currentDate = this.getCurrentDateMMYY();
+    this.getLastBillNumber();
     const today = this.getFormattedDate(new Date());
-
+    console.log(this.currentBillNumber);
     this.customerdetailsForBillingForm = this.fb.group({
-      BillNo: [this.lastBillnumber+1],
+      BillNo: [''],
       Billdate: [today, [Validators.required]],
 
       Mobile: ['', [Validators.pattern('^[0-9]{10}$')]],
@@ -68,34 +76,46 @@ export class FixedbottomComponent implements OnInit {
     });
   }
   ngOnInit(): void {
-    
     this.totalService.totalAmount$.subscribe((amount) => {
       this.totalAmount = amount;
     });
     console.log(this.customerdetailsForBillingForm.value);
-   
+    this.subscription.add(
+      this.totalService.dataSubmitted$.subscribe(() => {
+        this.getLastBillNumber();
+      })
+    );
     this.subscribeToTrnsmodeChanges();
-    this.printReceipt()
+    this.printReceipt();
   }
-
-  getLastBillNumber(){
-    const payLoad={"Type":"Maxbillno","Code":""};
-    this.masterService.getLastBillNumber(payLoad).subscribe({
-      next:(data)=>{
-        console.log(data[0].
-          billno
-          )
-          this.lastBillnumber=data[0].billno
-      }
-    })
+  private getCurrentDateMMYY(): string {
+    const now = new Date();
+    const month = ('0' + (now.getMonth() + 1)).slice(-2);
+    const year = now.getFullYear().toString().slice(-2);
+    return `${month}${year}`;
   }
-  printReceipt(){
-    this.receiptPrinrservice.receiptData$.subscribe(data => {
-      this.printReceipts(data);
-      console.log(data)
+  getLastBillNumber() {
+    this.masterService.getLastBillNumber().subscribe({
+      next: (data) => {
+        console.log(data[0].billno);
+        this.lastBillnumber = data[0].billno;
+        this.theLastBillNo =this.lastBillnumber.toString()+ '/'+this.currentDate ;
+        console.log(this.theLastBillNo);
+        this.currentBillNumber =
+           (this.lastBillnumber + 1).toString()+'/'+this.currentDate ;
+        this.customerdetailsForBillingForm.patchValue({
+          BillNo: this.currentBillNumber,
+        });
+        // console.log(this.currentBillNumber);
+      },
     });
   }
-
+  printReceipt() {
+    this.receiptPrinrservice.receiptData$.subscribe((data) => {
+      this.printReceipts(data);
+      console.log(data);
+    });
+  }
 
   private printReceipts(data: any) {
     // Extract details from data
@@ -108,14 +128,19 @@ export class FixedbottomComponent implements OnInit {
       Address3,
       Email,
       Pincode,
-      vazhipadinfo
+      vazhipadinfo,
     } = data;
-  
+
     // Calculate the total amount
-    const totalAmount = vazhipadinfo.reduce((total: number, item: any) => total + parseFloat(item.Amount || '0'), 0);
-  
+    const totalAmount = vazhipadinfo.reduce(
+      (total: number, item: any) => total + parseFloat(item.Amount || '0'),
+      0
+    );
+
     // Handle multiple vazhipadinfo entries if present
-    const vazhipadRows = vazhipadinfo.map((item: any) => `
+    const vazhipadRows = vazhipadinfo
+      .map(
+        (item: any) => `
       <tr>
         <td>${item.Vazhipad}</td>
         <td>${item.Prethista}</td>
@@ -127,8 +152,10 @@ export class FixedbottomComponent implements OnInit {
         <td>${item.Amount}</td>
         
       </tr>
-    `).join('');
-  
+    `
+      )
+      .join('');
+
     // Prepare HTML content for the receipt
     const receiptContent = `
       <html>
@@ -201,11 +228,10 @@ export class FixedbottomComponent implements OnInit {
         </body>
       </html>
     `;
-  
+
     // Print the content
     this.printContent(receiptContent);
   }
-  
 
   private printContent(content: string) {
     this.getLastBillNumber();
@@ -227,8 +253,8 @@ export class FixedbottomComponent implements OnInit {
     }
   }
   // private generateBillNumber(): number {
-    // Simple example: "BILL" followed by current timestamp
-    // return 'CBX-' + uuidv4();
+  // Simple example: "BILL" followed by current timestamp
+  // return 'CBX-' + uuidv4();
   //  return this.LastBillNo.billno+1
   // }
   private subscribeToTrnsmodeChanges() {
@@ -246,7 +272,6 @@ export class FixedbottomComponent implements OnInit {
     return formatDate(date, 'yyyy-MM-dd', 'en'); // Input type="date" expects format yyyy-MM-dd
   }
   onSubmit() {
-    
     if (this.customerdetailsForBillingForm.invalid) {
       this.showValidationErrors();
       this.markAllFieldsAsTouched();
@@ -260,8 +285,6 @@ export class FixedbottomComponent implements OnInit {
     this.totalService.setFirstComponentData(formData);
     this.totalService.emitClickEvent();
   }
-
- 
 
   private markAllFieldsAsTouched() {
     this.customerdetailsForBillingForm.markAllAsTouched();
@@ -348,7 +371,7 @@ export class FixedbottomComponent implements OnInit {
       next: (data) => {
         console.log(data);
         this.openDialog(data);
-        this.mobileNumber='';
+        this.mobileNumber = '';
       },
       error: (error) => {
         // Handle error
@@ -359,7 +382,7 @@ export class FixedbottomComponent implements OnInit {
   }
 
   onFindBillNumber() {
-    if (this.billNumber.length ===0) {
+    if (this.billNumber.length === 0) {
       // Display a toaster or any other form of error message
       this.notiication.showError('Please enter valid Bill Number');
       return;
@@ -369,13 +392,12 @@ export class FixedbottomComponent implements OnInit {
     this.masterService.SearchByBillNo(payLoad).subscribe({
       next: (data) => {
         console.log(data);
-        if(data.length>0){
+        if (data.length > 0) {
           this.openDialogBillNumber(data);
-          this.billNumber='';
-        }else{
-          this.notiication.showError("enter valid billnumber")
+          this.billNumber = '';
+        } else {
+          this.notiication.showError('enter valid billnumber');
         }
-       
       },
       error: (error) => {
         // Handle error
@@ -385,28 +407,26 @@ export class FixedbottomComponent implements OnInit {
     });
   }
 
-    openDialogBillNumber(data:any) {
-      this.dialog.open(SearchByBillNumberComponent, {
-        width: '80vw', // Set the width of the dialog
-        data: data
-      });
+  openDialogBillNumber(data: any) {
+    this.dialog.open(SearchByBillNumberComponent, {
+      width: '80vw', // Set the width of the dialog
+      data: data,
+    });
   }
-// resetForm(){
-// this.customerdetailsForBillingForm.reset();
-// const today = this.getFormattedDate(new Date());
-// this.customerdetailsForBillingForm.patchValue({
-//   BillNo:this.lastBillnumber+1,
-//       Billdate: today,
+  // resetForm(){
+  // this.customerdetailsForBillingForm.reset();
+  // const today = this.getFormattedDate(new Date());
+  // this.customerdetailsForBillingForm.patchValue({
+  //   BillNo:this.lastBillnumber+1,
+  //       Billdate: today,
 
-     
-//       Userid: '0',
-//       CounterId: '1',
-//       Trnsmode: 'cs',
-//       Instno: '',
-//       Instdate: today,
-//       InstBank: '',
-//       Memberid: '1',
-// })
-// }
-
+  //       Userid: '0',
+  //       CounterId: '1',
+  //       Trnsmode: 'cs',
+  //       Instno: '',
+  //       Instdate: today,
+  //       InstBank: '',
+  //       Memberid: '1',
+  // })
+  // }
 }

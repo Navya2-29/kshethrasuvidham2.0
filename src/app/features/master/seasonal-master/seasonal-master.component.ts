@@ -37,6 +37,7 @@ import { Vmaster } from '../../../models/vmaster.model';
   providers: [DatePipe],
 })
 export class SeasonalMasterComponent implements OnInit {
+  
   seasonalBlockingForm: FormGroup;
   seasonalMaster: SeasonalMaster[] = [];
   filteredSeasonalMaster: SeasonalMaster[] = [];
@@ -63,6 +64,7 @@ export class SeasonalMasterComponent implements OnInit {
     const currentDate = new Date();
     this.today = this.datePipe.transform(currentDate, 'yyyy-MM-dd') || '';
   }
+
   ngOnInit(): void {
     this.loading = true;
     this.getAllSeasonalisedVazhipad();

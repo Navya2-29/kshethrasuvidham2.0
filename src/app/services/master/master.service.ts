@@ -560,6 +560,15 @@ export class MasterService {
       payLoad
     );
   }
+// vazhipad date
+  getDayMasterforbooking(): Observable<any[]> {
+    const payLoad =  {"Type":"DayCheck","Code":"4"};
+    return this.http.post<any[]>(
+      Constant.BASE_URL + Constant.METHODS.GET_MASTER,
+      payLoad
+    );
+  }
+
   // create  day
   createDayMaster(payLoad: object): Observable<any> {
     // console.log(typeof(VMId));
@@ -584,6 +593,13 @@ export class MasterService {
   deleteDay(id: number): Observable<any> {
     console.log(id);
     const payLoad = { Type: 'DayMaster', Id: `${id}` };
+    return this.http
+      .post<any>(Constant.BASE_URL + Constant.METHODS.DELETE_MASTER, payLoad)
+      .pipe(catchError(this.errorHandler));
+  }
+  deleteDayByVazhipadId(id: number): Observable<any> {
+    console.log(id);
+    const payLoad = { Type: 'DayAll', Id: `${id}` };
     return this.http
       .post<any>(Constant.BASE_URL + Constant.METHODS.DELETE_MASTER, payLoad)
       .pipe(catchError(this.errorHandler));
@@ -666,12 +682,28 @@ export class MasterService {
       payLoad
     );
   }
-  getLastBillNumber(payLoad: any): Observable<any[]> {
+  getLastBillNumber(): Observable<any[]> {
+    const payLoad={"Type":"Maxbillno","Code":""};
     return this.http.post<any>(
       Constant.BASE_URL + Constant.METHODS.SEARCHBYMOBILENUMBER,
       payLoad
     );
   }
+  updateLastBillNumber(currentbillnumber: any): Observable<any[]> {
+    const payLoad={"Type":"UpdateBillNo","code":currentbillnumber}
+    return this.http.post<any>(
+      Constant.BASE_URL + Constant.METHODS.SEARCHBYMOBILENUMBER,
+      payLoad
+    );
+  }
+ 
+getSeasonalVazhipadDateCheck(){
+ const payLoad= {"Type":"SeasonalCheck","Code":"42"}
+ return this.http.post<any>(
+  Constant.BASE_URL + Constant.METHODS.SEARCHBYMOBILENUMBER,
+  payLoad
+);
+}
 
 
   kollavarashamData(): Observable<string[]> {

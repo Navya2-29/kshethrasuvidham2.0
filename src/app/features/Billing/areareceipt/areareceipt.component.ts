@@ -71,6 +71,7 @@ import { NgxPrintModule } from 'ngx-print';
 })
 export class AreareceiptComponent implements OnInit {
   // private multidayService = inject(MultidayService);
+  language:string[]=['English','malayalam','Hindi']
   form: FormGroup;
   row: FormArray;
   filteredOptions: any[] = [];
@@ -88,7 +89,8 @@ export class AreareceiptComponent implements OnInit {
   multidayBooking: any[] = [];
   isDataSaved: boolean = false;
   indexForAutoComplete: number;
-printData:any;
+  printData: any;
+  translatedVazhipad:string;
   private subscription: Subscription;
   private masterservice = inject(MasterService);
   private eventService = inject(TotalAmountService);
@@ -105,6 +107,7 @@ printData:any;
   }
 
   ngOnInit(): void {
+    this.onLanguageChange({ target: { value: 'English' } });
     this.getAllvazhipad();
     this.getNakshthram();
     // this.addRow(0);
@@ -119,6 +122,15 @@ printData:any;
       this.sendDataToApi(combinedData);
     });
   }
+
+  onLanguageChange(event: any): void {
+    const selectedLanguage = event.target.value;
+    console.log(selectedLanguage);
+    // this.translatedVazhipad = this.getTranslatedVazhipad(selectedLanguage);
+  }
+
+
+ 
 
   ngOnDestroy() {
     // Prevent memory leaks
@@ -147,7 +159,7 @@ printData:any;
       Amount: [''],
       VazhipadDate: ['', [Validators.required]],
       TotalAmt: [this.totalAmount],
-      VTime: ['',[Validators.required]],
+      VTime: ['', [Validators.required]],
       // multidaybookedDetails: this.fb.array([]),
       Name2: [''],
       Star2: ['0'],
@@ -579,7 +591,7 @@ printData:any;
 
     const vazhipadinfo = data.vazhipadinfo || []; // Ensure vazhipadinfo is an array
     const combinedVazhipadinfo = [...vazhipadinfo, ...flattenedData];
-this.printData=vazhipadinfo
+    this.printData = vazhipadinfo;
     const updatedData = {
       ...data,
       vazhipadinfo: combinedVazhipadinfo,
@@ -587,26 +599,37 @@ this.printData=vazhipadinfo
     console.log(updatedData);
     const formattedData = this.formatDateFields(updatedData);
     console.log(formattedData);
-    
+
     this.masterservice.vazhipadBooking(formattedData).subscribe((res: any) => {
       console.log(res);
       if (res) {
-        
         if (res.RespStatus === 'I') {
-
           this.notification.success(res.RespMsg);
           this.receiptPrintService.setReceiptData(formattedData);
           this.resetForm();
-          
+
+this.masterservice.getLastBillNumber().subscribe({
+  next:(lastbillno)=>{
+    const lastBillNumber=lastbillno[0].billno;
+    const currentBillnumber=lastBillNumber+1;
+    this.masterservice.updateLastBillNumber(currentBillnumber).subscribe({
+     next:(data)=>{
+      this.eventService.notifytheupdateLastbillnumber()
+      console.log(data)
+     },error:(err)=>{
+      console.log(err);
+     }
+    })
+  }
+})
           this.isDataSaved = true;
           // this.printReceipt();
-        } 
-      }else {
+        }
+      } else {
         this.notification.error('Please check your connection and try agin');
       }
     });
   }
-
 
   // printReceipt() {
   //   // Use ngx-print to print the receipt
@@ -698,5 +721,3 @@ this.printData=vazhipadinfo
     });
   }
 }
-
-
