@@ -71,7 +71,7 @@ import { NgxPrintModule } from 'ngx-print';
 })
 export class AreareceiptComponent implements OnInit {
   // private multidayService = inject(MultidayService);
-  language:string[]=['English','malayalam','Hindi']
+  language: string[] = ['English', 'malayalam', 'Hindi'];
   form: FormGroup;
   row: FormArray;
   filteredOptions: any[] = [];
@@ -90,7 +90,11 @@ export class AreareceiptComponent implements OnInit {
   isDataSaved: boolean = false;
   indexForAutoComplete: number;
   printData: any;
-  translatedVazhipad:string;
+  translatedVazhipad: string;
+  seasonalDates: { fromDate: any; toDate: any } | null = null;
+  allowedDays: number[] = [];
+  filteredVazhipadTimeOptions: any[][] = [];
+readonlyDate:boolean=false;
   private subscription: Subscription;
   private masterservice = inject(MasterService);
   private eventService = inject(TotalAmountService);
@@ -107,6 +111,7 @@ export class AreareceiptComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
     this.onLanguageChange({ target: { value: 'English' } });
     this.getAllvazhipad();
     this.getNakshthram();
@@ -121,6 +126,8 @@ export class AreareceiptComponent implements OnInit {
       // this.sendDataToApi(combinedData);
       this.sendDataToApi(combinedData);
     });
+
+   
   }
 
   onLanguageChange(event: any): void {
@@ -128,9 +135,6 @@ export class AreareceiptComponent implements OnInit {
     console.log(selectedLanguage);
     // this.translatedVazhipad = this.getTranslatedVazhipad(selectedLanguage);
   }
-
-
- 
 
   ngOnDestroy() {
     // Prevent memory leaks
@@ -145,7 +149,7 @@ export class AreareceiptComponent implements OnInit {
       Vazhipad: ['', [Validators.required, this.vazhipadValidator.bind(this)]],
       Vazhid: [''],
       Name: ['', [Validators.required]],
-      Star: ['0', [Validators.required]],
+      Star: ['28', [Validators.required]],
       Prethista: ['', [Validators.required]],
       Qty: [1, [Validators.required]],
       Rate: [
@@ -157,12 +161,12 @@ export class AreareceiptComponent implements OnInit {
         ],
       ],
       Amount: [''],
-      VazhipadDate: ['', [Validators.required]],
+      VazhipadDate: ['', [Validators.required],[this.validateVazhipadDate.bind(this)]],
       TotalAmt: [this.totalAmount],
-      VTime: ['', [Validators.required]],
+      VTime: ['0', [Validators.required]],
       // multidaybookedDetails: this.fb.array([]),
       Name2: [''],
-      Star2: ['0'],
+      Star2: ['28'],
       Postal: ['10'],
       PMid: ['1'],
       Mday: [''],
@@ -172,6 +176,13 @@ export class AreareceiptComponent implements OnInit {
       multiname: [{ disabled: true, value: '' }],
       booking: [{ disabled: true, value: '' }],
       ratechange: [{ disabled: true, value: '' }],
+      allowedDays: this.fb.array([]),
+      VM_Receipt:[{ disabled: true, value: '' }],
+      dateToSet:[''],
+      seasonalDates: this.fb.group({
+        fromDate: [''],
+        toDate: ['']
+      }),
     });
     row.get('Qty')?.valueChanges.subscribe(() => this.updateAmount(row));
     row.get('Rate')?.valueChanges.subscribe(() => this.updateAmount(row));
@@ -252,11 +263,9 @@ export class AreareceiptComponent implements OnInit {
       }
     }
     console.log(index);
-
     const currentRow = this.vazhipadinfo.at(index) as FormGroup;
     const currentName = currentRow.get('Name')?.value;
     const currentStar = currentRow.get('Star')?.value;
-
     const newRow = this.createRow();
     newRow.patchValue({
       Name: currentName,
@@ -338,8 +347,11 @@ export class AreareceiptComponent implements OnInit {
   }
 
   getNakshthram() {
-    this.masterservice.getNakshthra().subscribe((res) => {
+    const payLoad={"Type":"ListStar","Code":""};
+    this.masterservice.getStarData(payLoad).subscribe((res) => {
       this.nakshatham = res;
+      console.log(this.nakshatham);
+      // this.autoCompleteForStar();
     });
   }
 
@@ -357,10 +369,12 @@ export class AreareceiptComponent implements OnInit {
       row.get('Slno')?.setValue(index + 1);
     });
   }
+
   vazhipadtime = [
-    { id: '0', name: 'Any Time' },
-    { id: '1', name: 'Morning' },
-    { id: '2', name: 'Evening' },
+    { id: '0', name: 'Any Time'  },
+    { id: '1', name: 'Morning'   },
+    { id: '2', name: 'Evening'   },
+    { id: '3', name: 'AfterNoon' }
   ];
 
   onSelect(event: MatAutocompleteSelectedEvent, index: number): void {
@@ -376,6 +390,8 @@ export class AreareceiptComponent implements OnInit {
       (item) => item.VM_Name === selectedVazhipad
     );
     console.log(selectedVazhipadItem);
+    this.getDatamasterdateCheck(selectedVazhipadItem.VM_Id,index);
+    this.getSeasnalalVazhipadData(selectedVazhipadItem.VM_Id,index);
     if (selectedVazhipadItem) {
       selectedRow.get('Vazhid')?.setValue(selectedVazhipadItem.VM_Id);
       console.log(selectedRow);
@@ -404,30 +420,50 @@ export class AreareceiptComponent implements OnInit {
         // selectedRow.get('Rate')?.setValue(res[0].VM_Amt);
         selectedRow.get('multiname')?.setValue(res[0].VM_MultiName);
         selectedRow.get('booking')?.setValue(res[0].VM_Booking);
+        selectedRow.get('VM_Receipt')?.setValue(res[0].VM_Receipt);
         selectedRow.get('ratechange')?.setValue(res[0].VM_Rate_Change);
         selectedRow.get('VTime')?.setValue(res[0].VM_Time);
-        const isVMBooking = selectedRow.get('booking')?.value;
+        
+        const booking = selectedRow.get('booking')?.value;
+        const receipt=selectedRow.get('VM_Receipt')?.value;
+        const allowedDays = selectedRow.get('allowedDays')?.value as number[] || [];
+        console.log(allowedDays +"fffffffffffffffffffffff")
         this.tomorrowDate = new Date(this.currentDate);
         this.tomorrowDate.setDate(this.currentDate.getDate() + 1);
-        this.dateToSet =
-          isVMBooking === 'Y'
-            ? this.datePipe.transform(this.tomorrowDate, 'yyyy-MM-dd')
-            : this.datePipe.transform(this.currentDate, 'yyyy-MM-dd');
+        // this.dateToSet =
+        //   isVMBooking === 'Y'
+        //     ? this.datePipe.transform(this.tomorrowDate, 'yyyy-MM-dd')
+        //     : this.datePipe.transform(this.currentDate, 'yyyy-MM-dd');
+        // selectedRow.get('VazhipadDate')?.setValue(this.dateToSet);
 
-        selectedRow.get('VazhipadDate')?.setValue(this.dateToSet);
+        if (receipt === 'Y' && booking === 'N') {
+          // Case 1: Receipt is "Y" and Booking is "N"
+         
+          if (allowedDays.length === 0) {
+            // this.readonlyDate=true
+            // Set vazhipadDate to today's date
+            selectedRow.get('VazhipadDate')?.setValue(this.datePipe.transform(this.currentDate, 'yyyy-MM-dd'));
+            selectedRow.get('dateToSet')?.setValue(this.datePipe.transform(this.currentDate, 'yyyy-MM-dd'));
+          }
+        } else if (booking === 'Y' && receipt === 'N') {
+          selectedRow.get('VazhipadDate')?.setValue(this.datePipe.transform(this.tomorrowDate, 'yyyy-MM-dd'));
+          selectedRow.get('dateToSet')?.setValue(this.datePipe.transform(this.tomorrowDate, 'yyyy-MM-dd'));
+        }
 
-        // if (isVMBooking==='Y') {
 
-        //   selectedRow.get('minDate')?.setValue(this.tomorrowDate);
-        // } else {
-        //   selectedRow.get('VazhipadDate')?.disable();
-        //   selectedRow.get('minDate')?.setValue(this.today);
-        // }
+
+
+
+
+
+
+       
         this.selectedVazhipadPrathistaDetails(vazhipadcode, index);
-        //   selectedRow.get('rate')?.setValue(res.rate);
+        
         console.log(selectedRow);
       });
   }
+  
 
   // fetch parthishta details
   private formatDate(date: Date): string {
@@ -475,6 +511,7 @@ export class AreareceiptComponent implements OnInit {
       },
     });
   }
+
 
   // opne multiday open dialog box
   openMultiDayDialog(rowIndex: number): void {
@@ -608,20 +645,23 @@ export class AreareceiptComponent implements OnInit {
           this.receiptPrintService.setReceiptData(formattedData);
           this.resetForm();
 
-this.masterservice.getLastBillNumber().subscribe({
-  next:(lastbillno)=>{
-    const lastBillNumber=lastbillno[0].billno;
-    const currentBillnumber=lastBillNumber+1;
-    this.masterservice.updateLastBillNumber(currentBillnumber).subscribe({
-     next:(data)=>{
-      this.eventService.notifytheupdateLastbillnumber()
-      console.log(data)
-     },error:(err)=>{
-      console.log(err);
-     }
-    })
-  }
-})
+          this.masterservice.getLastBillNumber().subscribe({
+            next: (lastbillno) => {
+              const lastBillNumber = lastbillno[0].billno;
+              const currentBillnumber = lastBillNumber + 1;
+              this.masterservice
+                .updateLastBillNumber(currentBillnumber)
+                .subscribe({
+                  next: (data) => {
+                    this.eventService.notifytheupdateLastbillnumber();
+                    console.log(data);
+                  },
+                  error: (err) => {
+                    console.log(err);
+                  },
+                });
+            },
+          });
           this.isDataSaved = true;
           // this.printReceipt();
         }
@@ -720,4 +760,204 @@ this.masterservice.getLastBillNumber().subscribe({
       }
     });
   }
+
+  getSeasnalalVazhipadData(vid: string, index: number) {
+    console.log(vid + " ssssssssss");
+    this.masterservice.getSeasonalVazhipadDateCheck(vid).subscribe({
+      next: (data) => {
+        const row = this.vazhipadinfo.at(index) as FormGroup;
+  
+        if (data && data.length > 0 && data[0].VS_FromDate && data[0].VS_ToDate) {
+          // Parse the dates and ensure they are valid
+          const fromDate = new Date(data[0].VS_FromDate);
+          const toDate = new Date(data[0].VS_ToDate);
+          
+          if (!isNaN(fromDate.getTime()) && !isNaN(toDate.getTime())) {
+            this.seasonalDates = {
+              fromDate: this.datePipe.transform(fromDate, 'yyyy-MM-dd'),
+              toDate: this.datePipe.transform(toDate, 'yyyy-MM-dd')
+            };
+  
+            // Update seasonal dates in the specific row
+            row.get('seasonalDates')?.patchValue(this.seasonalDates);
+  
+            // Set vazhipadDate to seasonal 'fromDate'
+            row.get('VazhipadDate')?.setValue(this.seasonalDates.fromDate);
+          } else {
+            // Handle invalid date formats
+            this.seasonalDates = { fromDate: '', toDate: '' };
+            row.get('seasonalDates')?.patchValue(this.seasonalDates);
+          }
+        } else {
+          // Handle case when data is empty or dates are not present
+          this.seasonalDates = { fromDate: '', toDate: '' };
+          row.get('seasonalDates')?.patchValue(this.seasonalDates);
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching seasonal vazhipad data:', err);
+        // Handle error case by resetting seasonal dates
+        const row = this.vazhipadinfo.at(index) as FormGroup;
+        this.seasonalDates = { fromDate: '', toDate: '' };
+        row.get('seasonalDates')?.patchValue(this.seasonalDates);
+      }
+    });
+  }
+  
+  getDatamasterdateCheck(vid: string, index: number) {
+    const row = this.vazhipadinfo.at(index) as FormGroup;
+  
+    this.masterservice.getDayMastervazhipaddateCheck(vid).subscribe({
+      next: (data) => {
+        // Check the API response
+        console.log('API Response:', data);
+  
+        // Map the data to get the allowed days
+        this.allowedDays = data.map(day => day.Day);
+        console.log('Allowed Days:', this.allowedDays);
+  
+        // Ensure the allowedDays control is an array
+        const allowedDaysControl = row.get('allowedDays') as FormArray;
+      if (allowedDaysControl) {
+        allowedDaysControl.clear(); // Clear existing values
+        this.allowedDays.forEach(day => allowedDaysControl.push(this.fb.control(day)));
+        console.log('Updated Row:', row);
+        const nearestAllowedDate = this.getNearestAllowedDate(new Date(), this.allowedDays);
+        console.log(nearestAllowedDate +"JJJJJJJJJJJJJ");
+        if (nearestAllowedDate) {
+          // Update the vazhipadDate field with the nearest allowed date
+          row.get('VazhipadDate')?.setValue(this.datePipe.transform(nearestAllowedDate,'yyyy-MM-dd')); // YYYY-MM-DD format
+          row.get('dateToSet')?.setValue(this.datePipe.transform(nearestAllowedDate, 'yyyy-MM-dd'));
+        }
+      } else {
+        console.error('Allowed Days control is missing.');
+      }
+    },
+    error: (err) => {
+      console.error('Error fetching allowed days:', err);
+    }
+  });
+}
+  
+
+validateVazhipadDate(control: AbstractControl): Observable<{ [key: string]: any } | null> {
+  console.log('Validator called');
+
+  const row = control.parent as FormGroup;
+  if (!row) return of(null);
+
+  const allowedDays = row.get('allowedDays')?.value as number[] || [];
+  const selectedDate = new Date(control.value);
+  const selectedDayValue = this.getCustomDayValue(selectedDate);
+
+  const seasonalDates = row.get('seasonalDates')?.value as { fromDate: string, toDate: string } | null;
+  const seasonalFromDate = seasonalDates ? new Date(seasonalDates.fromDate) : null;
+  const seasonalToDate = seasonalDates ? new Date(seasonalDates.toDate) : null;
+  const isSeasonalValid = !seasonalDates || (seasonalFromDate && seasonalToDate && selectedDate >= seasonalFromDate && selectedDate <= seasonalToDate);
+
+
+  if (allowedDays.length > 0 && !allowedDays.includes(selectedDayValue)) {
+    // Get the allowed day names instead of nearest date
+    const allowedDayNames = this.getAllowedDayNames(allowedDays);
+
+    
+
+    // Show an error notification with the allowed day names
+    this.notification.error(
+      `Selected date is not allowed. Allowed days are: ${allowedDayNames.join(', ')}`,
+      'Validation Error',
+      {
+        timeOut: 5000,
+        closeButton: true
+      }
+    );
+
+    return of({ invalidDay: true });
+  }
+
+
+  if (seasonalDates && !isSeasonalValid) {
+    // Show an error notification if the date is not within the seasonal range
+    this.notification.error(
+      `Selected date is not valid for this vazhipad. The valid range is from ${this.datePipe.transform(seasonalFromDate, 'yyyy-MM-dd')} to ${this.datePipe.transform(seasonalToDate, 'yyyy-MM-dd')}`,
+      'Validation Error',
+      {
+        timeOut: 5000,
+        closeButton: true
+      }
+    );
+
+    return of({ invalidSeasonalDate: true });
+  }
+
+  return of(null);
+}
+
+
+getAllowedDayNames(allowedDays: number[]): string[] {
+  const dayNamesMap: { [key: number]: string } = {
+    1: 'Sunday',
+    2: 'Monday',
+    3: 'Tuesday',
+    4: 'Wednesday',
+    5: 'Thursday',
+    6: 'Friday',
+    7: 'Saturday'
+  };
+
+  return allowedDays.map(day => dayNamesMap[day] || '');
+}
+
+  
+  getCustomDayValue(date: Date): number {
+    const dayOfWeek = date.getDay(); // 0 (Sunday) to 6 (Saturday)
+    return this.dayMapping[dayOfWeek] || 0;
+  }
+  private dayMapping: { [key: number]: number } = {
+    0: 1, // Sunday
+    1: 2, // Monday
+    2: 3, // Tuesday
+    3: 4, // Wednesday
+    4: 5, // Thursday
+    5: 6, // Friday
+    6: 7  // Saturday
+  };
+
+  getNearestAllowedDate(date: Date, allowedDays: number[]): Date {
+    const dayOfWeek = date.getDay();
+    const allowedDates = allowedDays.map(dayValue => {
+      const diff = (dayValue - this.dayMapping[dayOfWeek] + 7) % 7;
+      return new Date(date.getFullYear(), date.getMonth(), date.getDate() + diff);
+    });
+
+    return allowedDates.reduce((nearest, current) =>
+      Math.abs(current.getTime() - date.getTime()) < Math.abs(nearest.getTime() - date.getTime()) ? current : nearest
+    );
+  }
+  
+  
+// Function to return today's date in YYYY-MM-DD format
+getTodayDate(): string {
+  const today = new Date();
+  const todayDate = today.toISOString().split('T')[0]; // Convert to YYYY-MM-DD
+  return todayDate;
+}
+
+// Function to return tomorrow's date in YYYY-MM-DD format
+getTomorrowDate(): string {
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1); // Add 1 day to get tomorrow
+  const tomorrowDate = tomorrow.toISOString().split('T')[0]; // Convert to YYYY-MM-DD
+  return tomorrowDate;
+}
+
+  getDefaultDate(): string {
+    // Set default date logic (e.g., today’s date or any specific logic)
+    const today = new Date();
+    const defaultDate = today.toISOString().split('T')[0]; // YYYY-MM-DD format
+    return defaultDate;
+  }
+ 
+
 }

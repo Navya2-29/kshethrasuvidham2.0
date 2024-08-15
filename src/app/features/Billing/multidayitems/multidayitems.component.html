@@ -79,7 +79,8 @@
                         type="date"
                         class="form-control formdate"
                         style="width: 100px" 
-                        [min]="minDate"
+                        [attr.min]="form.get('dateToSet')?.value"
+                        [readOnly]="form.get('VM_Receipt')?.value==='Y'"
                         formControlName="VazhipadDate"
                       />
                     </td>
@@ -110,6 +111,17 @@
                         readonly
                         style="width: 100px;"
                       />
+                    </td>
+                    <td>
+                      <select 
+                    class="form-control"
+                    formControlName="VTime"
+                    style="width: 80%; height: 30.6px"
+                    style="width: 100px;height: 30px;"
+                  >
+                    <option *ngFor="let time of vazhipadtime" [value]="time.id">{{time.name}}</option>
+                    
+                  </select>
                     </td>
                   </tr>
                  </table>

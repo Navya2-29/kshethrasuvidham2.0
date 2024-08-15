@@ -6,7 +6,8 @@
           <table class="table">
             <thead>
               <tr style="background: #223d61; color: white">
-                <td style="width: 2%"><select (change)="onLanguageChange($event)"><option *ngFor="let lan of language" [value]="lan">{{lan}}</option></select></td>
+                <!-- <select (change)="onLanguageChange($event)"><option *ngFor="let lan of language" [value]="lan">{{lan}}</option></select> -->
+                <td style="width: 2%"></td>
                 <th style="width: 18%">Vazhipad</th>
                 <th style="width: 8%">Name</th>
                 <th style="width: 8%">Star</th>
@@ -56,7 +57,7 @@
                       *ngFor="let option of filteredOptions[i]"
                       [value]="option.VM_Name"
                     >
-                     {{ option.VM_Name }}-{{option.VM_RName}}
+                    {{option.VM_Code}}- {{ option.VM_Name }}-{{option.VM_RName}}
                     </mat-option>
                   </mat-autocomplete>
                  
@@ -69,7 +70,6 @@
                     formControlName="Name"
                     [readonly]="multidayBooking[i]"
                   />
-                 
                 </td>
                 <td>
                   <select
@@ -78,9 +78,8 @@
                     style="width: 100%; height: 30.6px"
                    
                   >
-                    <option *ngFor="let item of nakshatham" [value]="item.id" >
-                      {{ item.name }}
-                    </option>
+                  <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_NameEng}}</option>
+                
                   </select>
                  
                 </td>
@@ -135,9 +134,9 @@
                     type="date"
                     class="form-control sps"
                     formControlName="VazhipadDate"
-                    [readOnly]="row.get('booking')?.value ==='N' ||'multidayBooking[i]'"
-                    [min]="dateToSet"
-                    
+                   
+                    [attr.min]="row.get('dateToSet')?.value"
+                    [readOnly]="row.get('VM_Receipt')?.value==='Y'"
                   /><span style="vertical-align: middle; text-align: center"  *ngIf="multidayBooking[i]">
                     <input
                       type="date"
@@ -168,7 +167,7 @@
                   <span style="margin-left: 5px">M</span>
                 </td>
                 <td>
-                  <select
+                  <select 
                     class="form-control"
                     formControlName="VTime"
                     style="width: 80%; height: 30.6px"

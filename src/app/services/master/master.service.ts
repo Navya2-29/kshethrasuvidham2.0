@@ -560,9 +560,10 @@ export class MasterService {
       payLoad
     );
   }
-// vazhipad date
-  getDayMasterforbooking(): Observable<any[]> {
-    const payLoad =  {"Type":"DayCheck","Code":"4"};
+
+ // vazhipad date
+  getDayMastervazhipaddateCheck(vid:string): Observable<any[]> {
+    const payLoad =  {"Type":"DayCheck","Code":vid};
     return this.http.post<any[]>(
       Constant.BASE_URL + Constant.METHODS.GET_MASTER,
       payLoad
@@ -697,10 +698,10 @@ export class MasterService {
     );
   }
  
-getSeasonalVazhipadDateCheck(){
- const payLoad= {"Type":"SeasonalCheck","Code":"42"}
+getSeasonalVazhipadDateCheck(vid:string){
+ const payLoad= {"Type":"SeasonalCheck","Code":vid}
  return this.http.post<any>(
-  Constant.BASE_URL + Constant.METHODS.SEARCHBYMOBILENUMBER,
+  Constant.BASE_URL + Constant.METHODS.GET_MASTER,
   payLoad
 );
 }
