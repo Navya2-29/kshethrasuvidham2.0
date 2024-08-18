@@ -13,6 +13,7 @@ import {
   FormsModule,
   ReactiveFormsModule,
   ValidationErrors,
+  ValidatorFn,
   Validators,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -51,7 +52,7 @@ interface Deity {
   styleUrl: './vmaster.component.css',
 })
 export class VmasterComponent implements OnInit {
-  toppings = new FormControl<string[]>([]);
+  toppings = new FormControl<string[]>([],[this.prathistaValidator()]);
   Vmaster: Vmaster[] = [];
   filteredVmaster: Vmaster[] = [];
   vazhipadMasterForm: FormGroup;
@@ -200,7 +201,7 @@ export class VmasterComponent implements OnInit {
   onSubmit(data: Vmaster) {
     console.log(this.toppings)
     console.log(data);
-    if (this.vazhipadMasterForm.valid) {
+    if (this.vazhipadMasterForm.valid && this.toppings.valid) {
       this.loading = true;
       const formValue = this.vazhipadMasterForm.value;
       const selectedPrathistaNames: string[] = Array.isArray(this.toppings.value)
@@ -254,6 +255,7 @@ export class VmasterComponent implements OnInit {
       }
     } else {
       this.markFormGroupTouched(this.vazhipadMasterForm);
+      this.toppings.markAsTouched();  
       this.notification.showSuccess('Please Fill the Details');
     }
   }
@@ -343,6 +345,16 @@ this.editDeity=diety
     });
 
     this.loading = false;
+  }
+
+  prathistaValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const selectedPrathista = control.value;
+      if (!selectedPrathista || selectedPrathista.length === 0) {
+        return { prathistaRequired: true };
+      }
+      return null;
+    };
   }
 
   //update data

@@ -144,15 +144,15 @@
                           <small> name is required.</small>
                         </div>
                         <div
-                        *ngIf="
-                          vmasterFormControl['VM_RName'].hasError(
-                            'duplicateRName'
-                          )
-                        "
-                        class="text-danger"
-                      >
-                        <small> Name already exists.</small>
-                      </div>
+                          *ngIf="
+                            vmasterFormControl['VM_RName'].hasError(
+                              'duplicateRName'
+                            )
+                          "
+                          class="text-danger"
+                        >
+                          <small> Name already exists.</small>
+                        </div>
                       </div>
                     </td>
                     <td colspan="1">
@@ -212,34 +212,51 @@
                       <small>category is required.</small>
                     </div>
                   </div>
-<tr>
+                  <tr>
+                    <td colspan="3">
+                      Prathishta<span class="text-danger">*</span>
 
-  <td colspan="3">Prathishta<span class="text-danger">*</span>
-
-  <mat-select [formControl]="toppings" placeholder="Select Prathista" multiple style="background-color: white;" class="form-control sps">
-    <mat-select-trigger>
-      {{toppings.value?.[0] || ''}}
-      @if ((toppings.value?.length || 0) > 1) {
-        <span class="example-additional-selection">
-          (+{{(toppings.value?.length || 0) - 1}} {{toppings.value?.length === 2 ? 'other' : 'others'}})
-        </span>
-      }
-    </mat-select-trigger>
-    @for (topping of deities; track topping) {
-  <mat-option [value]="topping.PM_Name">{{topping.PM_Name}}</mat-option>
-}
-  </mat-select>
-</td>
-</tr>
-<tr>
-<td colspan="3">
-  <div class="selected-items">
-    <ng-container *ngFor="let topping of toppings.value">
-      <span class="badge bg-primary">{{topping}} </span>
-    </ng-container>
-  </div>
-</td>
-</tr>
+                      <mat-select
+                        [formControl]="toppings"
+                        placeholder="Select Prathista"
+                        multiple
+                        style="background-color: white"
+                        class="form-control sps"
+                      >
+                        <mat-select-trigger>
+                          {{toppings.value?.[0] || ''}}
+                          @if ((toppings.value?.length || 0) > 1) {
+                          <span class="example-additional-selection">
+                            (+{{ (toppings.value?.length || 0) - 1 }}
+                            {{
+                              toppings.value?.length === 2 ? "other" : "others"
+                            }})
+                          </span>
+                          }
+                        </mat-select-trigger>
+                        @for (topping of deities; track topping) {
+                        <mat-option [value]="topping.PM_Name">{{
+                          topping.PM_Name
+                        }}</mat-option>
+                        }
+                      </mat-select>
+                    </td>
+                    
+                  </tr>
+                  <div *ngIf="toppings.invalid && toppings.touched">
+                    <div *ngIf="toppings.hasError('prathistaRequired')">
+                     <small style="color: red;">Please select at least one Prathista.</small> 
+                    </div>
+                  </div>
+                  <tr>
+                    <td colspan="3">
+                      <div class="selected-items">
+                        <ng-container *ngFor="let topping of toppings.value">
+                          <span class="badge bg-primary">{{ topping }} </span>
+                        </ng-container>
+                      </div>
+                    </td>
+                  </tr>
                   <tr>
                     <td>
                       Rate<span class="text-danger">*</span
@@ -494,33 +511,35 @@
           <div class="fixitems prathishta">
             <table class="table">
               <thead style="border-bottom: 2px solid #223d61">
-
-                <th style="text-align: left; padding-left: 10px;" >Code 
+                <th style="text-align: left; padding-left: 10px">
+                  Code
                   <!-- <mat-icon *ngIf="sortField === 'VM_Code'" style="font-size: 16px; vertical-align: middle;">
                     {{ sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward' }}
                   </mat-icon> -->
-
                 </th>
-                <th style="text-align: left; padding-left: 10px;width: 40%;" >Name</th>
+                <th style="text-align: left; padding-left: 10px; width: 40%">
+                  Name
+                </th>
                 <th>Rate</th>
-                <th>
-                </th>
-
+                <th></th>
               </thead>
 
               <tbody
                 *ngIf="!showNoRecordsMessage && Vmaster && Vmaster.length > 0"
               >
                 <tr *ngFor="let data of filteredVmaster; let i = index">
-                  <td style="text-align: left; padding-left: 10px;">
+                  <td style="text-align: left; padding-left: 10px">
                     {{ data.VM_Code }}
                   </td>
-                  <td style="text-align: left; padding-left: 10px;width: 40%;" class="wrap-text" >
+                  <td
+                    style="text-align: left; padding-left: 10px; width: 40%"
+                    class="wrap-text"
+                  >
                     {{ data.VM_Name }}-{{ data.VM_RName }}
                   </td>
-                  <td style="text-align: right;">{{ data.VM_Amt }}</td>
+                  <td style="text-align: right">{{ data.VM_Amt }}</td>
 
-                  <td >
+                  <td>
                     <mat-icon
                       title="Edit"
                       class="small"

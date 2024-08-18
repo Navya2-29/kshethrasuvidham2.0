@@ -4,7 +4,7 @@
   <div class="container">
     <div class="card-body outlook" style="background:white;">
       <div class="posback">
-        <a routerLink="/dashboard" class="back">&nbsp;&nbsp;<mat-icon title="Edit"
+        <a (click)="navigateToDAshboard()" class="back">&nbsp;&nbsp;<mat-icon title="Edit"
             style="color:white;">arrow_back_ios</mat-icon></a>
         <h1 class="tname">Guruvayurappan Temple</h1>
       </div>
@@ -86,7 +86,7 @@
                   <td style="text-align: left; ">{{data.VM_Code}}-{{data.VM_Name}}-{{data.VM_ID}}</td>
                   <td style="text-align: left; ">{{data.VS_FromDate | date:'dd-MM-yyyy'}}</td>
                   <td style="text-align: left; ">{{data.VS_ToDate | date:'dd-MM-yyyy'}}</td>
-                  <td style="text-align: left; " class="wrap-text">{{data.VS_Reasion}}</td>
+                  <td style="text-align: left;width: 30%; " class="wrap-text">{{data.VS_Reasion}}</td>
                   <td>
                     <mat-icon title="Edit" class="small" style="vertical-align: middle;" (click)="onEdit(data)">edit</mat-icon>
                     <mat-icon title="Delete" class="small" style="vertical-align: middle;" (click)="onDelete(data.VS_ID)">delete</mat-icon>

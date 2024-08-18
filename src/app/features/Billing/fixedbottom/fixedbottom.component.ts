@@ -164,7 +164,7 @@ export class FixedbottomComponent implements OnInit {
           <style>
             @media print {
               @page {
-                size: 3in 4in; /* Set the paper size */
+                size: 3in auto; /* Set the paper size */
                 margin: 0; /* Remove default margins */
               }
               body {

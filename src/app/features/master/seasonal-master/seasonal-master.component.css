@@ -18,6 +18,11 @@
     background-image:url('/assets/images/login-bg.jpg');background-position: center;background-size: cover;
 
 }
+.wrap-text {
+  word-wrap: break-word; /* For older browsers */
+  white-space: normal;   /* Allow text to wrap */
+  word-break: break-all; /* Break long words */
+}
 
 .content{
     width:100%;

@@ -134,9 +134,9 @@
                     type="date"
                     class="form-control sps"
                     formControlName="VazhipadDate"
-                   
-                    [attr.min]="row.get('dateToSet')?.value"
-                    [readOnly]="row.get('VM_Receipt')?.value==='Y'"
+                   [readOnly]="row.get('VM_Receipt')?.value==='Y'"
+                    [min]="row.get('dateToSet')?.value"
+                    
                   /><span style="vertical-align: middle; text-align: center"  *ngIf="multidayBooking[i]">
                     <input
                       type="date"
@@ -202,9 +202,7 @@
                 class="form-control"
                 style="width: 100%; height: 30.6px"
               >
-                <option *ngFor="let item of nakshatham" [value]="item.id">
-                  {{ item.name }}
-                </option>
+              <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_NameEng}}</option>
               </select>
                 </td>
                 <td>

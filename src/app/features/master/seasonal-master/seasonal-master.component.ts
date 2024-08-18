@@ -17,6 +17,7 @@ import { SeasonalMaster } from '../../../models/season-master.model';
 import { debounceTime, switchMap } from 'rxjs';
 import { NotificationService } from '../../../services/notification/notification.service';
 import { Vmaster } from '../../../models/vmaster.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-seasonal-master',
@@ -48,21 +49,30 @@ export class SeasonalMasterComponent implements OnInit {
   loading: boolean = false;
   Id: string;
   VM_Id: number;
-  today: string;
+  today: string |null;
+  tomorrow:string | null;
   vazhipadDetails: any;
   private masterService = inject(MasterService);
   private formBuilder = inject(FormBuilder);
   private notification = inject(NotificationService);
-  constructor(private datePipe: DatePipe) {
+  constructor(private datePipe: DatePipe,private router:Router) {
+    const currentDate = new Date();
+   
+    this.today = this.datePipe.transform(currentDate,'yyyy-MM-dd');
+
+      // Calculate tomorrow's date
+      const tomorrowDate = new Date(currentDate);
+      tomorrowDate.setDate(currentDate.getDate() + 1); // Add one day to the current date
+      this.tomorrow = this.datePipe.transform(tomorrowDate,'yyyy-MM-dd'); // Tomorrow's date in yyyy-mm-dd format
+  
     this.seasonalBlockingForm = this.formBuilder.group({
       VS_code: ['', [Validators.required]],
       VM_name: ['', [Validators.required]],
-      VS_FromDate: [new Date(), [Validators.required]],
-      VS_ToDate: [new Date(), [Validators.required]],
+      VS_FromDate: [this.today, [Validators.required]],
+      VS_ToDate: [this.tomorrow, [Validators.required]],
       VS_Reasion: [''],
     });
-    const currentDate = new Date();
-    this.today = this.datePipe.transform(currentDate, 'yyyy-MM-dd') || '';
+   
   }
 
   ngOnInit(): void {
@@ -77,7 +87,7 @@ export class SeasonalMasterComponent implements OnInit {
         switchMap((code) => this.masterService.getSeasonalVazhipadeByCode(code))
       )
       .subscribe((response: any) => {
-        if (response.length > 0) {
+        if (response?.length > 0) {
           this.seasonalBlockingForm
             .get('VM_name')
             ?.setValue(response[0].VM_Name);
@@ -88,13 +98,47 @@ export class SeasonalMasterComponent implements OnInit {
             this.seasonalBlockingForm.get('VM_name')?.setValue('');
           } else {
             this.seasonalBlockingForm.get('VM_name')?.setValue('');
-            this.notification.showSuccess(
-              `No  Seasonal vazhipad exist for this code ${this.seasonalBlockingForm.value.VS_code}`
-            );
+           
           }
         }
       });
   }
+
+  // Method to check if data already exists
+ // Function to parse date string in 'dd-MM-yyyy' format to Date object
+ parseDate(dateString: string): Date {
+  const [day, month, year] = dateString.split('-').map(Number);
+  return new Date(year, month - 1, day); // Months are 0-indexed in JavaScript Date
+}
+
+isDataAlreadyEntered(formValues: any): boolean {
+  const formFromDate = this.parseDate(formValues.VS_FromDate);
+  const formToDate = this.parseDate(formValues.VS_ToDate);
+
+  console.log('Form From Date:', formFromDate);
+  console.log('Form To Date:', formToDate);
+
+  return this.seasonalMaster.some((item) => {
+    const itemFromDate = new Date(item.VS_FromDate);
+    const itemToDate = new Date(item.VS_ToDate);
+
+    console.log('Item From Date:', itemFromDate);
+    console.log('Item To Date:', itemToDate);
+
+    // Compare dates by day, month, and year only
+    return item.VM_Code === formValues.VS_code &&
+           this.compareDatesByDayMonthYear(itemFromDate, formFromDate) &&
+           this.compareDatesByDayMonthYear(itemToDate, formToDate);
+  });
+}
+
+// Helper method to compare only day, month, and year
+compareDatesByDayMonthYear(date1: Date, date2: Date): boolean {
+  return date1.getDate() === date2.getDate() &&
+         date1.getMonth() === date2.getMonth() &&
+         date1.getFullYear() === date2.getFullYear();
+}
+
   // get form controls
   get SeasonalFormControl() {
     return this.seasonalBlockingForm.controls;
@@ -124,12 +168,37 @@ export class SeasonalMasterComponent implements OnInit {
   }
 
   onSubmit() {
+    
+    if (this.seasonalBlockingForm.invalid) {
+      // Mark all fields as touched to show validation errors
+      this.seasonalBlockingForm.markAllAsTouched();
+      return; // Exit the function without submitting the form
+    }
+    
     const fromDateString = this.seasonalBlockingForm.value.VS_FromDate;
     const toDateString = this.seasonalBlockingForm.value.VS_ToDate;
     this.seasonalBlockingForm.patchValue({
       VS_FromDate: this.formatDate(fromDateString),
       VS_ToDate: this.formatDate(toDateString),
     });
+    const formValues = this.seasonalBlockingForm.value;
+    console.log(formValues )
+
+     // Check if the data already exists in the seasonalMaster array
+     const existingItem = this.isDataAlreadyEntered(formValues);
+  console.log(existingItem)
+     if (existingItem) {
+      // Show a notification with the existing vazhipad details
+      
+      this.notification.showError(`Seasonal data already exists`);
+      this.seasonalBlockingForm.patchValue({
+        VS_FromDate:this.today,
+        VS_ToDate:this.tomorrow
+      })
+      return;
+    }
+
+
     this.loading = true;
     if (this.seasonalBlockingForm.valid) {
       this.masterService
@@ -159,7 +228,10 @@ export class SeasonalMasterComponent implements OnInit {
   // resetting form controls
   onReset() {
     this.loading = true;
-    this.seasonalBlockingForm.reset();
+    this.seasonalBlockingForm.reset({
+      VS_FromDate: this.today,
+      VS_ToDate: this.tomorrow
+    });
     this.updateFlag = false;
     this.loading = false;
   }
@@ -240,7 +312,7 @@ export class SeasonalMasterComponent implements OnInit {
         );
       });
     }
-    this.showNoRecordsMessage = this.filteredSeasonalMaster.length === 0;
+    this.showNoRecordsMessage = this.filteredSeasonalMaster?.length === 0;
   }
 
   // validation
@@ -260,5 +332,9 @@ export class SeasonalMasterComponent implements OnInit {
         console.log(data);
       },
     });
+  }
+
+  navigateToDAshboard(){
+    this.router.navigate(['/dashboard']);
   }
 }

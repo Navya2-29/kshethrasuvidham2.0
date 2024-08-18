@@ -5,7 +5,7 @@
     <div class="container">
      <div class="card-body outlook" style="background:white;">
             <div class="posback">
-                <a routerLink="/dashboard" class="back">&nbsp;&nbsp;<mat-icon title="Edit" style="color:white;">arrow_back_ios</mat-icon></a>
+                <a (click)="navigateToDAshboard()" class="back">&nbsp;&nbsp;<mat-icon title="Edit" style="color:white;">arrow_back_ios</mat-icon></a>
                 <h1 class="tname">Guruvayurappan Temple</h1>
             </div>
             <div class="master">
@@ -56,6 +56,9 @@
                                 {{ day.name }}
                               </label>
                             </div>
+                          </div>
+                          <div *ngIf="showNoDaysError">
+<small style="color: red;">Please selct atleat one day</small>
                           </div>
                          <tr>
                           <td colspan="3"><button *ngIf="!updateFlag" class="btn btn-primary" (click)="onSubmit()"

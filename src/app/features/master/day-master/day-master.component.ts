@@ -21,6 +21,7 @@ import { MasterService } from '../../../services/master/master.service';
 import { Observable, map, of, startWith } from 'rxjs';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { NotificationService } from '../../../services/notification/notification.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-day-master',
@@ -53,7 +54,7 @@ export class DayMasterComponent implements OnInit {
   vazhid:any;
   dayId:any;
   filteredDayMaster$: Observable<any[]> = of([]);
-
+  showNoDaysError:boolean = false;
   days = [
     {
       id: 1,
@@ -93,10 +94,10 @@ export class DayMasterComponent implements OnInit {
   private masterService = inject(MasterService);
   private formBuilder = inject(FormBuilder);
   private notification = inject(NotificationService);
-  constructor() {
+  constructor(private router:Router) {
     this.dayMasterForm = this.formBuilder.group({
       VM_Name: ['', [Validators.required]],
-      selectedDays: this.formBuilder.array([], { validators: this.validateDaysSelected() }),
+      selectedDays: this.formBuilder.array([],this.atLeastOneSelected()),
     });
     this.addCheckboxes();
   }
@@ -108,11 +109,11 @@ export class DayMasterComponent implements OnInit {
     });
   }
 
-  validateDaysSelected(): ValidatorFn {
-    return (formArray: AbstractControl): { [key: string]: any } | null => {
-      const formArrayControl = formArray as FormArray;
-      const isValid = formArrayControl.controls.some(control => control.value === true);
-      return isValid ? null : { 'daysRequired': 'At least one day must be selected.' };
+  atLeastOneSelected(): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: boolean } | null => {
+      const formArray = control as FormArray;
+      const isAnyChecked = formArray.controls.some(ctrl => ctrl.value);
+      return isAnyChecked ? null : { noSelection: true };
     };
   }
 
@@ -209,6 +210,7 @@ export class DayMasterComponent implements OnInit {
   //     ))
   //   );
   // }
+  
   onSubmit() {
 
     if (this.dayMasterForm.invalid) {
@@ -216,13 +218,20 @@ export class DayMasterComponent implements OnInit {
       Object.keys(this.dayMasterForm.controls).forEach(key => {
         this.dayMasterForm.get(key)?.markAsTouched();
       });
+     
+
       return;
     }
+
+    
     const selectedDays = this.dayMasterForm.value.selectedDays
       .map((checked: boolean, i: number) =>
         checked ? { day: this.days[i].id } : null
       )
       .filter((v: { day: number } | null): v is { day: number } => v !== null);
+
+      
+  this.showNoDaysError=false;
     const formValue = {
       VM_Name: this.dayMasterForm.get('VM_Name')?.value,
       dayinfo: selectedDays,
@@ -325,6 +334,7 @@ export class DayMasterComponent implements OnInit {
       'selectedDays',
       this.formBuilder.array(this.days.map(() => false))
     );
+    this.updateFlag=false;
   }
 
   update(){
@@ -340,6 +350,7 @@ this.onDeleteforUpdate(this.vazhid);
           this.loading = false;
           this.getDayMster();
           this.onSubmit();
+          this.updateFlag=false;
         } else {
           this.notification.showSuccess('An error occured try gain');
           this.loading = false;
@@ -350,5 +361,9 @@ this.onDeleteforUpdate(this.vazhid);
         this.loading = false;
       },
     });
+  }
+
+  navigateToDAshboard(){
+    this.router.navigate(['/dashboard']);
   }
 }
