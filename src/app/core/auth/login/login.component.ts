@@ -19,7 +19,7 @@ import { CommonModule } from '@angular/common';
   styleUrl: './login.component.css'
 })
 export class LoginComponent implements OnInit {
-  hide:false;
+  hide:boolean=true;
   loginForm:FormGroup;
   loading:boolean=false;
   errorMessage="";
@@ -39,7 +39,7 @@ export class LoginComponent implements OnInit {
 submitLogin(login:Login){
   this.loading=true;
   this.errorMessage='';
-  console.log(login +"data ts");
+  console.log(login);
   if(login.username=="admin" && login.password=="bbb"){
     this.authService.getLoginInfo(login).subscribe({
       next:(data)=>{

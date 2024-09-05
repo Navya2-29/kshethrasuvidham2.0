@@ -1,6 +1,6 @@
 <div class="">
   <div class="">
-    <div class="" style="display:flex;justify-content: space-between;border:0px solid red;width:100%;align-items:center;padding-left:20px;padding-right:20px;background:#223d61;">
+    <div class="" style="display:flex;justify-content: space-between;border:0px solid red;width:100%;align-items:center;padding-left:20px;padding-right:20px;background-image:url('assets/images/banner.png');background-size:cover;height:100px;background-position:center;">
       <div class="">
         <div class="card top">
           <app-menu></app-menu>
@@ -19,9 +19,9 @@
               <mat-icon>supervisor_account</mat-icon>
               <span>User Name</span>
             </button>
-            <button mat-menu-item>
+            <button mat-menu-item (click)="logout()"> 
               <mat-icon>logout</mat-icon>
-              <span (click)="logout()">Logout</span>
+              <span>Logout</span>
             </button>
           </mat-menu>    
         </div>

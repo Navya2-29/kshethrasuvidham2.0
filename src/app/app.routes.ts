@@ -20,6 +20,8 @@ import { LoginComponent } from './core/auth/login/login.component';
 import { authGuard } from './core/auth/guard/auth.guard';
 import { StarMasterComponent } from './features/master/star-master/star-master.component';
 import { CalendarComponent } from './calendar/calendar.component';
+import { VazhipadVivaramComponent } from './features/Billing/vazhipad-vivaram/vazhipad-vivaram.component';
+import { MattinangalComponent } from './features/Billing/mattinangal/mattinangal.component';
 
 
 
@@ -50,6 +52,10 @@ export const routes: Routes = [
   },
   {
     path:'calander',component:CalendarComponent,canActivate:[authGuard]
+  },
+  
+  {
+    path:'mattinagal',component:MattinangalComponent,canActivate:[authGuard]
   },
   {
     path:'**',pathMatch:'full', redirectTo:'/dashboard'

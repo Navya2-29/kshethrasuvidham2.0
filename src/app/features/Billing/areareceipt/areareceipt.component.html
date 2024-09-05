@@ -135,7 +135,7 @@
                     class="form-control sps"
                     formControlName="VazhipadDate"
                    [readOnly]="row.get('VM_Receipt')?.value==='Y'"
-                    [min]="row.get('dateToSet')?.value"
+                    [attr.min]="row.get('dateToSet')?.value"
                     
                   /><span style="vertical-align: middle; text-align: center"  *ngIf="multidayBooking[i]">
                     <input

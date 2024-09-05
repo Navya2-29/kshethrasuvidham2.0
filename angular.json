@@ -30,7 +30,8 @@
               "src/assets/css/bootstrap.css",
               "node_modules/ngx-toastr/toastr.css"
             ],
-            "scripts": []
+            "scripts": [   
+            ]
           },
           "configurations": {
             "production": {
@@ -92,7 +93,9 @@
               "src/assets/bootstrap.css",
               "node_modules/ngx-toastr/toastr.css"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/jsprintmanager/jsprintmanager.js"
+            ]
           }
         }
       }

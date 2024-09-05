@@ -2,12 +2,23 @@
 <main class="main">
     <div class="content">
       <div class="left-side">
-       <!-- <mat-slide-toggle>Toggle me!</mat-slide-toggle> -->
+        <div style="display:flex;flex-direction: column;align-items: center;">
+          <img src="assets/images/temple-logo.png" style="width:50%;">
+         <h2 style="font-size:25.2pt;font-weight:500;color:white;line-height:30.6pt;">Padmanabha Swami Temple</h2>
+        </div>
        
-      </div>
+       <div style="width:100%;position:absolute;bottom:0px;display:flex;justify-content: space-between;padding:10px;align-items: center;justify-items: center;">
+        <!-- <p style="color:white;">Version 1.0</p> -->
+        <p style="color:white;">Last Updated on: 15 Aug, 2024</p>
+       </div>
+    </div>
+     
+    <p style="color:brown;position:absolute;bottom:0px;margin-bottom:15px;font-size:12.6pt;">&#169; Copyright 2024 | Cubix Software Solutons</p>
      
       <!-- <div class="divider" role="separator" aria-label="Divider"></div> -->
       <div class="right-side">
+        <p style="position:absolute;top:0;right:0;margin-top:0px;margin-right:27px;font-weight:800;">Version 1.0</p>
+
         <img src="assets/images/logo.jpg">
         <h2>Counter Login</h2>
         <form [formGroup]="loginForm">
@@ -24,8 +35,8 @@
             <mat-form-field appearance="outline">
               <mat-label>Enter your password</mat-label>
               <input matInput [type]="hide ? 'password' : 'text'" formControlName="password">
-              <button mat-icon-button matSuffix >
-                <!-- <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon> -->
+              <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
               </button>
               
             </mat-form-field>

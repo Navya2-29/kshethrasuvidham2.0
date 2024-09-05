@@ -42,6 +42,7 @@ export class FixedbottomComponent implements OnInit {
   billNumber: string = '';
   lastBillnumber: number;
   currentBillNumber: string;
+  todayCollection:string='0'
   private subscription: Subscription = new Subscription();
   private totalService = inject(TotalAmountService);
   private notiication = inject(NotificationService);
@@ -76,6 +77,7 @@ export class FixedbottomComponent implements OnInit {
     });
   }
   ngOnInit(): void {
+    this.getTodayCollection();
     this.totalService.totalAmount$.subscribe((amount) => {
       this.totalAmount = amount;
     });
@@ -112,146 +114,137 @@ export class FixedbottomComponent implements OnInit {
   }
   printReceipt() {
     this.receiptPrinrservice.receiptData$.subscribe((data) => {
-      this.printReceipts(data);
+      this.printReceipts(data );
+      this.getTodayCollection()
       console.log(data);
     });
   }
 
   private printReceipts(data: any) {
-    // Extract details from data
-    const {
-      BillNo,
-      Billdate,
-      Mobile,
-      Address1,
-      Address2,
-      Address3,
-      Email,
-      Pincode,
-      vazhipadinfo,
-    } = data;
+  const {
+    BillNo,
+    Billdate,
+    Mobile,
+    Address1,
+    Address2,
+    Address3,
+    Email,
+    Pincode,
+    vazhipadinfo,
+  } = data;
 
-    // Calculate the total amount
-    const totalAmount = vazhipadinfo.reduce(
+  // Step 1: Group by Prathista
+  const groupedByPrathista = vazhipadinfo.reduce((acc: any, item: any) => {
+    if (!acc[item.Prethista]) {
+      acc[item.Prethista] = [];
+    }
+    acc[item.Prethista].push(item);
+    return acc;
+  }, {});
+
+  // Step 2: Generate HTML for each Prathista group
+  let allReceiptsContent = '';
+
+  for (const prathista in groupedByPrathista) {
+    const items = groupedByPrathista[prathista];
+
+    const totalAmount = items.reduce(
       (total: number, item: any) => total + parseFloat(item.Amount || '0'),
       0
     );
 
-    // Handle multiple vazhipadinfo entries if present
-    const vazhipadRows = vazhipadinfo
+    const vazhipadRows = items
       .map(
         (item: any) => `
-      <tr>
-        <td>${item.Vazhipad}</td>
-        <td>${item.Prethista}</td>
-        <td>${item.Name}</td>
-        <td>${item.Star}</td>
-       
-        <td>${item.Qty}</td>
-        <td>${item.Rate}</td>
-        <td>${item.Amount}</td>
-        
-      </tr>
-    `
+        <tr>
+          <td>${item.Vazhipad || "N/A"}</td>
+          <td>${item.VazhipadDate || "N/A"}</td>
+          <td>${item.Name || "N/A"}</td>
+          <td>${item.Star || "N/A"}</td>
+          <td>${item.Qty || "0"}</td>
+          <td>${item.Rate || "0"}</td>
+          <td>${item.Amount || "0"}</td>
+        </tr>
+      `
       )
       .join('');
 
-    // Prepare HTML content for the receipt
     const receiptContent = `
-      <html>
-        <head>
-          <title>Receipt</title>
-          <style>
-            @media print {
-              @page {
-                size: 3in auto; /* Set the paper size */
-                margin: 0; /* Remove default margins */
-              }
-              body {
-                width: 3in; /* Set the width to match the paper size */
-                height: 4in; /* Set the height to match the paper size */
-                margin: 0; /* Remove default margins */
-                font-family: Arial, sans-serif;
-                font-size: 12px; /* Adjust font size as needed */
-              }
-              table {
-                width: 100%; /* Full width for table */
-                border-collapse: collapse; /* Remove gaps between cells */
-              }
-              th, td {
-                border: 1px solid black; /* Border style */
-                padding: 2px; /* Adjust padding as needed */
-                text-align: left;
-                font-size: 10px; /* Adjust font size for table cells */
-              }
-              th {
-                background-color: #f2f2f2; /* Header background color */
-              }
-              p {
-                margin: 2px 0; /* Adjust margin for paragraph elements */
-                font-size: 10px; /* Adjust font size for paragraphs */
-              }
-            }
-          </style>
-        </head>
-        <body>
-          <h1>Receipt</h1>
-          <p><strong>Bill Number:</strong> ${BillNo}</p>
-          <p><strong>Bill Date:</strong> ${Billdate}</p>
-          <p><strong>Mobile:</strong> ${Mobile}</p>
-          <p><strong>Address:</strong> ${Address1}, ${Address2}, ${Address3}</p>
-          <p><strong>Email:</strong> ${Email}</p>
-          <p><strong>Pincode:</strong> ${Pincode}</p>
-          
-          <table>
-            <thead>
-              <tr>
-                <th>Vazhipad</th>
-                <th>Prethista</th>
-                <th>Name</th>
-                <th>Star</th>
-                
-                <th>Qty</th>
-                <th>Rate</th>
-                <th>Amount</th>
-                
-              </tr>
-            </thead>
-            <tbody>
-              ${vazhipadRows}
-              <tr>
-                <td colspan="6" style="text-align: right;"><strong>Total Amount:</strong></td>
-                <td><strong>${totalAmount.toFixed(2)}</strong></td>
-              </tr>
-            </tbody>
-          </table>
-        </body>
-      </html>
+      <div class="receipt-page">
+        <h1>Receipt</h1>
+        <p><strong>Bill Number:</strong> ${BillNo || "N/A"}</p>
+        <p><strong>Bill Date:</strong> ${Billdate || "N/A"}</p>
+        <p><strong>Mobile:</strong> ${Mobile || "N/A"}</p>
+        <p><strong>Address:</strong> 
+          ${[Address1, Address2, Address3].filter(Boolean).join(', ') || "N/A"}
+        </p>
+        <p><strong>Email:</strong> ${Email || "N/A"}</p>
+        <p><strong>Pincode:</strong> ${Pincode || "N/A"}</p>
+        <h2>Prathista: ${prathista}</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Vazhipad</th>
+              <th>Date</th>
+              <th>Name</th>
+              <th>Star</th>
+              <th>Qty</th>
+              <th>Rate</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${vazhipadRows}
+            <tr>
+              <td colspan="6" style="text-align: right;"><strong>Total Amount:</strong></td>
+              <td><strong>${totalAmount.toFixed(2)}</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="page-break"></div>
     `;
 
-    // Print the content
-    this.printContent(receiptContent);
+    allReceiptsContent += receiptContent;
   }
 
-  private printContent(content: string) {
-    this.getLastBillNumber();
-    // this.resetForm()
-    const printWindow = window.open('', '', 'height=600,width=800');
-    if (printWindow) {
-      printWindow.document.open();
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>Print Receipt</title>
-          </head>
-          <body onload="window.print(); window.close();">
-            ${content}
-          </body>
-        </html>
-      `);
-      printWindow.document.close();
-    }
+  // Step 3: Add CSS for page break
+  const printContent = `
+    <html>
+      <head>
+        <title>Receipt</title>
+        <style>
+          .receipt-page {
+            margin-bottom: 20px;
+          }
+          .page-break {
+            page-break-before: always;
+          }
+        </style>
+      </head>
+      <body>
+        ${allReceiptsContent}
+      </body>
+    </html>
+  `;
+
+  // Step 4: Print all receipts
+  this.printContent(printContent);
+}
+
+private printContent(content: string) {
+  const printWindow = window.open('', '_blank');
+
+  if (printWindow) {
+    printWindow.document.open();
+    printWindow.document.write(content);
+    printWindow.document.close();
+    printWindow.print();
+  } else {
+    console.error("Failed to open the print window.");
+    // Optionally, you can show an alert or handle this error more gracefully.
   }
+}
   // private generateBillNumber(): number {
   // Simple example: "BILL" followed by current timestamp
   // return 'CBX-' + uuidv4();
@@ -429,4 +422,13 @@ export class FixedbottomComponent implements OnInit {
   //       Memberid: '1',
   // })
   // }
+
+  getTodayCollection(){
+    this.masterService.getTodaycollection().subscribe({
+      next:(todaycollection)=>{
+        console.log(todaycollection);
+        this.todayCollection=todaycollection[0].Total;
+      }
+    })
+  }
 }

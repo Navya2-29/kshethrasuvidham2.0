@@ -18,6 +18,9 @@
     background-image:url('/assets/images/login-bg.jpg');background-position: center;background-size: cover;
     
 }
+input.ng-invalid.ng-touched,select.ng-invalid.ng-touched {
+  border: 2px solid red;
+}
 
 .content{
     width:100%;

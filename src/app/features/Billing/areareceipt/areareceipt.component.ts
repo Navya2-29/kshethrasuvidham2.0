@@ -13,7 +13,7 @@ import {
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
-import { DatePipe } from '@angular/common';
+import { DatePipe, formatDate } from '@angular/common';
 import {
   AbstractControl,
   FormArray,
@@ -22,6 +22,7 @@ import {
   FormsModule,
   ReactiveFormsModule,
   ValidationErrors,
+  ValidatorFn,
   Validators,
 } from '@angular/forms';
 import { AsyncPipe, CommonModule } from '@angular/common';
@@ -152,13 +153,13 @@ export class AreareceiptComponent implements OnInit {
         ],
       ],
       Amount: [''],
-      VazhipadDate: ['', [Validators.required],this.validateVazhipadDate],
+      VazhipadDate: ['', [Validators.required]],
       TotalAmt: [this.totalAmount],
       VTime: ['0', [Validators.required]],
       // multidaybookedDetails: this.fb.array([]),
       Name2: [''],
       Star2: ['28'],
-      Postal: ['10'],
+      Postal: ['0'],
       PMid: ['1'],
       Mday: [''],
       NalBy: [''],
@@ -188,18 +189,45 @@ export class AreareceiptComponent implements OnInit {
   }
 
   checkVazhipadDate(row: FormGroup) {
-   this.validateVazhipadDate(row)
-    // const vmBooking = row.get('booking')?.value === 'Y' ? 'Y' : 'N';
-    // console.log(vmBooking)
-    // const enteredDate = new Date(row.get('VazhipadDate')?.value);
-    // const currentDate = new Date(); // Current date without time
-    // const tomorrowDate = new Date(currentDate);
-    // tomorrowDate.setDate(currentDate.getDate() + 1);
-    // if (vmBooking === 'N' && enteredDate < currentDate) {
-    //   this.notification.error('The Vazhipad date must be today or a future date.');
-    // } else if (vmBooking === 'Y' && enteredDate < tomorrowDate) {
-    //   this.notification.error('The Vazhipad date must be tomorrow or a future date.');
-    // }
+    console.log('Form Group:', row);
+
+    // Retrieve values from the form
+    const vazhipadDateStr = row.get('VazhipadDate')?.value;
+    const fromDateStr = row.get('seasonalDates.fromDate')?.value;
+    const toDateStr = row.get('seasonalDates.toDate')?.value;
+    if (fromDateStr && toDateStr) {
+      console.log('Vazhipad Date String:', vazhipadDateStr);
+      console.log('From Date String:', fromDateStr);
+      console.log('To Date String:', toDateStr);
+
+      // Convert string dates to Date objects
+      const vazhipadDate = vazhipadDateStr ? new Date(vazhipadDateStr) : null;
+      const fromDate = fromDateStr ? new Date(fromDateStr) : null;
+      const toDate = toDateStr ? new Date(toDateStr) : null;
+
+      console.log('Parsed Vazhipad Date:', vazhipadDate);
+      console.log('Parsed From Date:', fromDate);
+      console.log('Parsed To Date:', toDate);
+
+      // Validate date ranges
+      if (vazhipadDate && fromDate && toDate) {
+        if (vazhipadDate < fromDate || vazhipadDate > toDate) {
+          console.log('Date is out of range');
+          row.get('VazhipadDate')?.setErrors({ invalidDateRange: true });
+          this.notification.error(
+            `Vazhipad date must be within ${
+              fromDate.toISOString().split('T')[0]
+            } - ${toDate.toISOString().split('T')[0]}`
+          );
+        } else {
+          console.log('Date is within range');
+          row.get('VazhipadDate')?.setErrors(null);
+        }
+      } else {
+        console.log('Date values are invalid or missing');
+        row.get('VazhipadDate')?.setErrors({ invalidDateRange: true });
+      }
+    }
   }
 
   zeroRateValidator(control: AbstractControl): ValidationErrors | null {
@@ -294,13 +322,7 @@ export class AreareceiptComponent implements OnInit {
   dateFormat(date: Date): any {
     return this.datePipe.transform(date, 'dd-MM-yyyy') || '';
   }
-  private dateFormatd(date: Date): string {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
 
-    return `${day}-${month}-${year}`;
-  }
   setupAutocomplete(index: number): void {
     const row = this.vazhipadinfo.at(index) as FormGroup;
     const control = row.get('Vazhipad');
@@ -314,15 +336,27 @@ export class AreareceiptComponent implements OnInit {
       });
   }
 
-  private _filter(value: string): any[] {
+  private _filter(value: string | null | undefined): any[] {
+    // Handle null or undefined value
+    if (value === null || value === undefined) {
+      return []; // or handle as appropriate for your use case
+    }
+
     const filterValue = value.toLowerCase();
-    const normalizedVazhipadMal = value.normalize('NFC');
-    return this.VMList.filter(
-      (option) =>
-        option.VM_Name.toLowerCase().includes(filterValue) ||
-        option.VM_Code.toLowerCase().includes(filterValue) ||
-        option.VM_RName?.normalize('NFC').includes(normalizedVazhipadMal)
-    );
+    const normalizedValue = value.normalize('NFC');
+
+    return this.VMList.filter((option) => {
+      // Ensure properties accessed on option are not null or undefined
+      const vmName = option.VM_Name ? option.VM_Name.toLowerCase() : '';
+      const vmCode = option.VM_Code ? option.VM_Code.toLowerCase() : '';
+      const vmRName = option.VM_RName ? option.VM_RName.normalize('NFC') : '';
+
+      return (
+        vmName.includes(filterValue) ||
+        vmCode.includes(filterValue) ||
+        vmRName.includes(normalizedValue)
+      );
+    });
   }
 
   getAllvazhipad() {
@@ -386,8 +420,8 @@ export class AreareceiptComponent implements OnInit {
       selectedRow.get('Vazhid')?.setValue(selectedVazhipadItem.VM_Id);
       console.log(selectedRow);
       // Fetch vazhipad details using VM_Code
-      this.getDatamasterdateCheck(selectedVazhipadItem.VM_Id,index);
-    this.getSeasnalalVazhipadData(selectedVazhipadItem.VM_Id,index);
+      this.getSeasnalalVazhipadData(selectedVazhipadItem.VM_Id, index);
+      this.getDatamasterdateCheck(selectedVazhipadItem.VM_Id, index);
       const vazhipadCode = selectedVazhipadItem.VM_Code;
       console.log(vazhipadCode);
       this.fetchVazhipadDetails(vazhipadCode, index);
@@ -415,63 +449,27 @@ export class AreareceiptComponent implements OnInit {
         selectedRow.get('VM_Receipt')?.setValue(res[0].VM_Receipt);
         selectedRow.get('ratechange')?.setValue(res[0].VM_Rate_Change);
         selectedRow.get('VTime')?.setValue(res[0].VM_Time);
-        this.setVazhipadDate(index);
-        // const booking = selectedRow.get('booking')?.value;
-        // const receipt=selectedRow.get('VM_Receipt')?.value;
-        // const allowedDays = selectedRow.get('allowedDays')?.value as number[] || [];
-        // console.log(allowedDays +"fffffffffffffffffffffff")
-        // this.tomorrowDate = new Date(this.currentDate);
-        // this.tomorrowDate.setDate(this.currentDate.getDate() + 1);
-
-        // this.dateToSet =
-        //   isVMBooking === 'Y'
-        //     ? this.datePipe.transform(this.tomorrowDate, 'yyyy-MM-dd')
-        //     : this.datePipe.transform(this.currentDate, 'yyyy-MM-dd');
-        // selectedRow.get('VazhipadDate')?.setValue(this.dateToSet);
-
-        // if (receipt === 'Y' && booking === 'N') {
-        // Case 1: Receipt is "Y" and Booking is "N"
-
-        // if (allowedDays.length === 0) {
-
-        // Set vazhipadDate to today's date
-        // selectedRow.get('VazhipadDate')?.setValue(this.datePipe.transform(this.currentDate, 'yyyy-MM-dd'));
-        // selectedRow.get('dateToSet')?.setValue(this.datePipe.transform(this.currentDate, 'yyyy-MM-dd'));
-        // }
-        // } else if (booking === 'Y' && receipt === 'N') {
-        // selectedRow.get('VazhipadDate')?.setValue(this.datePipe.transform(this.tomorrowDate, 'yyyy-MM-dd'));
-        // selectedRow.get('dateToSet')?.setValue(this.datePipe.transform(this.tomorrowDate, 'yyyy-MM-dd'));
-        // }
 
         this.selectedVazhipadPrathistaDetails(vazhipadcode, index);
-this.setVazhipadDate(index)
+
+        this.setVazhipadDate(index);
         console.log(selectedRow);
       });
   }
-
-
-
-
-
 
   setVazhipadDate(index: number) {
     const selectedRow = this.vazhipadinfo.at(index) as FormGroup;
     const booking = selectedRow.get('booking')?.value;
     const receipt = selectedRow.get('VM_Receipt')?.value;
+    const vazhipadId = selectedRow.get('Vazhid')?.value;
     const allowedDays =
       (selectedRow.get('allowedDays')?.value as number[]) || [];
-      const seasonaldays =
-      selectedRow.get('seasonalDates')?.value ;
+    const seasonaldays = selectedRow.get('seasonalDates')?.value;
     console.log(allowedDays + 'fffffffffffffffffffffff');
     this.tomorrowDate = new Date(this.currentDate);
     this.tomorrowDate.setDate(this.currentDate.getDate() + 1);
-
+    const fromDate = seasonaldays ? seasonaldays.fromDate : null;
     if (receipt === 'Y' && booking === 'N') {
-      // Case 1: Receipt is "Y" and Booking is "N"
-
-      // if (allowedDays.length === 0) {
-
-      // Set vazhipadDate to today's date
       selectedRow
         .get('VazhipadDate')
         ?.setValue(this.datePipe.transform(this.currentDate, 'yyyy-MM-dd'));
@@ -479,23 +477,29 @@ this.setVazhipadDate(index)
         .get('dateToSet')
         ?.setValue(this.datePipe.transform(this.currentDate, 'yyyy-MM-dd'));
       // }
-    } else if (booking === 'Y' && receipt === 'N') {
+    } else if (booking === 'Y' && receipt === 'N'  && (!seasonaldays || seasonaldays === '')) {
       selectedRow
         .get('VazhipadDate')
         ?.setValue(this.datePipe.transform(this.tomorrowDate, 'yyyy-MM-dd'));
       selectedRow
         .get('dateToSet')
         ?.setValue(this.datePipe.transform(this.tomorrowDate, 'yyyy-MM-dd'));
-    }else if(allowedDays?.length>0){
-      if (this.nearestAllowedDate) {
-
-            selectedRow.get('VazhipadDate')?.setValue(this.datePipe.transform(this.nearestAllowedDate,'yyyy-MM-dd')); // YYYY-MM-DD format
-            selectedRow.get('dateToSet')?.setValue(this.datePipe.transform(this.nearestAllowedDate, 'yyyy-MM-dd'));
-          }
-
-
-    }else if(seasonaldays){
-      selectedRow.get('VazhipadDate')?.setValue(seasonaldays.fromDate);
+    } else if (booking === 'N' && receipt === 'N' ) {
+      selectedRow
+        .get('VazhipadDate')
+        ?.setValue(this.datePipe.transform(this.currentDate, 'yyyy-MM-dd'));
+      selectedRow
+        .get('dateToSet')
+        ?.setValue(this.datePipe.transform(this.currentDate, 'yyyy-MM-dd'));
+    } 
+    
+    
+    
+    else if (fromDate) {
+      selectedRow.get('VazhipadDate')?.setValue(fromDate);
+      selectedRow
+        .get('dateToSet')
+        ?.setValue(this.datePipe.transform(fromDate, 'yyyy-MM-dd'));
     }
   }
 
@@ -503,6 +507,8 @@ this.setVazhipadDate(index)
   private formatDate(date: Date): string {
     return date.toISOString().split('T')[0];
   }
+
+  // fetch prathista detasils
   selectedVazhipadPrathistaDetails(vazhipadcode: any, index: number) {
     const selectedRow = this.vazhipadinfo.at(index) as FormGroup;
     this.masterservice.getVazhipadByCodeForDiety(vazhipadcode).subscribe({
@@ -538,15 +544,11 @@ this.setVazhipadDate(index)
               }
             });
         }
-        // const selectedRow = this.vazhipadinfo.at(index);
-        // selectedRow.get('Prathishta')?.setValue(res[0].PM_Name);
       },
       error: (err) => {
         console.log('error in getting prathishta');
       },
     });
-
-   
   }
 
   // opne multiday open dialog box
@@ -585,12 +587,9 @@ this.setVazhipadDate(index)
     const row = this.vazhipadinfo.at(rowIndex) as FormGroup;
     console.log(row);
     console.log(result[0]);
-
     let lastIndex = result.length - 1;
     const data = result[0];
-    // console.log(data.Prethista);
-    // row.get('Prethista')?.setValue(data.Prethista)
-    // this.prathishtaOptions[rowIndex]=data.Prethista
+    console.log(data.Prethista);
     this.multidayBooking[rowIndex] = result;
     row.patchValue({
       Vazhipad: data.Vazhipad,
@@ -609,7 +608,6 @@ this.setVazhipadDate(index)
       Star: data.Star,
       Name2: data.Name2,
       Star2: data.Star2,
-      // Add other fields if needed
     });
   }
 
@@ -632,6 +630,7 @@ this.setVazhipadDate(index)
     row.get('Amount')?.setValue(amount);
     this.updateTotalAmount();
   }
+
   // total amount calculation
   updateTotalAmount(): void {
     this.totalAmount = this.vazhipadinfo.controls.reduce((sum, row) => {
@@ -647,11 +646,50 @@ this.setVazhipadDate(index)
   private flattenMultiDayBooking(): any[] {
     return this.multidayBooking.flat();
   }
+
   // api data send
   sendDataToApi(data: any) {
-    if (this.form.invalid) {
-      this.notification.error('Please fill out all required fields correctly.');
+    let isFormValid = true; // Initialize form validity
 
+    // Iterate through each form group (row) in the vazhipadinfo FormArray
+    this.vazhipadinfo.controls.forEach((row) => {
+      // Mark all controls in this row as touched to trigger validation styles
+      row.markAllAsTouched();
+  
+      // Check if the current row is invalid
+      if (row.invalid) {
+        isFormValid = false; // Set form validity to false if any row is invalid
+  
+        // Display validation messages for each field based on its errors
+        if (row.get('Vazhipad')?.errors?.['required']) {
+          this.notification.success('Please select a vazhipad');
+        } else if (row.get('Vazhipad')?.errors?.['invalidVazhipad']) {
+          this.notification.success('Please select a Valid vazhipad');
+        } else if (row.get('Name')?.errors?.['required']) {
+          this.notification.success('Please enter the Name');
+        } else if (row.get('Star')?.errors?.['required']) {
+          this.notification.success('Please select a Star');
+        } else if (row.get('Prethista')?.errors?.['required']) {
+          this.notification.success('Please select a Prethista');
+        } else if (row.get('Qty')?.errors?.['required']) {
+          this.notification.success('Please enter a Qty');
+        } else if (row.get('Rate')?.errors?.['required']) {
+          this.notification.success('Please enter a Rate');
+        } else if (row.get('Rate')?.errors?.['pattern']) {
+          this.notification.success('Enter a valid rate');
+        } else if (row.get('Rate')?.errors?.['zeroRate']) {
+          this.notification.success('Rate cannot be zero');
+        } else if (row.get('VazhipadDate')?.errors?.['required']) {
+          this.notification.success('Please select a VazhipadDate');
+        }
+  
+        // Stop further validation if a row is found to be invalid
+        return;
+      }
+    });
+  
+    // If the form is invalid, do not proceed with the API call
+    if (!isFormValid) {
       return;
     }
     console.log('ffffffffffffffffffff');
@@ -706,6 +744,7 @@ this.setVazhipadDate(index)
     });
   }
 
+  // form reset
   resetForm() {
     this.form.reset();
     this.vazhipadinfo.clear();
@@ -714,6 +753,7 @@ this.setVazhipadDate(index)
     this.updateSlno();
   }
 
+  // format the data based apiformat
   private formatDateFields(data: any): any {
     const formattedData = { ...data };
     if (
@@ -749,7 +789,7 @@ this.setVazhipadDate(index)
     return formattedData;
   }
 
-  // add row by key press
+  // add row by enter key press
 
   handleTimeFieldKeyPress(
     event: KeyboardEvent,
@@ -768,6 +808,7 @@ this.setVazhipadDate(index)
     }
   }
 
+  // show validatin error
   showValidationErrors(row: FormGroup): void {
     Object.keys(row.controls).forEach((key) => {
       const controlErrors: ValidationErrors = row.get(key)?.errors || {};
@@ -790,230 +831,110 @@ this.setVazhipadDate(index)
     });
   }
 
+  // getseasonal vazhipad data
   getSeasnalalVazhipadData(vid: string, index: number) {
     console.log(vid + ' ssssssssss');
     this.masterservice.getSeasonalVazhipadDateCheck(vid).subscribe({
       next: (data) => {
-        const row = this.vazhipadinfo.at(index) as FormGroup;
+        console.log(data);
 
-        if (
-          data &&
-          data.length > 0 &&
-          data[0].VS_FromDate &&
-          data[0].VS_ToDate
-        ) {
-          // Parse the dates and ensure they are valid
-          const fromDate = new Date(data[0].VS_FromDate);
-          const toDate = new Date(data[0].VS_ToDate);
+        // Check if the response data is empty or not
+        if (data && data.length > 0) {
+          const seasonalDates = {
+            fromDate: data[0].VS_FromDate,
+            toDate: data[0].VS_ToDate,
+          };
+          console.log(seasonalDates);
 
-          if (!isNaN(fromDate.getTime()) && !isNaN(toDate.getTime())) {
-            this.seasonalDates = {
-              fromDate: this.datePipe.transform(fromDate, 'yyyy-MM-dd'),
-              toDate: this.datePipe.transform(toDate, 'yyyy-MM-dd'),
-            };
+          const row = this.vazhipadinfo.at(index) as FormGroup;
+          const formattedFromDate = this.datePipe.transform(
+            seasonalDates.fromDate,
+            'yyyy-MM-dd'
+          );
+          const formattedToDate = this.datePipe.transform(
+            seasonalDates.toDate,
+            'yyyy-MM-dd'
+          );
 
-            // Update seasonal dates in the specific row
-            row.get('seasonalDates')?.patchValue(this.seasonalDates);
+          // Update the form with the fetched seasonal dates
+          row.get('seasonalDates')?.patchValue({
+            fromDate: formattedFromDate,
+            toDate: formattedToDate,
+          });
 
-            // Set vazhipadDate to seasonal 'fromDate'
-            // row.get('VazhipadDate')?.setValue(this.seasonalDates.fromDate);
-          }
-          // else {
-          // Handle invalid date formats
-          // this.seasonalDates = { fromDate: '', toDate: '' };
-          // row.get('seasonalDates')?.patchValue(this.seasonalDates);
-          // }
+          this.setVazhipadDate(index);
+
+          console.log(row);
         } else {
-          // Handle case when data is empty or dates are not present
-          this.seasonalDates = { fromDate: '', toDate: '' };
-          row.get('seasonalDates')?.patchValue(this.seasonalDates);
+          // Handle the case when data is empty
+          console.warn('No seasonal data available for the provided ID');
+          const row = this.vazhipadinfo.at(index) as FormGroup;
+          row.get('seasonalDates')?.patchValue({ fromDate: '', toDate: '' });
+          row.get('vazhipadDate')?.patchValue('');
+          // Optionally, show a notification or alert to inform the user
         }
       },
       error: (err) => {
         console.error('Error fetching seasonal vazhipad data:', err);
         // Handle error case by resetting seasonal dates
         const row = this.vazhipadinfo.at(index) as FormGroup;
-        this.seasonalDates = { fromDate: '', toDate: '' };
-        row.get('seasonalDates')?.patchValue(this.seasonalDates);
+        row.get('seasonalDates')?.patchValue({ fromDate: '', toDate: '' });
+        row.get('vazhipadDate')?.patchValue('');
+        // Optionally, show a notification or alert to inform the user
+        this.notification.error(
+          'Error fetching seasonal data. Please try again later.'
+        );
       },
     });
   }
 
+  // get the day master vazhipad data
   getDatamasterdateCheck(vid: string, index: number) {
     const row = this.vazhipadinfo.at(index) as FormGroup;
 
     this.masterservice.getDayMastervazhipaddateCheck(vid).subscribe({
       next: (data) => {
-        // Check the API response
-        console.log('API Response:', data);
+        // Extract only the 'Day' field from each object in the response
+        console.log(data);
+        const allowedDays = data.map((item: any) => item.Day);
+        console.log(allowedDays);
+        // Get the 'allowDays' FormArray from the current row
+        const allowDaysFormArray = row.get('allowedDays') as FormArray;
 
-        // Map the data to get the allowed days
-        this.allowedDays = data.map((day) => day.Day);
-        console.log('Allowed Days:', this.allowedDays);
-
-        // Ensure the allowedDays control is an array
-        const allowedDaysControl = row.get('allowedDays') as FormArray;
-        if (allowedDaysControl) {
-          allowedDaysControl.clear(); // Clear existing values
-          this.allowedDays.forEach((day) =>
-            allowedDaysControl.push(this.fb.control(day))
-          );
-          console.log('Updated Row:', row);
-          this.nearestAllowedDate = this.getNearestAllowedDate(
-            new Date(),
-            this.allowedDays
-          );
-          console.log(this.nearestAllowedDate + 'JJJJJJJJJJJJJ');
-          //   if (this.nearestAllowedDate) {
-
-          //     row.get('VazhipadDate')?.setValue(this.datePipe.transform(this.nearestAllowedDate,'yyyy-MM-dd')); // YYYY-MM-DD format
-          //     row.get('dateToSet')?.setValue(this.datePipe.transform(this.nearestAllowedDate, 'yyyy-MM-dd'));
-          //   }
-        } else {
-          console.error('Allowed Days control is missing.');
+        // Clear the previous allowed days in the FormArray
+        while (allowDaysFormArray.length) {
+          allowDaysFormArray.removeAt(0);
         }
+
+        // Push the extracted 'Day' values into the 'allowDays' FormArray
+        allowedDays.forEach((day: number) => {
+          allowDaysFormArray.push(this.fb.control(day));
+        });
+
+        console.log('Allowed Days:', allowedDays);
+        console.log(row);
       },
-      error: (err: any) => {
-        console.error('Error fetching allowed days:', err);
+      error: (err) => {
+        console.error('Error fetching day master data:', err);
       },
     });
   }
 
-  validateVazhipadDate(
-    control: AbstractControl
-  ): Observable<{ [key: string]: any } | null> {
-    console.log('Validator called');
+  checkDayBasedVazhipadDate(row: FormGroup): void {
+    const allowedDays = row.get('allowedDays')?.value as number[];
+    const vazhipadDate = row.get('VazhipadDate')?.value;
 
-    const row = control.parent as FormGroup;
-    if (!row) return of(null);
+    if (allowedDays && vazhipadDate) {
+      const dateToCheck = new Date(vazhipadDate);
+      const dayOfWeek = dateToCheck.getDay(); // Sunday: 0, Monday: 1, etc.
 
-    const allowedDays = (row.get('allowedDays')?.value as number[]) || [];
-    const selectedDate = new Date(control.value);
-    const selectedDayValue = this.getCustomDayValue(selectedDate);
-
-    const seasonalDates = row.get('seasonalDates')?.value as {
-      fromDate: string;
-      toDate: string;
-    } | null;
-    const seasonalFromDate = seasonalDates
-      ? new Date(seasonalDates.fromDate)
-      : null;
-    const seasonalToDate = seasonalDates
-      ? new Date(seasonalDates.toDate)
-      : null;
-    const isSeasonalValid =
-      !seasonalDates ||
-      (seasonalFromDate &&
-        seasonalToDate &&
-        selectedDate >= seasonalFromDate &&
-        selectedDate <= seasonalToDate);
-
-    if (allowedDays.length > 0 && !allowedDays.includes(selectedDayValue)) {
-      // Get the allowed day names instead of nearest date
-      const allowedDayNames = this.getAllowedDayNames(allowedDays);
-
-      // Show an error notification with the allowed day names
-      this.notification.error(
-        `Selected date is not allowed. Allowed days are: ${allowedDayNames.join(
-          ', '
-        )}`,
-        'Validation Error',
-        {
-          timeOut: 5000,
-          closeButton: true,
-        }
-      );
-
-      return of({ invalidDay: true });
+      if (!allowedDays.includes(dayOfWeek + 1)) {
+        // Adjusting dayOfWeek to match your numbering
+        this.notification.error(
+          'Selected VazhipadDate is not on an allowed day.'
+        );
+        row.get('VazhipadDate')?.setValue(''); // Optionally reset the date
+      }
     }
-
-    if (seasonalDates && !isSeasonalValid) {
-      // Show an error notification if the date is not within the seasonal range
-      this.notification.error(
-        `Selected date is not valid for this vazhipad. The valid range is from ${this.datePipe.transform(
-          seasonalFromDate,
-          'yyyy-MM-dd'
-        )} to ${this.datePipe.transform(seasonalToDate, 'yyyy-MM-dd')}`,
-        'Validation Error',
-        {
-          timeOut: 5000,
-          closeButton: true,
-        }
-      );
-
-      return of({ invalidSeasonalDate: true });
-    }
-
-    return of(null);
-  }
-
-  getAllowedDayNames(allowedDays: number[]): string[] {
-    const dayNamesMap: { [key: number]: string } = {
-      1: 'Sunday',
-      2: 'Monday',
-      3: 'Tuesday',
-      4: 'Wednesday',
-      5: 'Thursday',
-      6: 'Friday',
-      7: 'Saturday',
-    };
-
-    return allowedDays.map((day) => dayNamesMap[day] || '');
-  }
-
-  getCustomDayValue(date: Date): number {
-    const dayOfWeek = date.getDay(); // 0 (Sunday) to 6 (Saturday)
-    return this.dayMapping[dayOfWeek] || 0;
-  }
-  private dayMapping: { [key: number]: number } = {
-    0: 1, // Sunday
-    1: 2, // Monday
-    2: 3, // Tuesday
-    3: 4, // Wednesday
-    4: 5, // Thursday
-    5: 6, // Friday
-    6: 7, // Saturday
-  };
-
-  getNearestAllowedDate(date: Date, allowedDays: number[]): Date {
-    const dayOfWeek = date.getDay();
-    const allowedDates = allowedDays.map((dayValue) => {
-      const diff = (dayValue - this.dayMapping[dayOfWeek] + 7) % 7;
-      return new Date(
-        date.getFullYear(),
-        date.getMonth(),
-        date.getDate() + diff
-      );
-    });
-
-    return allowedDates.reduce((nearest, current) =>
-      Math.abs(current.getTime() - date.getTime()) <
-      Math.abs(nearest.getTime() - date.getTime())
-        ? current
-        : nearest
-    );
-  }
-
-  // Function to return today's date in YYYY-MM-DD format
-  getTodayDate(): string {
-    const today = new Date();
-    const todayDate = today.toISOString().split('T')[0]; // Convert to YYYY-MM-DD
-    return todayDate;
-  }
-
-  // Function to return tomorrow's date in YYYY-MM-DD format
-  getTomorrowDate(): string {
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1); // Add 1 day to get tomorrow
-    const tomorrowDate = tomorrow.toISOString().split('T')[0]; // Convert to YYYY-MM-DD
-    return tomorrowDate;
-  }
-
-  getDefaultDate(): string {
-    // Set default date logic (e.g., today’s date or any specific logic)
-    const today = new Date();
-    const defaultDate = today.toISOString().split('T')[0]; // YYYY-MM-DD format
-    return defaultDate;
   }
 }

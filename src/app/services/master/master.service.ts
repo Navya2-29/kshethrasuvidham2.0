@@ -706,6 +706,14 @@ getSeasonalVazhipadDateCheck(vid:string){
 );
 }
 
+getTodaycollection():Observable<any[]> {
+  const payLoad={"Type":"TodayCollection","Code":"0"};
+  return this.http.post<any>(
+    Constant.BASE_URL + Constant.METHODS.SEARCHBYMOBILENUMBER,
+    payLoad
+  );
+}
+
 
   kollavarashamData(): Observable<string[]> {
     return this.http.get<string[]>('assets/data/kollavarsham.json');
