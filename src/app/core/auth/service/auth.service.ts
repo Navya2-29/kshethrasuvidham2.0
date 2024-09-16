@@ -7,15 +7,16 @@ import { Constant } from '../../../constants/constant';
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly httpClient=inject(HttpClient);
+  private  httpClient=inject(HttpClient);
   constructor() { }
 
 
 
   getLoginInfo(login:Login){
+    console.log(login)
     // console.log(login.username,login.password +"service");
-    const reqBody={"usename":login.username,"password":login.password}
-  return this.httpClient.post(Constant.BASE_URL+Constant.METHODS.LOGIN,reqBody)
+    const reqBody={"username":login.username,"password":login.password}
+  return this.httpClient.post<any>(Constant.BASE_URL+Constant.METHODS.LOGIN,reqBody)
   }
 
 

@@ -477,7 +477,7 @@ export class AreareceiptComponent implements OnInit {
         .get('dateToSet')
         ?.setValue(this.datePipe.transform(this.currentDate, 'yyyy-MM-dd'));
       // }
-    } else if (booking === 'Y' && receipt === 'N'  && (!seasonaldays || seasonaldays === '')) {
+    } else if (booking === 'Y' && receipt === 'N'  ) {
       selectedRow
         .get('VazhipadDate')
         ?.setValue(this.datePipe.transform(this.tomorrowDate, 'yyyy-MM-dd'));

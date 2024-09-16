@@ -15,7 +15,6 @@ import { CommonModule, formatDate } from '@angular/common';
 import { NotificationService } from '../../../services/notification/notification.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MobserachcontentsComponent } from '../mobserachcontents/mobserachcontents.component';
-import { v4 as uuidv4 } from 'uuid';
 import { SearchByBillNumberComponent } from '../search-by-bill-number/search-by-bill-number.component';
 import { ReceiptPrintService } from '../../../shared/service/receipt-print.service';
 import { Subscription } from 'rxjs';

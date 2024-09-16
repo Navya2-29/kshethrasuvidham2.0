@@ -94,7 +94,7 @@
               "node_modules/ngx-toastr/toastr.css"
             ],
             "scripts": [
-              "node_modules/jsprintmanager/jsprintmanager.js"
+              
             ]
           }
         }

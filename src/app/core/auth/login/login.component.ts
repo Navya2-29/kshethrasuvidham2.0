@@ -41,11 +41,26 @@ submitLogin(login:Login){
   this.errorMessage='';
   console.log(login);
   if(login.username=="admin" && login.password=="bbb"){
+    console.log(login)
     this.authService.getLoginInfo(login).subscribe({
-      next:(data)=>{
-        console.log(data);
-        localStorage.setItem('loggedIn', 'true');
+      next:(response)=>{
+        console.log(response);
+        if (response.alertmsg === "Login Sucessfully") {
+          console.log(response.alertmsg);
+          // Storing relevant details in localStorage
+          localStorage.setItem('name', response.name);
+          localStorage.setItem('username', response.username);
+          localStorage.setItem('password', response.password);
+          localStorage.setItem('alertmsg', response.alertmsg);
+          localStorage.setItem('loggedIn', 'true');
+          // Optional: Redirect to the dashboard or another page
           this.router.navigate(['/dashboard']);
+        } else {
+          // Handle case when login is not successful
+          this.errorMessage = response.alertmsg; // Show the error message
+        }
+        // localStorage.setItem('loggedIn', 'true');
+          // this.router.navigate(['/dashboard']);
         this.loading=false;
         this.loginForm.reset();
       },

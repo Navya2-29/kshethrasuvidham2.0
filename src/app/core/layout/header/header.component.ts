@@ -16,11 +16,14 @@ import { Router } from '@angular/router';
 export class HeaderComponent {
   private router=inject(Router);
   showFiller = false;
-
+  userName: string | null = '';
+constructor(){
+  this.userName = localStorage.getItem('name');
+}
   logout(){
 
     localStorage.setItem('loggedIn', 'false');
     this.router.navigate(['/login'])
-
+    localStorage.removeItem('name'); 
   }
 }
