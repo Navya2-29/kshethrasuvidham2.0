@@ -22,6 +22,7 @@ import { StarMasterComponent } from './features/master/star-master/star-master.c
 import { CalendarComponent } from './calendar/calendar.component';
 import { VazhipadVivaramComponent } from './features/Billing/vazhipad-vivaram/vazhipad-vivaram.component';
 import { MattinangalComponent } from './features/Billing/mattinangal/mattinangal.component';
+import { UserComponent } from './features/user/user/user.component';
 
 
 
@@ -56,6 +57,9 @@ export const routes: Routes = [
   
   {
     path:'mattinagal',component:MattinangalComponent,canActivate:[authGuard]
+  },
+  {
+    path:'userSignup',component:UserComponent,canActivate:[authGuard]
   },
   {
     path:'**',pathMatch:'full', redirectTo:'/dashboard'

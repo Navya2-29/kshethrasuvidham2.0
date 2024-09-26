@@ -1,3 +1,4 @@
+// import { multiDayFilter } from './../../../models/multidayFilter.model';
 import { Component, inject, Inject, OnInit } from '@angular/core';
 import {
   MAT_DIALOG_DATA,
@@ -6,7 +7,7 @@ import {
 } from '@angular/material/dialog';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import {
@@ -16,6 +17,7 @@ import {
   FormControl,
   FormGroup,
   FormsModule,
+  NgForm,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
@@ -31,7 +33,7 @@ import { map, Observable, of, startWith } from 'rxjs';
 import { MatInputModule } from '@angular/material/input';
 import { MasterService } from '../../../services/master/master.service';
 import { NotificationService } from '../../../services/notification/notification.service';
-import { minDateValidator } from '../../../shared/validator/min-date.validator';
+import { multiDayFilter } from '../../../models/multidayFilter.model';
 @Component({
   selector: 'app-multidayitems',
   standalone: true,
@@ -62,7 +64,7 @@ export class MultidayitemsComponent implements OnInit {
   prathishtaOptions: any[] = [];
   totalAmount: number = 0;
   tomorrowDate: Date;
-  minDate:any;
+  minDate: any;
   amountPerDevotee: number = 0;
   dayList: { date: Date | string; kollavarshamData: any }[] = [];
   kollavarsham: any[] = [];
@@ -72,7 +74,17 @@ export class MultidayitemsComponent implements OnInit {
   seasonalDates: { fromDate: any; toDate: any } | null = null;
   allowedDays: number[] = [];
   currentDate = new Date();
-
+  MlayalamDays = [
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+    21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+  ];
+  EnglishDays = [
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+    21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
+  ];
+  malayalamMonthList: any[];
+  multidayFilterForm: FormGroup;
+  multiDayList: multiDayFilter[] = [];
   private readonly masterservice = inject(MasterService);
   constructor(
     private fb: FormBuilder,
@@ -81,9 +93,9 @@ export class MultidayitemsComponent implements OnInit {
     private datePipe: DatePipe
   ) {
     this.tomorrowDate = new Date();
-   
+
     this.form = this.fb.group({
-      Vazhipad: ['', Validators.required,],
+      Vazhipad: ['', Validators.required],
       Rate: ['1', Validators.required],
       Qty: ['1', Validators.required],
       NoOfDays: ['1', Validators.required],
@@ -95,8 +107,8 @@ export class MultidayitemsComponent implements OnInit {
       Slno: [''],
       Vazhid: [''],
       Amount: [''],
-      VazhipadDate: ['', [Validators.required],[this.validateVazhipadDate.bind(this)]],
-      VTime: ['0',[Validators.required]],
+      VazhipadDate: ['', [Validators.required]],
+      VTime: ['0', [Validators.required]],
       Postal: ['10'],
       Mday: ['Sunday'],
       NalBy: ['Ohm'],
@@ -104,16 +116,25 @@ export class MultidayitemsComponent implements OnInit {
       multiname: [{ disabled: true, value: '' }],
       booking: [{ disabled: true, value: '' }],
       ratechange: [{ disabled: true, value: '' }],
-      VM_Receipt:[{ disabled: true, value: '' }],
+      VM_Receipt: [{ disabled: true, value: '' }],
       allowedDays: this.fb.array([]),
-      dateToSet:[''],
+      dateToSet: [''],
       seasonalDates: this.fb.group({
         fromDate: [''],
-        toDate: ['']
+        toDate: [''],
       }),
       devotees: this.fb.array([this.createDevotee()]),
     });
     this.devotees = this.form.get('devotees') as FormArray;
+
+    this.multidayFilterForm = this.fb.group({
+      Star: [''],
+      EngMonth: [''],
+      MalMonth: [''],
+      EngishDay: [''],
+      MalDay: [''],
+    });
+    this.getmultidayfilterData();
   }
 
   createDevotee(): FormGroup {
@@ -142,24 +163,12 @@ export class MultidayitemsComponent implements OnInit {
 
   private showValidationErrors() {
     if (this.form.get('VazhipadDate')?.invalid) {
-      this.notification.showError(
-        'Enter a valid date',
-        'Validation Error'
-      );
+      this.notification.showError('Enter a valid date', 'Validation Error');
     }
     if (this.form.get('Rate')?.invalid) {
-      this.notification.showError(
-        'Enter a valid Rate',
-        'Validation Error'
-      );
+      this.notification.showError('Enter a valid Rate', 'Validation Error');
     }
-    // const vazhipadDateControl = this.form.get('VazhipadDate');
-    // if (vazhipadDateControl?.errors?.['minDate']) {
-    //   this.notification.showError(
-    //     'The date must be on or after tomorrow.',
-    //     'Validation Error'
-    //   );
-    // }
+
     if (this.form.get('Vazhipad')?.invalid) {
       this.notification.showError(
         'Please enter the Vazhipad',
@@ -197,6 +206,7 @@ export class MultidayitemsComponent implements OnInit {
       }
     }
   }
+
   removeDevotee(index: number) {
     if (this.devotees.length === 1) {
       this.notification.showError(
@@ -209,13 +219,18 @@ export class MultidayitemsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.setDefaultVazhipadDate();
     this.getAllvazhipad();
     this.setupAutocomplete();
     this.getNakshthram();
-    this.watchDateChanges();
-    this.setDefaultDates();
-    this.getKollavarasham();
-    this.subscribeToQtyAndRateChanges();
+    this.getmultidayfilterData();
+    this.getMalayalamMonthList();
+    this.form.get('VazhipadDate')?.valueChanges.subscribe((value) => {
+      this.getmultidayfilterData();
+    });
+    this.form.get('NoOfDays')?.valueChanges.subscribe((value) => {
+      this.getmultidayfilterData();
+    });
   }
 
   private _filter(value: string): any[] {
@@ -227,19 +242,19 @@ export class MultidayitemsComponent implements OnInit {
     );
   }
 
-  private _filterStar(value: string): any[] {
-    const filterValue = value.toLowerCase();
-    return this.nakshatham.filter((option) =>
-      option.name.toLowerCase().includes(filterValue)
-    );
+  setDefaultVazhipadDate() {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1); // Add 1 day to get tomorrow
+    const formattedDate = this.datePipe.transform(tomorrow, 'yyyy-MM-dd'); // Format the date
+
+    this.form.get('VazhipadDate')?.setValue(formattedDate); // Set the default value
   }
 
   getNakshthram() {
-    const payLoad={"Type":"ListStar","Code":""};
+    const payLoad = { Type: 'ListStar', Code: '' };
     this.masterservice.getStarData(payLoad).subscribe((res) => {
       this.nakshatham = res;
       console.log(this.nakshatham);
-      // this.autoCompleteForStar();
     });
   }
 
@@ -262,12 +277,12 @@ export class MultidayitemsComponent implements OnInit {
     );
   }
 
-  autoCompleteForStar() {
-    this.starData = this.form.get('Star')!.valueChanges.pipe(
-      startWith(''),
-      map((value) => this._filterStar(value || ''))
-    );
-  }
+  // autoCompleteForStar() {
+  //   this.starData = this.form.get('Star')!.valueChanges.pipe(
+  //     startWith(''),
+  //     map((value) => this._filterStar(value || ''))
+  //   );
+  // }
 
   onSelectStar(event: MatAutocompleteSelectedEvent): void {
     const selectedStar = event.option.value;
@@ -283,10 +298,9 @@ export class MultidayitemsComponent implements OnInit {
     console.log(selectedVazhipadItem);
     if (selectedVazhipadItem) {
       // Fetch vazhipad details using VM_Code
-      console.log(selectedVazhipadItem)
+      console.log(selectedVazhipadItem);
       this.form.get('Vazhid')?.setValue(selectedVazhipadItem.VM_Id);
-      this.getDatamasterdateCheck(selectedVazhipadItem.VM_Id);
-      this.getSeasnalalVazhipadData(selectedVazhipadItem.VM_Id);
+
       const vazhipadCode = selectedVazhipadItem.VM_Code;
       console.log(vazhipadCode);
       this.fetchVazhipadDetails(vazhipadCode);
@@ -305,10 +319,11 @@ export class MultidayitemsComponent implements OnInit {
         this.form.get('multiName')?.setValue(res[0].VM_MultiName);
         this.rateChange = res[0].VM_Rate_Change;
 
-        const booking =res[0].VM_Booking
-        const receipt=res[0].VM_Receipt
-        const allowedDays = this.form.get('allowedDays')?.value as number[] || [];
-        console.log(allowedDays +"fffffffffffffffffffffff")
+        const booking = res[0].VM_Booking;
+        const receipt = res[0].VM_Receipt;
+        const allowedDays =
+          (this.form.get('allowedDays')?.value as number[]) || [];
+        console.log(allowedDays + 'fffffffffffffffffffffff');
         this.tomorrowDate = new Date(this.currentDate);
         this.tomorrowDate.setDate(this.currentDate.getDate() + 1);
         // this.dateToSet =
@@ -319,29 +334,37 @@ export class MultidayitemsComponent implements OnInit {
 
         if (receipt === 'Y' && booking === 'N') {
           // Case 1: Receipt is "Y" and Booking is "N"
-         
+
           if (allowedDays.length === 0) {
             // this.readonlyDate=true
             // Set vazhipadDate to today's date
-            this.form.get('VazhipadDate')?.setValue(this.datePipe.transform(this.currentDate, 'yyyy-MM-dd'));
-            this.form.get('dateToSet')?.setValue(this.datePipe.transform(this.currentDate, 'yyyy-MM-dd'));
-            this.watchDateChanges();
-            this.calculateEndDate();
+            this.form
+              .get('VazhipadDate')
+              ?.setValue(
+                this.datePipe.transform(this.currentDate, 'yyyy-MM-dd')
+              );
+            this.form
+              .get('dateToSet')
+              ?.setValue(
+                this.datePipe.transform(this.currentDate, 'yyyy-MM-dd')
+              );
+            // this.watchDateChanges();
+            // this.calculateEndDate();
           }
         } else if (booking === 'Y' && receipt === 'N') {
-          this.form.get('VazhipadDate')?.setValue(this.datePipe.transform(this.tomorrowDate, 'yyyy-MM-dd'));
-          this.form.get('dateToSet')?.setValue(this.datePipe.transform(this.tomorrowDate, 'yyyy-MM-dd'));
-          this.watchDateChanges();
-          this.calculateEndDate();
+          this.form
+            .get('VazhipadDate')
+            ?.setValue(
+              this.datePipe.transform(this.tomorrowDate, 'yyyy-MM-dd')
+            );
+          this.form
+            .get('dateToSet')
+            ?.setValue(
+              this.datePipe.transform(this.tomorrowDate, 'yyyy-MM-dd')
+            );
+          // this.watchDateChanges();
+          // this.calculateEndDate();
         }
-
-
-
-
-
-
-
-
         this.calculateTotalAmount();
         this.masterservice
           .getVazhipadByCodeForDiety(vazhipadcode)
@@ -352,64 +375,11 @@ export class MultidayitemsComponent implements OnInit {
               const defaultPrathishta = this.prathishtaOptions[0].PM_Name;
               const defaultPrathishtaId = this.prathishtaOptions[0].PM_ID;
               console.log(this.prathishtaOptions[0].PM_Name);
-
               this.form.get('Prethista')?.setValue(defaultPrathishta);
               this.form.get('PMid')?.setValue(defaultPrathishtaId);
             }
           });
       });
-  }
-
-  private setDefaultDates() {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    
-    this.minDate = this.formatDate(tomorrow);
-    const formattedDate = this.datePipe.transform(tomorrow, 'yyyy-MM-dd');
-    this.form.get('VazhipadDate')?.setValue(formattedDate);
-    this.calculateEndDate();
-    this.generateDayList();
-  }
-
-  watchDateChanges() {
-    this.form.get('VazhipadDate')?.valueChanges.subscribe(() => {
-      this.calculateEndDate();
-      this.generateDayList();
-    });
-
-    this.form.get('NoOfDays')?.valueChanges.subscribe(() => {
-      this.calculateEndDate();
-      this.generateDayList();
-    });
-  }
-
-  calculateEndDate() {
-    const VazhipadDate = this.form.get('VazhipadDate')?.value;
-    const noOfDays = +this.form.get('NoOfDays')?.value || 1;
-    console.log(typeof noOfDays);
-    if (VazhipadDate) {
-      const start = new Date(VazhipadDate);
-      const end = new Date(start);
-      end.setDate(start.getDate() + noOfDays - 1);
-      console.log(end + 'dghjs');
-      const formattedDate = this.formatDate(end);
-      this.form.get('EndDate')?.setValue(formattedDate);
-      console.log(end + 'end');
-    }
-  }
-
-  subscribeToQtyAndRateChanges() {
-    this.form.get('Rate')?.valueChanges.subscribe(() => {
-      this.calculateTotalAmount();
-    });
-
-    this.form.get('Qty')?.valueChanges.subscribe(() => {
-      this.calculateTotalAmount();
-    });
-
-    this.form.get('NoOfDays')?.valueChanges.subscribe(() => {
-      this.calculateTotalAmount();
-    });
   }
 
   calculateTotalAmount() {
@@ -430,72 +400,15 @@ export class MultidayitemsComponent implements OnInit {
     // this.totalAmount = initialAmount + this.devotees.length * initialAmount;
   }
 
-  getKollavarasham() {
-    this.masterservice.kollavarashamData().subscribe((res) => {
-      console.log(res);
-      this.kollavarsham = res;
-      this.generateDayList();
-    });
-  }
-
-  private dateFormat(date: Date): string {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-
-    return `${day}/${month}/${year}`;
-  }
-  private formatDate(date: Date): string {
-    return date.toISOString().split('T')[0];
-  }
-
-  generateDayList() {
-    const VazhipadDate = new Date(this.form.get('VazhipadDate')?.value);
-    const endDate = new Date(this.form.get('EndDate')?.value);
-
-    this.dayList = [];
-    if (VazhipadDate && endDate) {
-      let currentDate = new Date(VazhipadDate);
-      while (currentDate <= endDate) {
-        console.log(currentDate <= endDate);
-        const formattedDate = this.dateFormat(currentDate);
-        const kollavarshamData =
-          this.kollavarsham.find((k) => k.disdate === formattedDate) || {};
-        this.dayList.push({ date: formattedDate, kollavarshamData });
-        currentDate.setDate(currentDate.getDate() + 1);
-      }
-    }
-  }
-
-  generateArrayOfFormValues() {
-    const VazhipadDate = new Date(this.form.get('VazhipadDate')?.value);
-    const noOfDays = +this.form.get('NoOfDays')?.value || 1;
-    const formValuesArray = [];
-
-    for (let i = 0; i < noOfDays; i++) {
-      const currentDay = new Date(VazhipadDate);
-      currentDay.setDate(VazhipadDate.getDate() + i);
-
-      const formValue = {
-        ...this.form.value,
-        VazhipadDate: currentDay,
-      };
-
-      formValuesArray.push(formValue);
-    }
-
-    return formValuesArray;
-  }
-
   onSubmit() {
     if (this.form.valid && this.devotees.valid) {
       const formValues = this.form.value;
-      console.log(formValues)
+      console.log(formValues);
       const devoteeArray = formValues.devotees.map((devotee: any) => {
         return {
           Slno: '',
           PMid: formValues.PMid,
-          Vazhid:formValues.Vazhid ,
+          Vazhid: formValues.Vazhid,
           Prethista: formValues.Prethista,
           Vazhipad: formValues.Vazhipad,
           Name: devotee.Name,
@@ -512,26 +425,23 @@ export class MultidayitemsComponent implements OnInit {
           ).toString(),
           Postal: '10',
           VazhipadDate: formValues.VazhipadDate,
-          Mday: 'Sunday',
-          NalBy: 'Ohm',
-          Mmonth: 'Chingam',
+          Mday: '',
+          NalBy: '',
+          Mmonth: '',
         };
       });
       console.log(devoteeArray);
 
-      const startDate = new Date(formValues.VazhipadDate);
-      const noOfDays = formValues.NoOfDays;
       const finalArray: any[] = [];
 
-      for (let i = 0; i < noOfDays; i++) {
-        const currentDate = new Date(startDate);
-        currentDate.setDate(startDate.getDate() + i);
-        const vachipadDate = currentDate;
+this.multiDayList.forEach((item: any) => {
+  const disdate = item.disdate; // Taking disdate from multidayfilterList
 
-        devoteeArray.forEach((devotee: any) => {
-          finalArray.push({ ...devotee, VazhipadDate: vachipadDate });
-        });
-      }
+  devoteeArray.forEach((devotee: any) => {
+    // Replace VazhipadDate with disdate
+    finalArray.push({ ...devotee, VazhipadDate: disdate });
+  });
+});
 
       console.log(finalArray);
       this.dialogRef.close(finalArray);
@@ -539,184 +449,63 @@ export class MultidayitemsComponent implements OnInit {
       this.showValidationErrors();
     }
   }
-  cancel(){
+
+
+
+  cancel() {
     this.dialogRef.close();
   }
+
+  
   vazhipadtime = [
-    { id: '0', name: 'Any Time'  },
-    { id: '1', name: 'Morning'   },
-    { id: '2', name: 'Evening'   },
-    { id: '3', name: 'AfterNoon' }
+    { id: '0', name: 'Any Time' },
+    { id: '1', name: 'Morning' },
+    { id: '2', name: 'Evening' },
+    { id: '3', name: 'AfterNoon' },
   ];
 
-
-  getSeasnalalVazhipadData(vid: string) {
-    console.log(vid + " ssssssssss");
-    this.masterservice.getSeasonalVazhipadDateCheck(vid).subscribe({
+  getMalayalamMonthList() {
+    const payLoad = { Type: 'MalMonth', code: '' };
+    this.masterservice.getMalayalamMonthList(payLoad).subscribe({
       next: (data) => {
-        // const row = this.vazhipadinfo.at(index) as FormGroup;
-  
-        if (data && data.length > 0 && data[0].VS_FromDate && data[0].VS_ToDate) {
-          // Parse the dates and ensure they are valid
-          const fromDate = new Date(data[0].VS_FromDate);
-          const toDate = new Date(data[0].VS_ToDate);
-          
-          if (!isNaN(fromDate.getTime()) && !isNaN(toDate.getTime())) {
-            this.seasonalDates = {
-              fromDate: this.datePipe.transform(fromDate, 'yyyy-MM-dd'),
-              toDate: this.datePipe.transform(toDate, 'yyyy-MM-dd')
-            };
-  
-            // Update seasonal dates in the specific row
-            this.form.get('seasonalDates')?.patchValue(this.seasonalDates);
-  
-            // Set vazhipadDate to seasonal 'fromDate'
-            this.form.get('VazhipadDate')?.setValue(this.seasonalDates.fromDate);
-            this.calculateEndDate();
-          } else {
-            // Handle invalid date formats
-            this.seasonalDates = { fromDate: '', toDate: '' };
-            this.form.get('seasonalDates')?.patchValue(this.seasonalDates);
-          }
-        } else {
-          // Handle case when data is empty or dates are not present
-          this.seasonalDates = { fromDate: '', toDate: '' };
-          this.form.get('seasonalDates')?.patchValue(this.seasonalDates);
-        }
+        this.malayalamMonthList = data;
+        console.log(this.malayalamMonthList);
       },
-      error: (err) => {
-        console.error('Error fetching seasonal vazhipad data:', err);
-        // Handle error case by resetting seasonal dates
-        // const row = this.vazhipadinfo.at(index) as FormGroup;
-        this.seasonalDates = { fromDate: '', toDate: '' };
-        this.form.get('seasonalDates')?.patchValue(this.seasonalDates);
-      }
     });
   }
-  
-  getDatamasterdateCheck(vid: string) {
-    // const row = this.vazhipadinfo.at(index) as FormGroup;
-  
-    this.masterservice.getDayMastervazhipaddateCheck(vid).subscribe({
-      next: (data) => {
-        // Check the API response
-        console.log('API Response:', data);
-  
-        // Map the data to get the allowed days
-        this.allowedDays = data.map(day => day.Day);
-        console.log('Allowed Days:', this.allowedDays);
-  
-        // Ensure the allowedDays control is an array
-        const allowedDaysControl = this.form.get('allowedDays') as FormArray;
-      if (allowedDaysControl) {
-        allowedDaysControl.clear(); // Clear existing values
-        this.allowedDays.forEach(day => allowedDaysControl.push(this.fb.control(day)));
-        console.log('Updated Row:', this.form);
-        const nearestAllowedDate = this.getNearestAllowedDate(new Date(), this.allowedDays);
-        console.log(nearestAllowedDate +"JJJJJJJJJJJJJ");
-        if (nearestAllowedDate) {
-          // Update the vazhipadDate field with the nearest allowed date
-          this.form.get('VazhipadDate')?.setValue(this.datePipe.transform(nearestAllowedDate,'yyyy-MM-dd')); // YYYY-MM-DD format
-          this.form.get('dateToSet')?.setValue(this.datePipe.transform(nearestAllowedDate, 'yyyy-MM-dd'));
-          this.calculateEndDate();
-        }
-      } else {
-        console.error('Allowed Days control is missing.');
-      }
-    },
-    error: (err) => {
-      console.error('Error fetching allowed days:', err);
-    }
-  });
-}
-  
-  validateVazhipadDate(control: AbstractControl): Observable<{ [key: string]: any } | null> {
-    console.log('Validator called');
-  
-    const row = control.parent as FormGroup;
-    if (!row) return of(null);
-  
-    const allowedDays = row.get('allowedDays')?.value as number[] || [];
-    const selectedDate = new Date(control.value);
-    const selectedDayValue = this.getCustomDayValue(selectedDate);
-  
-    const seasonalDates = row.get('seasonalDates')?.value as { fromDate: string, toDate: string } | null;
-    const seasonalFromDate = seasonalDates ? new Date(seasonalDates.fromDate) : null;
-    const seasonalToDate = seasonalDates ? new Date(seasonalDates.toDate) : null;
-    const isSeasonalValid = !seasonalDates || (seasonalFromDate && seasonalToDate && selectedDate >= seasonalFromDate && selectedDate <= seasonalToDate);
-  
-  
-    if (allowedDays.length > 0 && !allowedDays.includes(selectedDayValue)) {
-      // Get the allowed day names instead of nearest date
-      const allowedDayNames = this.getAllowedDayNames(allowedDays);
-  
-      
-  
-      // Show an error notification with the allowed day names
-      this.notification.showError(
-        `Selected date is not allowed. Allowed days are: ${allowedDayNames.join(', ')}`,
-        'Validation Error',
-        
-      );
-  
-      return of({ invalidDay: true });
-    }
-  
-  
-    if (seasonalDates && !isSeasonalValid) {
-      // Show an error notification if the date is not within the seasonal range
-      this.notification.showError(
-        `Selected date is not valid for this vazhipad. The valid range is from ${this.datePipe.transform(seasonalFromDate, 'yyyy-MM-dd')} to ${this.datePipe.transform(seasonalToDate, 'yyyy-MM-dd')}`,
-        'Validation Error',
-      
-      );
-  
-      return of({ invalidSeasonalDate: true });
-    }
-  
-    return of(null);
-  }
 
-  getAllowedDayNames(allowedDays: number[]): string[] {
-    const dayNamesMap: { [key: number]: string } = {
-      1: 'Sunday',
-      2: 'Monday',
-      3: 'Tuesday',
-      4: 'Wednesday',
-      5: 'Thursday',
-      6: 'Friday',
-      7: 'Saturday'
+  getmultidayfilterData() {
+    const formattedDate = this.datePipe.transform(
+      this.form.get('VazhipadDate')?.value,
+      'dd-MM-yyyy'
+    );
+    const payLoad = {
+      ...this.multidayFilterForm.value,
+      Type: 'NULL',
+      NoofDays: this.form.get('NoOfDays')?.value,
+      VazhipadDate: formattedDate,
     };
-  
-    return allowedDays.map(day => dayNamesMap[day] || '');
+    console.log(payLoad);
+    this.masterservice.getMultidyaFilterinddata(payLoad).subscribe({
+      next: (data: multiDayFilter) => {
+        console.log(data);
+        this.multiDayList = Array.isArray(data) ? data : [data];
+        console.log(this.multiDayList);
+        if (this.multiDayList.length > 0) {
+          let lastItem = this.multiDayList[this.multiDayList.length - 1];
+          let lastDate = lastItem ? lastItem.date : null;
+
+          // Assuming the end date is stored in 'edate1' or a similar property
+          const endDate = lastItem.edate1; // Adjust the property name if needed
+
+          // Patch the EndDate form control with the last date
+          this.form.patchValue({
+            EndDate: this.datePipe.transform(endDate, 'dd-MM-YYYY'),
+          });
+
+          console.log('Last Date:', endDate);
+        }
+      },
+    });
   }
-  
-    
-    getCustomDayValue(date: Date): number {
-      const dayOfWeek = date.getDay(); // 0 (Sunday) to 6 (Saturday)
-      return this.dayMapping[dayOfWeek] || 0;
-    }
-    private dayMapping: { [key: number]: number } = {
-      0: 1, // Sunday
-      1: 2, // Monday
-      2: 3, // Tuesday
-      3: 4, // Wednesday
-      4: 5, // Thursday
-      5: 6, // Friday
-      6: 7  // Saturday
-    };
-  
-    getNearestAllowedDate(date: Date, allowedDays: number[]): Date {
-      const dayOfWeek = date.getDay();
-      const allowedDates = allowedDays.map(dayValue => {
-        const diff = (dayValue - this.dayMapping[dayOfWeek] + 7) % 7;
-        return new Date(date.getFullYear(), date.getMonth(), date.getDate() + diff);
-      });
-  
-      return allowedDates.reduce((nearest, current) =>
-        Math.abs(current.getTime() - date.getTime()) < Math.abs(nearest.getTime() - date.getTime()) ? current : nearest
-      );
-    }
-    
-  
 }

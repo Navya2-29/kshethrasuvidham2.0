@@ -52,6 +52,7 @@ submitLogin(login:Login){
           localStorage.setItem('username', response.username);
           localStorage.setItem('password', response.password);
           localStorage.setItem('alertmsg', response.alertmsg);
+          localStorage.setItem('Role', response.Role);
           localStorage.setItem('loggedIn', 'true');
           // Optional: Redirect to the dashboard or another page
           this.router.navigate(['/dashboard']);
@@ -72,7 +73,6 @@ submitLogin(login:Login){
   else{
     this.errorMessage="enter valid username or password";
   }
-
 }
 autoLogin(){
   const login=localStorage.getItem('loggedIn');
@@ -81,7 +81,5 @@ autoLogin(){
     this.router.navigate(['/dashboard']);
   }
 }
-
-
 
 }

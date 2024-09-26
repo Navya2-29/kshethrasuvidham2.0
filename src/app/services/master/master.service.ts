@@ -15,6 +15,7 @@ import {
 } from '../../models/special-day-master.model';
 import { SeasonalMaster } from '../../models/season-master.model';
 import { DayMaster } from '../../models/day-master.model';
+import { multiDayFilter } from '../../models/multidayFilter.model';
 @Injectable({
   providedIn: 'root',
 })
@@ -683,6 +684,13 @@ export class MasterService {
       payLoad
     );
   }
+  getMalayalamMonthList(payLoad: any): Observable<any[]> {
+    console.log(payLoad)
+    return this.http.post<any>(
+      Constant.BASE_URL + Constant.METHODS.GET_MASTER,
+      payLoad
+    );
+  }
   getLastBillNumber(): Observable<any[]> {
     const payLoad={"Type":"Maxbillno","Code":""};
     return this.http.post<any>(
@@ -712,6 +720,11 @@ getTodaycollection():Observable<any[]> {
     Constant.BASE_URL + Constant.METHODS.SEARCHBYMOBILENUMBER,
     payLoad
   );
+}
+
+getMultidyaFilterinddata(payLoad:any){
+return this.http.post<multiDayFilter>(Constant.BASE_URL + Constant.METHODS.MULTIDAY_FILTER,
+  payLoad)
 }
 
 

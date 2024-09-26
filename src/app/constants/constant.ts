@@ -1,88 +1,82 @@
-import { NgPluralCase } from "@angular/common";
+import { NgPluralCase } from '@angular/common';
 
 export const Constant = {
-    BASE_URL: 'http://api.suvidham.in/api/KshetramAPI/',
+  BASE_URL: 'http://api.suvidham.in/api/KshetramAPI/',
 
-    METHODS: {
+  METHODS: {
+    // master view
+    GET_MASTER: 'ViewMasters',
+    // delete masters
+    DELETE_MASTER: 'DeleteMasters',
 
-        // master view
-        GET_MASTER: 'ViewMasters',
-        // delete masters
-        DELETE_MASTER: 'DeleteMasters',
+    // pmaster
+    CREATE_PMASTER: 'AddPrathista',
 
-        // pmaster
-        CREATE_PMASTER: 'AddPrathista',
+    // cmaster
+    CREATE_CMASTER: 'AddVazhipadCategory',
+    Type: 'Category',
 
-        // cmaster
-        CREATE_CMASTER: "AddVazhipadCategory",
-        Type: "Category",
-        
-        // vmaster
-        CREATE_VMASTER: "AddVazhipadMaster",
-      
-        // daymaster
-        CREATE_VDAY:"DayMaster",
+    // vmaster
+    CREATE_VMASTER: 'AddVazhipadMaster',
 
-        
-        // SPECIAL master
-        GET_VSPECIAL: 'specialDay',
-        GET_ALL_SPECIAL: "getall",
-        CREATE_VSPECIAL: "create",
-        UPDATE_VSPECIAL: "update",
-        DELETE_VSPECIAL: "delete",
+    // daymaster
+    CREATE_VDAY: 'DayMaster',
 
-        // seasonal master
-        
-        CREATE_SEASONAL: 'VazhipadSeasonal',
-       
+    // SPECIAL master
+    GET_VSPECIAL: 'specialDay',
+    GET_ALL_SPECIAL: 'getall',
+    CREATE_VSPECIAL: 'create',
+    UPDATE_VSPECIAL: 'update',
+    DELETE_VSPECIAL: 'delete',
 
-        // vihidhm master
+    // seasonal master
 
-        GET_ALL_VIHIDHAM: 'getall',
-        CREATE_VIHIDHAM: 'create',
-        UPDATE_VIHIDHAM: 'update',
-        DELETE_VIHIDHAM: 'delete',
+    CREATE_SEASONAL: 'VazhipadSeasonal',
 
-        // BLOcking master
-       
-        CREATE_VBLOCK: 'VazhipadBlocking',
-        
+    // vihidhm master
 
-        
+    GET_ALL_VIHIDHAM: 'getall',
+    CREATE_VIHIDHAM: 'create',
+    UPDATE_VIHIDHAM: 'update',
+    DELETE_VIHIDHAM: 'delete',
 
-        // COMBO MASTWR
-        GET_VCOMBO: 'comboVazhipad',
-        GET_VCOMBO_BYID: "vcombo",
-        GET_ALL_VCOMBO: 'getall',
-        CREATE_VCOMBO: 'create',
-        UPDATE_VCOMBO: 'update',
-        DELETE_VCOMBO: 'delete',
+    // BLOcking master
 
-        // ITEM MASTER
-        GET_ITEM: 'ITEM',
-        GET_ALL_ITEM: 'getall',
-        CREATE_ITEM: 'create',
-        UPDATE_ITEM: 'update',
-        DELETE_ITEM: 'delete',
+    CREATE_VBLOCK: 'VazhipadBlocking',
 
-        // member master
+    // COMBO MASTWR
+    GET_VCOMBO: 'comboVazhipad',
+    GET_VCOMBO_BYID: 'vcombo',
+    GET_ALL_VCOMBO: 'getall',
+    CREATE_VCOMBO: 'create',
+    UPDATE_VCOMBO: 'update',
+    DELETE_VCOMBO: 'delete',
 
-        GET_ALL_MEMBER: 'getall',
-        CREATE_MEMBER: 'create',
-        UPDATE_MEMBER: 'update',
-        DELETE_MEMBER: 'delete',
+    // ITEM MASTER
+    GET_ITEM: 'ITEM',
+    GET_ALL_ITEM: 'getall',
+    CREATE_ITEM: 'create',
+    UPDATE_ITEM: 'update',
+    DELETE_ITEM: 'delete',
 
-        // login
-        LOGIN: "GetLoginInfo",
+    // member master
 
-        // commen
-        GET_ACCOUNTHEAD: "getAccountHead",
-        GET_SUBACCOUNTHEAD: "getAccountSubHead",
+    GET_ALL_MEMBER: 'getall',
+    CREATE_MEMBER: 'create',
+    UPDATE_MEMBER: 'update',
+    DELETE_MEMBER: 'delete',
 
-        // vazhipad booking
-        VAZHIPAD_BOOKING:'VazhipadBooking',
-SEARCHBYMOBILENUMBER:'ViewMasters',
-STARDATA:'ListStar'
+    // login
+    LOGIN: 'GetLoginInfo',
 
-    }
-}
+    // commen
+    GET_ACCOUNTHEAD: 'getAccountHead',
+    GET_SUBACCOUNTHEAD: 'getAccountSubHead',
+
+    // vazhipad booking
+    VAZHIPAD_BOOKING: 'VazhipadBooking',
+    SEARCHBYMOBILENUMBER: 'ViewMasters',
+    STARDATA: 'ListStar',
+    MULTIDAY_FILTER: 'MultiFilter',
+  },
+};
