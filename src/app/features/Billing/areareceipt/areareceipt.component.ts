@@ -560,7 +560,7 @@ export class AreareceiptComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        console.log('Dialog closed with data:', result);
+        console.log('Dialog closed with MULTIDAY DATAAAAAAdata:', result);
         // this.handleDialogData(result);
 
         this.handleMultiDayBookingResult(result, rowIndex);
@@ -571,7 +571,7 @@ export class AreareceiptComponent implements OnInit {
   // to show multi day booked details
   openMultiDayBookedDetails(rowIndex: number) {
     const dialogRef = this.dialog.open(MultidaybookeddetailsComponent, {
-      width: '80vh',
+      height: '80vh',
       maxWidth: '50vw',
       data: this.multidayBooking[rowIndex], // Pass the array values
     });
@@ -583,6 +583,14 @@ export class AreareceiptComponent implements OnInit {
     });
   }
 
+  formatDateToDDMMYYYY(date: Date): string {
+    const day = String(date.getDate()).padStart(2, '0'); // Get day and pad with zero if needed
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based, so add 1
+    const year = date.getFullYear(); // Get the full year
+
+    return `${year}-${month}-${day}`; // Return formatted string in yyyy-mm-dd format}
+  }
+
   private handleMultiDayBookingResult(result: any, rowIndex: number): void {
     const row = this.vazhipadinfo.at(rowIndex) as FormGroup;
     console.log(row);
@@ -590,16 +598,30 @@ export class AreareceiptComponent implements OnInit {
     let lastIndex = result.length - 1;
     const data = result[0];
     console.log(data.Prethista);
-    this.multidayBooking[rowIndex] = result;
+console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaa",result)
+       // Assuming data.VazhipadDate is a Date object
+       const startDate = new Date(data.VazhipadDate); // This should be the start date
+       const endDate = new Date(result[lastIndex].VazhipadDate); // This should be the end date
+   
+       const formattedDates = result.map((item:any) => {
+        // Format the VazhipadDate property
+        return {
+            ...item,
+            VazhipadDate: this.formatDateToDDMMYYYY(new Date(item.VazhipadDate)) // Format date here
+        };
+    });
+
+    console.log("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",formattedDates)
+    this.multidayBooking[rowIndex] = formattedDates;
     row.patchValue({
       Vazhipad: data.Vazhipad,
       Vazhid: data.Vazhid,
       Prethista: data.Prethista,
       Qty: data.Qty * result.length,
       Rate: data.Rate,
-      VazhipadDate: this.formatDate(data.VazhipadDate),
+      VazhipadDate: this.datePipe.transform(startDate, 'yyyy-MM-dd') || '',
       TotalAmt: this.totalAmount,
-      toDate: this.formatDate(result[lastIndex].VazhipadDate),
+      toDate:this.datePipe.transform(endDate, 'yyyy-MM-dd') || '',
       PMid: data.PMid,
       Mday: data.Mday,
       NalBy: data.NalBy,
@@ -647,8 +669,53 @@ export class AreareceiptComponent implements OnInit {
     return this.multidayBooking.flat();
   }
 
+
+
+
+
+
+
+  private cleanVazhipadInfo(item: any) {
+    return {
+      Amount: item.Amount,      // Including Amount
+      Mday: item.Mday,          // Including Mday
+      Mmonth: item.Mmonth,      // Including Mmonth
+      NalBy: item.NalBy,        // Including NalBy
+      Name: item.Name,          // Including Name
+      Name2: item.Name2,        // Including Name2 (if applicable)
+      PMid: item.PMid,          // Including PMid
+      Postal: item.Postal,      // Including Postal
+      Prethista: item.Prethista, // Including Prethista
+      Qty: item.Qty,            // Including Qty
+      Rate: item.Rate,          // Including Rate
+      Slno: item.Slno,          // Including Slno
+      Star: item.Star,          // Including Star
+      Star2: item.Star2,        // Including Star2 (if applicable)
+      TotalAmt: item.TotalAmt,  // Including TotalAmt
+      Vazhid: item.Vazhid,      // Including Vazhid
+      Vazhipad: item.Vazhipad,  // Including Vazhipad
+      VazhipadDate: item.VazhipadDate ,// Including VazhipadDate
+      VTime:"1"
+    };
+}
+
+
+
+
+
+
+
+
+
+
+
+
   // api data send
   sendDataToApi(data: any) {
+    console.log(  'send api data',data);
+
+
+
     let isFormValid = true; // Initialize form validity
 
     // Iterate through each form group (row) in the vazhipadinfo FormArray
@@ -700,7 +767,21 @@ export class AreareceiptComponent implements OnInit {
     console.log('Flattened Data:', flattenedData);
 
     const vazhipadinfo = data.vazhipadinfo || []; // Ensure vazhipadinfo is an array
-    const combinedVazhipadinfo = [...vazhipadinfo, ...flattenedData];
+
+
+    const cleanedVazhipadinfo = vazhipadinfo.map(this.cleanVazhipadInfo);
+
+  console.log('Cleaned vazhipadinfo:', cleanedVazhipadinfo);
+
+
+
+
+
+
+    console.log('aaaaaaaaaaadddddddddddddddd',vazhipadinfo)
+    const combinedVazhipadinfo = [...cleanedVazhipadinfo, ...flattenedData];
+
+    console.log('combined data',combinedVazhipadinfo)
     this.printData = vazhipadinfo;
     const updatedData = {
       ...data,
@@ -708,7 +789,7 @@ export class AreareceiptComponent implements OnInit {
     };
     console.log(updatedData);
     const formattedData = this.formatDateFields(updatedData);
-    console.log(formattedData);
+    console.log('formatted data',formattedData);
 
     this.masterservice.vazhipadBooking(formattedData).subscribe((res: any) => {
       console.log(res);
