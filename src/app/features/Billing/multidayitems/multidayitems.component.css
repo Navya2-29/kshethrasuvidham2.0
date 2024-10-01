@@ -406,3 +406,7 @@ th {
   background: #5d85b9; /* Color of the thumb */
   border-radius: 5px; /* Radius of the thumb */
 }
+
+.invalid-input {
+  border: 1px solid red !important;
+}

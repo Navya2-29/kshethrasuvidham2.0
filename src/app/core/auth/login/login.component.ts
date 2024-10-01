@@ -55,7 +55,7 @@ submitLogin(login:Login){
           localStorage.setItem('Role', response.Role);
           localStorage.setItem('loggedIn', 'true');
           // Optional: Redirect to the dashboard or another page
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['/front']);
         } else {
           // Handle case when login is not successful
           this.errorMessage = response.alertmsg; // Show the error message
@@ -78,7 +78,7 @@ autoLogin(){
   const login=localStorage.getItem('loggedIn');
   console.log(login);
   if(login){
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['/front']);
   }
 }
 

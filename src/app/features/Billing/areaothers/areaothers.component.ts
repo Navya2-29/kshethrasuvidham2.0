@@ -1,6 +1,5 @@
 import {Component, ViewChild} from '@angular/core';
 import {MatAccordion, MatExpansionModule} from '@angular/material/expansion';
-
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
@@ -9,8 +8,6 @@ import {provideNativeDateAdapter} from '@angular/material/core';
 import { NadavaravuComponent } from '../../../nadavaravu/nadavaravu.component';
 import { OthervazhipadComponent } from '../../../othervazhipad/othervazhipad.component';
 import { CreditcollectionComponent } from '../../../creditcollection/creditcollection.component';
-
-
 import {MatTabsModule} from '@angular/material/tabs';
 
 @Component({

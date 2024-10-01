@@ -23,6 +23,7 @@ import { CalendarComponent } from './calendar/calendar.component';
 import { VazhipadVivaramComponent } from './features/Billing/vazhipad-vivaram/vazhipad-vivaram.component';
 import { MattinangalComponent } from './features/Billing/mattinangal/mattinangal.component';
 import { UserComponent } from './features/user/user/user.component';
+import { FrontComponent } from './core/layout/front/front.component';
 
 
 
@@ -62,7 +63,10 @@ export const routes: Routes = [
     path:'userSignup',component:UserComponent,canActivate:[authGuard]
   },
   {
-    path:'**',pathMatch:'full', redirectTo:'/dashboard'
+    path:'front',component:FrontComponent,canActivate:[authGuard]
+  },
+  {
+    path:'**',pathMatch:'full', redirectTo:'/front'
   }
 ];
 
@@ -71,4 +75,7 @@ export const routes: Routes = [
   exports: [RouterModule],
 })
 
-export class approutingmodule{}
+export class approutingmodule{
+
+
+}
