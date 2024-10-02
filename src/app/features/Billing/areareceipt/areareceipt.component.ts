@@ -832,6 +832,7 @@ console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaa",result)
     this.addRow(-1); // Add an initial row after resetting
     this.updateTotalAmount();
     this.updateSlno();
+    this.multidayBooking = [];
   }
 
   // format the data based apiformat

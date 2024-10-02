@@ -216,7 +216,10 @@ export class MultidayitemsComponent implements OnInit {
 
   addDevotee() {
     if (this.form.invalid) {
+  this.form.markAllAsTouched();
+      this.validateDevoteeName();
       this.showValidationErrors();
+      
       return; // Exit early if the main form is invalid
     }
 
@@ -480,7 +483,6 @@ export class MultidayitemsComponent implements OnInit {
     const noOfDays = this.form.get('NoOfDays')?.value || 0;
     const calculatedQty = qty * noOfDays;
     const initialAmount = rate * calculatedQty;
-    // this.totalAmount = initialAmount + this.devotees.length * initialAmount;
   }
 
   onSubmit() {
@@ -517,20 +519,18 @@ export class MultidayitemsComponent implements OnInit {
       console.log(devoteeArray);
       const finalArray: any[] = [];
       this.multiDayList.forEach((item: any) => {
-        const disdate = item.disdate; // Taking disdate from multidayfilterList
-        const dateParts = disdate.split('/'); // Split the date string into parts
+        const disdate = item.disdate; 
+        const dateParts = disdate.split('/'); 
         const formattedDisdate = new Date(
           +dateParts[2],
           +dateParts[1] - 1,
           +dateParts[0]
-        ); // Create a Date object
-        // Use DatePipe to format the date as 'dd-MM-yyyy'
+        ); 
         const formattedVazhipadDate = this.datePipe.transform(
           formattedDisdate,
           'dd-MM-yyyy'
         );
         devoteeArray.forEach((devotee: any) => {
-          // Replace VazhipadDate with disdate
           finalArray.push({ ...devotee, VazhipadDate: formattedDisdate });
         });
       });
@@ -540,6 +540,7 @@ export class MultidayitemsComponent implements OnInit {
     } else {
       this.showValidationErrors();
       this.form.markAllAsTouched();
+      this.validateDevoteeName();
     }
   }
 
@@ -574,7 +575,6 @@ export class MultidayitemsComponent implements OnInit {
 
     console.log(englishday)
     let type: string | null = null;
-     // Conditions to determine the type
   if (star && englishday && !engMonth && !malMonth && !malday && !thithi) {
      type = 'EDayStar';
   } else if (star && malday && malMonth && !engMonth && !englishday && !thithi) {
@@ -644,9 +644,7 @@ else if (!thithi && !star && !engMonth && !malMonth && !englishday && malday) {
         if (this.multiDayList.length > 0) {
           let lastItem = this.multiDayList[this.multiDayList.length - 1];
           let lastDate = lastItem ? lastItem.date : null;
-          // Assuming the end date is stored in 'edate1' or a similar property
-          const endDate = lastItem.edate1; // Adjust the property name if needed
-          // Patch the EndDate form control with the last date
+          const endDate = lastItem.edate1;
           this.form.patchValue({
             EndDate: this.datePipe.transform(endDate, 'dd-MM-YYYY'),
           });
@@ -657,11 +655,10 @@ else if (!thithi && !star && !engMonth && !malMonth && !englishday && malday) {
   }
 
   onSearchClick() {
-    this.getmultidayfilterData(); // Call the existing function to filter data
+    this.getmultidayfilterData(); 
   }
 
   onCancelClick() {
-    // Reset the multidayFilterForm (clears all selected filter values)
     this.multidayFilterForm.patchValue({
       Star: '',
       EngMonth: '',
@@ -670,8 +667,20 @@ else if (!thithi && !star && !engMonth && !malMonth && !englishday && malday) {
       MalDay: '',
       Thithi: '',
     });
-    // Optionally, clear the filtered data list
+    
     this.getmultidayfilterData();
     console.log('Filters have been cleared and the form reset.');
   }
+
+
+  validateDevoteeName() {
+    const devoteesArray = this.devotees.controls;
+    devoteesArray.forEach((devotee, index) => {
+      const nameControl = devotee.get('Name');
+      if (nameControl?.invalid && nameControl.touched) {
+        this.notification.showError(`Devotee ${index + 1}- Please enter the Name!`, 'Name is invalid');
+      }
+    });
+  }
+
 }

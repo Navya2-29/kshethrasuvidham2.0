@@ -23,7 +23,9 @@
                         class="form-control sps"
                         formControlName="Vazhipad"
                         [matAutocomplete]="auto"
-                        
+                        [ngClass]="{
+                          'invalid-control': form.get('Vazhipad')?.invalid && form.get('Vazhipad')?.touched
+                        }"
                       />
                       <mat-autocomplete
                         autoActiveFirstOption
@@ -48,6 +50,9 @@
                         formControlName="Rate"
                         appNumber
                         [readOnly]="rateChange==='N'"
+                        [ngClass]="{
+                          'invalid-control': form.get('Rate')?.invalid && form.get('Rate')?.touched
+                        }"
                       /></td>
                       <td>
                         <select
@@ -55,6 +60,9 @@
                           formControlName="Prethista"
                           style="width: 100px; height: 30.6px"
                           placeholder="Prethista"
+                          [ngClass]="{
+                            'invalid-control': form.get('Prethista')?.invalid && form.get('Prethista')?.touched
+                          }"
                         >
                         <option
                         *ngFor="let prathishta of prathishtaOptions"
@@ -158,6 +166,10 @@
                         formControlName="Name"
                         placeholder="Enter Name"
                         style="border: none"
+                        (blur)="validateDevoteeName()" 
+                        [ngClass]="{
+                          'invalid-control': devotee.get('Name')?.invalid && devotee.get('Name')?.touched
+                        }" 
                       />
                     </td>
                     <td>
