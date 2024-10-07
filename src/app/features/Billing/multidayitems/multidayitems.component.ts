@@ -19,6 +19,7 @@ import {
   FormsModule,
   NgForm,
   ReactiveFormsModule,
+  ValidationErrors,
   Validators,
 } from '@angular/forms';
 import { NumberDirective } from '../../../shared/directives/number/number.directive';
@@ -67,9 +68,10 @@ export class MultidayitemsComponent implements OnInit {
   tomorrowDate: Date;
   minDate: any;
   amountPerDevotee: number = 0;
-  dayList: { date: Date | string; kollavarshamData: any }[] = [];
-  kollavarsham: any[] = [];
+  // dayList: { date: Date | string; kollavarshamData: any }[] = [];
+  // kollavarsham: any[] = [];
   daysList: any[] = [];
+  updatedDayList:any[]=[];
   devotees: FormArray;
   rateChange: string = 'N';
   seasonalDates: { fromDate: any; toDate: any } | null = null;
@@ -145,6 +147,7 @@ export class MultidayitemsComponent implements OnInit {
   malayalamMonthList: any[];
   multidayFilterForm: FormGroup;
   multiDayList: multiDayFilter[] = [];
+  updatedmultiDayList:multiDayFilter[] = [];
   lastChanged: 'English' | 'Malayalam' | null = null;
 
   private readonly masterservice = inject(MasterService);
@@ -160,9 +163,9 @@ export class MultidayitemsComponent implements OnInit {
       this.tomorrowDate,
       'yyyy-MM-dd'
     ); // Format the date
-
+    this.minDate=formattedDate;
     this.form = this.fb.group({
-      Vazhipad: ['', Validators.required],
+      Vazhipad: ['', [Validators.required,this.vazhipadValidator.bind(this)]],
       Rate: ['1', Validators.required],
       Qty: ['1', Validators.required],
       NoOfDays: ['1', Validators.required],
@@ -219,12 +222,10 @@ export class MultidayitemsComponent implements OnInit {
   this.form.markAllAsTouched();
       this.validateDevoteeName();
       this.showValidationErrors();
-      
       return; // Exit early if the main form is invalid
     }
 
     const lastDevotee = this.devotees.at(this.devotees.length - 1) as FormGroup;
-
     if (lastDevotee.invalid) {
       this.showDevoteeValidationErrors(lastDevotee);
       return; // Exit early if the last devotee form is invalid
@@ -263,6 +264,7 @@ export class MultidayitemsComponent implements OnInit {
     }
   }
 
+
   private showDevoteeValidationErrors(devotee: FormGroup): void {
     const controls = devotee.controls;
     for (const key in controls) {
@@ -278,6 +280,7 @@ export class MultidayitemsComponent implements OnInit {
     }
   }
 
+
   removeDevotee(index: number) {
     if (this.devotees.length === 1) {
       this.notification.showError(
@@ -288,6 +291,7 @@ export class MultidayitemsComponent implements OnInit {
     }
     this.devotees.removeAt(index);
   }
+
 
   ngOnInit() {
     this.setDefaultVazhipadDate();
@@ -305,6 +309,7 @@ export class MultidayitemsComponent implements OnInit {
       this.getmultidayfilterData();
     });
   }
+
 
   getThithiList() {
     const payLoad = { Type: 'Thithi', code: '' };
@@ -326,13 +331,11 @@ export class MultidayitemsComponent implements OnInit {
           });
         }
       });
-
     this.multidayFilterForm.get('MalDay')?.valueChanges.subscribe((value) => {
       if (value !== '') {
         this.multidayFilterForm.patchValue({ EngishDay: '', Thithi: '' });
       }
     });
-
     this.multidayFilterForm.get('Star')?.valueChanges.subscribe((value) => {
       if (value !== '') {
         this.multidayFilterForm.patchValue({ Thithi: '' });
@@ -357,7 +360,6 @@ export class MultidayitemsComponent implements OnInit {
           MalMonth: '',
           EngishDay: '',
           MalDay: '',
-          
         });
       }
     });
@@ -388,7 +390,7 @@ export class MultidayitemsComponent implements OnInit {
   }
 
   getAllvazhipad() {
-    this.masterservice.getVmaster().subscribe((data) => {
+    this.masterservice.getAllActiveVazhipad().subscribe((data) => {
       // console.log(data);
       // this.VMList=data
       this.VMList = data.map((item) => ({
@@ -442,9 +444,10 @@ export class MultidayitemsComponent implements OnInit {
     this.masterservice
       .getVazhipadeByCode(vazhipadcode)
       .subscribe((res: any) => {
-        console.log(res);
+        console.log(res,"vazhipad details");
         this.form.get('Rate')?.setValue(res[0].VM_Amt);
         this.form.get('multiName')?.setValue(res[0].VM_MultiName);
+        this.form.get('VTime')?.setValue(res[0].VM_Time)
         this.rateChange = res[0].VM_Rate_Change;
         const booking = res[0].VM_Booking;
         const receipt = res[0].VM_Receipt;
@@ -526,10 +529,10 @@ export class MultidayitemsComponent implements OnInit {
           +dateParts[1] - 1,
           +dateParts[0]
         ); 
-        const formattedVazhipadDate = this.datePipe.transform(
-          formattedDisdate,
-          'dd-MM-yyyy'
-        );
+        // const formattedVazhipadDate = this.datePipe.transform(
+        //   formattedDisdate,
+        //   'dd-MM-yyyy'
+        // );
         devoteeArray.forEach((devotee: any) => {
           finalArray.push({ ...devotee, VazhipadDate: formattedDisdate });
         });
@@ -554,6 +557,7 @@ export class MultidayitemsComponent implements OnInit {
     { id: '2', name: 'Evening' },
     { id: '3', name: 'AfterNoon' },
   ];
+
 
   getMalayalamMonthList() {
     const payLoad = { Type: 'MalMonth', code: '' };
@@ -639,8 +643,21 @@ else if (!thithi && !star && !engMonth && !malMonth && !englishday && malday) {
     this.masterservice.getMultidyaFilterinddata(payLoad).subscribe({
       next: (data: multiDayFilter) => {
         console.log(data);
-        this.multiDayList = Array.isArray(data) ? data : [data];
-        console.log(this.multiDayList);
+        const dayList = Array.isArray(data) ? data : [data];
+        this.updatedDayList= Array.isArray(data) ? data : [data];
+
+        // this.multiDayList = Array.isArray(data) ? data : [data];
+
+
+        this.updatedDayList = dayList.map((item: any) => ({
+          ...item,
+          selected: true // Set the initial value to true for all dates
+        }));
+        console.log(this.multiDayList,"day listtttttttttttttttttttt");
+        this.multiDayList = [...this.updatedDayList];
+        
+
+        //finding end date
         if (this.multiDayList.length > 0) {
           let lastItem = this.multiDayList[this.multiDayList.length - 1];
           let lastDate = lastItem ? lastItem.date : null;
@@ -654,9 +671,12 @@ else if (!thithi && !star && !engMonth && !malMonth && !englishday && malday) {
     });
   }
 
+
+
   onSearchClick() {
     this.getmultidayfilterData(); 
   }
+
 
   onCancelClick() {
     this.multidayFilterForm.patchValue({
@@ -667,7 +687,6 @@ else if (!thithi && !star && !engMonth && !malMonth && !englishday && malday) {
       MalDay: '',
       Thithi: '',
     });
-    
     this.getmultidayfilterData();
     console.log('Filters have been cleared and the form reset.');
   }
@@ -681,6 +700,44 @@ else if (!thithi && !star && !engMonth && !malMonth && !englishday && malday) {
         this.notification.showError(`Devotee ${index + 1}- Please enter the Name!`, 'Name is invalid');
       }
     });
+  }
+
+  vazhipadValidator(control: AbstractControl): ValidationErrors | null {
+    const vazhipad = control.value;
+    const vmExists = this.VMList.some((vm) => vm.VM_Name === vazhipad);
+    if (!vmExists) {
+      return { invalidVazhipad: true };
+    }
+    return null;
+  }
+
+
+
+  onCheckboxChange(index: number): void {
+    // Toggle the selected status of the date
+    this.updatedDayList[index].selected = !this.updatedDayList[index].selected;
+
+    // Filter out the unselected dates from the list
+    this.multiDayList = this.updatedDayList.filter(item => item.selected);
+
+    console.log(this.multiDayList, 'Updated multiDayList after checkbox change');
+
+    if (this.multiDayList.length > 0) {
+      let lastItem = this.multiDayList[this.multiDayList.length - 1];
+      let lastDate = lastItem ? lastItem.date : null;
+      const endDate = lastItem.edate1;
+      this.form.patchValue({
+        EndDate: this.datePipe.transform(endDate, 'dd-MM-YYYY'),
+      });
+      console.log('Last Date:', endDate);
+    }
+  
+// this.form.patchValue({
+//   NoOfDays : this.multiDayList.length
+// });
+
+
+
   }
 
 }

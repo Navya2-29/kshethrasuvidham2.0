@@ -408,5 +408,7 @@ th {
 }
 
 .invalid-control {
-  border: 1px solid red;
+  border: 2px solid red;
+  border-top: 2px solid red;
+  border-bottom: 2px solid red;
 }

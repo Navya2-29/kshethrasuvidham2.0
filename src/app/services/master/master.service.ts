@@ -599,6 +599,8 @@ export class MasterService {
       .post<any>(Constant.BASE_URL + Constant.METHODS.DELETE_MASTER, payLoad)
       .pipe(catchError(this.errorHandler));
   }
+
+
   deleteDayByVazhipadId(id: number): Observable<any> {
     console.log(id);
     const payLoad = { Type: 'DayAll', Id: `${id}` };
@@ -638,6 +640,7 @@ export class MasterService {
       .post<any>(Constant.BASE_URL + Constant.METHODS.DELETE_MASTER, payLoad)
       .pipe(catchError(this.errorHandler));
   }
+
   // get nakshthram
   getNakshthra(): Observable<string[]> {
     return this.http.get<string[]>('assets/data/nakshatras.json');
@@ -649,6 +652,7 @@ export class MasterService {
       Constant.BASE_URL + Constant.METHODS.GET_ACCOUNTHEAD
     );
   }
+  
   // get account sub heads
   getSubAccountHeads(): Observable<AccountSubHead[]> {
     return this.http.get<AccountSubHead[]>(
@@ -729,7 +733,6 @@ return this.http.post<multiDayFilter>(Constant.BASE_URL + Constant.METHODS.MULTI
 
 
 getThithilist(payLoad:any){
-  
   return this.http.post<multiDayFilter>(Constant.BASE_URL + Constant.METHODS.GET_MASTER,
     payLoad)
 }

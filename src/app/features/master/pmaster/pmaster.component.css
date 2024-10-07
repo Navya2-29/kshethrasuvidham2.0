@@ -475,7 +475,11 @@ mat-option {
     height: 100%;
     cursor: pointer;
   }
-
+  .wrap-text {
+    word-wrap: break-word; /* For older browsers */
+    white-space: normal;   /* Allow text to wrap */
+    word-break: break-all; /* Break long words */
+  }
   .file-input-icon {
     vertical-align: middle;
     margin-right: 5px; /* Adjust the margin as needed */

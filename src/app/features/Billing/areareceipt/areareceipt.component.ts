@@ -5,6 +5,7 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  HostListener,
   OnInit,
   Output,
   ViewChild,
@@ -138,10 +139,10 @@ export class AreareceiptComponent implements OnInit {
   createRow(): FormGroup {
     const row = this.fb.group({
       Slno: [''],
-      Vazhipad: ['', [Validators.required]],
+      Vazhipad: ['', [Validators.required,this.vazhipadValidator.bind(this)]],
       Vazhid: [''],
       Name: ['', [Validators.required]],
-      Star: ['28', [Validators.required]],
+      Star: [' ', [Validators.required]],
       Prethista: ['', [Validators.required]],
       Qty: [1, [Validators.required]],
       Rate: [
@@ -359,6 +360,7 @@ export class AreareceiptComponent implements OnInit {
     });
   }
 
+
   getAllvazhipad() {
     this.masterservice.getAllActiveVazhipad().subscribe((data) => {
       this.VMList = data.map((item) => ({
@@ -388,6 +390,7 @@ export class AreareceiptComponent implements OnInit {
     }
     return null;
   }
+
 
   updateSlno(): void {
     this.vazhipadinfo.controls.forEach((row, index) => {
@@ -449,7 +452,6 @@ export class AreareceiptComponent implements OnInit {
         selectedRow.get('VM_Receipt')?.setValue(res[0].VM_Receipt);
         selectedRow.get('ratechange')?.setValue(res[0].VM_Rate_Change);
         selectedRow.get('VTime')?.setValue(res[0].VM_Time);
-
         this.selectedVazhipadPrathistaDetails(vazhipadcode, index);
 
         this.setVazhipadDate(index);
@@ -492,8 +494,6 @@ export class AreareceiptComponent implements OnInit {
         .get('dateToSet')
         ?.setValue(this.datePipe.transform(this.currentDate, 'yyyy-MM-dd'));
     } 
-    
-    
     
     else if (fromDate) {
       selectedRow.get('VazhipadDate')?.setValue(fromDate);
@@ -587,7 +587,6 @@ export class AreareceiptComponent implements OnInit {
     const day = String(date.getDate()).padStart(2, '0'); // Get day and pad with zero if needed
     const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based, so add 1
     const year = date.getFullYear(); // Get the full year
-
     return `${year}-${month}-${day}`; // Return formatted string in yyyy-mm-dd format}
   }
 
@@ -598,11 +597,10 @@ export class AreareceiptComponent implements OnInit {
     let lastIndex = result.length - 1;
     const data = result[0];
     console.log(data.Prethista);
-console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaa",result)
+    console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaa",result)
        // Assuming data.VazhipadDate is a Date object
        const startDate = new Date(data.VazhipadDate); // This should be the start date
        const endDate = new Date(result[lastIndex].VazhipadDate); // This should be the end date
-   
        const formattedDates = result.map((item:any) => {
         // Format the VazhipadDate property
         return {
@@ -630,6 +628,7 @@ console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaa",result)
       Star: data.Star,
       Name2: data.Name2,
       Star2: data.Star2,
+      VTime:data.VTime
     });
   }
 
@@ -670,12 +669,8 @@ console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaa",result)
   }
 
 
-
-
-
-
-
   private cleanVazhipadInfo(item: any) {
+    console.log(item,'testttttttttttttttttttttttttttttttttttt')
     return {
       Amount: item.Amount,      // Including Amount
       Mday: item.Mday,          // Including Mday
@@ -695,38 +690,26 @@ console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaa",result)
       Vazhid: item.Vazhid,      // Including Vazhid
       Vazhipad: item.Vazhipad,  // Including Vazhipad
       VazhipadDate: item.VazhipadDate ,// Including VazhipadDate
-      VTime:"1"
+      VTime:item.VTime
     };
 }
 
 
-
-
-
-
-
-
-
-
-
-
   // api data send
   sendDataToApi(data: any) {
-    console.log(  'send api data',data);
-
+    console.log(  'send api data getting formdata only',data);
 
 
     let isFormValid = true; // Initialize form validity
-
+    let multidayRowIndices: number[] = [];
     // Iterate through each form group (row) in the vazhipadinfo FormArray
-    this.vazhipadinfo.controls.forEach((row) => {
+    this.vazhipadinfo.controls.forEach((row,index) => {
       // Mark all controls in this row as touched to trigger validation styles
       row.markAllAsTouched();
-  
       // Check if the current row is invalid
       if (row.invalid) {
-        isFormValid = false; // Set form validity to false if any row is invalid
-  
+        isFormValid = false; 
+        // Set form validity to false if any row is invalid
         // Display validation messages for each field based on its errors
         if (row.get('Vazhipad')?.errors?.['required']) {
           this.notification.success('Please select a vazhipad');
@@ -753,8 +736,21 @@ console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaa",result)
         // Stop further validation if a row is found to be invalid
         return;
       }
+      else{
+      //   console.log(row,"rowwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
+        if (this.multidayBooking[index]) {
+          multidayRowIndices.push(index); // Store the index if multidayBooking data exists
+        // console.log(multidayRowIndices,"indexxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+        }
+      }
     });
   
+
+    // for (let i = multidayRowIndices.length - 1; i >= 0; i--) {
+    //   const indexToRemove = multidayRowIndices[i];
+    //   this.vazhipadinfo.removeAt(indexToRemove);
+
+    // }
     // If the form is invalid, do not proceed with the API call
     if (!isFormValid) {
       return;
@@ -762,25 +758,24 @@ console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaa",result)
     console.log('ffffffffffffffffffff');
     console.log(this.multidayBooking);
     console.log(data);
-
     const flattenedData = this.flattenMultiDayBooking();
     console.log('Flattened Data:', flattenedData);
-
     const vazhipadinfo = data.vazhipadinfo || []; // Ensure vazhipadinfo is an array
 
+console.log(vazhipadinfo,"for removing data");
+
+    // code for remove multiday showing row.
+for (let i = multidayRowIndices.length - 1; i >= 0; i--) {
+      const indexToRemove = multidayRowIndices[i];
+      vazhipadinfo.splice(indexToRemove,1);
+      console.log(vazhipadinfo,"jhhhhhhhhhhhhhhhh");
+  }
 
     const cleanedVazhipadinfo = vazhipadinfo.map(this.cleanVazhipadInfo);
-
   console.log('Cleaned vazhipadinfo:', cleanedVazhipadinfo);
+  console.log('aaaaaaaaaaadddddddddddddddd',vazhipadinfo)
 
-
-
-
-
-
-    console.log('aaaaaaaaaaadddddddddddddddd',vazhipadinfo)
     const combinedVazhipadinfo = [...cleanedVazhipadinfo, ...flattenedData];
-
     console.log('combined data',combinedVazhipadinfo)
     this.printData = vazhipadinfo;
     const updatedData = {
@@ -790,7 +785,6 @@ console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaa",result)
     console.log(updatedData);
     const formattedData = this.formatDateFields(updatedData);
     console.log('formatted data',formattedData);
-
     this.masterservice.vazhipadBooking(formattedData).subscribe((res: any) => {
       console.log(res);
       if (res) {
@@ -798,7 +792,6 @@ console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaa",result)
           this.notification.success(res.RespMsg);
           this.receiptPrintService.setReceiptData(formattedData);
           this.resetForm();
-
           this.masterservice.getLastBillNumber().subscribe({
             next: (lastbillno) => {
               const lastBillNumber = lastbillno[0].billno;
@@ -913,13 +906,13 @@ console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaa",result)
     });
   }
 
+
   // getseasonal vazhipad data
   getSeasnalalVazhipadData(vid: string, index: number) {
     console.log(vid + ' ssssssssss');
     this.masterservice.getSeasonalVazhipadDateCheck(vid).subscribe({
       next: (data) => {
         console.log(data);
-
         // Check if the response data is empty or not
         if (data && data.length > 0) {
           const seasonalDates = {
@@ -927,7 +920,6 @@ console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaa",result)
             toDate: data[0].VS_ToDate,
           };
           console.log(seasonalDates);
-
           const row = this.vazhipadinfo.at(index) as FormGroup;
           const formattedFromDate = this.datePipe.transform(
             seasonalDates.fromDate,
@@ -937,15 +929,12 @@ console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaa",result)
             seasonalDates.toDate,
             'yyyy-MM-dd'
           );
-
           // Update the form with the fetched seasonal dates
           row.get('seasonalDates')?.patchValue({
             fromDate: formattedFromDate,
             toDate: formattedToDate,
           });
-
           this.setVazhipadDate(index);
-
           console.log(row);
         } else {
           // Handle the case when data is empty
@@ -973,7 +962,6 @@ console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaa",result)
   // get the day master vazhipad data
   getDatamasterdateCheck(vid: string, index: number) {
     const row = this.vazhipadinfo.at(index) as FormGroup;
-
     this.masterservice.getDayMastervazhipaddateCheck(vid).subscribe({
       next: (data) => {
         // Extract only the 'Day' field from each object in the response
@@ -1005,11 +993,9 @@ console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaa",result)
   checkDayBasedVazhipadDate(row: FormGroup): void {
     const allowedDays = row.get('allowedDays')?.value as number[];
     const vazhipadDate = row.get('VazhipadDate')?.value;
-
     if (allowedDays && vazhipadDate) {
       const dateToCheck = new Date(vazhipadDate);
-      const dayOfWeek = dateToCheck.getDay(); // Sunday: 0, Monday: 1, etc.
-
+      const dayOfWeek = dateToCheck.getDay(); // Sunday: 0, Monday: 1, etc
       if (!allowedDays.includes(dayOfWeek + 1)) {
         // Adjusting dayOfWeek to match your numbering
         this.notification.error(
@@ -1019,4 +1005,20 @@ console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaa",result)
       }
     }
   }
+
+  clearAll(){
+    this.resetForm();
+  }
+
+
+ 
+
+  
+  getStarName(starId: string): string {
+    const star = this.nakshatham.find(nakshtra => nakshtra.id === starId);
+    return star ? star.SM_NameEng : '';
+  }
+
+  
+
 }
