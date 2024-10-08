@@ -339,12 +339,17 @@ private printContent(content: string) {
     printWindow.document.close();
     
     // Wait for the window to finish loading the content before printing
+    // printWindow.onload = () => {
+    //   printWindow.focus();  // Focus on the new window
+    //   printWindow.print();  // Trigger the print dialog
+    //   printWindow.onafterprint = () => {
+    //     printWindow.close();  // Close the window after printing
+    //   };
+    // };
+
     printWindow.onload = () => {
-      printWindow.focus();  // Focus on the new window
-      printWindow.print();  // Trigger the print dialog
-      printWindow.onafterprint = () => {
-        printWindow.close();  // Close the window after printing
-      };
+      printWindow.print();
+      printWindow.close(); // Close the print window after printing
     };
   } else {
     console.error("Failed to open the print window.");

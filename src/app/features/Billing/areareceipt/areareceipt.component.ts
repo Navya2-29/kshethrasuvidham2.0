@@ -8,7 +8,9 @@ import {
   HostListener,
   OnInit,
   Output,
+  QueryList,
   ViewChild,
+  ViewChildren,
   inject,
 } from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
@@ -98,6 +100,10 @@ export class AreareceiptComponent implements OnInit {
   filteredVazhipadTimeOptions: any[][] = [];
   readonlyDate: boolean = false;
   nearestAllowedDate: any;
+  filteredStarOptions: Observable<string[]>;
+  @ViewChildren('nameInput') nameInputs!: QueryList<ElementRef>;
+  @ViewChild('firstInput') firstInputElement!: ElementRef;
+
   private subscription: Subscription;
   private masterservice = inject(MasterService);
   private eventService = inject(TotalAmountService);
@@ -159,7 +165,7 @@ export class AreareceiptComponent implements OnInit {
       VTime: ['0', [Validators.required]],
       // multidaybookedDetails: this.fb.array([]),
       Name2: [''],
-      Star2: ['28'],
+      Star2: [''],
       Postal: ['0'],
       PMid: ['1'],
       Mday: [''],
@@ -295,7 +301,19 @@ export class AreareceiptComponent implements OnInit {
     this.vazhipadinfo.insert(index + 1, newRow);
     this.setupAutocomplete(index + 1);
     this.updateTotalAmount();
+    setTimeout(() => {
+      this.focusOnNewRow(); // Focus on the newly created row's text box
+    }, 0);
   }
+
+
+  focusOnNewRow(): void {
+    const lastInput = this.nameInputs.last;
+    if (lastInput) {
+      lastInput.nativeElement.select(); // Focus and select the text in the input field
+    }
+  }
+
 
   removeRow(index: number) {
     console.log(index + 'Sssssssssssssssssssss');
@@ -866,22 +884,22 @@ for (let i = multidayRowIndices.length - 1; i >= 0; i--) {
 
   // add row by enter key press
 
-  handleTimeFieldKeyPress(
-    event: KeyboardEvent,
-    row: AbstractControl,
-    i: number
-  ) {
-    if (event.key === 'Enter') {
-      const formGroupRow = row as FormGroup;
-      if (formGroupRow.valid) {
-        this.addRow(i);
-      } else {
-        alert(
-          'Please fill in all required fields in the current row before adding a new row.'
-        );
-      }
-    }
-  }
+  // handleTimeFieldKeyPress(
+  //   event: KeyboardEvent,
+  //   row: AbstractControl,
+  //   i: number
+  // ) {
+  //   if (event.key === 'Enter') {
+  //     const formGroupRow = row as FormGroup;
+  //     if (formGroupRow.valid) {
+  //       this.addRow(i);
+  //     } else {
+  //       alert(
+  //         'Please fill in all required fields in the current row before adding a new row.'
+  //       );
+  //     }
+  //   }
+  // }
 
   // show validatin error
   showValidationErrors(row: FormGroup): void {
@@ -1019,6 +1037,47 @@ for (let i = multidayRowIndices.length - 1; i >= 0; i--) {
     return star ? star.SM_NameEng : '';
   }
 
+  onKeyDown(event: KeyboardEvent, field: string, index: number) {
+    const currentRow = this.vazhipadinfo.at(index) as FormGroup;
+
+
+
+    // if (event.key === 'Enter') {
+    //   event.preventDefault(); // Prevent form submission on Enter key
+    //   this.addRow(index); // Optionally, call addRow if you want to add a new row on Enter key
+    //   return; // Exit the method
+    // }
+    // Handle the Backspace key
+    if (event.key === 'Backspace') {
+      const nameField = currentRow.get(field);
+      if (nameField && nameField.value) {
+        const inputElement = event.target as HTMLInputElement;
+        const start = inputElement.selectionStart;
+        const end = inputElement.selectionEnd;
+
+        // If all text is selected, clear the field
+        if (start === 0 && end === nameField.value.length) {
+          nameField.setValue(''); // Clear the field if all text is selected
+          event.preventDefault(); // Prevent default backspace action
+        }
+      }
+    }
+  }
   
+  handleTabKeyDown(event: KeyboardEvent, index: number): void {
+    // Check if the Tab key is pressed
+    if (event.key === 'Tab') {
+      // Prevent the default behavior so it doesn't move focus immediately
+      event.preventDefault();
+  
+      // Call the addRow function to add a new row
+      this.addRow(index);
+    }
+  }
+
+  ngAfterViewInit(): void {
+    // Focus on the first input field when the page loads
+    this.firstInputElement.nativeElement.focus();
+  }
 
 }

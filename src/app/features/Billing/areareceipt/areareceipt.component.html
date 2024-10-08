@@ -44,6 +44,8 @@
                     type="text"
                     placeholder="Select vazhipad"
                     matInput
+                    #nameInput
+                    #firstInput
                     class="form-control sps"
                     formControlName="Vazhipad"
                     [matAutocomplete]="auto"
@@ -70,6 +72,7 @@
                     placeholder="Enter Name"
                     formControlName="Name"
                     [readonly]="multidayBooking[i]"
+                    (keydown)="onKeyDown($event, 'Name', i)"
                   />
                 </td>
                 <td>
@@ -174,8 +177,9 @@
                     class="form-control"
                     formControlName="VTime"
                     style="width: 80%; height: 30.6px"
-                    (keypress)="handleTimeFieldKeyPress($event, row,i)"
+                    
                   >
+                  <!-- (keypress)="handleTimeFieldKeyPress($event, row,i)" -->
                     <option *ngFor="let time of vazhipadtime" [value]="time.id">{{time.name}}</option>
                     
                   </select>
@@ -206,11 +210,12 @@
                 class="form-control"
                 style="width: 100%; height: 30.6px"
               >
+              <option value="">Select</option>
               <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_NameEng}}</option>
               </select>
                 </td>
                 <td>
-                  <a (click)="addRow(i)">
+                  <a (click)="addRow(i)" tabindex="0" (keydown)="handleTabKeyDown($event, i)">
                     <mat-icon><span class="icons">add_comment</span></mat-icon>
                   </a>
                 </td>

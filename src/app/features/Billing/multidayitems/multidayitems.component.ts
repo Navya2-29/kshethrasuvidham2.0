@@ -71,12 +71,14 @@ export class MultidayitemsComponent implements OnInit {
   // dayList: { date: Date | string; kollavarshamData: any }[] = [];
   // kollavarsham: any[] = [];
   daysList: any[] = [];
-  updatedDayList:any[]=[];
+  updatedDayList: any[] = [];
   devotees: FormArray;
   rateChange: string = 'N';
   seasonalDates: { fromDate: any; toDate: any } | null = null;
   allowedDays: number[] = [];
   currentDate = new Date();
+  filteredStars: Observable<string[]>[] = [];
+  starList: string[] = [];
   MlayalamDays = [
     '1',
     '2',
@@ -147,7 +149,7 @@ export class MultidayitemsComponent implements OnInit {
   malayalamMonthList: any[];
   multidayFilterForm: FormGroup;
   multiDayList: multiDayFilter[] = [];
-  updatedmultiDayList:multiDayFilter[] = [];
+  updatedmultiDayList: multiDayFilter[] = [];
   lastChanged: 'English' | 'Malayalam' | null = null;
 
   private readonly masterservice = inject(MasterService);
@@ -163,9 +165,9 @@ export class MultidayitemsComponent implements OnInit {
       this.tomorrowDate,
       'yyyy-MM-dd'
     ); // Format the date
-    this.minDate=formattedDate;
+    this.minDate = formattedDate;
     this.form = this.fb.group({
-      Vazhipad: ['', [Validators.required,this.vazhipadValidator.bind(this)]],
+      Vazhipad: ['', [Validators.required, this.vazhipadValidator.bind(this)]],
       Rate: ['1', Validators.required],
       Qty: ['1', Validators.required],
       NoOfDays: ['1', Validators.required],
@@ -180,9 +182,9 @@ export class MultidayitemsComponent implements OnInit {
       VazhipadDate: [formattedDate, [Validators.required]],
       VTime: ['0', [Validators.required]],
       Postal: ['10'],
-      Mday: ['Sunday'],
-      NalBy: ['Ohm'],
-      Mmonth: ['Chingam'],
+      Mday: [''],
+      NalBy: [''],
+      Mmonth: [''],
       multiname: [{ disabled: true, value: '' }],
       booking: [{ disabled: true, value: '' }],
       ratechange: [{ disabled: true, value: '' }],
@@ -211,7 +213,7 @@ export class MultidayitemsComponent implements OnInit {
   createDevotee(): FormGroup {
     return this.fb.group({
       Name: ['', [Validators.required]],
-      Star: ['28', [Validators.required]],
+      Star: ['', ],
       Name2: [''],
       Star2: [''],
     });
@@ -219,7 +221,7 @@ export class MultidayitemsComponent implements OnInit {
 
   addDevotee() {
     if (this.form.invalid) {
-  this.form.markAllAsTouched();
+      this.form.markAllAsTouched();
       this.validateDevoteeName();
       this.showValidationErrors();
       return; // Exit early if the main form is invalid
@@ -264,7 +266,6 @@ export class MultidayitemsComponent implements OnInit {
     }
   }
 
-
   private showDevoteeValidationErrors(devotee: FormGroup): void {
     const controls = devotee.controls;
     for (const key in controls) {
@@ -281,6 +282,28 @@ export class MultidayitemsComponent implements OnInit {
   }
 
 
+
+
+  // star data auto compleate
+
+  setUpstarAutocomplete(){
+    const devoteesArray = this.form.get('devotees') as FormArray;
+    devoteesArray.controls.forEach((control, index) => {
+      this.filteredStars[index] = control.get('Star')!.valueChanges.pipe(
+        startWith(''),
+        map((value) => this._filterStar(value || ''))
+      );
+    });
+  }
+
+
+  private _filterStar(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.nakshatham.filter((star) => star.SM_NameEng.toLowerCase().includes(filterValue));
+  }
+
+
+
   removeDevotee(index: number) {
     if (this.devotees.length === 1) {
       this.notification.showError(
@@ -291,7 +314,6 @@ export class MultidayitemsComponent implements OnInit {
     }
     this.devotees.removeAt(index);
   }
-
 
   ngOnInit() {
     this.setDefaultVazhipadDate();
@@ -309,7 +331,6 @@ export class MultidayitemsComponent implements OnInit {
       this.getmultidayfilterData();
     });
   }
-
 
   getThithiList() {
     const payLoad = { Type: 'Thithi', code: '' };
@@ -391,8 +412,6 @@ export class MultidayitemsComponent implements OnInit {
 
   getAllvazhipad() {
     this.masterservice.getAllActiveVazhipad().subscribe((data) => {
-      // console.log(data);
-      // this.VMList=data
       this.VMList = data.map((item) => ({
         VM_Id: item.VM_Id,
         VM_Name: item.VM_Name,
@@ -415,9 +434,10 @@ export class MultidayitemsComponent implements OnInit {
   //   );
   // }
 
-  onSelectStar(event: MatAutocompleteSelectedEvent): void {
+  onSelectStar(index: number, event: MatAutocompleteSelectedEvent): void {
     const selectedStar = event.option.value;
-    this.form.get('Star')?.setValue(selectedStar);
+    const devoteesArray = this.form.get('devotees') as FormArray;
+    devoteesArray.at(index).get('Star')?.setValue(selectedStar);
   }
 
   onSelect(event: MatAutocompleteSelectedEvent): void {
@@ -444,10 +464,10 @@ export class MultidayitemsComponent implements OnInit {
     this.masterservice
       .getVazhipadeByCode(vazhipadcode)
       .subscribe((res: any) => {
-        console.log(res,"vazhipad details");
+        console.log(res, 'vazhipad details');
         this.form.get('Rate')?.setValue(res[0].VM_Amt);
         this.form.get('multiName')?.setValue(res[0].VM_MultiName);
-        this.form.get('VTime')?.setValue(res[0].VM_Time)
+        this.form.get('VTime')?.setValue(res[0].VM_Time);
         this.rateChange = res[0].VM_Rate_Change;
         const booking = res[0].VM_Booking;
         const receipt = res[0].VM_Receipt;
@@ -522,13 +542,13 @@ export class MultidayitemsComponent implements OnInit {
       console.log(devoteeArray);
       const finalArray: any[] = [];
       this.multiDayList.forEach((item: any) => {
-        const disdate = item.disdate; 
-        const dateParts = disdate.split('/'); 
+        const disdate = item.disdate;
+        const dateParts = disdate.split('/');
         const formattedDisdate = new Date(
           +dateParts[2],
           +dateParts[1] - 1,
           +dateParts[0]
-        ); 
+        );
         // const formattedVazhipadDate = this.datePipe.transform(
         //   formattedDisdate,
         //   'dd-MM-yyyy'
@@ -558,7 +578,6 @@ export class MultidayitemsComponent implements OnInit {
     { id: '3', name: 'AfterNoon' },
   ];
 
-
   getMalayalamMonthList() {
     const payLoad = { Type: 'MalMonth', code: '' };
     this.masterservice.getMalayalamMonthList(payLoad).subscribe({
@@ -576,58 +595,173 @@ export class MultidayitemsComponent implements OnInit {
     const englishday = this.multidayFilterForm.get('EngishDay')?.value;
     const malday = this.multidayFilterForm.get('MalDay')?.value;
     const thithi = this.multidayFilterForm.get('Thithi')?.value;
-
-    console.log(englishday)
+this.form.patchValue({
+  Mday:engMonth,
+  NalBy:star,
+  Mmonth: malMonth,
+})
+    console.log(englishday);
     let type: string | null = null;
-  if (star && englishday && !engMonth && !malMonth && !malday && !thithi) {
-     type = 'EDayStar';
-  } else if (star && malday && malMonth && !engMonth && !englishday && !thithi) {
-    type = 'StarMDayMDate';
-  } else if (star && engMonth && !malMonth && !englishday && !malday && !thithi) {
-    type = 'StarDay';
-  } else if (star && !engMonth && !malMonth && !englishday && !malday && !thithi) {
-    type = 'Star';
-  } else if (malMonth && star && !engMonth && !englishday && !malday && !thithi) {
-    type = 'MalStar';
-  } else if (malMonth && star && engMonth && !englishday && !malday && !thithi) {
-    type = 'Both';
-  } else if (star && malday && !engMonth && !malMonth && !englishday && !thithi) {
-    type = 'MDaystar';
-  } else if (star && engMonth && englishday && !malMonth && !malday && !thithi) {
-    type = 'StarDayEngDate';
-  } else if (malMonth && !star && !engMonth && !englishday && !malday && !thithi) {
-    type = 'MalMonth';
-  } else if (malMonth && engMonth && !star && !englishday && !malday && !thithi) {
-    type = 'MalEng';
-  } else if (malday && malMonth && !star && !engMonth && !englishday && !thithi) {
-    type = 'MDayMDate';
-  } else if (malday && malMonth && engMonth && !star && !englishday && !thithi) {
-    type = 'MDayMDateEDay';
-  } else if (engMonth && !star && !malMonth && !englishday && !malday && !thithi) {
-    type = 'EngDay';
-  } else if (engMonth && englishday) {
-    type = 'DayEngDate';
-  } else if (englishday && !star && !engMonth && !malMonth && !malday && !thithi) {
-    type = 'EngDate';
-  } else if (thithi && !star && !engMonth && !malMonth && !englishday && !malday) {
-    type = 'Thithi';
-  }  else if (!thithi && star && engMonth && !malMonth && !englishday && malday) {
-    type = 'StarDayMDate';
-  
-  }
-
-  else if (!thithi && !star && engMonth && !malMonth && !englishday && malday) {
-  type = 'DayMDate';
-
-}
-
-else if (!thithi && !star && !engMonth && !malMonth && !englishday && malday) {
-  type = 'MDate';
-
-}
-  else {
-    type = 'NULL';
-  }
+    if (star && englishday && !engMonth && !malMonth && !malday && !thithi) {
+      type = 'EDayStar';
+    } else if (
+      star &&
+      malday &&
+      malMonth &&
+      !engMonth &&
+      !englishday &&
+      !thithi
+    ) {
+      type = 'StarMDayMDate';
+    } else if (
+      star &&
+      engMonth &&
+      !malMonth &&
+      !englishday &&
+      !malday &&
+      !thithi
+    ) {
+      type = 'StarDay';
+    } else if (
+      star &&
+      !engMonth &&
+      !malMonth &&
+      !englishday &&
+      !malday &&
+      !thithi
+    ) {
+      type = 'Star';
+    } else if (
+      malMonth &&
+      star &&
+      !engMonth &&
+      !englishday &&
+      !malday &&
+      !thithi
+    ) {
+      type = 'MalStar';
+    } else if (
+      malMonth &&
+      star &&
+      engMonth &&
+      !englishday &&
+      !malday &&
+      !thithi
+    ) {
+      type = 'Both';
+    } else if (
+      star &&
+      malday &&
+      !engMonth &&
+      !malMonth &&
+      !englishday &&
+      !thithi
+    ) {
+      type = 'MDaystar';
+    } else if (
+      star &&
+      engMonth &&
+      englishday &&
+      !malMonth &&
+      !malday &&
+      !thithi
+    ) {
+      type = 'StarDayEngDate';
+    } else if (
+      malMonth &&
+      !star &&
+      !engMonth &&
+      !englishday &&
+      !malday &&
+      !thithi
+    ) {
+      type = 'MalMonth';
+    } else if (
+      malMonth &&
+      engMonth &&
+      !star &&
+      !englishday &&
+      !malday &&
+      !thithi
+    ) {
+      type = 'MalEng';
+    } else if (
+      malday &&
+      malMonth &&
+      !star &&
+      !engMonth &&
+      !englishday &&
+      !thithi
+    ) {
+      type = 'MDayMDate';
+    } else if (
+      malday &&
+      malMonth &&
+      engMonth &&
+      !star &&
+      !englishday &&
+      !thithi
+    ) {
+      type = 'MDayMDateEDay';
+    } else if (
+      engMonth &&
+      !star &&
+      !malMonth &&
+      !englishday &&
+      !malday &&
+      !thithi
+    ) {
+      type = 'EngDay';
+    } else if (engMonth && englishday) {
+      type = 'DayEngDate';
+    } else if (
+      englishday &&
+      !star &&
+      !engMonth &&
+      !malMonth &&
+      !malday &&
+      !thithi
+    ) {
+      type = 'EngDate';
+    } else if (
+      thithi &&
+      !star &&
+      !engMonth &&
+      !malMonth &&
+      !englishday &&
+      !malday
+    ) {
+      type = 'Thithi';
+    } else if (
+      !thithi &&
+      star &&
+      engMonth &&
+      !malMonth &&
+      !englishday &&
+      malday
+    ) {
+      type = 'StarDayMDate';
+    } else if (
+      !thithi &&
+      !star &&
+      engMonth &&
+      !malMonth &&
+      !englishday &&
+      malday
+    ) {
+      type = 'DayMDate';
+    } else if (
+      !thithi &&
+      !star &&
+      !engMonth &&
+      !malMonth &&
+      !englishday &&
+      malday
+    ) {
+      type = 'MDate';
+    } else {
+      type = 'NULL';
+    }
 
     const formattedDate = this.datePipe.transform(
       this.form.get('VazhipadDate')?.value,
@@ -644,18 +778,16 @@ else if (!thithi && !star && !engMonth && !malMonth && !englishday && malday) {
       next: (data: multiDayFilter) => {
         console.log(data);
         const dayList = Array.isArray(data) ? data : [data];
-        this.updatedDayList= Array.isArray(data) ? data : [data];
+        this.updatedDayList = Array.isArray(data) ? data : [data];
 
         // this.multiDayList = Array.isArray(data) ? data : [data];
 
-
         this.updatedDayList = dayList.map((item: any) => ({
           ...item,
-          selected: true // Set the initial value to true for all dates
+          selected: true, // Set the initial value to true for all dates
         }));
-        console.log(this.multiDayList,"day listtttttttttttttttttttt");
+        console.log(this.multiDayList, 'day listtttttttttttttttttttt');
         this.multiDayList = [...this.updatedDayList];
-        
 
         //finding end date
         if (this.multiDayList.length > 0) {
@@ -671,10 +803,8 @@ else if (!thithi && !star && !engMonth && !malMonth && !englishday && malday) {
     });
   }
 
-
-
   onSearchClick() {
-    this.getmultidayfilterData(); 
+    this.getmultidayfilterData();
   }
 
 
@@ -691,13 +821,15 @@ else if (!thithi && !star && !engMonth && !malMonth && !englishday && malday) {
     console.log('Filters have been cleared and the form reset.');
   }
 
-
   validateDevoteeName() {
     const devoteesArray = this.devotees.controls;
     devoteesArray.forEach((devotee, index) => {
       const nameControl = devotee.get('Name');
       if (nameControl?.invalid && nameControl.touched) {
-        this.notification.showError(`Devotee ${index + 1}- Please enter the Name!`, 'Name is invalid');
+        this.notification.showError(
+          `Devotee ${index + 1}- Please enter the Name!`,
+          'Name is invalid'
+        );
       }
     });
   }
@@ -711,16 +843,17 @@ else if (!thithi && !star && !engMonth && !malMonth && !englishday && malday) {
     return null;
   }
 
-
-
   onCheckboxChange(index: number): void {
     // Toggle the selected status of the date
     this.updatedDayList[index].selected = !this.updatedDayList[index].selected;
 
     // Filter out the unselected dates from the list
-    this.multiDayList = this.updatedDayList.filter(item => item.selected);
+    this.multiDayList = this.updatedDayList.filter((item) => item.selected);
 
-    console.log(this.multiDayList, 'Updated multiDayList after checkbox change');
+    console.log(
+      this.multiDayList,
+      'Updated multiDayList after checkbox change'
+    );
 
     if (this.multiDayList.length > 0) {
       let lastItem = this.multiDayList[this.multiDayList.length - 1];
@@ -731,13 +864,13 @@ else if (!thithi && !star && !engMonth && !malMonth && !englishday && malday) {
       });
       console.log('Last Date:', endDate);
     }
-  
-// this.form.patchValue({
-//   NoOfDays : this.multiDayList.length
-// });
 
-
-
+    // this.form.patchValue({
+    //   NoOfDays : this.multiDayList.length
+    // });
   }
+
+
+
 
 }
