@@ -1,5 +1,13 @@
 import { MasterService } from './../../../services/master/master.service';
-import { Component, ElementRef, HostListener, inject, OnInit, Type, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  inject,
+  OnInit,
+  Type,
+  ViewChild,
+} from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MobserachbtnComponent } from '../../../mobserachbtn/mobserachbtn.component';
@@ -42,13 +50,13 @@ export class FixedbottomComponent implements OnInit {
   billNumber: string = '';
   lastBillnumber: number;
   currentBillNumber: string;
-  todayCollection:string='0';
+  todayCollection: string = '0';
   @ViewChild('payButton', { static: true }) payButton!: ElementRef;
   private subscription: Subscription = new Subscription();
   private totalService = inject(TotalAmountService);
   private notiication = inject(NotificationService);
   private masterService = inject(MasterService);
-  private escPressed: boolean = false; 
+  private escPressed: boolean = false;
   theLastBillNo: string;
   constructor(
     private fb: FormBuilder,
@@ -99,16 +107,16 @@ export class FixedbottomComponent implements OnInit {
     return `${month}${year}`;
   }
 
-
   getLastBillNumber() {
     this.masterService.getLastBillNumber().subscribe({
       next: (data) => {
         console.log(data[0].billno);
         this.lastBillnumber = data[0].billno;
-        this.theLastBillNo =this.lastBillnumber.toString()+ '/'+this.currentDate ;
+        this.theLastBillNo =
+          this.lastBillnumber.toString() + '/' + this.currentDate;
         console.log(this.theLastBillNo);
         this.currentBillNumber =
-           (this.lastBillnumber + 1).toString()+'/'+this.currentDate ;
+          (this.lastBillnumber + 1).toString() + '/' + this.currentDate;
         this.customerdetailsForBillingForm.patchValue({
           BillNo: this.currentBillNumber,
         });
@@ -117,15 +125,13 @@ export class FixedbottomComponent implements OnInit {
     });
   }
 
-
   printReceipt() {
     this.receiptPrinrservice.receiptData$.subscribe((data) => {
-      this.printReceipts(data );
-      this.getTodayCollection()
+      this.printReceipts(data);
+      this.getTodayCollection();
       console.log(data);
     });
   }
-
 
   private printReceipts(data: any) {
     const {
@@ -139,227 +145,166 @@ export class FixedbottomComponent implements OnInit {
       Pincode,
       vazhipadinfo,
     } = data;
-  
+
     const starNameMapping = {
-      "1": "ASWATHY",
-      "2": "BHARANI",
-      "3": "KARTHIKA",
-      "4": "ROHINI",
-      "5": "MAKAYIRAM",
-      "6": "THIRUVATHIRA",
-      "7": "PUNARTHAM",
-      "8": "POOYAM",
-      "9": "AYILYAM",
-      "10": "MAKAM",
-      "11": "POORAM",
-      "12": "UTHRAM",
-      "13": "ATHAM",
-      "14": "CHITHIRA",
-      "15": "CHOTHI",
-      "16": "VISHAKAM",
-      "17": "ANIZHAM",
-      "18": "THRIKKETTA",
-      "19": "MOOLAM",
-      "20": "POORADAM",
-      "21": "UTHRADAM",
-      "22": "THIRUVONAM",
-      "23": "AVITTAM",
-      "24": "CHATHAYAM",
-      "25": "PURUTTATHI",
-      "26": "UTHRITTATHI",
-      "27": "REVATHI",
-      "28": "OHM"
+      '1': 'ASWATHY',
+      '2': 'BHARANI',
+      '3': 'KARTHIKA',
+      '4': 'ROHINI',
+      '5': 'MAKAYIRAM',
+      '6': 'THIRUVATHIRA',
+      '7': 'PUNARTHAM',
+      '8': 'POOYAM',
+      '9': 'AYILYAM',
+      '10': 'MAKAM',
+      '11': 'POORAM',
+      '12': 'UTHRAM',
+      '13': 'ATHAM',
+      '14': 'CHITHIRA',
+      '15': 'CHOTHI',
+      '16': 'VISHAKAM',
+      '17': 'ANIZHAM',
+      '18': 'THRIKKETTA',
+      '19': 'MOOLAM',
+      '20': 'POORADAM',
+      '21': 'UTHRADAM',
+      '22': 'THIRUVONAM',
+      '23': 'AVITTAM',
+      '24': 'CHATHAYAM',
+      '25': 'PURUTTATHI',
+      '26': 'UTHRITTATHI',
+      '27': 'REVATHI',
+      '28': 'OHM',
     };
-  
-    // Group by Prathista
-    const groupedByPrathista = vazhipadinfo.reduce((acc: any, item: any) => {
-      if (!acc[item.Prethista]) {
-        acc[item.Prethista] = [];
-      }
-      acc[item.Prethista].push(item);
-      return acc;
-    }, {});
-  
+
+    const groupedByPrathistaVazhipad = vazhipadinfo.reduce(
+      (acc: any, item: any) => {
+        const key = `${item.Prethista}-${item.Vazhipad}`;
+        if (!acc[key]) {
+          acc[key] = [];
+        }
+        acc[key].push(item);
+        return acc;
+      },
+      {}
+    );
+
     let allReceiptsContent = '';
-    const prathistaKeys = Object.keys(groupedByPrathista);
-  
-    // Loop through each Prathista group
-    for (let i = 0; i < prathistaKeys.length; i++) {
-      const prathista = prathistaKeys[i];
-      const items = groupedByPrathista[prathista];
-  
+    const prathistaVazhipadKeys = Object.keys(groupedByPrathistaVazhipad);
+
+    for (let i = 0; i < prathistaVazhipadKeys.length; i++) {
+      const key = prathistaVazhipadKeys[i];
+      const items = groupedByPrathistaVazhipad[key];
+      const [prathista, vazhipad] = key.split('-');
+
       const totalAmount = items.reduce(
         (total: number, item: any) => total + parseFloat(item.Amount || '0'),
         0
       );
-  
+
       const vazhipadRows = items
         .map(
           (item: any) => `
           <tr>
-            <td>${item.Vazhipad || "N/A"}</td>
-            <td>${item.Name || "N/A"}<p>${item.Name2 || " "}<p></td>
-            <td>${starNameMapping[item.Star as keyof typeof starNameMapping] || " "} <p>${starNameMapping[item.Star2 as keyof typeof starNameMapping] || " "}</P></td>
-            <td>${item.Qty || "0"}</td>
-            <td>${item.Rate || "0"}</td>
-            <td>${item.Amount || "0"}</td>
-          </tr>
-        `
+            <td>${item.Name || 'N/A'}<p>${item.Name2 || ' '}</p></td>
+            <td>${
+              starNameMapping[item.Star as keyof typeof starNameMapping] || ' '
+            }<p>${
+            starNameMapping[item.Star2 as keyof typeof starNameMapping] || ' '
+          }</p></td>
+            <td>${item.Qty || '0'}</td>
+            <td>${item.Rate || '0'}</td>
+            <td>${item.Amount || '0'}</td>
+          </tr>`
         )
         .join('');
-  
+
       const receiptContent = `
         <div class="receipt-page">
-          <h1 style="text-align: center; color: #4CAF50;">Koduvayur Sree Subrahmanya Swami Kshethram</h1>
+          <h1>Koduvayur Sree Subrahmanya Swami Kshethram</h1>
           <div>
-            <strong>Bill Number:</strong> ${BillNo || "N/A"}
-            <div>
-            <strong>Bill Date:</strong> ${Billdate || "N/A"}
-            <div>
-            <h2 style="color: #FF5722;">Prathista: ${prathista}</h2>
-            <table style="width: 100%; border-collapse: collapse; background-color: #f9f9f9;">
-              <thead style="background-color: #3f51b5; color: white;">
+            <div style="display: flex; justify-content: space-between;">
+              <strong>Bill No: ${BillNo || 'N/A'}</strong>
+              <strong>Bill Date: ${Billdate || 'N/A'}</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <strong style="color: red;">Prathista: ${prathista}</strong>
+              <strong style="color: green;">Vazhipad: ${vazhipad}</strong>
+            </div>
+            <table>
+              <thead>
                 <tr>
-                  <th style="border: 1px solid #ddd; padding: 8px;">Vazhipad</th>
-                  <th style="border: 1px solid #ddd; padding: 8px;">Name</th>
-                  <th style="border: 1px solid #ddd; padding: 8px;">Star</th>
-                  <th style="border: 1px solid #ddd; padding: 8px;">Qty</th>
-                  <th style="border: 1px solid #ddd; padding: 8px;">Rate</th>
-                  <th style="border: 1px solid #ddd; padding: 8px;">Amount</th>
+                  <th>Name</th>
+                  <th>Star</th>
+                  <th>Qty</th>
+                  <th>Rate</th>
+                  <th>Amount</th>
                 </tr>
               </thead>
               <tbody>
                 ${vazhipadRows}
                 <tr>
-                  <td colspan="5" style="text-align: right; border: 1px solid #ddd; padding: 8px;"><strong>Total Amount:</strong></td>
-                  <td style="border: 1px solid #ddd; padding: 8px; background-color: #e0f7fa;"><strong>${totalAmount.toFixed(2)}</strong></td>
+                  <td colspan="4" class="total-label"><strong>Total Amount:</strong></td>
+                  <td class="total-amount"><strong>${totalAmount.toFixed(
+                    2
+                  )}</strong></td>
                 </tr>
               </tbody>
             </table>
           </div>
-          ${i < prathistaKeys.length - 1 ? '<div class="page-break"></div>' : ''}
-        </div>
-      `;
-  
+          ${
+            i < prathistaVazhipadKeys.length - 1
+              ? '<div class="page-break"></div>'
+              : ''
+          }
+        </div>`;
       allReceiptsContent += receiptContent;
     }
-  
-    // Step 3: Add CSS for page break
+
     const printContent = `
-          <html>
-            <head>
-              <title>Receipt</title>
-              <style>
-                body {
-                  font-family: Arial, sans-serif;
-                  margin: 0;
-                  padding: 0;
-                  color: #333;
-                }
-                .receipt-page {
-                  margin: 0; /* No extra margin */
-                  padding: 10px; /* Adjust padding as necessary */
-                  page-break-inside: avoid; /* Prevent breaking inside this element */
-                }
-                .page-break {
-                  page-break-after: always; /* Forces a page break after each receipt */
-                }
-                h1 {
-                  text-align: center;
-                  color: #4CAF50;
-                  margin: 5px 0; /* Minimized margins */
-                }
-                h2 {
-                  color: #FF5722;
-                  margin: 5px 0; /* Minimized margins */
-                }
-                table {
-                  width: 100%;
-                  border-collapse: collapse;
-                  margin-top: 10px; /* Adjust if necessary */
-                }
-                th, td {
-                  border: 1px solid #ddd;
-                  padding: 5px; /* Minimized padding */
-                  text-align: left;
-                }
-                th {
-                  background-color: #3f51b5;
-                  color: white;
-                }
-                @media print {
-                  @page {
-                    margin: 0; /* Reset margin for printed pages */
-                    size: A4; /* Set the size of the printed page */
-                  }
-                  body {
-                    margin: 10mm; /* Set margin for printed pages */
-                  }
-                  /* Hide any elements not needed for print */
-                  .no-print {
-                    display: none; /* Example class to hide elements */
-                  }
-                }
-              </style>
-            </head>
-            <body>
-              ${allReceiptsContent}
-            </body>
-          </html>
-    `;
-  
-    // Step 4: Print all receipts
+      <html>
+        <head>
+          <title>Receipt</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 0; padding: 0; color: #333; }
+            .receipt-page { padding: 10px; page-break-inside: avoid; }
+            .page-break { page-break-after: always; }
+            h1 { text-align: center; color: #4CAF50; margin: 5px 0; }
+            table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+            th, td { border: 1px solid #ddd; padding: 5px; text-align: left; }
+            th { background-color: #3f51b5; color: white; }
+            .total-label { text-align: right; }
+            .total-amount { background-color: #e0f7fa; }
+            @media print {
+              @page { margin: 0; size: A4; }
+              body { margin: 10mm; }
+              .no-print { display: none; }
+            }
+          </style>
+        </head>
+        <body>
+          ${allReceiptsContent}
+        </body>
+      </html>`;
+
     this.printContent(printContent);
   }
 
+  private printContent(content: string) {
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
 
-  // <html>
-  //     <head>
-  //       <title>Receipt</title>
-  //       <style>
-  //         .receipt-page {
-  //           margin-bottom: 20px;
-  //         }
-  //         .page-break {
-  //           page-break-before: always;
-  //         }
-  //       </style>
-  //     </head>
-  //     <body>
-       
-  //     </body>
-  //   </html>
-
-private printContent(content: string) {
-  const printWindow = window.open('', '_blank', 'width=800,height=600');
-
-  if (printWindow) {
-    printWindow.document.open();
-    printWindow.document.write(content);
-    printWindow.document.close();
-    
-    // Wait for the window to finish loading the content before printing
-    // printWindow.onload = () => {
-    //   printWindow.focus();  // Focus on the new window
-    //   printWindow.print();  // Trigger the print dialog
-    //   printWindow.onafterprint = () => {
-    //     printWindow.close();  // Close the window after printing
-    //   };
-    // };
-
-    printWindow.onload = () => {
-      printWindow.print();
-      printWindow.close(); // Close the print window after printing
-    };
-  } else {
-    console.error("Failed to open the print window.");
+    if (printWindow) {
+      printWindow.document.open();
+      printWindow.document.write(content);
+      printWindow.document.close();
+      printWindow.onload = () => {
+        printWindow.print();
+        printWindow.close(); // Close the print window after printing
+      };
+    } else {
+      console.error('Failed to open the print window.');
+    }
   }
-}
-  // private generateBillNumber(): number {
-  // Simple example: "BILL" followed by current timestamp
-  // return 'CBX-' + uuidv4();
-  //  return this.LastBillNo.billno+1
-  // }
 
   private subscribeToTrnsmodeChanges() {
     this.customerdetailsForBillingForm
@@ -458,7 +403,6 @@ private printContent(content: string) {
     return `${day}-${month}-${year}`;
   }
 
-  
   openDialog(data: any) {
     this.dialog.open(MobserachcontentsComponent, {
       width: '80vw', // Set the width of the dialog
@@ -520,43 +464,34 @@ private printContent(content: string) {
       data: data,
     });
   }
-  // resetForm(){
-  // this.customerdetailsForBillingForm.reset();
-  // const today = this.getFormattedDate(new Date());
-  // this.customerdetailsForBillingForm.patchValue({
-  //   BillNo:this.lastBillnumber+1,
-  //       Billdate: today,
-
-  //       Userid: '0',,
-  //       CounterId: '1',
-  //       Trnsmode: 'cs',
-  //       Instno: '',
-  //       Instdate: today,
-  //       InstBank: '',
-  //       Memberid: '1',
-  // })
-  // }
-
-  getTodayCollection(){
-    this.masterService.getTodaycollection().subscribe({
-      next:(todaycollection)=>{
-        console.log(todaycollection);
-        this.todayCollection=todaycollection[0].Total;
-      }
-    })
 
 
-
-    
+  resetForm(){
+  this.customerdetailsForBillingForm.reset();
+  const today = this.getFormattedDate(new Date());
+  this.customerdetailsForBillingForm.patchValue({
+    BillNo:this.lastBillnumber+1,
+        Billdate: today,
+        Userid: '0',
+        CounterId: '1',
+        Trnsmode: 'cs',
+        Instno: '',
+        Instdate: today,
+        InstBank: '',
+        Memberid: '1',
+  })
   }
 
+  getTodayCollection() {
+    this.masterService.getTodaycollection().subscribe({
+      next: (todaycollection) => {
+        console.log(todaycollection);
+        this.todayCollection = todaycollection[0].Total;
+      },
+    });
+  }
 
-  // function to pdf 
-
-  
-
-
-
+  // function to pdf
 
   generatePDFAndSendToWhatsApp() {
     const data = document.getElementById('bill-content');
@@ -597,45 +532,39 @@ private printContent(content: string) {
       // Example: Upload the PDF to your server (adjust URL to your server's endpoint)
       fetch('https://your-server-endpoint/upload', {
         method: 'POST',
-        body: formData
+        body: formData,
       })
-      .then(response => response.json())
-      .then(data => {
-        const pdfUrl = data.fileUrl; // Get the URL from your server response
-        this.sendWhatsAppMessage(pdfUrl);
-      })
-      .catch(error => console.error('Error uploading PDF:', error));
+        .then((response) => response.json())
+        .then((data) => {
+          const pdfUrl = data.fileUrl; // Get the URL from your server response
+          this.sendWhatsAppMessage(pdfUrl);
+        })
+        .catch((error) => console.error('Error uploading PDF:', error));
     });
   }
 
   sendWhatsAppMessage(pdfUrl: string) {
     const whatsappMessage = `Hey, here is your bill: ${pdfUrl}`;
-    const whatsappURL = `https://wa.me/?text=${encodeURIComponent(whatsappMessage)}`;
+    const whatsappURL = `https://wa.me/?text=${encodeURIComponent(
+      whatsappMessage
+    )}`;
     window.open(whatsappURL, '_blank');
   }
- 
-
-
-
-
 
   @HostListener('document:keydown.escape', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent): void {
     if (event.key === 'Escape' || event.key === 'Esc') {
-      this.escPressed = true; 
+      this.escPressed = true;
       this.focusOnPayButton();
     }
   }
 
-   // Function to focus on the Pay button
-   focusOnPayButton(): void {
+  // Function to focus on the Pay button
+  focusOnPayButton(): void {
     if (this.payButton) {
       this.payButton.nativeElement.focus();
     }
   }
-
-
-
 
   @HostListener('document:keydown.enter', ['$event'])
   handleEnterKeyPress(event: KeyboardEvent): void {
@@ -643,6 +572,5 @@ private printContent(content: string) {
       this.onSubmit(); // Trigger the click event of the Pay button
       this.escPressed = false; // Reset the ESC key flag
     }
-
-}
+  }
 }

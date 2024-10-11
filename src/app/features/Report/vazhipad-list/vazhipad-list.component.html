@@ -1,0 +1,51 @@
+<!-- <app-header></app-header>
+<app-spinner *ngIf="loading"></app-spinner> -->
+
+<!-- Button Container -->
+<div class="fixed-button-container">
+    <div class="button-wrapper">
+        <button class="button btn-dark" (click)="backButtonClick()">Back</button>
+        <button class="button save-button" (click)="saveToComputer()">Save to Computer</button>
+        <button class="button print-button" (click)="printView()">Print as PDF</button>
+        <button class="button download-button" (click)="downloadExcel()">Download as Excel</button>
+        
+        <select class="custom-button-dropdown" (change)="onPrathistaChange($event)">
+            <option value="">Select prathista</option>
+           <option *ngFor="let name of prathistalist" let i="index" [value]="name.PM_Code">{{name.PM_Name}}</option>
+        </select>
+    </div>
+</div>
+
+<!-- Main Document Container -->
+<div class="document-container" *ngIf="vazhipadDetails">
+    <div class="document-header">
+        <h1>Vazhipad Report</h1>
+        <p>Date: {{ currentDate | date: 'dd-MM-yyyy' }}</p>
+    </div>
+
+    <div class="document-content" *ngIf="vazhipadDetails" id="printableArea">
+        <h2 *ngIf="prathistaName==''">Vazhipad List</h2>
+        <h2 *ngIf="prathistaName" > Vazhipad List of Prathishta : {{prathistaName}} </h2>
+        <table>
+            <tr>
+                <th>SI</th>
+                <th>Code</th>
+                <th>Vazhipad</th>
+                <th>Amount</th>
+                <th>Time</th>
+            </tr>
+            <tr *ngFor="let item of vazhipadDetails; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ item.VM_Code }}</td>
+                <td>{{ item.VM_Name }}</td>
+                <td style="text-align: right;">{{ item.VM_Amt | number: '1.2-2' }}</td>
+                <td>{{ item.VM_Time }}</td>
+            </tr>
+            <tr *ngIf="vazhipadDetails==''"><td colspan="5" style="text-align: center;">Vazhipad not found</td></tr>
+        </table>
+    </div>
+
+    <div class="document-footer">
+        cubix Software Solution
+    </div>
+</div>

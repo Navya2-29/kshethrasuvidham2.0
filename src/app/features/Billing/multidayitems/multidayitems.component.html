@@ -173,17 +173,17 @@
                       />
                     </td>
                     <td>
-                      <!-- <select
+                      <select
                         class="form-control select-star"
                         style="width: fit-content; height: 30.6px"
                         formControlName="Star"
                       >
                       <option value="">Select</option>
                        <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_NameEng}}</option>
-                      </select> -->
+                      </select>
 
 
-                      <input type="text"
+                      <!-- <input type="text"
                       placeholder="Select star"
                       aria-label="star"
                       class="form-control sps"
@@ -194,7 +194,7 @@
                         <mat-option *ngFor="let star of filteredStars[i] | async" [value]="star">
                           {{ star }}
                         </mat-option>
-                      </mat-autocomplete>
+                      </mat-autocomplete> -->
                     </td>
                     <td *ngIf="form.get('multiName')?.value === 'Y'">
                       <input

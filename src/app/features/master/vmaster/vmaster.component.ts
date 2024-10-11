@@ -567,4 +567,10 @@ this.editDeity=diety
       return null;
     }
   }
+
+
+
+  gotoPrintPage(){
+   this.router.navigate(['/vazhipadReport']);
+  }
 }

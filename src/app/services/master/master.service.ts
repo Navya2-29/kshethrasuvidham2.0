@@ -737,6 +737,13 @@ getThithilist(payLoad:any){
     payLoad)
 }
 
+
+getVazhipadListBasedOnPrathistaList(payLoad:any){
+
+  return this.http.post<multiDayFilter>(Constant.BASE_URL + Constant.METHODS.GET_MASTER,
+    payLoad)
+}
+
   kollavarashamData(): Observable<string[]> {
     return this.http.get<string[]>('assets/data/kollavarsham.json');
   }

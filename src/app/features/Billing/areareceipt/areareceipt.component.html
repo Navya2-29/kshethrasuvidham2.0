@@ -7,18 +7,19 @@
             <thead>
               <tr style="background: #223d61; color: white">
                 <!-- <select (change)="onLanguageChange($event)"><option *ngFor="let lan of language" [value]="lan">{{lan}}</option></select> -->
-                <td style="width: 2%"></td>
-                <th style="width: 18%">Vazhipad</th>
-                <th style="width: 15%">Name</th>
+                
+                <th style="width: 20%">Vazhipad</th>
+                <th style="width: 25%">Name</th>
                 <th style="width: 8%">Star</th>
                 <th style="width: 8%">Diety</th>
                 <th style="width: 1%; text-align: center">Qty</th>
-                <th style="width: 4%; text-align: center">Rate</th>
-                <th style="width: 4%; text-align: center">Amount</th>
-                <th style="width: 9%; text-align: center">Date</th>
-                <td style="width: 7%; text-align: center">Single/Multi</td>
-                <th style="width: 5%; text-align: center">Time</th>
-                <th><button (click)="clearAll()">Clear All</button></th>
+                <th style="width: 2%; text-align: center">Rate</th>
+                <!-- <th style="width: 4%; text-align: center">Amount</th> -->
+                <th style="width: 8%; text-align: center">Date</th>
+                <!-- <td style="width: 7%; text-align: center">Single/Multi</td> -->
+                <th style="width: 8%; text-align: center">Time</th>
+                <th style="width: 1%;"> <button (click)="clearAll()">Clear All</button>
+                </th>
                 <!-- <th> Name 2</th>
                 <th>Star 2</th> -->
                 <th></th>
@@ -31,11 +32,7 @@
                 [formGroupName]="i"
                 
               >
-                <td style="padding: 10px">
-                  <a (click)="removeRow(i)">
-                    <mat-icon>delete</mat-icon>
-                  </a>
-                </td>
+                
                 <td style="display: none">
                   <input type="text" formControlName="Slno" [value]="i" />
                 </td>
@@ -54,13 +51,14 @@
                   <mat-autocomplete
                     autoActiveFirstOption
                     #auto="matAutocomplete"
+                    class="large-autocomplete-panel"
                     (optionSelected)="onSelect($event, i)"
                   >
                     <mat-option
                       *ngFor="let option of filteredOptions[i]"
                       [value]="option.VM_Name"
                     >
-                    {{option.VM_Code}}- {{ option.VM_Name }}-{{option.VM_RName}}
+                    <p style="margin-bottom: 0px;padding-bottom: 0px;font-size: 12px;line-height: normal;">{{option.VM_Code}}-{{ option.VM_Name }}</p><p style="font-size: 12px;margin-top: 0px;padding-top: 0px;">{{option.VM_RName}}</p>
                     </mat-option>
                   </mat-autocomplete>
                  
@@ -76,7 +74,7 @@
                   />
                 </td>
                 <td>
-                  <select
+                  <!-- <select
                  
                     formControlName="Star"
                     class="form-control"
@@ -86,8 +84,30 @@
                   <option value=" ">Select</option>
                   <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_NameEng}}</option>
                 
-                  </select>
+                  </select> -->
 
+                  <input
+                  type="text"
+                  placeholder="Select Star"
+                  matInput
+                 
+                  class="form-control sps"
+                  formControlName="starName"
+                  [matAutocomplete]="str"
+                  [readonly]="multidayBooking[i]"
+                />
+                <mat-autocomplete
+                  autoActiveFirstOption
+                  #str="matAutocomplete"
+                  class="large-autocomplete-panel"
+                  (optionSelected)="onStarSelect($event, i)"
+                >
+                  <mat-option
+                    *ngFor="let option of starFilteredOption[i]"
+                    [value]="option.SM_Name"
+                  >
+                  <p style="margin-bottom: 0px;padding-bottom: 0px;font-size: 12px;line-height: normal;">{{option.SM_Id}}-{{option.SM_Name}}</p></mat-option>
+                </mat-autocomplete>
                 </td>
                 <td>
                   <select
@@ -133,57 +153,49 @@
                     class="form-control"
                     formControlName="Amount"
                     readonly
+                    style="display: none;"
                   />
-                </td>
-                <td style="vertical-align: middle; text-align: center">
+                  <input
+                  type="date"
+                  class="form-control sps"
+                  formControlName="VazhipadDate"
+                 [readOnly]="row.get('VM_Receipt')?.value==='Y'"
+                  [attr.min]="row.get('dateToSet')?.value"
+                  
+                /><span style="vertical-align: middle; text-align: center"  *ngIf="multidayBooking[i]">
                   <input
                     type="date"
                     class="form-control sps"
-                    formControlName="VazhipadDate"
-                   [readOnly]="row.get('VM_Receipt')?.value==='Y'"
-                    [attr.min]="row.get('dateToSet')?.value"
-                    
-                  /><span style="vertical-align: middle; text-align: center"  *ngIf="multidayBooking[i]">
-                    <input
-                      type="date"
-                      class="form-control sps"
-                    formControlName="toDate"
-                      readonly
-                    />
-                  </span>
-                </td>
-                
-                <td style="text-align: center; vertical-align: middle">
-                  <input
-                    type="radio"
-                    name="singleMulti_{{ i }}"
-                    value="s"
-                  
-                    checked
-                  /><span style="margin-left: 5px">S</span>
-                  <input
-                 
-                    type="radio"
-                    name="singleMulti_{{ i }}"
-                    value="m"
-                   
-                    (click)="openMultiDayDialog(i)"
-                    style="padding: 5px; font-size: 9pt"
+                  formControlName="toDate"
+                    readonly
                   />
-                  <span style="margin-left: 5px">M</span>
+                </span>
                 </td>
-                <td>
+                <td style="vertical-align: middle; text-align: center">
                   <select 
                     class="form-control"
                     formControlName="VTime"
                     style="width: 80%; height: 30.6px"
-                    
                   >
                   <!-- (keypress)="handleTimeFieldKeyPress($event, row,i)" -->
                     <option *ngFor="let time of vazhipadtime" [value]="time.id">{{time.name}}</option>
                     
                   </select>
                 </td>
+                
+                <!-- <td style="text-align: center; vertical-align: middle"> -->
+                  <!-- <input
+                    type="radio"
+                    name="singleMulti_{{ i }}"
+                    value="s"
+                  
+                    checked
+                  /><span style="margin-left: 5px">S</span> -->
+                 
+                <!-- </td> -->
+                <!-- <td> -->
+                 
+                <!-- </td> -->
                 
                 <td
                   [ngStyle]="{
@@ -198,13 +210,13 @@
                     formControlName="Name2"
                     placeholder="Name 2"
                   />
-                </td>
-                <td
-                  [ngStyle]="{
+                <!-- </td> -->
+                <!-- <td -->
+                  <!-- [ngStyle]="{
                     display:
                       row.get('multiname')?.value === 'Y' ? 'block' : 'none'
                   }"
-                >
+                > -->
                 <select
                 formControlName="Star2"
                 class="form-control"
@@ -215,6 +227,17 @@
               </select>
                 </td>
                 <td>
+                  <span style="padding-bottom:90px;padding-right: 10px;"><input
+                 
+                    type="radio"
+                    name="singleMulti_{{ i }}"
+                    value="m"
+                   
+                    (click)="openMultiDayDialog(i)"
+                    style="padding: 5px; font-size: 9pt"
+                  />
+                  
+                <span style="margin-left: 5px">M</span></span>
                   <a (click)="addRow(i)" tabindex="0" (keydown)="handleTabKeyDown($event, i)">
                     <mat-icon><span class="icons">add_comment</span></mat-icon>
                   </a>
@@ -227,6 +250,11 @@
                       >more</mat-icon
                     ></a
                   >
+                </td>
+                <td style="padding: 10px">
+                  <a (click)="removeRow(i)">
+                    <mat-icon>delete</mat-icon>
+                  </a>
                 </td>
               </tr>
             </tbody>
