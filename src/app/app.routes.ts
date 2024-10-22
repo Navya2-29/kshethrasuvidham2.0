@@ -1,3 +1,4 @@
+import { ReportDashboardComponent } from './features/Report/report-dashboard/report-dashboard.component';
 import { VazhipadListComponent } from './features/Report/vazhipad-list/vazhipad-list.component';
 import { Routes } from '@angular/router';
 
@@ -68,6 +69,9 @@ export const routes: Routes = [
   },
   {
     path:"vazhipadReport",component:VazhipadListComponent,canActivate:[authGuard]
+  },
+  {
+    path:"getReport",component:ReportDashboardComponent,canActivate:[authGuard]
   },
   {
     path:'**',pathMatch:'full', redirectTo:'/front'

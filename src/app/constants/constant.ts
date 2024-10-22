@@ -78,5 +78,6 @@ export const Constant = {
     SEARCHBYMOBILENUMBER: 'ViewMasters',
     STARDATA: 'ListStar',
     MULTIDAY_FILTER: 'MultiFilter',
+    GET_REPORT:"GetReport"
   },
 };

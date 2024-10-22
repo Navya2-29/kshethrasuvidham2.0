@@ -30,16 +30,41 @@
             <tr>
                 <th>SI</th>
                 <th>Code</th>
+                <th class="no-print-column">VC ID</th>
                 <th>Vazhipad</th>
                 <th>Amount</th>
-                <th>Time</th>
+                <th>Active</th>
+                <th class="no-print-column">Blocking</th>
+                <th class="no-print-column">Booking</th>
+                <th class="no-print-column">Seasonal</th>
+                <th class="no-print-column">Special</th>
+                <th class="no-print-column">Receipt</th>
+                <th class="no-print-column">MultiName</th>
+                <th class="no-print-column">Descriptn</th>
+                <th class="no-print-column">Rate-Change</th>
+                <th class="no-print-column">SMS</th>
+                
             </tr>
             <tr *ngFor="let item of vazhipadDetails; let i = index">
                 <td>{{ i + 1 }}</td>
                 <td>{{ item.VM_Code }}</td>
+                <td class="no-print-column">{{item.VC_ID}}</td>
+
                 <td>{{ item.VM_Name }}</td>
                 <td style="text-align: right;">{{ item.VM_Amt | number: '1.2-2' }}</td>
-                <td>{{ item.VM_Time }}</td>
+                
+                <td>{{ item.VM_Active }}</td>
+                <td class="no-print-column">{{item.VM_Blocking}}</td>
+                <td class="no-print-column">{{item.VM_Booking}}</td>
+                <td class="no-print-column">{{item.VM_Seasonal}}</td>
+                <td class="no-print-column">{{item.VM_Special}}</td>
+
+                <td class="no-print-column">{{item.VM_Receipt}}</td>
+                <td class="no-print-column">{{item.VM_MultiName}}</td>
+                <td class="no-print-column">{{item.VM_Description}}</td>
+                <td class="no-print-column">{{item.VM_Rate_Change}}</td>
+                <td class="no-print-column">{{item.VM_SMS}}</td>
+
             </tr>
             <tr *ngIf="vazhipadDetails==''"><td colspan="5" style="text-align: center;">Vazhipad not found</td></tr>
         </table>

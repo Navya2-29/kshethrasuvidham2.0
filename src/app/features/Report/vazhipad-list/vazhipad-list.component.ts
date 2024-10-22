@@ -142,20 +142,20 @@ export class VazhipadListComponent {
                 tr {
                     page-break-inside: avoid; 
                 }
+                /* Hide columns with the class 'no-print' */
+                .no-print-column {
+                    display: none !important;
+                }
             </style>
         `);
-        this.printWindow.document.write('</head><body>');
+        this.printWindow.document.write('</head><body class="document-container">');
+        this.printWindow.document.write('<div class="document-content">');
         this.printWindow.document.write(printContent.innerHTML);
+        this.printWindow.document.write('</div>');
         this.printWindow.document.write('</body></html>');
 
         this.printWindow.document.close(); // Close the document to trigger rendering
         this.printWindow.print(); // Open the print dialog
-
-        // Close the print window after printing dialog opens
-        // this.printWindow.onafterprint = () => {
-        //   this.printWindow.close();
-        //     this.printWindow = null; // Clear the reference
-        // };
     }
 }
 

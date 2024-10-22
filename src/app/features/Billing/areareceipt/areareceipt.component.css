@@ -21,6 +21,11 @@
 input.ng-invalid.ng-touched,select.ng-invalid.ng-touched {
   border: 2px solid red;
 }
+.button-container {
+  display: flex;           /* Enable Flexbox */
+  justify-content: flex-end; /* Align items to the right */
+  margin-top: 20px;      /* Optional: Add some space above the button */
+}
 
 .content{
     width:100%;

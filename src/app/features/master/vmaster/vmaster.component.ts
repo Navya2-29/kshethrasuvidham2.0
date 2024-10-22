@@ -361,48 +361,75 @@ this.editDeity=diety
   onUpdate(updatedata: Vmaster) {
     console.log(updatedata);
     this.loading = true;
-    this.deleteForUpdate(this.Id);
-    this.onSubmit(updatedata)
-    // console.log(updatedata, this.Id);
-    // if (this.vazhipadMasterForm.valid) {
-    //   const formValue = this.vazhipadMasterForm.value;
-    //   const selectedVc = this.category.find(
-    //     (vc) => vc.VC_Name === formValue.VC_Name
-    //   );
+    // this.deleteForUpdate(this.Id);
+    // this.onSubmit(updatedata)
+    console.log(updatedata, this.Id);
+    if (this.vazhipadMasterForm.valid && this.toppings.valid) {
+      const formValue = this.vazhipadMasterForm.value;
 
-    //   if (selectedVc) {
-    //     const VCId = selectedVc.VC_Id;
-    //     this.masterService.updateVmaster(VCId, updatedata, this.Id).subscribe({
-    //       next: (res) => {
-    //         this.getVmaster();
-    //         this.loading = false;
+      const selectedPrathistaNames: string[] = Array.isArray(this.toppings.value)
+      ? this.toppings.value
+      : [];
 
-    //         this.onReset();
-    //         this.notification.showSuccess(
-    //           'Vazhipad details updated suceesfully'
-    //         );
-    //       },
-    //       error: (error) => {
-    //         this.loading = true;
-    //         this.notification.showSuccess(error);
-    //       },
-    //     });
-    //   }
-    // } else {
-    //   this.markFormGroupTouched(this.vazhipadMasterForm);
-    //   this.notification.showSuccess('please fill the details');
-    // }
+  // Step 1: Create prathistainfo array from selected prathista names
+  const prathistainfo = selectedPrathistaNames.map((name) => {
+      const prathista = this.deities.find((deity) => deity.PM_Name === name);
+
+      // Check if prathista is found before accessing its properties
+      if (prathista) {
+          return { PMId: prathista.PM_ID.toString() };
+      } else {
+          console.warn(`Prathista with name "${name}" not found in deities array.`);
+          return null; // Handle missing prathista case
+      }
+  }).filter(item => item !== null) as { PMId: string }[];
+
+  // Add prathistainfo to formValue
+  formValue.prathistainfo = prathistainfo;
+
+  console.log('Form value with prathistainfo:', formValue);
+
+
+
+
+      const selectedVc = this.category.find(
+        (vc) => vc.VC_Name === formValue.VC_Name
+      );
+
+      if (selectedVc) {
+        const VCId = selectedVc.VC_Id;
+        this.masterService.updateVmaster(VCId, updatedata, this.Id).subscribe({
+          next: (res) => {
+            this.getVmaster();
+            this.loading = false;
+
+            this.onReset();
+            this.notification.showSuccess(
+              'Vazhipad details updated suceesfully'
+            );
+          },
+          error: (error) => {
+            this.loading = true;
+            this.notification.showSuccess(error);
+          },
+        });
+      }
+    } else {
+      this.markFormGroupTouched(this.vazhipadMasterForm);
+      this.notification.showSuccess('please fill the details');
+    }
   }
 
-  deleteForUpdate(id: number) {
-    this.loading = true;
-    const Id = id + '';
-    this.masterService.deleteVmaster(Id).subscribe((res) => {
-      this.loading = false;
-      this.getVmaster();
-      // this.notification.showSuccess(' Vazhipad Details deleted successfully');
-    });
-  }
+  // deleteForUpdate(id: number) {
+  //   this.loading = true;
+  //   const Id = id + '';
+  //   this.masterService.deleteVmaster(Id).subscribe((res) => {
+  //     this.loading = false;
+  //     this.getVmaster();
+  //     // this.notification.showSuccess(' Vazhipad Details deleted successfully');
+  //   });
+  // }
+
   // deleteData
   onDelete(id: number) {
     this.loading = true;

@@ -5,7 +5,7 @@
         <form [formGroup]="form">
           <table class="table">
             <thead>
-              <tr style="background: #223d61; color: white">
+              <tr style="background: #203b5e; color: white" >
                 <!-- <select (change)="onLanguageChange($event)"><option *ngFor="let lan of language" [value]="lan">{{lan}}</option></select> -->
                 
                 <th style="width: 20%">Vazhipad</th>
@@ -18,8 +18,7 @@
                 <th style="width: 8%; text-align: center">Date</th>
                 <!-- <td style="width: 7%; text-align: center">Single/Multi</td> -->
                 <th style="width: 8%; text-align: center">Time</th>
-                <th style="width: 1%;"> <button (click)="clearAll()">Clear All</button>
-                </th>
+                
                 <!-- <th> Name 2</th>
                 <th>Star 2</th> -->
                 <th></th>
@@ -259,6 +258,9 @@
               </tr>
             </tbody>
           </table>
+          <div class="button-container">
+            <button class="btn btn-danger" (click)="clearAll()">Clear All</button>
+          </div>
         </form>
       </div>
     </div>

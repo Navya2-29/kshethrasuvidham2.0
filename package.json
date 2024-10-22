@@ -23,7 +23,7 @@
     "@angular/router": "^17.2.0",
     "@ngx-translate/core": "^15.0.0",
     "@ngx-translate/http-loader": "^8.0.0",
-    "bootstrap": "^5.3.3",
+    
     "cors": "^2.8.5",
     "html2canvas": "^1.4.1",
     "html2pdf": "^0.0.11",

@@ -1,14 +1,15 @@
 /* General Document Styles */
 .document-container {
-    width: 21cm; /* A4 page width */
+    width: 100%; /* A4 page width */
     min-height: 29.7cm; /* A4 page height */
-    padding: 2cm; /* Page margins */
+    padding: 10px; /* Page margins */
     margin: 0 auto; /* Center the page */
     background: white;
     border: none; /* No borders */
     box-shadow: none; /* No shadow */
     font-family: 'Arial', sans-serif;
     color: #333;
+    padding-top: 2.5cm;
 }
 
 /* Header Styles */

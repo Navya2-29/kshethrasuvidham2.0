@@ -253,7 +253,7 @@ export class MasterService {
       DisplayMode: obj.DisplayMode ? 'Y' : 'N',
       VM_SMS:obj.VM_SMS?'Y' : 'N',
       VM_Whatsapp:obj.VM_Whatsapp?'Y' : 'N',
-
+      prathistainfo:obj.prathistainfo
     };
     console.log(payLoad);
     return this.http
@@ -744,9 +744,9 @@ getVazhipadListBasedOnPrathistaList(payLoad:any){
     payLoad)
 }
 
-  kollavarashamData(): Observable<string[]> {
-    return this.http.get<string[]>('assets/data/kollavarsham.json');
-  }
+getReport(payLoad:any){
+  return this.http.post<any>(Constant.BASE_URL+Constant.METHODS.GET_REPORT,payLoad)
+}
 
   // error handling
   private errorHandler(error: HttpErrorResponse) {
