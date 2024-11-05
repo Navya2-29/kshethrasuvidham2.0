@@ -26,6 +26,7 @@ VM_Time:string;
 VM_TimeLimit:number
 VM_Whatsapp:string
 RespStatus:string,
+VM_Mattinam:string,
 prathistainfo?: PrathistaInfo[];
 }
 export  interface AccountHead{

@@ -205,12 +205,13 @@ export class MasterService {
       ACHeadCode: obj.ACHeadCode,
       ACSubCode: obj.ACSubCode,
       Cuser: '1',
+      VM_Mattinam:obj.VM_Mattinam,
       VazhBlocking: obj.VM_Blocking ? 'Y' : 'N',
       Type: 'INSERT',
       DisplayMode: obj.DisplayMode ? 'Y' : 'N',
-      VM_SMS:obj.VM_SMS?'Y' : 'N',
-      VM_Whatsapp:obj.VM_Whatsapp?'Y' : 'N',
-      prathistainfo:obj.prathistainfo
+      VM_SMS: obj.VM_SMS ? 'Y' : 'N',
+      VM_Whatsapp: obj.VM_Whatsapp ? 'Y' : 'N',
+      prathistainfo: obj.prathistainfo,
     };
     return this.http
       .post<Vmaster>(
@@ -235,6 +236,7 @@ export class MasterService {
       VazhBooking: obj.VM_Booking ? 'Y' : 'N',
       VazhSeasonal: obj.VM_Seasonal ? 'Y' : 'N',
       VazhMultiName: obj.VM_MultiName ? 'Y' : 'N',
+      VM_Mattinam:obj.VM_Mattinam?'Y':'N',
       VMDevice: obj.VM_Device ? 'Y' : 'N',
       VMapp: obj.VM_Mobileapp ? 'Y' : 'N',
       VMspecial: obj.VM_Special ? 'Y' : 'N',
@@ -251,9 +253,9 @@ export class MasterService {
       VazhBlocking: obj.VM_Blocking ? 'Y' : 'N',
       Type: 'UPDATE',
       DisplayMode: obj.DisplayMode ? 'Y' : 'N',
-      VM_SMS:obj.VM_SMS?'Y' : 'N',
-      VM_Whatsapp:obj.VM_Whatsapp?'Y' : 'N',
-      prathistainfo:obj.prathistainfo
+      VM_SMS: obj.VM_SMS ? 'Y' : 'N',
+      VM_Whatsapp: obj.VM_Whatsapp ? 'Y' : 'N',
+      prathistainfo: obj.prathistainfo,
     };
     console.log(payLoad);
     return this.http
@@ -562,9 +564,9 @@ export class MasterService {
     );
   }
 
- // vazhipad date
-  getDayMastervazhipaddateCheck(vid:string): Observable<any[]> {
-    const payLoad =  {"Type":"DayCheck","Code":vid};
+  // vazhipad date
+  getDayMastervazhipaddateCheck(vid: string): Observable<any[]> {
+    const payLoad = { Type: 'DayCheck', Code: vid };
     return this.http.post<any[]>(
       Constant.BASE_URL + Constant.METHODS.GET_MASTER,
       payLoad
@@ -599,7 +601,6 @@ export class MasterService {
       .post<any>(Constant.BASE_URL + Constant.METHODS.DELETE_MASTER, payLoad)
       .pipe(catchError(this.errorHandler));
   }
-
 
   deleteDayByVazhipadId(id: number): Observable<any> {
     console.log(id);
@@ -652,7 +653,7 @@ export class MasterService {
       Constant.BASE_URL + Constant.METHODS.GET_ACCOUNTHEAD
     );
   }
-  
+
   // get account sub heads
   getSubAccountHeads(): Observable<AccountSubHead[]> {
     return this.http.get<AccountSubHead[]>(
@@ -689,64 +690,73 @@ export class MasterService {
     );
   }
   getMalayalamMonthList(payLoad: any): Observable<any[]> {
-    console.log(payLoad)
+    console.log(payLoad);
     return this.http.post<any>(
       Constant.BASE_URL + Constant.METHODS.GET_MASTER,
       payLoad
     );
   }
   getLastBillNumber(): Observable<any[]> {
-    const payLoad={"Type":"Maxbillno","Code":""};
+    const payLoad = { Type: 'Maxbillno', Code: '' };
     return this.http.post<any>(
       Constant.BASE_URL + Constant.METHODS.SEARCHBYMOBILENUMBER,
       payLoad
     );
   }
+
+  getloggedInUserLastBillNumber(): Observable<any[]> {
+    const loggedinUserId = localStorage.getItem('LoginId');
+    const payLoad = { Type: 'UserBillno', Code: loggedinUserId };
+    return this.http.post<any>(
+      Constant.BASE_URL + Constant.METHODS.SEARCHBYMOBILENUMBER,
+      payLoad
+    );
+  }
+
   updateLastBillNumber(currentbillnumber: any): Observable<any[]> {
-    const payLoad={"Type":"UpdateBillNo","code":currentbillnumber}
+    const payLoad = { Type: 'UpdateBillNo', code: currentbillnumber };
     return this.http.post<any>(
       Constant.BASE_URL + Constant.METHODS.SEARCHBYMOBILENUMBER,
       payLoad
     );
   }
- 
-getSeasonalVazhipadDateCheck(vid:string){
- const payLoad= {"Type":"SeasonalCheck","Code":vid}
- return this.http.post<any>(
-  Constant.BASE_URL + Constant.METHODS.GET_MASTER,
-  payLoad
-);
-}
 
-getTodaycollection():Observable<any[]> {
-  const payLoad={"Type":"TodayCollection","Code":"0"};
-  return this.http.post<any>(
-    Constant.BASE_URL + Constant.METHODS.SEARCHBYMOBILENUMBER,
-    payLoad
-  );
-}
+  getSeasonalVazhipadDateCheck(vid: string) {
+    const payLoad = { Type: 'SeasonalCheck', Code: vid };
+    return this.http.post<any>(
+      Constant.BASE_URL + Constant.METHODS.GET_MASTER,
+      payLoad
+    );
+  }
 
-getMultidyaFilterinddata(payLoad:any){
-return this.http.post<multiDayFilter>(Constant.BASE_URL + Constant.METHODS.MULTIDAY_FILTER,
-  payLoad)
-}
+  getTodaycollection(): Observable<any[]> {
+    const payLoad = { Type: 'TodayCollection', Code: '0' };
+    return this.http.post<any>(
+      Constant.BASE_URL + Constant.METHODS.SEARCHBYMOBILENUMBER,
+      payLoad
+    );
+  }
 
+  getMultidyaFilterinddata(payLoad: any) {
+    return this.http.post<multiDayFilter>(
+      Constant.BASE_URL + Constant.METHODS.MULTIDAY_FILTER,
+      payLoad
+    );
+  }
 
-getThithilist(payLoad:any){
-  return this.http.post<multiDayFilter>(Constant.BASE_URL + Constant.METHODS.GET_MASTER,
-    payLoad)
-}
+  getThithilist(payLoad: any) {
+    return this.http.post<multiDayFilter>(
+      Constant.BASE_URL + Constant.METHODS.GET_MASTER,
+      payLoad
+    );
+  }
 
-
-getVazhipadListBasedOnPrathistaList(payLoad:any){
-
-  return this.http.post<multiDayFilter>(Constant.BASE_URL + Constant.METHODS.GET_MASTER,
-    payLoad)
-}
-
-getReport(payLoad:any){
-  return this.http.post<any>(Constant.BASE_URL+Constant.METHODS.GET_REPORT,payLoad)
-}
+  getVazhipadListBasedOnPrathistaList(payLoad: any) {
+    return this.http.post<multiDayFilter>(
+      Constant.BASE_URL + Constant.METHODS.GET_MASTER,
+      payLoad
+    );
+  }
 
   // error handling
   private errorHandler(error: HttpErrorResponse) {

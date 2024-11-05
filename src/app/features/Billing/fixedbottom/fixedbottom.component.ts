@@ -49,6 +49,7 @@ export class FixedbottomComponent implements OnInit {
   mobileNumber: string = '';
   billNumber: string = '';
   lastBillnumber: number;
+  LoggedInUserLastnumber: string;
   currentBillNumber: string;
   todayCollection: string = '0';
   @ViewChild('payButton', { static: true }) payButton!: ElementRef;
@@ -58,13 +59,16 @@ export class FixedbottomComponent implements OnInit {
   private masterService = inject(MasterService);
   private escPressed: boolean = false;
   theLastBillNo: string;
+  loginId: string | null = '';
   constructor(
     private fb: FormBuilder,
     public dialog: MatDialog,
     private receiptPrinrservice: ReceiptPrintService
   ) {
+    this.loginId = localStorage.getItem('LoginId');
     this.currentDate = this.getCurrentDateMMYY();
     this.getLastBillNumber();
+    this.loggedInUserLastBillNumber();
     const today = this.getFormattedDate(new Date());
     console.log(this.currentBillNumber);
     this.customerdetailsForBillingForm = this.fb.group({
@@ -77,7 +81,7 @@ export class FixedbottomComponent implements OnInit {
       Address3: [''],
       Email: ['', [Validators.email]],
       Pincode: ['', [Validators.pattern('^[0-9]{6}$')]],
-      Userid: ['0'],
+      Userid: [this.loginId],
       CounterId: ['1'],
       Trnsmode: ['cs'],
       Instno: [''],
@@ -95,6 +99,7 @@ export class FixedbottomComponent implements OnInit {
     this.subscription.add(
       this.totalService.dataSubmitted$.subscribe(() => {
         this.getLastBillNumber();
+        this.loggedInUserLastBillNumber();
       })
     );
     this.subscribeToTrnsmodeChanges();
@@ -125,11 +130,25 @@ export class FixedbottomComponent implements OnInit {
     });
   }
 
+  loggedInUserLastBillNumber() {
+    this.masterService.getloggedInUserLastBillNumber().subscribe({
+      next: (data) => {
+        console.log(data[0].billno);
+        this.LoggedInUserLastnumber = data[0].billno;
+        this.billNumber = this.LoggedInUserLastnumber;
+        console.log(this.LoggedInUserLastnumber, 'loggedinUserdatataaaaaaa');
+        // this.theLastBillNo =
+        //   this.lastBillnumber.toString() + '/' + this.currentDate;
+        // console.log(this.theLastBillNo);
+      },
+    });
+  }
+
   printReceipt() {
     this.receiptPrinrservice.receiptData$.subscribe((data) => {
       this.printReceipts(data);
       this.getTodayCollection();
-      console.log(data);
+      console.log(data, 'printing details');
     });
   }
 
@@ -137,6 +156,7 @@ export class FixedbottomComponent implements OnInit {
     const {
       BillNo,
       Billdate,
+      Trnsmode,
       Mobile,
       Address1,
       Address2,
@@ -212,31 +232,37 @@ export class FixedbottomComponent implements OnInit {
             }<p>${
             starNameMapping[item.Star2 as keyof typeof starNameMapping] || ' '
           }</p></td>
+          <td>${item.VazhipadDate || 'N/A'}</td>
             <td>${item.Qty || '0'}</td>
             <td>${item.Rate || '0'}</td>
             <td>${item.Amount || '0'}</td>
           </tr>`
         )
         .join('');
-
+      const displayTrnsmode =
+        Trnsmode.toLowerCase() === 'credit' ? 'Cash not paid' : Trnsmode;
       const receiptContent = `
         <div class="receipt-page">
           <h1>Koduvayur Sree Subrahmanya Swami Kshethram</h1>
           <div>
             <div style="display: flex; justify-content: space-between;">
-              <strong>Bill No: ${BillNo || 'N/A'}</strong>
+            <strong style="color: green;">Vazhipad: ${vazhipad}</strong>
               <strong>Bill Date: ${Billdate || 'N/A'}</strong>
             </div>
             <div style="display: flex; justify-content: space-between;">
+            
               <strong style="color: red;">Prathista: ${prathista}</strong>
-              <strong style="color: green;">Vazhipad: ${vazhipad}</strong>
+               <strong>Bill No: ${BillNo || 'N/A'}</strong>
+              
             </div>
             <table>
               <thead>
                 <tr>
                   <th>Name</th>
                   <th>Star</th>
+                  <th>Date</th>
                   <th>Qty</th>
+                  
                   <th>Rate</th>
                   <th>Amount</th>
                 </tr>
@@ -244,13 +270,19 @@ export class FixedbottomComponent implements OnInit {
               <tbody>
                 ${vazhipadRows}
                 <tr>
-                  <td colspan="4" class="total-label"><strong>Total Amount:</strong></td>
+                  <td colspan="5" class="total-label"><strong>Total Amount:</strong></td>
                   <td class="total-amount"><strong>${totalAmount.toFixed(
                     2
                   )}</strong></td>
                 </tr>
               </tbody>
             </table>
+<div style="text-align: right; margin-top: 20px;">
+        <strong>Login ID: ${this.loginId}</strong><br />
+        <strong>Transaction Mode: ${displayTrnsmode}</strong>
+      </div>
+
+
           </div>
           ${
             i < prathistaVazhipadKeys.length - 1
@@ -307,15 +339,22 @@ export class FixedbottomComponent implements OnInit {
   }
 
   private subscribeToTrnsmodeChanges() {
+    const mobileControl = this.customerdetailsForBillingForm.get('Mobile');
     this.customerdetailsForBillingForm
       .get('Trnsmode')
       ?.valueChanges.subscribe((value) => {
         if (value === 'cheque') {
           this.setChequeValidators();
+        } else if (value === 'credit') {
+          this.clearChequeValidators();
+          mobileControl?.setValidators([Validators.required]); // Set as required
         } else {
           this.clearChequeValidators();
+          mobileControl?.clearValidators();
+          mobileControl?.setValidators([Validators.pattern('^[0-9]{10}$')]);
         }
       });
+    mobileControl?.updateValueAndValidity();
   }
   private getFormattedDate(date: Date): string {
     return formatDate(date, 'yyyy-MM-dd', 'en'); // Input type="date" expects format yyyy-MM-dd
@@ -465,21 +504,20 @@ export class FixedbottomComponent implements OnInit {
     });
   }
 
-
-  resetForm(){
-  this.customerdetailsForBillingForm.reset();
-  const today = this.getFormattedDate(new Date());
-  this.customerdetailsForBillingForm.patchValue({
-    BillNo:this.lastBillnumber+1,
-        Billdate: today,
-        Userid: '0',
-        CounterId: '1',
-        Trnsmode: 'cs',
-        Instno: '',
-        Instdate: today,
-        InstBank: '',
-        Memberid: '1',
-  })
+  resetForm() {
+    this.customerdetailsForBillingForm.reset();
+    const today = this.getFormattedDate(new Date());
+    this.customerdetailsForBillingForm.patchValue({
+      BillNo: this.lastBillnumber + 1,
+      Billdate: today,
+      Userid: this.loginId,
+      CounterId: '1',
+      Trnsmode: 'cs',
+      Instno: '',
+      Instdate: today,
+      InstBank: '',
+      Memberid: '1',
+    });
   }
 
   getTodayCollection() {

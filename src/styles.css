@@ -11,4 +11,19 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
       --mdc-snackbar-supporting-text-color: #ffffff;
     }
   }
+
+  @font-face {
+    font-family: 'Noto Sans Malayalam';
+    src: url('assets/fonts/malayalam/NotoSansMalayalam-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  /* Optional: Include bold font if available */
+  /* @font-face {
+    font-family: 'Noto Sans Malayalam Bold';
+    src: url('assets/fonts/malayalam/NotoSansMalayalam-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+  } */
   

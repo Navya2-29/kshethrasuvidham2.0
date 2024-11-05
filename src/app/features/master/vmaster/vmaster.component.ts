@@ -122,6 +122,7 @@ export class VmasterComponent implements OnInit {
       VM_Time: ['1'],
       VM_SMS:[false],
       VM_Whatsapp:[false],
+      VM_Mattinam:[false],
       prathistainfo: this.formBuilder.array([]),
       //  deities: this.formBuilder.array([]),
     });
@@ -282,7 +283,7 @@ export class VmasterComponent implements OnInit {
       VM_TimeLimit: 0,
       VM_Description: '',
       VM_AlertMsg: '',
-
+      VM_Mattinam:false,
       DisplayMode: false,
       ACHeadCode: '',
       ACSubCode: '',
@@ -342,6 +343,7 @@ this.editDeity=diety
       VM_Whatsapp:data.VM_Whatsapp== 'Y' ? true : false,
       VC_Name: VCName,
       VM_Time: data.VM_Time,
+      VM_Mattinam:data.VM_Mattinam
     });
 
     this.loading = false;

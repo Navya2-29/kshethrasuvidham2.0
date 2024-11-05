@@ -5,223 +5,229 @@
   
   <div class="container" >
     <div class="row">
-      <form [formGroup]="form">
-        <div class="col-md-6">
-       
-            <div style="padding: 0px; margin-bottom: 18px">
-              <table class="">
-                <tr><td style="width: 100px;">Vazhipad</td>
-              
-                    <td>Rate</td>
-                  <td>Prathista</td></tr>
-                    <tr>
-                      <td>  <input
-                        type="text"
-                        style="width: 100px;"
-                        placeholder="Vazhipad"
-                        matInput
-                        class="form-control sps"
-                        formControlName="Vazhipad"
-                        [matAutocomplete]="auto"
-                        [ngClass]="{
-                          'invalid-control': form.get('Vazhipad')?.invalid && form.get('Vazhipad')?.touched
-                        }"
-                      />
-                      <mat-autocomplete
-                        autoActiveFirstOption
-                        #auto="matAutocomplete"
-                        (optionSelected)="onSelect($event)"
-                      >
-                      @for (option of filteredOptions | async; track option) {
-                        <mat-option
-                         
-                          [value]="option.VM_Name"
-                        >
-                      
-                          {{option.VM_Code}}-{{ option.VM_Name }}
-                        </mat-option>
-                      }
-                      </mat-autocomplete></td>
-
-                      <td><input
-                        type="text"
-                        class="form-control formdate"
-                        placeholder="Rate"
-                        formControlName="Rate"
-                        appNumber
-                        [readOnly]="rateChange==='N'"
-                        [ngClass]="{
-                          'invalid-control': form.get('Rate')?.invalid && form.get('Rate')?.touched
-                        }"
-                      /></td>
-                      <td>
-                        <select
-                          class="form-control"
-                          formControlName="Prethista"
-                          style="width: 100px; height: 30.6px"
-                          placeholder="Prethista"
+      <div class="vazhipad-details" class="col-md-6">
+        <form [formGroup]="form">
+          <div class="col-md-6">
+         
+              <div style="padding: 0px; margin-bottom: 18px">
+                <table class="">
+                  <tr><td style="width: 100px;" colspan="2">Vazhipad</td>
+             
+                      <td>Rate</td>
+                    <td>Prathista</td></tr>
+                      <tr>
+                        <td colspan="2">  <input
+                          type="text"
+                          style="width: 100%;"
+                          placeholder="Vazhipad"
+                          matInput
+                          class="form-control sps"
+                          formControlName="Vazhipad"
+                          [matAutocomplete]="auto"
                           [ngClass]="{
-                            'invalid-control': form.get('Prethista')?.invalid && form.get('Prethista')?.touched
+                            'invalid-control': form.get('Vazhipad')?.invalid && form.get('Vazhipad')?.touched
                           }"
+                        />
+                        <mat-autocomplete
+                          autoActiveFirstOption
+                          #auto="matAutocomplete"
+                          (optionSelected)="onSelect($event)"
                         >
-                        <option
-                        *ngFor="let prathishta of prathishtaOptions"
-                        value="prathishta.PM_Name"
-                      >
-                        {{prathishta.PM_Name}}
-                      </option>
-                          
-                        </select>
-                       
+                        @for (option of filteredOptions | async; track option) {
+                          <mat-option
+                           
+                            [value]="option.VM_Name"
+                          >
+                        
+                            {{option.VM_Code}}-{{ option.VM_Name }}
+                          </mat-option>
+                        }
+                        </mat-autocomplete></td>
+  
+                        <td><input
+                          type="text"
+                          class="form-control formdate"
+                          placeholder="Rate"
+                          formControlName="Rate"
+                          appNumber
+                          [readOnly]="rateChange==='N'"
+                          [ngClass]="{
+                            'invalid-control': form.get('Rate')?.invalid && form.get('Rate')?.touched
+                          }"
+                        /></td>
+                        <td colspan="2">
+                          <select
+                            class="form-control"
+                            formControlName="Prethista"
+                            style="width: 100%; height: 30.6px"
+                            placeholder="Prethista"
+                            [ngClass]="{
+                              'invalid-control': form.get('Prethista')?.invalid && form.get('Prethista')?.touched
+                            }"
+                          >
+                          <option
+                          *ngFor="let prathishta of prathishtaOptions"
+                          value="prathishta.PM_Name"
+                        >
+                          {{prathishta.PM_Name}}
+                        </option>
+                            
+                          </select>
+                         
+                        </td>
+                        <td></td>
+                      </tr>
+                    <tr>
+                      <th >Starting Date</th>
+                      <th>No. of Days</th>
+                      <th>Qty</th>
+                      <th>End Date</th>
+                    </tr>
+                    <tr>
+                      <td>
+                        <input
+                          type="date"
+                          class="form-control formdate"
+                          style="width: 100%" 
+                          [attr.min]="minDate"
+                          [readOnly]="form.get('VM_Receipt')?.value==='Y'"
+                          formControlName="VazhipadDate"
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="number"
+                          class="form-control formdate"
+                          formControlName="NoOfDays"
+                          [min]="1"
+                          appNumber
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="number"
+                          class="form-control formdate"
+                          style="width: 60px"
+                          formControlName="Qty"
+                          [min]="1"
+                          appNumber
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          class="form-control formdate"
+                          formControlName="EndDate"
+                          readonly
+                          style="width: 100px;"
+                        />
+                      </td>
+                      <td>
+                        <select 
+                      class="form-control"
+                      formControlName="VTime"
+                      style="width: 80%; height: 30.6px"
+                      style="width: 100px;height: 30px;"
+                    >
+                      <option *ngFor="let time of vazhipadtime" [value]="time.id">{{time.name}}</option>
+                      
+                    </select>
                       </td>
                     </tr>
-                  <tr>
-                    <th >Starting Date</th>
-                    <th>No. of Days</th>
-                    <th>Qty</th>
-                    <th>End Date</th>
-                  </tr>
-                  <tr>
-                    <td>
-                      <input
-                        type="date"
-                        class="form-control formdate"
-                        style="width: 100px" 
-                        [attr.min]="minDate"
-                        [readOnly]="form.get('VM_Receipt')?.value==='Y'"
-                        formControlName="VazhipadDate"
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="number"
-                        class="form-control formdate"
-                        formControlName="NoOfDays"
-                        [min]="1"
-                        appNumber
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="number"
-                        class="form-control formdate"
-                        style="width: 60px"
-                        formControlName="Qty"
-                        [min]="1"
-                        appNumber
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        class="form-control formdate"
-                        formControlName="EndDate"
-                        readonly
-                        style="width: 100px;"
-                      />
-                    </td>
-                    <td>
-                      <select 
-                    class="form-control"
-                    formControlName="VTime"
-                    style="width: 80%; height: 30.6px"
-                    style="width: 100px;height: 30px;"
-                  >
-                    <option *ngFor="let time of vazhipadtime" [value]="time.id">{{time.name}}</option>
+                   </table>
                     
-                  </select>
-                    </td>
-                  </tr>
-                 </table>
-                  
-          
-            <div
-              style="
-                margin-bottom: 11px;
-                width: auto;
-                padding: 5px;
-                height: auto;
-              "
-            >
-              <button class="btn btn-primary" (click)=" addDevotee()" >
-                Add Devotee
-              </button>  
-            </div>
-            <div>
-              <table class="table">
-                <tbody    formArrayName="devotees" >
-                  <tr
-                  *ngFor="let devotee of devotees.controls; let i = index" [formGroupName]="i"
-                  >
-                    <td>
-                      <a color="accent"
-                        ><mat-icon class="icons" (click)="removeDevotee(i)"
-                          >delete</mat-icon
-                        ></a
-                      >
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        formControlName="Name"
-                        placeholder="Enter Name"
-                        style="border: none"
-                        (blur)="validateDevoteeName()" 
-                        [ngClass]="{
-                          'invalid-control': devotee.get('Name')?.invalid && devotee.get('Name')?.touched
-                        }" 
-                      />
-                    </td>
-                    <td>
-                      <select
-                        class="form-control select-star"
-                        style="width: fit-content; height: 30.6px"
+            
+              <div
+                style="
+                  margin-bottom: 11px;
+                  width: auto;
+                  padding: 5px;
+                  height: auto;
+                "
+              >
+                <button class="btn btn-primary" (click)=" addDevotee()" >
+                  Add Devotee
+                </button>  
+              </div>
+              <div>
+                <table class="table">
+                  <tbody    formArrayName="devotees" >
+                    <tr
+                    *ngFor="let devotee of devotees.controls; let i = index" [formGroupName]="i"
+                    >
+                      <td>
+                        <a color="accent"
+                          ><mat-icon class="icons" (click)="removeDevotee(i)"
+                            >delete</mat-icon
+                          ></a
+                        >
+                      </td>
+                      <td colspan="2">
+                        <input
+                        style="width:100%"
+                          type="text"
+                          formControlName="Name"
+                          placeholder="Enter Name"
+                          style="border: none"
+                          (blur)="validateDevoteeName()" 
+                          [ngClass]="{
+                            'invalid-control': devotee.get('Name')?.invalid && devotee.get('Name')?.touched
+                          }" 
+                        />
+                      </td>
+                      <td style="width:100%"></td>
+                      <td>
+                        <select
+                          class="form-control select-star"
+                          style="width: fit-content; height: 30.6px"
+                          formControlName="Star"
+                        >
+                        <option value="">Select</option>
+                         <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_NameEng}}</option>
+                        </select>
+  
+  
+                        <!-- <input type="text"
+                        placeholder="Select star"
+                        aria-label="star"
+                        class="form-control sps"
+                        matInput
                         formControlName="Star"
-                      >
-                      <option value="">Select</option>
-                       <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_NameEng}}</option>
-                      </select>
-
-
-                      <!-- <input type="text"
-                      placeholder="Select star"
-                      aria-label="star"
-                      class="form-control sps"
-                      matInput
-                      formControlName="Star"
-                      [matAutocomplete]="star">
-                      <mat-autocomplete #star="matAutocomplete" (optionSelected)="onSelectStar(i, $event)">
-                        <mat-option *ngFor="let star of filteredStars[i] | async" [value]="star">
-                          {{ star }}
-                        </mat-option>
-                      </mat-autocomplete> -->
-                    </td>
-                    <td *ngIf="form.get('multiName')?.value === 'Y'">
-                      <input
-                        type="text"
-                      formControlName="Name2"
-                        placeholder="Enter 2nd Name"
-                        style="border: none"
-                      />
-                    </td>
-                    <td *ngIf="form.get('multiName')?.value === 'Y'">
-                      <select
-                        class="form-control select-star"
-                        style="width: fit-content; height: 30.6px"
-                        formControlName="Star2"
-                      >
-                      <option value="">Select</option>
-                      <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_NameEng}}</option>
-                      </select>
-                    </td>
-                  </tr>  
-                </tbody>
-              </table>
+                        [matAutocomplete]="star">
+                        <mat-autocomplete #star="matAutocomplete" (optionSelected)="onSelectStar(i, $event)">
+                          <mat-option *ngFor="let star of filteredStars[i] | async" [value]="star">
+                            {{ star }}
+                          </mat-option>
+                        </mat-autocomplete> -->
+                      </td>
+                      <td *ngIf="form.get('multiName')?.value === 'Y'">
+                        <input
+                          type="text"
+                        formControlName="Name2"
+                          placeholder="Enter 2nd Name"
+                          style="border: none"
+                        />
+                      </td>
+                      <td *ngIf="form.get('multiName')?.value === 'Y'">
+                        <select
+                          class="form-control select-star"
+                          style="width: fit-content; height: 30.6px"
+                          formControlName="Star2"
+                        >
+                        <option value="">Select</option>
+                        <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_NameEng}}</option>
+                        </select>
+                      </td>
+                    </tr>  
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
-        </div>
-      </form>
-
+        </form>
+  
+      </div>
+    
 
 
 
@@ -343,8 +349,8 @@
             </thead>
           </table>
         </div>
-        <div class="daylist">
-          <table class="table" style="width: 100%">
+        <div class="daylist" style="height: 35vh;">
+          <table class="table" style="width: 100%; ">
             <tbody>
               <tr *ngFor="let day of updatedDayList; let i = index">
                 <td><input type="checkbox" [checked]="day.selected" (change)="onCheckboxChange(i)" />&nbsp;{{ day.date }}  </td>
@@ -356,6 +362,9 @@
           </table>
         </div>
       </div>
+
+
+
     </div>
   </div>
 

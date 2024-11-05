@@ -40,7 +40,7 @@ submitLogin(login:Login){
   this.loading=true;
   this.errorMessage='';
   console.log(login);
-  if(login.username=="admin" && login.password=="bbb"){
+  if(login.username && login.password){
     console.log(login)
     this.authService.getLoginInfo(login).subscribe({
       next:(response)=>{
@@ -53,12 +53,14 @@ submitLogin(login:Login){
           localStorage.setItem('password', response.password);
           localStorage.setItem('alertmsg', response.alertmsg);
           localStorage.setItem('Role', response.Role);
+          localStorage.setItem('LoginId',response.LoginId);
           localStorage.setItem('loggedIn', 'true');
           // Optional: Redirect to the dashboard or another page
           this.router.navigate(['/front']);
         } else {
           // Handle case when login is not successful
           this.errorMessage = response.alertmsg; // Show the error message
+          this.errorMessage="enter valid username or password";
         }
         // localStorage.setItem('loggedIn', 'true');
           // this.router.navigate(['/dashboard']);
@@ -71,15 +73,19 @@ submitLogin(login:Login){
     })
   }
   else{
-    this.errorMessage="enter valid username or password";
+    this.errorMessage="Please Enter your Username and Password";
   }
 }
+
 autoLogin(){
   const login=localStorage.getItem('loggedIn');
   console.log(login);
   if(login){
     this.router.navigate(['/front']);
+  }else{
+    this.router.navigate(['/login']);
   }
 }
+
 
 }

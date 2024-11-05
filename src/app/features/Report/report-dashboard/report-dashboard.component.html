@@ -1,7 +1,8 @@
 <app-header></app-header>
 <app-spinner *ngIf="isloading"></app-spinner>
 
-<div class="dashboard-container">
+<div class=" container dashboard-container">
+  <div class="row">
   <!-- Left side menu with radio buttons -->
   <div class="left-menu">
     <form [formGroup]="searchForm">
@@ -34,9 +35,9 @@
           <input
             type="radio"
             formControlName="vazhipadOption"
-            value="address"
+            value="cheque"
           />
-          Address
+          Cheque Stmnt
         </label>
         <label>
           <input
@@ -44,7 +45,7 @@
             formControlName="vazhipadOption"
             value="DailyStmt"
           />
-          Daily Statement (Counter)
+          Daily Statement (Transaction)
         </label>
         <label>
           <input
@@ -59,6 +60,63 @@
             type="radio"
             formControlName="vazhipadOption"
             value="DailyStmtDetaild"
+          />
+          Daily Statement (Detailed)
+        </label>
+        <label>
+          <input
+            type="radio"
+            formControlName="vazhipadOption"
+            value="DailyStmt1"
+          />
+          Daily Statement 
+        </label>
+        <label>
+          <input
+            type="radio"
+            formControlName="vazhipadOption"
+            value="DailyStmtDetaild2"
+          />
+          Money order
+        </label>
+        <label>
+          <input
+            type="radio"
+            formControlName="vazhipadOption"
+            value="credit"
+          />
+         
+          Due details
+        </label>
+        <label>
+          <input
+            type="radio"
+            formControlName="vazhipadOption"
+            value="DailyStmtDetaild4"
+          />
+         Counter
+        </label>
+        <label>
+          <input
+            type="radio"
+            formControlName="vazhipadOption"
+            value="upi"
+          />
+         UPI
+        </label>
+        <label>
+          <input
+            type="radio"
+            formControlName="vazhipadOption"
+            value="address"
+          />
+         Address list
+        </label>
+        <label>
+          <input
+            type="radio"
+            formControlName="vazhipadOption"
+            value="DailyStmtDetaild7"
           />
           Daily Statement (Detailed)
         </label>
@@ -85,309 +143,10 @@
   <!-- Right side buttons -->
   <div class="right-buttons">
     <button class="action-button" (click)="onSearch()">Search</button>
-    <button
-      class="action-button"
-      [disabled]="!isSearchPerformed"
-      (click)="onPrint()"
-    >
-      Print
-    </button>
-    <button class="action-button" (click)="onBackButtonClick()">Back</button>
-    <button
-      class="action-button"
-      [disabled]="!isSearchPerformed"
-      (click)="convertToCSV()"
-    >
-      Convert to Excel
-    </button>
-    <button
-      class="action-button"
-      [disabled]="!isSearchPerformed"
-      (click)="generatePDF()"
-    >
-      Make PDF
-    </button>
+    
   </div>
+
+</div>
 </div>
 
-<div id="printableArea">
-  <div *ngIf="dataList && dataList.length > 0">
-    <h2>{{ tableHeading }}</h2>
-  </div>
-  <div
-    class="table-header"
-    style="line-height: 2px; text-align: center"
-    *ngIf="dataList && dataList.length > 0"
-  >
-    <h2>Kariyam Devikshethra Trust</h2>
-    <h4>
-      Reg.750/86, Kariyam ,Srrekariyam Po, Thirivandapauram
-      <span style="text-align: right; margin-right: 0px">{{
-        currentDate | date : "short"
-      }}</span>
-    </h4>
-    <h4>daily statement -Kshethram (counter:1)</h4>
-    <h5>Date : {{ currentDate | date : "dd-MM-yyyy" }}</h5>
-  </div>
-  <hr />
-  <!-- Data display section -->
-  <div class="data-display-section" *ngIf="isloading">
-    <app-spinner></app-spinner>
-    <!-- Spinner shown while data is loading -->
-  </div>
 
-  <div *ngIf="selectedVazhipadOption !== 'DailyStmtDetaild'">
-    <div
-      class="data-table-container"
-      *ngIf="dataList && dataList.length > 0; else noDataMessage"
-    >
-      <table mat-table [dataSource]="dataList" class="mat-elevation-z8">
-        <!-- Column definitions -->
-        <ng-container matColumnDef="SI">
-          <th mat-header-cell *matHeaderCellDef>SI</th>
-          <td mat-cell *matCellDef="let element; let i = index">{{ i + 1 }}</td>
-        </ng-container>
-        <ng-container matColumnDef="Vazhipad">
-          <th mat-header-cell *matHeaderCellDef>Vazhipad</th>
-          <td mat-cell *matCellDef="let element">{{ element.Vazhipad }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="Name">
-          <th mat-header-cell *matHeaderCellDef>Name</th>
-          <td mat-cell *matCellDef="let element">{{ element.Name }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="Star">
-          <th mat-header-cell *matHeaderCellDef>Star</th>
-          <td mat-cell *matCellDef="let element">{{ element.Star }}</td>
-        </ng-container>
-        <ng-container matColumnDef="Qty">
-          <th mat-header-cell *matHeaderCellDef>Qty</th>
-          <td mat-cell *matCellDef="let element">{{ element.Qty }}</td>
-        </ng-container>
-        <ng-container matColumnDef="Rate">
-          <th mat-header-cell *matHeaderCellDef>Rate</th>
-          <td mat-cell *matCellDef="let element">{{ element.Rate }}</td>
-        </ng-container>
-        <ng-container matColumnDef="Amount">
-          <th mat-header-cell *matHeaderCellDef>Amount</th>
-          <td mat-cell *matCellDef="let element">{{ element.Amount }}</td>
-        </ng-container>
-        <ng-container matColumnDef="BillDate">
-          <th mat-header-cell *matHeaderCellDef>BillDate</th>
-          <td mat-cell *matCellDef="let element">{{ element.BillDate }}</td>
-        </ng-container>
-        <ng-container matColumnDef="VazhiDate">
-          <th mat-header-cell *matHeaderCellDef>VazhiDate</th>
-          <td mat-cell *matCellDef="let element">{{ element.VazhiDate }}</td>
-        </ng-container>
-        <ng-container matColumnDef="BillNo">
-          <th mat-header-cell *matHeaderCellDef>BillNo</th>
-          <td mat-cell *matCellDef="let element">{{ element.BillNo }}</td>
-        </ng-container>
-
-        <!-- Header row -->
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <!-- Data rows -->
-        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-      </table>
-    </div>
-
-    <ng-template #noDataMessage>
-      <p class="no-data-message">No data found for the selected criteria.</p>
-    </ng-template>
-  </div>
-
-  <div *ngIf="csDataList.length > 0">
-    <h2>Cash Transactions</h2>
-    <mat-table [dataSource]="cashTransactionData" class="mat-elevation-z8">
-      <ng-container matColumnDef="SI">
-        <mat-header-cell *matHeaderCellDef> SI</mat-header-cell>
-        <mat-cell *matCellDef="let element; let i = index"
-          >{{ i + 1 }}
-        </mat-cell>
-        <mat-cell mat-footer-cell *matFooterCellDef>  </mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="Vazhipad">
-        <mat-header-cell *matHeaderCellDef> Vazhipad </mat-header-cell>
-        <mat-cell *matCellDef="let element">{{ element.Vazhipad }}</mat-cell>
-        <mat-cell mat-footer-cell *matFooterCellDef>  </mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="Qty">
-        <mat-header-cell *matHeaderCellDef> Qty </mat-header-cell>
-        <mat-cell *matCellDef="let element">{{ element.Qty }}</mat-cell>
-        <mat-cell mat-footer-cell *matFooterCellDef>  </mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="Rate">
-        <mat-header-cell *matHeaderCellDef> Rate </mat-header-cell>
-        <mat-cell *matCellDef="let element">{{ element.Rate }}</mat-cell>
-        <mat-cell mat-footer-cell *matFooterCellDef> <b>Total Amount</b></mat-cell>
-      </ng-container>
-      <!-- <ng-container matColumnDef="Rate">
-      <mat-header-cell *matHeaderCellDef> Rate </mat-header-cell>
-      <mat-cell *matCellDef="let element">{{ element.Rate }}</mat-cell>
-    </ng-container> -->
-      <ng-container matColumnDef="Amount">
-        <mat-header-cell *matHeaderCellDef> Amount </mat-header-cell>
-        <mat-cell *matCellDef="let element">{{ element.Amount }}</mat-cell>
-        <mat-cell mat-footer-cell *matFooterCellDef> <b>{{totalAmount}}</b> </mat-cell>
-      </ng-container>
-     
-      <mat-header-row
-        *matHeaderRowDef="['SI', 'Vazhipad', 'Qty', 'Rate', 'Amount']"
-      ></mat-header-row>
-      <mat-row
-        *matRowDef="
-          let row;
-          columns: ['SI', 'Vazhipad', 'Qty', 'Rate', 'Amount']
-        "
-        class="table-row"
-      ></mat-row>
-      <mat-row mat-footer-row *matFooterRowDef="displayedColumns"></mat-row>
-    </mat-table>
-  </div>
-  <!-- UPI Transactions Table -->
-
-  <div *ngIf="upiDataList.length > 0">
-    <h2>UPI Transactions</h2>
-    <mat-table [dataSource]="upiTransactionData" class="mat-elevation-z8">
-      <ng-container matColumnDef="SI">
-        <mat-header-cell *matHeaderCellDef> SI</mat-header-cell>
-        <mat-cell *matCellDef="let element; let i = index"
-          >{{ i + 1 }}
-        </mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="Vazhipad">
-        <mat-header-cell *matHeaderCellDef> Vazhipad </mat-header-cell>
-        <mat-cell *matCellDef="let element">{{ element.Vazhipad }}</mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="Qty">
-        <mat-header-cell *matHeaderCellDef> Qty </mat-header-cell>
-        <mat-cell *matCellDef="let element">{{ element.Qty }}</mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="Rate">
-        <mat-header-cell *matHeaderCellDef> Rate </mat-header-cell>
-        <mat-cell *matCellDef="let element">{{ element.Rate }}</mat-cell>
-      </ng-container>
-      <!-- <ng-container matColumnDef="Rate">
-      <mat-header-cell *matHeaderCellDef> Rate </mat-header-cell>
-      <mat-cell *matCellDef="let element">{{ element.Rate }}</mat-cell>
-    </ng-container> -->
-      <ng-container matColumnDef="Amount">
-        <mat-header-cell *matHeaderCellDef> Amount </mat-header-cell>
-        <mat-cell *matCellDef="let element">{{ element.Amount }}</mat-cell>
-      </ng-container>
-
-      <mat-header-row
-        *matHeaderRowDef="['SI', 'Vazhipad', 'Qty', 'Rate', 'Amount']"
-      ></mat-header-row>
-      <mat-row
-        *matRowDef="
-          let row;
-          columns: ['SI', 'Vazhipad', 'Qty', 'Rate', 'Amount']
-        "
-        class="table-row"
-      ></mat-row>
-    </mat-table>
-  </div>
-
-  <!-- Cash Transactions Table -->
-  <div *ngIf="debitDataList.length > 0">
-    <h2>Debit card Transactions</h2>
-    <mat-table [dataSource]="debitDataList" class="mat-elevation-z8">
-      <ng-container matColumnDef="SI">
-        <mat-header-cell *matHeaderCellDef> SI</mat-header-cell>
-        <mat-cell *matCellDef="let element; let i = index"
-          >{{ i + 1 }}
-        </mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="Vazhipad">
-        <mat-header-cell *matHeaderCellDef> Vazhipad </mat-header-cell>
-        <mat-cell *matCellDef="let element">{{ element.Vazhipad }}</mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="Qty">
-        <mat-header-cell *matHeaderCellDef> Qty </mat-header-cell>
-        <mat-cell *matCellDef="let element">{{ element.Qty }}</mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="Rate">
-        <mat-header-cell *matHeaderCellDef> Rate </mat-header-cell>
-        <mat-cell *matCellDef="let element">{{ element.Rate }}</mat-cell>
-      </ng-container>
-      <!-- <ng-container matColumnDef="Rate">
-      <mat-header-cell *matHeaderCellDef> Rate </mat-header-cell>
-      <mat-cell *matCellDef="let element">{{ element.Rate }}</mat-cell>
-    </ng-container> -->
-      <ng-container matColumnDef="Amount">
-        <mat-header-cell *matHeaderCellDef> Amount </mat-header-cell>
-        <mat-cell *matCellDef="let element">{{ element.Amount }}</mat-cell>
-      </ng-container>
-
-      <mat-header-row
-        *matHeaderRowDef="['SI', 'Vazhipad', 'Qty', 'Rate', 'Amount']"
-      ></mat-header-row>
-      <mat-row
-        *matRowDef="
-          let row;
-          columns: ['SI', 'Vazhipad', 'Qty', 'Rate', 'Amount']
-        "
-        class="table-row"
-      ></mat-row>
-    </mat-table>
-  </div>
-  <!-- Other Transactions Table -->
-
-  <div *ngIf="creditDataList.length > 0">
-    <h2>credit Transaction</h2>
-    <mat-table [dataSource]="creditDataList" class="mat-elevation-z8">
-      <ng-container matColumnDef="SI">
-        <mat-header-cell *matHeaderCellDef> SI</mat-header-cell>
-        <mat-cell *matCellDef="let element; let i = index"
-          >{{ i + 1 }}
-        </mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="Vazhipad">
-        <mat-header-cell *matHeaderCellDef> Vazhipad </mat-header-cell>
-        <mat-cell *matCellDef="let element">{{ element.Vazhipad }}</mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="Qty">
-        <mat-header-cell *matHeaderCellDef> Qty </mat-header-cell>
-        <mat-cell *matCellDef="let element">{{ element.Qty }}</mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="Rate">
-        <mat-header-cell *matHeaderCellDef> Rate </mat-header-cell>
-        <mat-cell *matCellDef="let element">{{ element.Rate }}</mat-cell>
-      </ng-container>
-      <!-- <ng-container matColumnDef="Rate">
-      <mat-header-cell *matHeaderCellDef> Rate </mat-header-cell>
-      <mat-cell *matCellDef="let element">{{ element.Rate }}</mat-cell>
-    </ng-container> -->
-      <ng-container matColumnDef="Amount">
-        <mat-header-cell *matHeaderCellDef> Amount </mat-header-cell>
-        <mat-cell *matCellDef="let element">{{ element.Amount }}</mat-cell>
-      </ng-container>
-
-      <mat-header-row
-        *matHeaderRowDef="['SI', 'Vazhipad', 'Qty', 'Rate', 'Amount']"
-      ></mat-header-row>
-      <mat-row
-        *matRowDef="
-          let row;
-          columns: ['SI', 'Vazhipad', 'Qty', 'Rate', 'Amount']
-        "
-        class="table-row"
-      ></mat-row>
-    </mat-table>
-  </div>
-</div>

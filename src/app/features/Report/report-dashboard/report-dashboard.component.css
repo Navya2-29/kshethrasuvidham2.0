@@ -1,147 +1,167 @@
 /* Main container styling */
 .dashboard-container {
-    display: flex;
-    gap: 30px;
-    padding: 20px;
-    align-items: flex-start;
-  }
-  
-  /* Left menu for radio buttons */
-  .left-menu .radio-group {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .radio-group label {
-    display: flex;
-    align-items: center;
-    font-weight: bold;
-    cursor: pointer;
-  }
-  
-  /* Styling for the middle section (date inputs) */
-  .middle-section {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  .middle-section .form-group {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .middle-section label {
-    font-weight: bold;
-    margin-bottom: 5px;
-  }
-  
-  /* Right buttons styling */
-  .right-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .action-button {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    text-align: center;
-    width: 160px;
-  }
-  
-  .action-button:hover {
-    background-color: #0056b3;
-  }
-  
-  /* Styling for the date section */
-.date-section {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 6px 0;
-  }
-  
-  .date-card {
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    max-width: 300px;
-    width: 100%;
-  }
-  
-  .date-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-  }
-  
-  .form-group label {
-    font-weight: bold;
-    color: #333;
-  }
-  
-  .form-group input[type="date"] {
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.3s ease;
-  }
-  
-  .form-group input[type="date"]:focus {
-    border-color: #007bff;
-  }
-  
-  /* Data display section styling */
-.data-display-section {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-  }
-  
-  .data-table-container {
-    margin-top: 20px;
-    overflow-x: auto;
-  }
-  
-  .mat-elevation-z8 {
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  th.mat-header-cell, td.mat-cell {
-    padding: 12px 16px;
-    text-align: left;
-  }
-  
-  th.mat-header-cell {
-    background-color: #386799; /* Change to your desired color */
-    color: white; /* Optional: Change text color for contrast */
-  }
+  display: flex;
+  gap: 30px; /* Space between sections */
+  padding: 20px;
+  align-items: flex-start;
+}
 
-  tr.mat-row:nth-child(even) {
-    background-color: #f9f9f9;
-  }
-  
-  .no-data-message {
-    text-align: center;
-    font-style: italic;
-    color: #999;
-    margin-top: 20px;
-  }
- 
+/* Left menu for radio buttons */
+.left-menu {
+  margin-right: 20px; /* Space to the right of the left menu */
+}
+
+.left-menu .radio-group {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Two equal-width columns */
+  gap: 10px; /* Space between radio buttons */
+}
+
+.radio-group label {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  cursor: pointer;
+  gap: 8px; /* Space between radio button and label text */
+}
+
+/* Styling for the date section */
+.date-section {
+  margin: 20px 20px; /* Space on both sides */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Date card styling */
+.date-card {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-width: 300px;
+  width: 100%;
+}
+
+/* Date form styling */
+.date-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Space between date inputs */
+}
+
+/* Right buttons styling */
+.right-buttons {
+  margin-left: 20px; /* Space to the left of the right buttons */
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Space between buttons */
+}
+
+/* Action button styling */
+.action-button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  width: 160px;
+}
+
+.action-button:hover {
+  background-color: #0056b3; /* Hover effect */
+}
+
+/* Input field styling */
+.form-group input[type="date"] {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input[type="date"]:focus {
+  border-color: #007bff; /* Focus effect */
+}
+
+/* Other styles for table and messages */
+.data-display-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.data-table-container {
+  margin-top: 20px;
+  overflow-x: auto;
+}
+
+/* Table styling */
+th.mat-header-cell, td.mat-cell {
+  padding: 12px 16px;
+  text-align: left;
+}
+
+th.mat-header-cell {
+  background-color: #386799; /* Change to your desired color */
+  color: white; /* Optional: Change text color for contrast */
+}
+
+tr.mat-row:nth-child(even) {
+  background-color: #f9f9f9; /* Even row color */
+}
+
+.no-data-message {
+  text-align: center;
+  font-style: italic;
+  color: #999;
+  margin-top: 20px;
+}
+
+.table-header h2,
+.table-header h3 {
+  text-align: center;
+  font-size: 12px;
+  font-family: 'Times New Roman', Times, serif;
+}
+
+.table-header > h2 {
+  margin-bottom: 5px;
+}
+
+.table-header > h4 {
+  margin-bottom: 3px;
+}
+
+.table-header > h3 {
+  margin-bottom: 1px;
+  margin-top: 2px;
+  font-weight: bold;
+}
+.right-buttons {
+  display: flex;
+  justify-content: center; /* Centers horizontally */
+  margin-top: 15px; /* Optional: adds space above the button */
+}
+
+/* Styling for action button */
+.action-button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  width: auto; /* Change this to auto to fit the text or specify a width */
+}
+
+.action-button:hover {
+  background-color: #0056b3; /* Hover effect */
+}
