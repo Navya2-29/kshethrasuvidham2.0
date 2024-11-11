@@ -68,7 +68,7 @@ import { ConfirmationDialogComponent } from '../../../shared/component/confirmat
     MultidayComponent,
     MorebuttonComponent,
     NumberDirective,
-    NgxPrintModule,
+    
   ],
   templateUrl: './areareceipt.component.html',
   styleUrl: './areareceipt.component.css',

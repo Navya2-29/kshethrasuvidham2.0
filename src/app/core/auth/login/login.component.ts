@@ -10,6 +10,8 @@ import { AuthService } from '../service/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 import { CommonModule } from '@angular/common';
+import { MatDialog } from '@angular/material/dialog';
+import { CouterPopupComponent } from '../../couter-popup/couter-popup.component';
 
 @Component({
   selector: 'app-login',
@@ -26,15 +28,39 @@ export class LoginComponent implements OnInit {
   private readonly formBuilder=inject(FormBuilder);
   private readonly authService=inject(AuthService);
   private readonly router=inject(Router);
-  constructor(private http:HttpClient){    
+  constructor(private http:HttpClient, private dialog: MatDialog){    
   }
   ngOnInit(): void {
+
+    const storedCounterId = localStorage.getItem('counterId');
+    if (!storedCounterId) {
+      // Open the dialog if the Counter ID is not found
+      this.openCounterIdDialog();
+    }
+
+
     this.loginForm=this.formBuilder.group({
       username:['',[Validators.required]],
       password:['',[Validators.required]]
    })
    this.autoLogin();
   }
+
+
+
+  openCounterIdDialog(): void {
+    const dialogRef = this.dialog.open(CouterPopupComponent, {
+      width: '300px',
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // Store the entered Counter ID in localStorage
+        localStorage.setItem('counterId', result);
+      }
+    });
+  }
+
 
 submitLogin(login:Login){
   this.loading=true;

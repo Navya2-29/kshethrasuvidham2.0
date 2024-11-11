@@ -12,7 +12,10 @@ import { MenuitemsComponent } from '../menuitems/menuitems.component';
   styleUrl: './menu.component.css'
 })
 export class MenuComponent {
- constructor(public dialog: MatDialog) {}
+  role:string | null='';
+ constructor(public dialog: MatDialog) {
+
+ }
 
   openDialog() {
     const dialogRef = this.dialog.open(MenuitemsComponent);

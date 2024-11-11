@@ -52,7 +52,7 @@ interface Deity {
   styleUrl: './vmaster.component.css',
 })
 export class VmasterComponent implements OnInit {
-  toppings = new FormControl<string[]>([],[this.prathistaValidator()]);
+  toppings = new FormControl<string[]>([], [this.prathistaValidator()]);
   Vmaster: Vmaster[] = [];
   filteredVmaster: Vmaster[] = [];
   vazhipadMasterForm: FormGroup;
@@ -120,9 +120,9 @@ export class VmasterComponent implements OnInit {
       ACSubCode: [''],
       VC_Name: ['', [Validators.required]],
       VM_Time: ['1'],
-      VM_SMS:[false],
-      VM_Whatsapp:[false],
-      VM_Mattinam:[false],
+      VM_SMS: [false],
+      VM_Whatsapp: [false],
+      VM_Mattinam: [false],
       prathistainfo: this.formBuilder.array([]),
       //  deities: this.formBuilder.array([]),
     });
@@ -200,34 +200,40 @@ export class VmasterComponent implements OnInit {
 
   // submit form
   onSubmit(data: Vmaster) {
-    console.log(this.toppings)
+    console.log(this.toppings);
     console.log(data);
     if (this.vazhipadMasterForm.valid && this.toppings.valid) {
       this.loading = true;
       const formValue = this.vazhipadMasterForm.value;
-      const selectedPrathistaNames: string[] = Array.isArray(this.toppings.value)
-      ? this.toppings.value
-      : [];
+      const selectedPrathistaNames: string[] = Array.isArray(
+        this.toppings.value
+      )
+        ? this.toppings.value
+        : [];
 
-  // Step 1: Create prathistainfo array from selected prathista names
-  const prathistainfo = selectedPrathistaNames.map((name) => {
-      const prathista = this.deities.find((deity) => deity.PM_Name === name);
+      // Step 1: Create prathistainfo array from selected prathista names
+      const prathistainfo = selectedPrathistaNames
+        .map((name) => {
+          const prathista = this.deities.find(
+            (deity) => deity.PM_Name === name
+          );
 
-      // Check if prathista is found before accessing its properties
-      if (prathista) {
-          return { PMId: prathista.PM_ID.toString() };
-      } else {
-          console.warn(`Prathista with name "${name}" not found in deities array.`);
-          return null; // Handle missing prathista case
-      }
-  }).filter(item => item !== null) as { PMId: string }[];
+          // Check if prathista is found before accessing its properties
+          if (prathista) {
+            return { PMId: prathista.PM_ID.toString() ,VMId:this.Id?this.Id:"" };
+          } else {
+            console.warn(
+              `Prathista with name "${name}" not found in deities array.`
+            );
+            return null; // Handle missing prathista case
+          }
+        })
+        .filter((item) => item !== null) as { PMId: string }[];
 
-  // Add prathistainfo to formValue
-  formValue.prathistainfo = prathistainfo;
+      // Add prathistainfo to formValue
+      formValue.prathistainfo = prathistainfo;
 
-  console.log('Form value with prathistainfo:', formValue);
-
-
+      console.log('Form value with prathistainfo:', formValue);
 
       const selectedVc = this.category.find(
         (vc) => vc.VC_Name === formValue.VC_Name
@@ -256,7 +262,7 @@ export class VmasterComponent implements OnInit {
       }
     } else {
       this.markFormGroupTouched(this.vazhipadMasterForm);
-      this.toppings.markAsTouched();  
+      this.toppings.markAsTouched();
       this.notification.showSuccess('Please Fill the Details');
     }
   }
@@ -283,20 +289,20 @@ export class VmasterComponent implements OnInit {
       VM_TimeLimit: 0,
       VM_Description: '',
       VM_AlertMsg: '',
-      VM_Mattinam:false,
+      VM_Mattinam: false,
       DisplayMode: false,
       ACHeadCode: '',
       ACSubCode: '',
       VC_Name: '',
       VM_Whatsapp: '',
       VM_Time: '1',
-      PrathistaInfo:''
+      PrathistaInfo: '',
       // prathistainfo:this.toppings
     });
     this.toppings.reset();
     this.updateFlag = false;
     this.loading = false;
-    this.prathistainfo.clear()
+    this.prathistainfo.clear();
   }
 
   // for editing the form fields
@@ -309,14 +315,14 @@ export class VmasterComponent implements OnInit {
     const selectedVc = this.category.find((vc) => vc.VC_Id == id);
     const VCName = selectedVc?.VC_Name;
     this.masterService.getVazhipadByCodeForDiety(data.VM_Code).subscribe({
-      next:(diety:Deity[])=>{
-        console.log(diety);
-this.editDeity=diety
-        const preSelectedNames = this.editDeity.map(deity => deity.PM_Name);
-        console.log(preSelectedNames)
-      this.toppings.setValue(preSelectedNames);
-      }
-    })
+      next: (diety: Deity[]) => {
+        console.log(diety,"pratstaaaaaaaaaaaaaaaaaaaaaaa");
+        this.editDeity = diety;
+        const preSelectedNames = this.editDeity.map((deity) => deity.PM_Name);
+        console.log(preSelectedNames,"hjjjjjjjjjjjjjjjjjjjjjjjjjjjjjk");
+        this.toppings.setValue(preSelectedNames);
+      },
+    });
     this.vazhipadMasterForm.patchValue({
       VM_Code: data.VM_Code,
       VM_Name: data.VM_Name,
@@ -337,13 +343,13 @@ this.editDeity=diety
       VM_AlertMsg: data.VM_AlertMsg,
       DisplayMode: data.DisplayMode == 'Y' ? true : false,
       VM_Active: data.VM_Active == 'Y' ? true : false,
-      VM_SMS:data.VM_SMS== 'Y' ? true : false,
+      VM_SMS: data.VM_SMS == 'Y' ? true : false,
       ACHeadCode: data.ACHeadCode,
       ACSubCode: data.ACSubCode,
-      VM_Whatsapp:data.VM_Whatsapp== 'Y' ? true : false,
+      VM_Whatsapp: data.VM_Whatsapp == 'Y' ? true : false,
       VC_Name: VCName,
       VM_Time: data.VM_Time,
-      VM_Mattinam:data.VM_Mattinam
+      VM_Mattinam: data.VM_Mattinam== 'Y' ? true : false,
     });
 
     this.loading = false;
@@ -365,34 +371,40 @@ this.editDeity=diety
     this.loading = true;
     // this.deleteForUpdate(this.Id);
     // this.onSubmit(updatedata)
+   
     console.log(updatedata, this.Id);
     if (this.vazhipadMasterForm.valid && this.toppings.valid) {
       const formValue = this.vazhipadMasterForm.value;
 
-      const selectedPrathistaNames: string[] = Array.isArray(this.toppings.value)
-      ? this.toppings.value
-      : [];
+      const selectedPrathistaNames: string[] = Array.isArray(
+        this.toppings.value
+      )
+        ? this.toppings.value
+        : [];
 
-  // Step 1: Create prathistainfo array from selected prathista names
-  const prathistainfo = selectedPrathistaNames.map((name) => {
-      const prathista = this.deities.find((deity) => deity.PM_Name === name);
+      // Step 1: Create prathistainfo array from selected prathista names
+      const prathistainfo = selectedPrathistaNames
+        .map((name) => {
+          const prathista = this.deities.find(
+            (deity) => deity.PM_Name === name
+          );
 
-      // Check if prathista is found before accessing its properties
-      if (prathista) {
-          return { PMId: prathista.PM_ID.toString() };
-      } else {
-          console.warn(`Prathista with name "${name}" not found in deities array.`);
-          return null; // Handle missing prathista case
-      }
-  }).filter(item => item !== null) as { PMId: string }[];
+          // Check if prathista is found before accessing its properties
+          if (prathista) {
+            return { PMId: prathista.PM_ID.toString() ,VMId:this.Id?this.Id.toString():""};
+          } else {
+            console.warn(
+              `Prathista with name "${name}" not found in deities array.`
+            );
+            return null; // Handle missing prathista case
+          }
+        })
+        .filter((item) => item !== null) as { PMId: string }[];
 
-  // Add prathistainfo to formValue
-  formValue.prathistainfo = prathistainfo;
+      // Add prathistainfo to formValue
+      formValue.prathistainfo = prathistainfo;
 
-  console.log('Form value with prathistainfo:', formValue);
-
-
-
+      console.log('Form value with prathistainfo:', formValue);
 
       const selectedVc = this.category.find(
         (vc) => vc.VC_Name === formValue.VC_Name
@@ -400,21 +412,47 @@ this.editDeity=diety
 
       if (selectedVc) {
         const VCId = selectedVc.VC_Id;
-        this.masterService.updateVmaster(VCId, updatedata, this.Id).subscribe({
-          next: (res) => {
-            this.getVmaster();
-            this.loading = false;
 
-            this.onReset();
-            this.notification.showSuccess(
-              'Vazhipad details updated suceesfully'
-            );
-          },
-          error: (error) => {
-            this.loading = true;
-            this.notification.showSuccess(error);
-          },
+        this.masterService
+        .deleteAllPrethista(this.Id.toString())
+        .subscribe((data) => {
+          console.log('delete suceessfully');
+
+          this.masterService.updateVmaster(VCId, updatedata, this.Id).subscribe({
+            next: (res) => {
+              this.getVmaster();
+              this.loading = false;
+  
+              this.onReset();
+              this.notification.showSuccess(
+                'Vazhipad details updated suceesfully'
+              );
+            },
+            error: (error) => {
+              this.loading = true;
+              this.notification.showSuccess(error);
+            },
+          });
+
+
+
         });
+
+        // this.masterService.updateVmaster(VCId, updatedata, this.Id).subscribe({
+        //   next: (res) => {
+        //     this.getVmaster();
+        //     this.loading = false;
+
+        //     this.onReset();
+        //     this.notification.showSuccess(
+        //       'Vazhipad details updated suceesfully'
+        //     );
+        //   },
+        //   error: (error) => {
+        //     this.loading = true;
+        //     this.notification.showSuccess(error);
+        //   },
+        // });
       }
     } else {
       this.markFormGroupTouched(this.vazhipadMasterForm);
@@ -528,7 +566,6 @@ this.editDeity=diety
     return this.vazhipadMasterForm.get('prathistainfo') as FormArray;
   }
 
-
   // duplicate name check validators
   duplicateNameValidator(control: AbstractControl): ValidationErrors | null {
     const name = control.value;
@@ -597,9 +634,7 @@ this.editDeity=diety
     }
   }
 
-
-
-  gotoPrintPage(){
-   this.router.navigate(['/vazhipadReport']);
+  gotoPrintPage() {
+    this.router.navigate(['/vazhipadReport']);
   }
 }

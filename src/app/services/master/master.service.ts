@@ -20,9 +20,12 @@ import { multiDayFilter } from '../../models/multidayFilter.model';
   providedIn: 'root',
 })
 export class MasterService {
+  userId:string | null='';
   private readonly http = inject(HttpClient);
 
-  constructor() {}
+  constructor() {
+this.userId=localStorage.getItem('LoginId');
+  }
 
   // get all prathishta list
   getPmaster(): Observable<Pmaster[]> {
@@ -56,7 +59,7 @@ export class MasterService {
       Active: obj.PM_Active ? 'Y' : 'N',
       Type: 'INSERT',
       UnitId: '1',
-      Cuser: '1',
+      Cuser: this.userId,
       PMImage: obj.PM_Image,
     };
     return this.http
@@ -77,7 +80,7 @@ export class MasterService {
       Active: obj.PM_Active ? 'Y' : 'N',
       Type: 'UPDATE',
       UnitId: '1',
-      Cuser: '1',
+      Cuser: this.userId,
       PMImage: obj.PM_Image,
     };
     console.log(payLoad);
@@ -100,6 +103,17 @@ export class MasterService {
       .pipe(catchError(this.errorHandler));
   }
 
+
+    // delete pmaster
+    deleteAllPrethista(id: string): Observable<void> {
+      const payLoad = {
+        Type: 'PrethistaAll',
+        Id: id,
+      };
+      return this.http
+        .post<void>(Constant.BASE_URL + Constant.METHODS.DELETE_MASTER, payLoad)
+        .pipe(catchError(this.errorHandler));
+    }
   // get category
   getCmaster(): Observable<Cmaster[]> {
     const payLoad: VCMRequestBody = { Type: 'CategoryALL', Code: '' };
@@ -117,7 +131,7 @@ export class MasterService {
       VCRName: obj.VC_RegName,
       Active: obj.VC_Active ? 'Y' : 'N',
       Type: 'INSERT',
-      Cuser: '1',
+      Cuser:this.userId,
     };
     return this.http
       .post<Cmaster>(
@@ -136,7 +150,7 @@ export class MasterService {
       VCRName: obj.VC_RegName,
       Active: obj.VC_Active ? 'Y' : 'N',
       Type: 'UPDATE',
-      Cuser: '1',
+      Cuser: this.userId,
     };
     return this.http
       .post<Cmaster>(
@@ -204,8 +218,8 @@ export class MasterService {
       VCatId: Id,
       ACHeadCode: obj.ACHeadCode,
       ACSubCode: obj.ACSubCode,
-      Cuser: '1',
-      VM_Mattinam:obj.VM_Mattinam,
+      Cuser: this.userId,
+      VM_Mattinam:obj.VM_Mattinam ? 'Y' : 'N',
       VazhBlocking: obj.VM_Blocking ? 'Y' : 'N',
       Type: 'INSERT',
       DisplayMode: obj.DisplayMode ? 'Y' : 'N',
@@ -213,6 +227,7 @@ export class MasterService {
       VM_Whatsapp: obj.VM_Whatsapp ? 'Y' : 'N',
       prathistainfo: obj.prathistainfo,
     };
+    console.log(payLoad,"create vmaster last data")
     return this.http
       .post<Vmaster>(
         Constant.BASE_URL + Constant.METHODS.CREATE_VMASTER,
@@ -223,6 +238,9 @@ export class MasterService {
 
   // update vamster
   updateVmaster(VC_Id: string, obj: Vmaster, id: number): Observable<Vmaster> {
+
+    console.log(obj,"vmaster update service")
+    // const userId=localStorage.getItem('LoginId');
     const Id = `${id}`;
     console.log(typeof VC_Id, obj, id);
     const payLoad = {
@@ -236,7 +254,7 @@ export class MasterService {
       VazhBooking: obj.VM_Booking ? 'Y' : 'N',
       VazhSeasonal: obj.VM_Seasonal ? 'Y' : 'N',
       VazhMultiName: obj.VM_MultiName ? 'Y' : 'N',
-      VM_Mattinam:obj.VM_Mattinam?'Y':'N',
+      VM_Mattinam:obj.VM_Mattinam ? 'Y': 'N',
       VMDevice: obj.VM_Device ? 'Y' : 'N',
       VMapp: obj.VM_Mobileapp ? 'Y' : 'N',
       VMspecial: obj.VM_Special ? 'Y' : 'N',
@@ -249,7 +267,7 @@ export class MasterService {
       VCatId: `${VC_Id}`,
       ACHeadCode: obj.ACHeadCode,
       ACSubCode: obj.ACSubCode,
-      Cuser: '1',
+      Cuser: this.userId,
       VazhBlocking: obj.VM_Blocking ? 'Y' : 'N',
       Type: 'UPDATE',
       DisplayMode: obj.DisplayMode ? 'Y' : 'N',
@@ -257,7 +275,7 @@ export class MasterService {
       VM_Whatsapp: obj.VM_Whatsapp ? 'Y' : 'N',
       prathistainfo: obj.prathistainfo,
     };
-    console.log(payLoad);
+    console.log(payLoad,"update payload");
     return this.http
       .post<Vmaster>(
         Constant.BASE_URL + Constant.METHODS.CREATE_VMASTER,
@@ -346,7 +364,7 @@ export class MasterService {
       Fdate: data.VS_FromDate,
       Tdate: data.VS_ToDate,
       reason: data.VS_Reasion,
-      Cuser: '2',
+      Cuser: this.userId,
       Type: 'INSERT',
     };
     console.log(payLoad);
@@ -363,7 +381,7 @@ export class MasterService {
       Fdate: data.VS_FromDate,
       Tdate: data.VS_ToDate,
       reason: data.VS_Reasion,
-      Cuser: '2',
+      Cuser: this.userId,
       Type: 'UPDATE',
     };
     console.log(payLoad);
@@ -587,7 +605,7 @@ export class MasterService {
 
   // update  day
   updateDay(): Observable<any> {
-    const payLoad = { VazhId: '1', Day: '4', Cuser: '2', Type: 'UPDATE' };
+    const payLoad = { VazhId: '1', Day: '4', Cuser:this.userId, Type: 'UPDATE' };
     return this.http
       .post<any>(Constant.BASE_URL + Constant.METHODS.CREATE_VDAY, payLoad)
       .pipe(catchError(this.errorHandler));

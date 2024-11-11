@@ -60,12 +60,15 @@ export class FixedbottomComponent implements OnInit {
   private escPressed: boolean = false;
   theLastBillNo: string;
   loginId: string | null = '';
+  counterId: string | null = '';
+  @ViewChild('address1Input', { static: true }) address1Input!: ElementRef;
   constructor(
     private fb: FormBuilder,
     public dialog: MatDialog,
     private receiptPrinrservice: ReceiptPrintService
   ) {
     this.loginId = localStorage.getItem('LoginId');
+    this.counterId = localStorage.getItem('counterId');
     this.currentDate = this.getCurrentDateMMYY();
     this.getLastBillNumber();
     this.loggedInUserLastBillNumber();
@@ -74,7 +77,6 @@ export class FixedbottomComponent implements OnInit {
     this.customerdetailsForBillingForm = this.fb.group({
       BillNo: [''],
       Billdate: [today, [Validators.required]],
-
       Mobile: ['', [Validators.pattern('^[0-9]{10}$')]],
       Address1: [''],
       Address2: [''],
@@ -82,7 +84,7 @@ export class FixedbottomComponent implements OnInit {
       Email: ['', [Validators.email]],
       Pincode: ['', [Validators.pattern('^[0-9]{6}$')]],
       Userid: [this.loginId],
-      CounterId: ['1'],
+      CounterId: [this.counterId],
       Trnsmode: ['cs'],
       Instno: [''],
       Instdate: [today],
@@ -609,6 +611,20 @@ export class FixedbottomComponent implements OnInit {
     if (this.escPressed) {
       this.onSubmit(); // Trigger the click event of the Pay button
       this.escPressed = false; // Reset the ESC key flag
+    }
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent) {
+    if (event.key === 'F2') {
+      event.preventDefault(); // Prevents the default browser refresh behavior
+      this.focusOnAddress1();
+    }
+  }
+
+  private focusOnAddress1() {
+    if (this.address1Input) {
+      this.address1Input.nativeElement.focus();
     }
   }
 }

@@ -6,6 +6,7 @@ import { MenuComponent } from '../menu/menu.component';
 import { AreaComponent } from '../../../features/Billing/area/area.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-header',
   standalone: true,
@@ -16,6 +17,7 @@ import { Router } from '@angular/router';
     MenuComponent,
     AreaComponent,
     MatMenuModule,
+    CommonModule
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css',
@@ -24,8 +26,10 @@ export class HeaderComponent {
   private router = inject(Router);
   showFiller = false;
   userName: string | null = '';
+  role:string |null='';
   constructor() {
     this.userName = localStorage.getItem('name');
+    this.role=localStorage.getItem('Role')
   }
 
   logout() {

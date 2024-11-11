@@ -9,12 +9,14 @@ import {ReportData} from '../../../models/poornam-report'
 import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Location } from '@angular/common';
-import autoTable from 'jspdf-autotable';
 
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import puppeteer from 'puppeteer';
 @Component({
   selector: 'app-report-checquestmnt',
   standalone: true,
-  imports: [CommonModule,MatTableModule,MatPaginatorModule,HeaderComponent,MatTooltipModule],
+  imports: [CommonModule,MatTableModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
   templateUrl: './report-checquestmnt.component.html',
   styleUrl: './report-checquestmnt.component.css'
 })
@@ -85,133 +87,75 @@ export class ReportChecquestmntComponent implements OnInit{
     console.log('Going back...'); // Log to verify method execution
     this.router.navigate(['/getReport']);
   }
-
-
-
-  generatePDF(): void {
-    // Filter data for entries with transmode 'ch'
-    const filteredData = this.data.filter(item => item.TrnsMode === 'ch');
-  
-    // Initialize jsPDF instance
-    const doc = new jsPDF();
-    const pageHeight = doc.internal.pageSize.height;
-    const pageWidth = doc.internal.pageSize.width;
-    const margin = 10;
-    const startY = 30;
-    const lineHeight = 10; // Increased line height for better spacing
-    const columnWidths = [25, 35, 50, 30, 30, 25];
-    const headerFontSize = 12;
-    const contentFontSize = 10;
-    let y = startY;
-  
-    // Function to add header
-    const addHeader = () => {
-      doc.setFontSize(headerFontSize);
-      doc.text('Transaction Mode: CH Report', pageWidth / 2, 15, { align: 'center' });
-      doc.setLineWidth(0.5);
-      doc.line(margin, 18, pageWidth - margin, 18);
-    };
-  
-    // Function to add table header with underline separation
-    const addTableHeader = () => {
-      const headers = ['Bill No', 'Bank Name', 'Vazhipad', 'Cheq Date', 'Cheque No', 'Amount'];
-      doc.setFontSize(contentFontSize);
-      headers.forEach((header, index) => {
-        const x = margin + columnWidths.slice(0, index).reduce((a, b) => a + b, 0);
-        doc.text(header, x, y);
-      });
-      y += lineHeight; // Move to the next line after header
-      doc.line(margin, y - lineHeight / 2, pageWidth - margin, y - lineHeight / 2); // Line below header
-      y += 5; // Additional spacing between header line and content
-    };
-  
-    // Function to add footer with pagination
-    const addFooter = (pageNumber: number) => {
-      doc.setFontSize(contentFontSize);
-      doc.text(`Page ${pageNumber}`, pageWidth - margin - 20, pageHeight - margin);
-      doc.setLineWidth(0.5);
-      doc.line(margin, pageHeight - margin - 5, pageWidth - margin, pageHeight - margin - 5);
-    };
-  
-    addHeader();
-    addTableHeader();
-  
-    let pageNumber = 1;
-    let grandTotal = 0;
-  
-    // Handle case where no data is available for transmode 'ch'
-    if (filteredData.length === 0) {
-      doc.text('No data available for the selected transaction mode.', margin, y);
-      doc.save('Transaction_Mode_CH_Report.pdf');
-      return;
-    }
-  
-    // Function to wrap text within a specified width
-    const wrapText = (text: string, width: number) => {
-      return doc.splitTextToSize(text, width);
-    };
-  
-    // Populate the table with filtered data
-    filteredData.forEach(item => {
-      // Add a new page if needed
-      if (y + lineHeight * 2 > pageHeight - margin) {
-        addFooter(pageNumber);
-        doc.addPage();
-        y = startY;
-        pageNumber++;
-        addHeader();
-        addTableHeader();
-      }
-  
-      const row = [
-        item.BillNo || '',
-        item.InstBank || '',
-        item.Vazhipad || '',
-        item.InstDate || '',
-        item.InstNo || '',
-        (parseFloat(item.Amount) || 0).toFixed(2)
-      ];
-  
-      // Calculate x positions for each column
-      const xPositions = [
-        margin,
-        margin + columnWidths[0],
-        margin + columnWidths[0] + columnWidths[1],
-        margin + columnWidths[0] + columnWidths[1] + columnWidths[2],
-        margin + columnWidths[0] + columnWidths[1] + columnWidths[2] + columnWidths[3],
-        margin + columnWidths[0] + columnWidths[1] + columnWidths[2] + columnWidths[3] + columnWidths[4]
-      ];
-  
-      // Add each value in the row with wrapping for long text
-      row.forEach((value, index) => {
-        const wrappedText = wrapText(value, columnWidths[index] - 5);
-        doc.setFontSize(contentFontSize);
-        doc.text(wrappedText, xPositions[index], y);
-      });
-  
-      // Move to the next line considering the maximum line height for wrapped text
-      y += lineHeight * Math.max(...row.map(value => wrapText(value, columnWidths[2]).length));
-      grandTotal += parseFloat(item.Amount) || 0;
-    });
-  
-    // Add grand total at the bottom of the last page, right-aligned
-    if (y + lineHeight > pageHeight - margin) {
-      addFooter(pageNumber);
-      doc.addPage();
-      y = startY;
-      pageNumber++;
-      addHeader();
-      addTableHeader();
-    }
-    
-    doc.setFontSize(contentFontSize);
-    doc.text(`Grand Total: ₹${grandTotal.toFixed(2)}`, pageWidth - margin - 50, y + lineHeight);
-  
-    addFooter(pageNumber);
-  
-    // Save the PDF
-    doc.save('Transaction_Mode_CH_Report.pdf');
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
   }
+
+ 
+
+// Helper method to format date as dd-mm-yyyy
+formatDate(dateString: string | undefined): string {
+    if (!dateString) return ''; // Return empty string if undefined or empty string
+    const date = new Date(dateString);
+    const day = ("0" + date.getDate()).slice(-2);  // Ensure two digits
+    const month = ("0" + (date.getMonth() + 1)).slice(-2);  // Ensure two digits
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+}
+
+ generatePDF(): void {
+  const doc = new jsPDF();
+  const pageHeight = doc.internal.pageSize.height;
+  const pageWidth = doc.internal.pageSize.width;
+  const pageCount = 3; // Specify the number of pages you want in the PDF
+
+  // Function to add the header
+  const addHeader = () => {
+    doc.setFontSize(16);
+    doc.text('Temple Name', pageWidth / 2, 15, { align: 'center' });
+    
+    doc.setFontSize(12);
+    doc.text('Temple Address Line 1, City, State, ZIP', pageWidth / 2, 20, { align: 'center' });
+    
+    const currentDate = new Date().toLocaleDateString('en-GB'); // Format: dd-mm-yyyy
+    doc.text(`Date: ${currentDate}`, pageWidth / 2, 25, { align: 'center' });
+    
+    // Underline below header
+    doc.setLineWidth(0.5);
+    doc.line(15, 28, pageWidth - 15, 28); // Adjust this line position as needed
+  };
+
+  // Function to add footer with page number below a line
+  const addFooter = (pageNumber: number) => {
+    const footerLineY = pageHeight - 20; // Position for footer line
+    const pageNumberY = footerLineY + 6; // Position for page number below the line
+
+    // Draw footer line
+    doc.setLineWidth(0.5);
+    doc.line(15, footerLineY, pageWidth - 15, footerLineY);
+
+    // Add page number text below the line, right-aligned
+    doc.setFontSize(10);
+    doc.text(`Page ${pageNumber}`, pageWidth - 20, pageNumberY, { align: 'right' });
+  };
+
+  // Loop to create the specified number of pages
+  for (let pageNumber = 1; pageNumber <= pageCount; pageNumber++) {
+    if (pageNumber > 1) doc.addPage(); // Add a new page for each iteration except the first page
+    addHeader();
+    addFooter(pageNumber);
+  }
+
+  // Save or output the PDF
+  doc.save('Temple_Report_Empty.pdf');
+}
+
+
+
+
+
+
   
   
   
