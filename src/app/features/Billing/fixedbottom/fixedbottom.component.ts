@@ -61,6 +61,8 @@ export class FixedbottomComponent implements OnInit {
   theLastBillNo: string;
   loginId: string | null = '';
   counterId: string | null = '';
+
+  billType: string;
   @ViewChild('address1Input', { static: true }) address1Input!: ElementRef;
   constructor(
     private fb: FormBuilder,
@@ -94,6 +96,7 @@ export class FixedbottomComponent implements OnInit {
   }
   ngOnInit(): void {
     this.getTodayCollection();
+
     this.totalService.totalAmount$.subscribe((amount) => {
       this.totalAmount = amount;
     });
@@ -107,6 +110,7 @@ export class FixedbottomComponent implements OnInit {
     this.subscribeToTrnsmodeChanges();
     this.printReceipt();
   }
+
   private getCurrentDateMMYY(): string {
     const now = new Date();
     const month = ('0' + (now.getMonth() + 1)).slice(-2);
@@ -279,12 +283,10 @@ export class FixedbottomComponent implements OnInit {
                 </tr>
               </tbody>
             </table>
-<div style="text-align: right; margin-top: 20px;">
+         <div style="text-align: right; margin-top: 20px;">
         <strong>Login ID: ${this.loginId}</strong><br />
         <strong>Transaction Mode: ${displayTrnsmode}</strong>
       </div>
-
-
           </div>
           ${
             i < prathistaVazhipadKeys.length - 1

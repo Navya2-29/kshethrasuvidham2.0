@@ -72,3 +72,143 @@ mat-paginator {
     padding: 4px 8px;
   }
 }
+
+
+
+/* Styling for the Table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+}
+
+th, td {
+  padding: 8px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+th {
+  background-color: #f4f4f4;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tr:hover {
+  background-color: #f1f1f1;
+}
+
+td[colspan="7"] {
+  text-align: center;
+  background-color: #e2e2e2;
+  font-weight: bold;
+}
+
+tfoot td {
+  font-weight: bold;
+  background-color: #f4f4f4;
+}
+
+/* component.css */
+#pdf-content table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#pdf-content th, #pdf-content td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+#pdf-content th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+#pdf-content td {
+  background-color: #fff;
+}
+
+
+/* component.css */
+#pdf-content {
+  padding: 20px;
+}
+
+.pdf-header, .pdf-footer {
+  text-align: center;
+  font-weight: bold;
+}
+
+.pdf-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 10px;
+  background: #f8f8f8;
+}
+
+.pdf-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px;
+  background: #f8f8f8;
+}
+
+.pdf-body {
+  margin-top: 100px; /* Space for header */
+  margin-bottom: 50px; /* Space for footer */
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.group-header {
+  background-color: #f0f0f0;
+  font-weight: bold;
+}
+
+@media print {
+  .pdf-header, .pdf-footer {
+    position: static;
+    page-break-before: always;
+  }
+}
+
+
+
+/* component.css */
+
+/* Force page break after specific elements if needed */
+.page-break {
+  page-break-before: always;
+}
+
+/* Avoid breaking inside these elements to keep rows or groups together */
+.pdf-body tr {
+  page-break-inside: avoid;
+}
+
+.pdf-body .group-header {
+  page-break-before: always; /* Optional: break before each group */
+  page-break-inside: avoid; /* Keep group header with its rows */
+}
+
+/* General body style adjustments to avoid page breaks within headers and footers */
+.pdf-header, .pdf-footer {
+  page-break-inside: avoid;
+  position: fixed;
+}

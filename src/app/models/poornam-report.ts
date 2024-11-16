@@ -13,5 +13,5 @@ export interface ReportData {
     InstDate?:string;
     InstNo?:string;
     TrnsMode:string;
-
+    CounterId:string
   }

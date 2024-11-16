@@ -1,5 +1,9 @@
 
 <h2 mat-dialog-title style="background:#223d61;color:white;">Bill Number  -{{lastBillNo}}</h2>
+<div class="cancel-container">
+  <h3 class="status" [ngClass]="TrnStatus === 'C' ? 'cancelled' : 'success'"> Status :<span [ngClass]="TrnStatus === 'C' ? 'cancelled' : 'success'">{{TrnStatus==='S'?'Success':'Cancelled'}}</span></h3><button class="cancel btn btn-primary" *ngIf="TrnStatus==='S' && role==='admin'" (click)="cancellTheBill()" >Cancel Bill</button>
+
+</div>
 <mat-dialog-content class="high">
     <div class="container">
         <div class="row openmenu">
@@ -87,5 +91,8 @@
 
 <mat-dialog-actions  class="menuend">
   <button mat-button [mat-dialog-close]="true" class="close">Close</button>
-    <button mat-button class="proceed">Proceed</button> 
+    <button mat-button class="proceed" [disabled]="TrnStatus=='C'" (click)="onProceed()">Proceed</button> 
 </mat-dialog-actions>
+
+
+

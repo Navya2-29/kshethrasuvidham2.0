@@ -22,3 +22,30 @@ table {
     letter-spacing:0pt;
    
   }
+  .cancel{
+    width: 100px;
+    margin-right: 10px;
+    /* margin-right: 3%; */
+    border: none;
+    background: #046ef8;;
+    color:white;
+    letter-spacing:0pt;
+    box-shadow: none;
+  }
+  .status{
+    margin-left: 3%; 
+  }
+  .cancel-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Optional: vertically centers the buttons */
+    width: 100%;  
+  }
+
+  .status.success {
+    color: green;
+  }
+  
+  .status.cancelled {
+    color: red;
+  }

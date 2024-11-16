@@ -76,3 +76,53 @@
     </mat-paginator>
   </div>
   
+
+ <!-- Table with Header, Grouped Data, and Footer -->
+<table border="1" id="pdf-content" >
+  <!-- Table Header (for the whole table) -->
+
+
+  <!-- Table Body with Grouped Data -->
+  <tbody>
+    <ng-container *ngFor="let group of groupedData | keyvalue">
+      <!-- Group name (Transaction Mode) displayed as a row header -->
+      <tr>
+        <td colspan="7" style="font-weight: bold; background-color: #f2f2f2;">
+          <!-- Display the human-readable transaction type -->
+        TRANSACTION  :   {{ getTransactionType(group.key) }} <!-- Dynamic transaction type -->
+        </td>
+      </tr>
+
+      <!-- Table header for each group -->
+      <tr>
+        <th>Bill No</th>
+        <th>Transaction Mode</th>
+        <th>Name</th>
+        <th>Star</th>
+        <th>Quantity</th>
+        <th>Rate</th>
+        <th>Vazhipad Date</th>
+      </tr>
+
+      <!-- Loop through items in the group -->
+      <tr *ngFor="let item of group.value">
+        <td>{{ item.BillNo }}</td>
+        <td>{{ item.Vazhipad }}</td>
+        <td>{{ item.Name }}</td>
+        <td>{{ item.Star }}</td>
+        <td>{{ item.Qty }}</td>
+        <td>{{ item.Rate }}</td>
+        <td>{{ item.VazhiDate }}</td>
+      </tr>
+    </ng-container>
+  </tbody>
+
+  <!-- Table Footer with Page Number -->
+  <tfoot>
+    <tr>
+      <td colspan="7" style="text-align: center;">
+        Page {{ currentPage }}
+      </td>
+    </tr>
+  </tfoot>
+</table>

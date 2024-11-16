@@ -51,6 +51,7 @@ export class MobserachcontentsComponent implements OnInit {
   ];
   dataSource: MatTableDataSource<Data>;
   mobilenumber: string = '';
+  TrnStatus:string;
   starData: { [id: string]: string } = {};
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -60,7 +61,10 @@ export class MobserachcontentsComponent implements OnInit {
     private masterService: MasterService
   ) {
     this.mobilenumber = data[0].MobileNo;
+    
+    this.TrnStatus=data[0].TrnStatus;
     this.dataSource = new MatTableDataSource(data);
+    console.log(data,"search mobile number")
   }
 
   ngOnInit() {
@@ -93,5 +97,12 @@ export class MobserachcontentsComponent implements OnInit {
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+  }
+
+
+
+  cancellTheBill(){
+    
+this.masterService.cancellBill
   }
 }

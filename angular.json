@@ -96,7 +96,7 @@
               "node_modules/ngx-toastr/toastr.css"
             ],
             "scripts": [
-              
+               "node_modules/html2pdf.js/dist/html2pdf.js"
             ]
           }
         }

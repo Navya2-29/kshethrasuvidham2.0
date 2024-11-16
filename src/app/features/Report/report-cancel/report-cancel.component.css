@@ -1,0 +1,39 @@
+table {
+    width: 100%;
+  }
+  
+  .mat-mdc-form-field {
+    font-size: 14px;
+    width: 100%;
+  }
+
+
+
+  #pdfContent {
+    padding: 20px;
+    width: 100%;
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+  }
+  
+  .pdf-header {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #000;
+  }
+  
+  .pdf-body {
+    margin-top: 20px;
+  }
+  
+  .pdf-footer {
+    position: relative;
+    text-align: center;
+    font-size: 12px;
+    margin-top: 20px;
+    border-top: 2px solid #000;
+    padding-top: 5px;
+  }
+  

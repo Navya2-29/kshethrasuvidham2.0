@@ -12,4 +12,7 @@ export class ReportService {
   getReport(payLoad:any){
     return this.http.post<any>(Constant.BASE_URL+Constant.METHODS.GET_REPORT,payLoad)
   }
+
+
+  
 }

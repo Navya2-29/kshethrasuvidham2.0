@@ -35,6 +35,8 @@ import { ReportUpiComponent } from './features/Report/report-upi/report-upi.comp
 import { ReportOfferingComponent } from './features/Report/report-offering/report-offering.component';
 import { ReportAddresslistComponent } from './features/Report/report-addresslist/report-addresslist.component';
 import { ReportCreditComponent } from './features/Report/report-credit/report-credit.component';
+import { ReportCounterComponent } from './features/Report/report-counter/report-counter.component';
+import { ReportCancelComponent } from './features/Report/report-cancel/report-cancel.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -137,6 +139,8 @@ export const routes: Routes = [
   { path: 'report-offering', component: ReportOfferingComponent },
   { path: 'report-address', component: ReportAddresslistComponent },
   { path: 'report-credit', component: ReportCreditComponent },
+  { path: 'report-counter', component: ReportCounterComponent },
+  { path: 'report-cancel', component: ReportCancelComponent },
   {
     path: '**',
     pathMatch: 'full',

@@ -159,14 +159,14 @@ export class DuplicatecheckService {
     code: string,
     ImasterData: ItemMaster[]
   ): boolean {
-    return ImasterData.some((I) => I.item_code == code);
+    return ImasterData.some((I) => I.NM_Code == code);
   }
 
   itemMastercheckDuplicateName(
     name: string,
     ImasterData: ItemMaster[]
   ): boolean {
-    return ImasterData.some((I) => I.item_code === name);
+    return ImasterData.some((I) => I.NM_Name === name);
   }
   vihidhamMastercheckDuplicateCode(
     code: string,

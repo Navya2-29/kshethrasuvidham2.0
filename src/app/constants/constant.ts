@@ -1,7 +1,7 @@
 import { NgPluralCase } from '@angular/common';
 
 export const Constant = {
-  BASE_URL: 'http://api.suvidham.in/api/KshetramAPI/',
+   BASE_URL: 'http://api.suvidham.in/api/KshetramAPI/',
 
   METHODS: {
     // master view
@@ -53,9 +53,9 @@ export const Constant = {
     DELETE_VCOMBO: 'delete',
 
     // ITEM MASTER
-    GET_ITEM: 'ITEM',
-    GET_ALL_ITEM: 'getall',
-    CREATE_ITEM: 'create',
+    GET_ITEM: 'Nad',
+    GET_ALL_ITEM: '',
+    CREATE_ITEM: 'AddNAdavaravuMaster',
     UPDATE_ITEM: 'update',
     DELETE_ITEM: 'delete',
 
@@ -78,6 +78,8 @@ export const Constant = {
     SEARCHBYMOBILENUMBER: 'ViewMasters',
     STARDATA: 'ListStar',
     MULTIDAY_FILTER: 'MultiFilter',
-    GET_REPORT:"GetReport"
+    GET_REPORT:"GetReport",
+    CANCEL_BILL:"CancelBill",
+    NADAVARAV_BOOKING:"NadavaravuBooking"
   },
 };

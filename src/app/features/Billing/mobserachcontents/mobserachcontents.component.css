@@ -22,3 +22,13 @@ table {
     letter-spacing:0pt;
    
   }
+
+  .cancel{
+    width: 50%;
+    margin-left: 3%;
+    margin-right: 3%;
+    border: none;
+  }
+  .status{
+    margin-left: 3%; 
+  }

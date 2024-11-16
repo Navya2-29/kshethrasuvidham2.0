@@ -12,4 +12,7 @@ export class ReceiptPrintService {
   setReceiptData(data: any) {
     this.receiptDataSubject.next(data);
   }
+
+
+  
  }

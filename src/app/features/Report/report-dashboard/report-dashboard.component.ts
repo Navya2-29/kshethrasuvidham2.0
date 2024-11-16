@@ -41,6 +41,7 @@ export class ReportDashboardComponent {
   isloading: boolean = false;
   isSearchPerformed: boolean = false;
   newTab: any;
+  
   constructor(
     private fb: FormBuilder,
     private service: ReportService,
@@ -99,6 +100,13 @@ export class ReportDashboardComponent {
     else if (reportType === 'credit') {
       this.newTab = window.open(`./report-credit${queryString}`, '_blank');
     }
+    else if (reportType === 'counter') {
+      this.newTab = window.open(`./report-counter${queryString}`, '_blank');
+    }
+    else if (reportType === 'cancel') {
+      this.newTab = window.open(`./report-cancel${queryString}`, '_blank');
+    }
+
     if (this.newTab) {
       this.newTab.focus();
       this.isloading = false;

@@ -26,6 +26,7 @@
     "cors": "^2.8.5",
     "html2canvas": "^1.4.1",
     "html2pdf": "^0.0.11",
+    "html2pdf.js": "^0.10.2",
     "json-server": "^1.0.0-alpha.23",
     "jspdf": "^2.5.2",
     "jspdf-autotable": "^3.8.4",

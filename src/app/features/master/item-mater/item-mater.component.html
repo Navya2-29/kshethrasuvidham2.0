@@ -14,20 +14,20 @@
           <form [formGroup]="itemMasterForm">
             <table class="table">
               <tr>
-                <td> Item Code<span class="text-danger">*</span><input type="text" maxlength="3" (input)="onInputChange($event)" appUpperCase matInput formControlName="item_code" class="form-control sps"
+                <td> Item Code<span class="text-danger">*</span><input type="text" maxlength="3" (input)="onInputChange($event)" appUpperCase matInput formControlName="NM_Code" class="form-control sps"
                     placeholder="Enter Code" style="width:126px;"> </td>
 
               </tr>
               <div
-                *ngIf="itemMasterFormControl['item_code'].invalid && (itemMasterFormControl['item_code'].dirty || itemMasterFormControl['item_code'].touched)"
+                *ngIf="itemMasterFormControl['NM_Code'].invalid && (itemMasterFormControl['NM_Code'].dirty || itemMasterFormControl['NM_Code'].touched)"
                 class="pl-1 text-danger">
-                <div *ngIf="itemMasterFormControl['item_code'].hasError('required')">
+                <div *ngIf="itemMasterFormControl['NM_Code'].hasError('required')">
                   code is required.
                 </div>
-                <div *ngIf="itemMasterFormControl['item_code'].invalid && itemMasterFormControl['item_code'].hasError('maxlength')">
+                <div *ngIf="itemMasterFormControl['NM_Code'].invalid && itemMasterFormControl['NM_Code'].hasError('maxlength')">
                   code must be 3 characters long.
                 </div>
-                <div *ngIf="itemMasterFormControl['item_code'].hasError('pattern')">
+                <div *ngIf="itemMasterFormControl['NM_Code'].hasError('pattern')">
                   code must be include number or english alphabat.
                 </div>
                 <div *ngIf="showMaxLengthError" class="pl-1 text-danger">
@@ -36,26 +36,32 @@
               </div>
              
               <tr>
-                <td> Item Name<span class="text-danger">*</span><input type="text" appUpperCase formControlName="item_name" matInput
+                <td> Item Name<span class="text-danger">*</span><input type="text" appUpperCase formControlName="NM_Name" matInput
                     class="form-control" placeholder="Enter Name"> </td>
 
               </tr>
               <div
-                *ngIf="itemMasterFormControl['item_name'].invalid && (itemMasterFormControl['item_name'].dirty || itemMasterFormControl['item_name'].touched)"
+                *ngIf="itemMasterFormControl['NM_Name'].invalid && (itemMasterFormControl['NM_Name'].dirty || itemMasterFormControl['NM_Name'].touched)"
                 class="pl-1 text-danger">
-                <div *ngIf="itemMasterFormControl['item_name'].hasError('required')">
+                <div *ngIf="itemMasterFormControl['NM_Name'].hasError('required')">
                   name is required.
                 </div>
-                <div *ngIf="itemMasterFormControl['item_name'].hasError('pattern')">
+                <div *ngIf="itemMasterFormControl['NM_Name'].hasError('pattern')">
                   name must be include english alphabat and spaces only.
                 </div>
-                <div *ngIf="itemMasterFormControl['item_name'].hasError('duplicateName')" class="text-danger">
+                <div *ngIf="itemMasterFormControl['NM_Name'].hasError('duplicateName')" class="text-danger">
                     Name already exists.
                   </div>
               </div>
+
+              <tr>
+                <td> Item Reginla name<span class="text-danger">*</span><input type="text" appUpperCase formControlName="NM_RName" matInput
+                    class="form-control" placeholder="Enter RName"> </td>
+
+              </tr>
               <tr>
                 <td>
-                    Item Decription<textarea type="text" appUpperCase formControlName="item_decription" class="form-control" placeholder="Enter Decription" matInput></textarea>
+                    Item Decription<textarea type="text" appUpperCase formControlName="NM_Description" class="form-control" placeholder="Enter Decription" matInput></textarea>
                 </td>
               </tr>
               <tr>
@@ -79,7 +85,7 @@
           <div class="fixitems prathishta">
             <table class="table">
               <tr style="border-bottom: 2px solid #223d61;">
-                <th style="width:10px;background-color: #223d61;color:white;">Active</th>
+                <!-- <th style="width:10px;background-color: #223d61;color:white;">Active</th> -->
                 <th>Id</th>
                 <th>code</th>
                 <th>Name</th>
@@ -87,16 +93,16 @@
               </tr>
               <tbody *ngIf="itemMaster && itemMaster.length > 0">
                 <tr *ngFor="let data of filtereditemMaster ; let i=index">
-                  <td style="background-color: #87b6f3;"><input type="Checkbox"
-                      style="vertical-align: middle;width:12px;" checked></td>
-                  <td>{{data.id}}</td>
-                  <td>{{data.item_code}}</td>
-                  <td style="text-align:left;">{{data.item_name}}</td>
+                  <!-- <td style="background-color: #87b6f3;"><input type="Checkbox"
+                      style="vertical-align: middle;width:12px;" checked></td> -->
+                  <td>{{data.NM_Id}}</td>
+                  <td>{{data.NM_Code}}</td>
+                  <td style="text-align:left;">{{data.NM_Name}}- {{data.NM_RName}} </td>
                   <td>
                     <mat-icon title="Edit" class="small" style="vertical-align: middle;"
                       (click)="onEdit(data)">edit</mat-icon>
                     <mat-icon title="Delete" class="small" style="vertical-align: middle;"
-                      (click)="onDelete(data.id)">delete</mat-icon>
+                      (click)="onDelete(data.NM_Id)">delete</mat-icon>
                   </td>
 
                 </tr>

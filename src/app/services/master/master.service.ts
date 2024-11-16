@@ -16,6 +16,7 @@ import {
 import { SeasonalMaster } from '../../models/season-master.model';
 import { DayMaster } from '../../models/day-master.model';
 import { multiDayFilter } from '../../models/multidayFilter.model';
+import { ItemMaster } from '../../models/item-master.model';
 @Injectable({
   providedIn: 'root',
 })
@@ -472,14 +473,15 @@ this.userId=localStorage.getItem('LoginId');
   // item master
 
   //// get list item master
-  getItemMaster(): Observable<any[]> {
-    return this.http.get<any[]>(
-      Constant.BASE_URL + Constant.METHODS.GET_ALL_ITEM
+  getItemMaster(payLoad:any): Observable<any[]> {
+    return this.http.post<any[]>(
+      Constant.BASE_URL + Constant.METHODS.GET_MASTER,payLoad
     );
   }
 
   // create  item master
   createItemMaster(data: any): Observable<any> {
+    console.log(data ,"service")
     return this.http.post<any>(
       Constant.BASE_URL + Constant.METHODS.CREATE_ITEM,
       data
@@ -487,16 +489,17 @@ this.userId=localStorage.getItem('LoginId');
   }
 
   // update  item master
-  updateItemMaster(id: string, obj: any): Observable<any> {
+  updateItemMaster( obj: any): Observable<any> {
+    console.log(obj,"service")
     return this.http
-      .put<any>(Constant.BASE_URL + Constant.METHODS.UPDATE_ITEM + id, obj)
+      .post<any>(Constant.BASE_URL + Constant.METHODS.CREATE_ITEM , obj)
       .pipe(catchError(this.errorHandler));
   }
 
   // delete  item master
-  deleteItemMaster(id: string): Observable<any> {
+  deleteItemMaster(payLoad: any): Observable<any> {
     return this.http
-      .delete<any>(Constant.BASE_URL + Constant.METHODS.DELETE_ITEM + id)
+      .post<any>(Constant.BASE_URL + Constant.METHODS.DELETE_MASTER,payLoad)
       .pipe(catchError(this.errorHandler));
   }
 
@@ -763,19 +766,55 @@ this.userId=localStorage.getItem('LoginId');
   }
 
   getThithilist(payLoad: any) {
-    return this.http.post<multiDayFilter>(
+    return this.http.post<any>(
       Constant.BASE_URL + Constant.METHODS.GET_MASTER,
       payLoad
     );
   }
 
   getVazhipadListBasedOnPrathistaList(payLoad: any) {
-    return this.http.post<multiDayFilter>(
+    return this.http.post<any>(
       Constant.BASE_URL + Constant.METHODS.GET_MASTER,
       payLoad
     );
   }
+cancellBill(payLoad:any){
+  return this.http.post<any>(
+    Constant.BASE_URL + Constant.METHODS.CANCEL_BILL,
+    payLoad
+  );
+}
+nadavaravBooking(payLoad:any){
+  return this.http.post<any>(
+    Constant.BASE_URL + Constant.METHODS.NADAVARAV_BOOKING,
+    payLoad
+  ); 
+}
 
+
+getNadavaravBillNumber(payLoad:any){
+ 
+  return this.http.post<any>(
+    Constant.BASE_URL + Constant.METHODS.GET_MASTER,
+    payLoad
+  ); 
+  
+
+
+}
+
+
+
+updateNadavaravuBillNumber(currentbillnumber: any): Observable<any[]> {
+  const payLoad = { Type: 'UpdateBillNoNadavaravu', code: currentbillnumber };
+  return this.http.post<any>(
+    Constant.BASE_URL + Constant.METHODS.SEARCHBYMOBILENUMBER,
+    payLoad
+  );
+}
+  settingsmaster(){
+    
+  }
   // error handling
   private errorHandler(error: HttpErrorResponse) {
     //

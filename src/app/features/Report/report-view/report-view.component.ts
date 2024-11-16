@@ -84,107 +84,153 @@ export class ReportViewComponent implements OnInit {
     }, {} as { [key: string]: ReportData[] });
   }
 
-
   generatePDF() {
     const doc = new jsPDF();
-    
     const pageWidth = doc.internal.pageSize.width;
-    const title = 'Vazhipad Report';
-    doc.setFontSize(18);
-    const titleWidth = doc.getTextWidth(title);
-    doc.text(title, (pageWidth - titleWidth) / 2, 20);
-    
-    const currentDate = new Date().toLocaleDateString('en-IN'); 
-    doc.setFontSize(12);
-    const dateWidth = doc.getTextWidth(currentDate);
-    doc.text(currentDate, (pageWidth - dateWidth) / 2, 28);
-    
-    let y = 35; // Starting Y position for the first page
     const pageHeight = doc.internal.pageSize.height;
-    const lineHeight = 6; // Reduced line height for closer spacing
-    const smallSpacing = 3; // Reduced spacing value between entries
-    const headerSpacing = 5; // Space between header and content
-    const groupTitleSpacing = 2; // Reduced space after the group title
-    const contentSpacing = 5; // Increased space between underline and first content
   
-    // Function to draw the header
-    const drawHeader = (yPos: number) => {
-        doc.setFillColor(230, 230, 250);
-        doc.rect(10, yPos, pageWidth - 20, lineHeight, 'F');
-
-        doc.setTextColor(0, 0, 0);
-        doc.setFontSize(12);
-        doc.text('Sl No', 14, yPos + 5);
-        doc.text('Name', 40, yPos + 5);
-        doc.text('Star', 80, yPos + 5);
-        doc.text('Qty', 120, yPos + 5);
-        doc.text('BillNo', 160, yPos + 5);
+    const title = 'Vazhipad Report';
+    const currentDate = new Date().toLocaleDateString('en-IN');
+  
+    const lineHeight = 8; // Row height for the table
+    const smallSpacing = 4; // Space between groups
+    const headerSpacing = 6; // Space between header and content
+    const groupNameFontSize = 12; // Font size for group name
+    const tableContentFontSize = 10; // Font size for table content
+    const headerHeight = 20; // Height of header
+    const footerHeight = 20; // Height of footer
+  
+    // Function to Draw Header
+    const drawHeader = () => {
+      doc.setFontSize(18); // Title font size
+      const titleWidth = doc.getTextWidth(title);
+      doc.text(title, (pageWidth - titleWidth) / 2, headerHeight - 12); // Title above header line
+  
+      doc.setFontSize(12); // Date font size
+      const dateWidth = doc.getTextWidth(currentDate);
+      doc.text(currentDate, (pageWidth - dateWidth) / 2, headerHeight - 4); // Date above header line
+  
+      // Draw a line under the header content
+      doc.setLineWidth(0.5);
+      doc.line(10, headerHeight, pageWidth - 10, headerHeight); // Line under header
     };
-
-    drawHeader(y); // Draw header for the first page
-    y += lineHeight + headerSpacing; // Move down to start the table content
   
+    // Function to Draw Footer
+    const drawFooter = (pageNum: number) => {
+      doc.setFontSize(10);
+      const footerText = `Page ${pageNum}`;
+      const footerWidth = doc.getTextWidth(footerText);
+      doc.text(footerText, (pageWidth - footerWidth) / 2, pageHeight - footerHeight + 12); // Footer content below footer line
+  
+      // Draw a line above the footer content
+      doc.setLineWidth(0.5);
+      doc.line(10, pageHeight - footerHeight, pageWidth - 10, pageHeight - footerHeight); // Line above footer
+    };
+  
+    // Draw header for the first page
+    drawHeader();
+    
+    let y = headerHeight + 5; // Starting Y position for content (after header)
     let serialNumber = 1;
-
+  
+    // Add footer to the first page (explicitly before adding any content)
+    drawFooter(1); // Ensure footer is on the first page
+  
+    // Loop through grouped data
     for (const [vazhipad, entries] of Object.entries(this.groupedData)) {
-        y += smallSpacing; // Smaller spacing before group title
+      if (y + 20 > pageHeight - footerHeight) {
+        doc.addPage();
+        drawHeader(); // Draw header again on the new page
+        drawFooter(doc.internal.pages.length); // Draw footer on new page with correct page number
+        y = headerHeight + 5; // Reset Y position for new page (after header)
+      }
   
-        // Check if we need to add a new page
-        if (y + lineHeight > pageHeight) {
-            doc.addPage();
-            y = 20; // Reset y position for the new page
-            drawHeader(y); // Redraw the header
-            y += lineHeight + headerSpacing; // Move down to start the table content after the header
+      // Draw group header (Group name font size reduced)
+      doc.setFontSize(groupNameFontSize);
+      doc.setFont("Helvetica", "bold"); // Bold font for group name
+      doc.text(vazhipad, 14, y); // Group title
+      y += 6; // Space after group title
+  
+      // Add thin line under group name
+      doc.setLineWidth(0.2); // Set a thin line
+      doc.line(14, y, pageWidth - 14, y); // Draw line under group name
+  
+      y += 3; // Space after thin line before table header
+  
+      // Draw table header for the group (Table header font size reduced)
+      doc.setFontSize(tableContentFontSize); // Font size for table content
+      doc.setTextColor(0, 0, 0); // Set text color
+      doc.text('Sl No', 14, y + 5);
+      doc.text('Name', 40, y + 5);
+      doc.text('Star', 100, y + 5); // Adjusted the X-position to leave space for Name column
+      doc.text('Qty', 140, y + 5);
+      doc.text('BillNo', 180, y + 5);
+  
+      // Line below header
+      doc.line(10, y + lineHeight, pageWidth - 10, y + lineHeight);
+  
+      y += lineHeight + headerSpacing; // Move down after header
+  
+      // Set maximum width for Name column
+      const nameColumnWidth = 60; // Max width for Name column
+  
+      // Loop through the entries in the group
+      for (const entry of entries) {
+        // Check for page break
+        if (y + lineHeight > pageHeight - footerHeight) {
+          doc.addPage();
+          drawHeader(); // Draw header again on the new page
+          drawFooter(doc.internal.pages.length); // Add footer with page number
+          y = headerHeight + 5; // Reset Y position for new page (after header)
         }
   
-        // Group title
-        doc.setFontSize(12);
-        doc.text(vazhipad, 14, y);
-        y += groupTitleSpacing; // Move down slightly for the underline
+        // Table Content (without grid lines, only text)
+        doc.setFont("Helvetica", "normal");
+        doc.setFontSize(tableContentFontSize); // Use the content font size for table rows
   
-        // Draw bottom border for the group title directly below the group name
-        doc.setDrawColor(0); // Set color for the border (black)
-        doc.line(10, y, pageWidth - 10, y); // Draw a line across the page width
-        y += contentSpacing; // Increase space between the underline and the first content
+        // Serial Number
+        doc.text(String(serialNumber), 14, y);
   
-        // Set font size for table content once here to maintain consistency
-        doc.setFontSize(12);
+        // Name (Wrap text if needed)
+        const nameLines = doc.splitTextToSize(entry.Name, nameColumnWidth);
+        const nameHeight = nameLines.length * lineHeight; // Calculate height for name lines
   
-        for (const entry of entries) {
-            // Check if we need to add a new page
-            if (y + lineHeight > pageHeight) {
-                doc.addPage();
-                y = 20; // Reset y position for the new page
-                drawHeader(y); // Redraw the header
-                y += lineHeight + headerSpacing; // Move down to start the table content after the header
-            }
+        doc.text(nameLines, 40, y); // Draw wrapped name text
   
-            // Table content
-            doc.setFont("Helvetica", "normal");
-            doc.text(String(serialNumber), 14, y);
+        // Other Columns (no wrapping needed)
+        doc.text(entry.Star, 100, y);
+        doc.text(String(entry.Qty), 140, y);
+        doc.text(String(entry.BillNo), 180, y);
   
-            // Wrapping Name text
-            doc.setFont('NotoSansMalayalam', 'normal');
-            const nameWidth = 140; // Set the max width for the name column
-            const nameLines = doc.splitTextToSize(entry.Name, nameWidth);
-            doc.text(nameLines, 40, y);
+        // Adjust Y position based on the number of lines in Name column
+        y += nameHeight; // Adjust Y position based on the wrapped name lines
+        serialNumber++;
+      }
   
-            doc.setFont("Helvetica", "normal");
-            doc.text(entry.Star, 80, y);
-            doc.text(String(entry.Qty), 120, y);
-            doc.text(String(entry.BillNo), 160, y);
-  
-            // Adjust y based on number of lines in Name
-            y += lineHeight * Math.max(1, nameLines.length); 
-            serialNumber++;
-        }
-  
-        y += smallSpacing; // Apply smaller space between groups
+      y += smallSpacing; // Space between groups
     }
   
-    doc.save('poornam_report.pdf');
-}
-
+    // Draw footer on the last page
+    drawFooter(doc.internal.pages.length);
+  
+    doc.save('vazhipad_report_with_header_footer.pdf');
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 // pagechange for paginator
   onPageChange(event: PageEvent) {
     this.pageIndex = event.pageIndex;

@@ -1,13 +1,194 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, Type } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
+import { MasterService } from '../services/master/master.service';
+import { CommonModule } from '@angular/common';
+import { ItemMaster } from '../models/item-master.model';
+import { NotificationService } from '../services/notification/notification.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-nadavaravu',
   standalone: true,
-  imports: [MatIconModule],
+  imports: [MatIconModule, CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './nadavaravu.component.html',
-  styleUrl: './nadavaravu.component.css'
+  styleUrl: './nadavaravu.component.css',
 })
-export class NadavaravuComponent {
+export class NadavaravuComponent implements OnInit {
+  nadavaravForm: FormGroup;
+  userId: string | null;
+  nakshatham: any[];
+  itemMaster: ItemMaster[] = [];
+  currentDate: string;
+  lastBillnumber: number;
+  currentBillNumber: string;
+  theLastBillNo: string;
+  constructor(
+    private fb: FormBuilder,
+    private service: MasterService,
+    private notification: ToastrService
+  ) {
+    this.userId = localStorage.getItem('LoginId');
 
+    this.nadavaravForm = this.fb.group({
+      BillNo: ['', [Validators.required]],
+      Name: ['', [Validators.required]],
+      Star: [''],
+      Address: [''],
+      Description: [''],
+      NMId: ['', [Validators.required]],
+      Qty: ['1'],
+      weight: [''],
+      unit: [''],
+      ItemValue: ['0'],
+      ReceiptAmount: ['0'],
+      Remarks: [''],
+      TrnsMode: ['CS'],
+      UserId: [this.userId],
+    });
+  }
+
+  ngOnInit() {
+    this.currentDate = this.getCurrentDateMMYY();
+    this.getBillNumber();
+    this.getStar();
+    this.getNadavaravuItem();
+    this.setupConditionalValidationForItemValue();
+  }
+
+  setupConditionalValidationForItemValue() {
+    this.nadavaravForm.get('ItemValue')?.valueChanges.subscribe((value) => {
+      if (value) {
+        this.nadavaravForm.get('weight')?.setValidators(Validators.required);
+        this.nadavaravForm.get('unit')?.setValidators(Validators.required);
+      } else {
+        this.nadavaravForm.get('weight')?.clearValidators();
+        this.nadavaravForm.get('unit')?.clearValidators();
+      }
+
+      this.nadavaravForm.get('weight')?.updateValueAndValidity();
+      this.nadavaravForm.get('unit')?.updateValueAndValidity();
+    });
+  }
+
+  onSubmit() {
+    if (this.nadavaravForm.invalid) {
+      this.notification.error(
+        'Please fix the errors in the form before saving.',
+        'Validation Error'
+      );
+      this.markAllFieldsAsTouched();
+      return;
+    }
+    console.log(this.nadavaravForm.value);
+    // const payLoad = {};
+    this.service.nadavaravBooking(this.nadavaravForm.value).subscribe({
+      next: (data) => {
+        console.log(data);
+
+        if (data.RespStatus == 'I') {
+          this.notification.success(data.RespMsg);
+          this.resetForm();
+
+          const currentBillnumber = this.lastBillnumber + 1;
+          console.log(currentBillnumber, '_1');
+          this.service.updateNadavaravuBillNumber(currentBillnumber).subscribe({
+            next: (data) => {
+              console.log(data, 'update');
+              this.getBillNumber();
+            },
+            error: (err) => {},
+          });
+
+          // this.printReceipt();
+        }
+      },
+      error: (error) => {},
+    });
+  }
+
+  markAllFieldsAsTouched() {
+    Object.keys(this.nadavaravForm.controls).forEach((field) => {
+      const control = this.nadavaravForm.get(field);
+      control?.markAsTouched({ onlySelf: true });
+    });
+  }
+  resetForm() {
+    this.nadavaravForm.reset({
+      BillNo: '',
+      Name: '',
+      Star: '',
+      Address: '',
+      Description: '',
+      NMId: '',
+      Qty: '1',
+      weight: '',
+      unit: '',
+      ItemValue: '0',
+      ReceiptAmount: '0',
+      Remarks: '',
+      TrnsMode: 'CS',
+      UserId: this.userId,
+    });
+    this.getBillNumber();
+  }
+
+  getStar() {
+    const payLoad = { Type: 'ListStar', Code: '' };
+    this.service.getStarData(payLoad).subscribe((res) => {
+      this.nakshatham = res;
+      console.log(this.nakshatham);
+    });
+  }
+
+  getNadavaravuItem() {
+    const payLoad = {
+      Type: 'NadavaravuALL',
+      Code: '',
+    };
+
+    this.service.getItemMaster(payLoad).subscribe({
+      next: (data) => {
+        console.log(data);
+        this.itemMaster = data;
+      },
+    });
+  }
+
+  getBillNumber() {
+    const payLoad = {
+      Type: 'MaxBillnoNadavaravu',
+      code: '',
+    };
+    this.service.getNadavaravBillNumber(payLoad).subscribe({
+      next: (data) => {
+        console.log(data);
+
+        console.log(data[0].billno);
+        this.lastBillnumber = data[0].billno;
+        this.theLastBillNo =
+          'NV' + this.lastBillnumber.toString() + '/' + this.currentDate;
+        console.log(this.theLastBillNo);
+        this.currentBillNumber =
+          (this.lastBillnumber + 1).toString() + '/' + this.currentDate;
+        console.log(this.currentBillNumber);
+        this.nadavaravForm.patchValue({
+          BillNo: this.theLastBillNo,
+        });
+      },
+    });
+  }
+
+  private getCurrentDateMMYY(): string {
+    const now = new Date();
+    const month = ('0' + (now.getMonth() + 1)).slice(-2);
+    const year = now.getFullYear().toString().slice(-2);
+    return `${month}${year}`;
+  }
 }

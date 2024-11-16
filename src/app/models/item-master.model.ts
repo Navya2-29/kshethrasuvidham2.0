@@ -1,6 +1,7 @@
 export interface ItemMaster{
-    item_code:string;
-    item_name:string;
-    id:string;
-    item_decription:string;
+    NM_Code:string;
+    NM_Name:string;
+    NM_RName:string;
+    NM_Id:string;
+    NM_Description:string;
 }
