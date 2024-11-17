@@ -92,126 +92,183 @@ export class ReportCreditComponent {
     // Filter data for entries with transmode 'ch'
     const filteredData = this.data.filter(item => item.TrnsMode === 'cr');
   
-    // Initialize jsPDF instance
+    const templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
+    const templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
     const doc = new jsPDF();
-    const pageHeight = doc.internal.pageSize.height;
     const pageWidth = doc.internal.pageSize.width;
-    const margin = 10;
-    const startY = 30;
-    const lineHeight = 10; // Increased line height for better spacing
-    const columnWidths = [25, 35, 50, 30, 30, 25];
-    const headerFontSize = 12;
+    const pageHeight = doc.internal.pageSize.height;
+    const headerHeight = 35;
+    const footerHeight = 8;
+    const lineHeight = 10;
+    const tableHeaderFontSize = 11;
     const contentFontSize = 10;
-    let y = startY;
+    const currentDate = new Date().toLocaleDateString();
   
-    // Function to add header
-    const addHeader = () => {
-      doc.setFontSize(headerFontSize);
-      doc.text('Due Details', pageWidth / 2, 15, { align: 'center' });
+    const maxColumnWidths = [20, 55, 40, 30, 15, 15, 15]; // Column widths for each column
+    const headers = ["Bill No.", "VAZHIPAD", "NAME", "MOBILE", "ENNAM", "RATE", "TOTAL"];
+  
+    let y = headerHeight;
+    let grandTotalRate = 0;
+    let grandTotalAmount = 0;
+  
+    // Draw Header
+    const drawHeader = () => {
+      doc.setFontSize(12);
+      doc.setFont("Helvetica", "bold");
+      doc.text(templeName, pageWidth / 2, 12, { align: "center" });
+      doc.setFont("Helvetica", "normal");
+      doc.setFontSize(10);
+      doc.text(templeAddress, pageWidth / 2, 18, { align: "center" });
+    
+      doc.setFontSize(10);
+      doc.setFont("Helvetica", "bold");
+      doc.text("Credit Transaction Report", pageWidth / 2, 27, { align: "center" });
+    
+      // Add current date below the report title but above the table header
+      doc.setFontSize(10);
+      doc.setFont("Helvetica", "normal");
+      doc.text(currentDate, pageWidth / 2, 32, { align: "center" });
+    
       doc.setLineWidth(0.5);
-      doc.line(margin, 18, pageWidth - margin, 18);
+      doc.line(10, y, pageWidth - 10, y); // Line below header
+      y += 3; // Space below the line
     };
   
-    // Function to add table header with underline separation
-    const addTableHeader = () => {
-      const headers = ['Bill No', 'Bank Date', 'Vazhipad', 'Name', 'Mobile', 'Amount'];
-      doc.setFontSize(contentFontSize);
+    // Draw Footer
+    const drawFooter = (pageNum: number) => {
+      doc.setFontSize(10);
+      doc.text(`Page ${pageNum}`, pageWidth / 2, pageHeight - footerHeight / 2, { align: "center" });
+    };
+  
+    // Add Table Header
+    const drawTableHeader = () => {
+      doc.setFontSize(tableHeaderFontSize);
+      doc.setFont("Helvetica", "bold");
+      let x = 10;
       headers.forEach((header, index) => {
-        const x = margin + columnWidths.slice(0, index).reduce((a, b) => a + b, 0);
-        doc.text(header, x, y);
+        doc.text(header, x, y + 5);
+        x += maxColumnWidths[index];
       });
-      y += lineHeight; // Move to the next line after header
-      doc.line(margin, y - lineHeight / 2, pageWidth - margin, y - lineHeight / 2); // Line below header
-      y += 5; // Additional spacing between header line and content
+      y += lineHeight;
+      doc.setLineWidth(0.3);
+      doc.setDrawColor(200, 200, 200); // Light gray color for grid lines
+      doc.line(10, y, pageWidth - 10, y); // Line below the table header
+      y += 2;
     };
   
-    // Function to add footer with pagination
-    const addFooter = (pageNumber: number) => {
-      doc.setFontSize(contentFontSize);
-      doc.text(`Page ${pageNumber}`, pageWidth - margin - 20, pageHeight - margin);
-      doc.setLineWidth(0.5);
-      doc.line(margin, pageHeight - margin - 5, pageWidth - margin, pageHeight - margin - 5);
+    // Helper to Wrap Text
+    const wrapText = (doc: jsPDF, text: string, maxWidth: number): string[] => {
+      const lines = doc.splitTextToSize(text, maxWidth);
+      return lines;
     };
   
-    addHeader();
-    addTableHeader();
+    // Initialize PDF
+    drawHeader();
+    drawFooter(1);
+    drawTableHeader();
   
-    let pageNumber = 1;
-    let grandTotal = 0;
+    let pageNum = 1;
   
-    // Handle case where no data is available for transmode 'ch'
-    if (filteredData.length === 0) {
-      doc.text('No data available for the selected transaction mode.', margin, y);
-      doc.save('Transaction_Mode_CH_Report.pdf');
-      return;
-    }
+    // Iterate over data and draw rows
+    this.filteredData.forEach((row: any) => {
+      const tableRow = [
+        row.BillNo,
+        wrapText(doc, row.Vazhipad, maxColumnWidths[1]), // Wrap Vazhipad
+        wrapText(doc, row.Name, maxColumnWidths[2]),     // Wrap Name
+        row.InstNo,
+        row.Qty,
+        row.Rate.toFixed(2),
+        row.Amount.toFixed(2),
+      ];
   
-    // Function to wrap text within a specified width
-    const wrapText = (text: string, width: number) => {
-      return doc.splitTextToSize(text, width);
-    };
+      // Calculate the max height required for wrapped text in the row
+      const rowHeight = Math.max(...tableRow.map((cell, index) => {
+        return Array.isArray(cell) ? cell.length * contentFontSize : lineHeight;
+      }));
   
-    // Populate the table with filtered data
-    filteredData.forEach(item => {
-      // Add a new page if needed
-      if (y + lineHeight * 2 > pageHeight - margin) {
-        addFooter(pageNumber);
+      // Check if a new page is needed
+      if (y + rowHeight > pageHeight - footerHeight - 10) {
         doc.addPage();
-        y = startY;
-        pageNumber++;
-        addHeader();
-        addTableHeader();
+        pageNum++;
+        y = headerHeight + 5;
+        drawHeader();
+        drawFooter(pageNum);
+        drawTableHeader();
       }
   
-      const row = [
-        item.BillNo || '',
-        item.BillDate || '',
-        item.Vazhipad || '',
-        item.Name || '',
-        item.InstNo || '',
-        (parseFloat(item.Amount) || 0).toFixed(2)
-      ];
+      let x = 10;
   
-      // Calculate x positions for each column
-      const xPositions = [
-        margin,
-        margin + columnWidths[0],
-        margin + columnWidths[0] + columnWidths[1],
-        margin + columnWidths[0] + columnWidths[1] + columnWidths[2],
-        margin + columnWidths[0] + columnWidths[1] + columnWidths[2] + columnWidths[3],
-        margin + columnWidths[0] + columnWidths[1] + columnWidths[2] + columnWidths[3] + columnWidths[4]
-      ];
+      // Draw each cell with normal font
+      doc.setFont("Helvetica", "normal");
+      doc.setFontSize(contentFontSize);
   
-      // Add each value in the row with wrapping for long text
-      row.forEach((value, index) => {
-        const wrappedText = wrapText(value, columnWidths[index] - 5);
-        doc.setFontSize(contentFontSize);
-        doc.text(wrappedText, xPositions[index], y);
+      tableRow.forEach((cell, index) => {
+        if (Array.isArray(cell)) {
+          // Handle wrapped text
+          cell.forEach((line, lineIndex) => {
+            doc.text(line, x, y + 5 + (lineIndex * contentFontSize));
+          });
+        } else {
+          if (index === 5 || index === 6) {
+            // Align Rate and Total columns to the right
+            doc.text(String(cell), x + maxColumnWidths[index] - 2, y + 5, { align: "right" });
+          } else {
+            // Left-align other columns
+            doc.text(String(cell), x, y + 5);
+          }
+        }
+        x += maxColumnWidths[index];
       });
   
-      // Move to the next line considering the maximum line height for wrapped text
-      y += lineHeight * Math.max(...row.map(value => wrapText(value, columnWidths[2]).length));
-      grandTotal += parseFloat(item.Amount) || 0;
+      // Draw row grid lines
+      doc.setLineWidth(0.3); // Light line width for grid
+      doc.setDrawColor(200, 200, 200); // Light gray color
+      doc.line(10, y, pageWidth - 10, y); // Line at the bottom of the row
+  
+      // Accumulate grand totals
+      grandTotalRate += row.Rate;
+      grandTotalAmount += row.Amount;
+  
+      y += rowHeight; // Move y position for the next row
     });
   
-    // Add grand total at the bottom of the last page, right-aligned
-    if (y + lineHeight > pageHeight - margin) {
-      addFooter(pageNumber);
-      doc.addPage();
-      y = startY;
-      pageNumber++;
-      addHeader();
-      addTableHeader();
-    }
-    
+    // Add Grand Total row
+    const grandTotalRow = [
+      "",
+      "Grand Total", 
+      "",
+      "", 
+      "", 
+      "", 
+      grandTotalAmount.toFixed(2)
+    ];
+  
+    let x = 10;
+    doc.setFont("Helvetica", "bold");
     doc.setFontSize(contentFontSize);
-    doc.text(`Grand Total:${grandTotal.toFixed(2)}`, pageWidth - margin - 50, y + lineHeight);
+    grandTotalRow.forEach((cell, index) => {
+      if (index === 5 || index === 6) {
+        // Align Rate and Total columns to the right
+        doc.text(String(cell), x + maxColumnWidths[index] - 2, y + 5, { align: "right" });
+      } else {
+        // Left-align other columns
+        doc.text(String(cell), x, y + 5);
+      }
+      x += maxColumnWidths[index];
+    });
   
-    addFooter(pageNumber);
+    // Draw grid line after Grand Total
+    doc.setLineWidth(0.3);
+    doc.setDrawColor(200, 200, 200);
+    doc.line(10, y, pageWidth - 10, y);
   
-    // Save the PDF
-    doc.save('Credit_Report.pdf');
+    y += lineHeight; // Move y position for the Grand Total row
+  
+    // Save PDF
+   
+    doc.save('Credit_Transaction_Report.pdf');
   }
+
   
   
   

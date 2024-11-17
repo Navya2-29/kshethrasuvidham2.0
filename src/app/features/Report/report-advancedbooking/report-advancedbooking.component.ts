@@ -81,93 +81,201 @@ export class ReportAdvancedbookingComponent {
 
 
   generatePDF() {
+    const templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
+    const templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
     const doc = new jsPDF();
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const marginLeft = 10;
-    let currentY = 20;
-    let grandTotal = 0; // Variable to keep track of the total amount
+    const pageWidth = doc.internal.pageSize.width;
+    const pageHeight = doc.internal.pageSize.height;
+    const headerHeight = 35;
+    const footerHeight = 8;
+    const lineHeight = 10;
+    const tableHeaderFontSize = 11;
+    const contentFontSize = 10;
+    const currentDate = new Date().toLocaleDateString();
   
-    // Header section
-    doc.setFontSize(18);
-    doc.setFont('bold');
-    doc.text('MAMMIYOOR DEVASWOM', pageWidth / 2, currentY, { align: 'center' });
-    currentY += 6;
+    const maxColumnWidths = [20, 50, 40, 30, 15, 15, 15]; // Column widths for each column
+    const headers = ["Bill No.", "VAZHIPAD", "NAME", "STAR", "ENNAM", "RATE", "TOTAL"];
   
-    doc.setFontSize(12);
-    doc.setFont('normal');
-    doc.text('Under Malabar Devaswom Board, Guruvayur, Thrissur-680 101.', pageWidth / 2, currentY, { align: 'center' });
-    currentY += 6;
+    let y = headerHeight;
+    let grandTotalRate = 0;
+    let grandTotalAmount = 0;
   
-    doc.setFontSize(16);
-    doc.setFont('bold');
-    doc.text('Daily Statement Advance Booking', pageWidth / 2, currentY, { align: 'center' });
-    currentY += 6;
-  
-    const formattedDate = new Date().toLocaleDateString('en-GB');
-    doc.setFontSize(10);
-    doc.text(`Date: ${formattedDate}`, pageWidth / 2, currentY, { align: 'center' });
-    currentY += 10;
-  
-    // Table header
-    doc.setFontSize(10);
-    doc.setFillColor(200, 200, 200);
-    doc.rect(marginLeft, currentY, pageWidth - 20, 10, 'FD');
-    doc.text('Bill No.', marginLeft + 5, currentY + 7);
-    doc.text('Name', marginLeft + 40, currentY + 7);
-    doc.text('Star', marginLeft + 80, currentY + 7);
-    doc.text('Nos.', marginLeft + 110, currentY + 7);
-    doc.text('Date', marginLeft + 140, currentY + 7);
-    doc.text('Amount', marginLeft + 170, currentY + 7);
-    currentY += 15;
-  
-    // Loop through each item in data and display it
-    this.data.forEach((item) => {
+    // Draw Header
+    const drawHeader = () => {
+      doc.setFontSize(12);
+      doc.setFont("Helvetica", "bold");
+      doc.text(templeName, pageWidth / 2, 12, { align: "center" });
+      doc.setFont("Helvetica", "normal");
       doc.setFontSize(10);
-      doc.setFont('normal');
+      doc.text(templeAddress, pageWidth / 2, 18, { align: "center" });
+    
+      doc.setFontSize(10);
+      doc.setFont("Helvetica", "bold");
+      doc.text("Advance Booking Report", pageWidth / 2, 27, { align: "center" });
+    
+      // Add current date below the report title but above the table header
+      doc.setFontSize(10);
+      doc.setFont("Helvetica", "normal");
+      doc.text(currentDate, pageWidth / 2, 32, { align: "center" });
+    
+      doc.setLineWidth(0.5);
+      doc.line(10, y, pageWidth - 10, y); // Line below header
+      y += 3; // Space below the line
+    };
   
-      const billNoText = item.BillNo || '';
-      const nameText = item.Name || '';
-      const starText = item.Star || '';
-      const qtyText = item.Qty ? item.Qty.toString() : '';
-      const dateText = item.VazhiDate || '';
-      const amountText = item.Amount ? item.Amount.toString() : '';
+    // Draw Footer
+    const drawFooter = (pageNum: number) => {
+      doc.setFontSize(10);
+      doc.text(`Page ${pageNum}`, pageWidth / 2, pageHeight - footerHeight / 2, { align: "center" });
+    };
   
-      // Add the amount to the grand total
-      const amountValue = Number(item.Amount) || 0;
-      grandTotal += amountValue;
+    // Add Table Header
+    const drawTableHeader = () => {
+      doc.setFontSize(tableHeaderFontSize);
+      doc.setFont("Helvetica", "bold");
+      let x = 10;
+      headers.forEach((header, index) => {
+        doc.text(header, x, y + 5);
+        x += maxColumnWidths[index];
+      });
+      y += lineHeight;
+      doc.setLineWidth(0.3);
+      doc.setDrawColor(200, 200, 200); // Light gray color for grid lines
+      doc.line(10, y, pageWidth - 10, y); // Line below the table header
+      y += 2;
+    };
   
-      // Render the row
-      doc.text(billNoText, marginLeft + 5, currentY);
-      doc.text(nameText, marginLeft + 40, currentY);
-      doc.text(starText, marginLeft + 80, currentY);
-      doc.text(qtyText, marginLeft + 110, currentY);
-      doc.text(dateText, marginLeft + 140, currentY);
-      doc.text(amountText, marginLeft + 170, currentY);
+    // Helper to Wrap Text
+    const wrapText = (doc: jsPDF, text: string, maxWidth: number): string[] => {
+      const lines = doc.splitTextToSize(text, maxWidth);
+      return lines;
+    };
   
-      currentY += 10;
+    // Initialize PDF
+    drawHeader();
+    drawFooter(1);
+    drawTableHeader();
   
-      // Check for page overflow and add a new page if necessary
-      if (currentY > pageHeight - 20) {
+    let pageNum = 1;
+  
+    // Iterate over data and draw rows
+    this.data.forEach((row: any) => {
+      const tableRow = [
+        row.BillNo,
+        this.wrapText(doc, row.Vazhipad, maxColumnWidths[1]), // Wrap Vazhipad
+        this.wrapText(doc, row.Name, maxColumnWidths[2]),     // Wrap Name
+        row.Star,
+        row.Qty,
+        row.Rate.toFixed(2),
+        row.Amount.toFixed(2),
+      ];
+  
+      // Calculate the max height required for wrapped text in the row
+      const rowHeight = Math.max(...tableRow.map((cell, index) => {
+        return Array.isArray(cell) ? cell.length * contentFontSize : lineHeight;
+      }));
+  
+      // Check if a new page is needed
+      if (y + rowHeight > pageHeight - footerHeight - 10) {
         doc.addPage();
-        currentY = 20;
+        pageNum++;
+        y = headerHeight + 5;
+        drawHeader();
+        drawFooter(pageNum);
+        drawTableHeader();
       }
+  
+      let x = 10;
+  
+      // Draw each cell with normal font
+      doc.setFont("Helvetica", "normal");
+      doc.setFontSize(contentFontSize);
+  
+      tableRow.forEach((cell, index) => {
+        if (Array.isArray(cell)) {
+          // Handle wrapped text
+          cell.forEach((line, lineIndex) => {
+            doc.text(line, x, y + 5 + (lineIndex * contentFontSize));
+          });
+        } else {
+          if (index === 5 || index === 6) {
+            // Align Rate and Total columns to the right
+            doc.text(String(cell), x + maxColumnWidths[index] - 2, y + 5, { align: "right" });
+          } else {
+            // Left-align other columns
+            doc.text(String(cell), x, y + 5);
+          }
+        }
+        x += maxColumnWidths[index];
+      });
+  
+      // Draw row grid lines
+      doc.setLineWidth(0.3); // Light line width for grid
+      doc.setDrawColor(200, 200, 200); // Light gray color
+      doc.line(10, y, pageWidth - 10, y); // Line at the bottom of the row
+  
+      // Accumulate grand totals
+      grandTotalRate += row.Rate;
+      grandTotalAmount += row.Amount;
+  
+      y += rowHeight; // Move y position for the next row
     });
   
-    // Display Grand Total on the last page
-    if (currentY > pageHeight - 20) {
-      doc.addPage();
-      currentY = 20;
+    // Add Grand Total row
+    const grandTotalRow = [
+      "",
+      "Grand Total", 
+      "",
+      "", 
+      "", 
+      "", 
+      grandTotalAmount.toFixed(2)
+    ];
+  
+    let x = 10;
+    doc.setFont("Helvetica", "bold");
+    doc.setFontSize(contentFontSize);
+    grandTotalRow.forEach((cell, index) => {
+      if (index === 5 || index === 6) {
+        // Align Rate and Total columns to the right
+        doc.text(String(cell), x + maxColumnWidths[index] - 2, y + 5, { align: "right" });
+      } else {
+        // Left-align other columns
+        doc.text(String(cell), x, y + 5);
+      }
+      x += maxColumnWidths[index];
+    });
+  
+    // Draw grid line after Grand Total
+    doc.setLineWidth(0.3);
+    doc.setDrawColor(200, 200, 200);
+    doc.line(10, y, pageWidth - 10, y);
+  
+    y += lineHeight; // Move y position for the Grand Total row
+  
+    // Save PDF
+    doc.save("AdvancebookingReport.pdf");
+}
+  
+
+
+
+wrapText(doc: jsPDF, text: string, maxWidth: number): string {
+  const words = text.split(' ');
+  let currentLine = '';
+  let wrappedText = '';
+
+  words.forEach(word => {
+    if (doc.getTextWidth(currentLine + word) < maxWidth) {
+      currentLine += word + ' ';
+    } else {
+      wrappedText += currentLine.trim() + '\n';
+      currentLine = word + ' ';
     }
-    
-    currentY += 10;
-    doc.setFontSize(12);
-    doc.setFont('bold');
-    doc.text(`Grand Total: ${grandTotal.toFixed(2)}`, pageWidth - 60, currentY);
-  
-    // Save the PDF
-    doc.save('AdvanceBooking.pdf');
-  }
-  
+  });
+
+  wrappedText += currentLine.trim();
+  return wrappedText;
+}
   
 }

@@ -155,3 +155,38 @@
     
     
 </div>
+
+<div id="thermal-print-content" style="font-size: 12px; font-family: 'Courier New', monospace; width: 58mm;display: none;">
+    <div style="text-align: center;">
+      <strong>പയ്യന്നൂർ</strong><br />
+      <strong>സുബ്രഹ്മണ്യ ക്ഷേത്രം</strong><br />
+      പയ്യന്നൂർ, കേരളം<br />
+      Ph: 9400135116, 04985205166
+    </div>
+    <hr />
+    <div>
+      <p><strong>രസീത്</strong></p>
+      <p><strong>ബിൽ നമ്പർ:</strong> {{ nadavaravForm.value.BillNo }}</p>
+      <p><strong>ബിൽ തീയതി:</strong> {{ today |date:'dd-MM-YYYY' }}</p>
+    </div>
+    <hr />
+    <div>
+      <p><strong>പേരറുമാന്റെ വിവരങ്ങൾ</strong></p>
+      <p><strong>പേര്:</strong> {{ nadavaravForm.value.Name }}</p>
+      <p><strong>നക്ഷത്രം:</strong> {{ nadavaravForm.value.Star }}</p>
+      <p><strong>തീയതി:</strong> {{today |date:'dd-MM-YYYY' }}</p>
+      <p><strong>പൂജ:</strong> {{ nadavaravForm.value.NMId }}</p>
+      <p><strong>എണ്ണം:</strong> {{ nadavaravForm.value.Qty }}</p>
+      <p><strong>നിരക്ക്:</strong> {{ nadavaravForm.value.ReceiptAmount }}</p>
+    </div>
+    <hr />
+    <div>
+      <p><strong>മൊത്തം തുക:</strong> {{ nadavaravForm.value.ReceiptAmount }}</p>
+      <p><strong>പേയ്മെന്റ് മോഡ്:</strong> {{ nadavaravForm.value.TrnsMode }}</p>
+    </div>
+    <hr />
+    <div style="text-align: center;">
+      <p>WWW.KSHETHRASUVIDHAM.COM</p>
+    </div>
+  </div>
+  

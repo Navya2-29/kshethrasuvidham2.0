@@ -61,7 +61,7 @@ export class FixedbottomComponent implements OnInit {
   theLastBillNo: string;
   loginId: string | null = '';
   counterId: string | null = '';
-
+templeNAme:string| null = '';
   billType: string;
   @ViewChild('address1Input', { static: true }) address1Input!: ElementRef;
   constructor(
@@ -71,6 +71,7 @@ export class FixedbottomComponent implements OnInit {
   ) {
     this.loginId = localStorage.getItem('LoginId');
     this.counterId = localStorage.getItem('counterId');
+    this.templeNAme=localStorage.getItem('TempleName');
     this.currentDate = this.getCurrentDateMMYY();
     this.getLastBillNumber();
     this.loggedInUserLastBillNumber();
@@ -249,7 +250,7 @@ export class FixedbottomComponent implements OnInit {
         Trnsmode.toLowerCase() === 'credit' ? 'Cash not paid' : Trnsmode;
       const receiptContent = `
         <div class="receipt-page">
-          <h1>Koduvayur Sree Subrahmanya Swami Kshethram</h1>
+          <h1>${this.templeNAme}</h1>
           <div>
             <div style="display: flex; justify-content: space-between;">
             <strong style="color: green;">Vazhipad: ${vazhipad}</strong>

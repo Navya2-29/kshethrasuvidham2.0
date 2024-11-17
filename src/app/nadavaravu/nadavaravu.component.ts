@@ -33,7 +33,7 @@ export class NadavaravuComponent implements OnInit {
   nadavaravData:any[]=[];
   filteredData:any[]=[];
   searchForm: FormGroup;
-
+today:Date=new Date()
   constructor(
     private fb: FormBuilder,
     private service: MasterService,
@@ -103,6 +103,7 @@ export class NadavaravuComponent implements OnInit {
         console.log(data);
 
         if (data.RespStatus == 'I') {
+          this.printReceipt();
           this.notification.success(data.RespMsg);
           this.resetForm();
 
@@ -232,5 +233,39 @@ this.filteredData=this.nadavaravData;
   
   
 
+
+
+  printReceipt() {
+    const printContent = document.getElementById('thermal-print-content')?.innerHTML;
+    if (printContent) {
+      const printWindow = window.open('', '_blank', 'width=300,height=400');
+      printWindow?.document.write(`
+        <html>
+          <head>
+            <title>Receipt</title>
+            <style>
+              body {
+                font-family: 'Courier New', monospace;
+                font-size: 12px;
+                text-align: left;
+                margin: 0;
+                padding: 0;
+                width: 58mm;
+              }
+              hr {
+                border: none;
+                border-top: 1px dashed black;
+                margin: 5px 0;
+              }
+            </style>
+          </head>
+          <body onload="window.print(); window.close();">
+            ${printContent}
+          </body>
+        </html>
+      `);
+      printWindow?.document.close();
+    }
+  }
 
 }

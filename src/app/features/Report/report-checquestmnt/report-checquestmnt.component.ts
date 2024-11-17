@@ -104,52 +104,169 @@ formatDate(dateString: string | undefined): string {
     return `${day}-${month}-${year}`;
 }
 
- generatePDF(): void {
+generatePDF(): void {
+  const filteredData = this.data.filter(item => item.TrnsMode === 'ch');
+
+  const templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
+  const templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
   const doc = new jsPDF();
-  const pageHeight = doc.internal.pageSize.height;
   const pageWidth = doc.internal.pageSize.width;
-  const pageCount = 3; // Specify the number of pages you want in the PDF
+  const pageHeight = doc.internal.pageSize.height;
+  const headerHeight = 35;
+  const footerHeight = 8;
+  const lineHeight = 10;
+  const tableHeaderFontSize = 11;
+  const contentFontSize = 10;
+  const currentDate = new Date().toLocaleDateString('en-GB'); // Format as dd-mm-yyyy
 
-  // Function to add the header
-  const addHeader = () => {
-    doc.setFontSize(16);
-    doc.text('Temple Name', pageWidth / 2, 15, { align: 'center' });
-    
+  const maxColumnWidths = [20, 40, 40, 25, 25, 25]; // Column widths for each column
+  const headers = ["Bill No.", "Bank Name", "Vazhipad", "Cheq Date", "Chque No", "Amount"];
+
+  let y = headerHeight;
+  let grandTotalAmount = 0;
+
+  // Draw Header
+  const drawHeader = () => {
     doc.setFontSize(12);
-    doc.text('Temple Address Line 1, City, State, ZIP', pageWidth / 2, 20, { align: 'center' });
-    
-    const currentDate = new Date().toLocaleDateString('en-GB'); // Format: dd-mm-yyyy
-    doc.text(`Date: ${currentDate}`, pageWidth / 2, 25, { align: 'center' });
-    
-    // Underline below header
-    doc.setLineWidth(0.5);
-    doc.line(15, 28, pageWidth - 15, 28); // Adjust this line position as needed
-  };
-
-  // Function to add footer with page number below a line
-  const addFooter = (pageNumber: number) => {
-    const footerLineY = pageHeight - 20; // Position for footer line
-    const pageNumberY = footerLineY + 6; // Position for page number below the line
-
-    // Draw footer line
-    doc.setLineWidth(0.5);
-    doc.line(15, footerLineY, pageWidth - 15, footerLineY);
-
-    // Add page number text below the line, right-aligned
+    doc.setFont("Helvetica", "bold");
+    doc.text(templeName, pageWidth / 2, 12, { align: "center" });
+    doc.setFont("Helvetica", "normal");
     doc.setFontSize(10);
-    doc.text(`Page ${pageNumber}`, pageWidth - 20, pageNumberY, { align: 'right' });
+    doc.text(templeAddress, pageWidth / 2, 18, { align: "center" });
+
+    doc.setFontSize(10);
+    doc.setFont("Helvetica", "bold");
+    doc.text("Cheque Transaction Report", pageWidth / 2, 27, { align: "center" });
+
+    doc.setFontSize(10);
+    doc.setFont("Helvetica", "normal");
+    doc.text(currentDate, pageWidth / 2, 32, { align: "center" });
+
+    doc.setLineWidth(0.5);
+    doc.line(10, y, pageWidth - 10, y); // Line below header
+    y += 3; // Space below the line
   };
 
-  // Loop to create the specified number of pages
-  for (let pageNumber = 1; pageNumber <= pageCount; pageNumber++) {
-    if (pageNumber > 1) doc.addPage(); // Add a new page for each iteration except the first page
-    addHeader();
-    addFooter(pageNumber);
-  }
+  // Draw Footer
+  const drawFooter = (pageNum: number) => {
+    doc.setFontSize(10);
+    doc.text(`Page ${pageNum}`, pageWidth / 2, pageHeight - footerHeight / 2, { align: "center" });
+  };
 
-  // Save or output the PDF
-  doc.save('Temple_Report_Empty.pdf');
+  // Add Table Header
+  const drawTableHeader = () => {
+    doc.setFontSize(tableHeaderFontSize);
+    doc.setFont("Helvetica", "bold");
+    let x = 10;
+    headers.forEach((header, index) => {
+      doc.text(header, x, y + 5);
+      x += maxColumnWidths[index];
+    });
+    y += lineHeight;
+    doc.setLineWidth(0.3);
+    doc.setDrawColor(200, 200, 200); // Light gray color for grid lines
+    doc.line(10, y, pageWidth - 10, y); // Line below the table header
+    y += 2;
+  };
+
+  // Helper to wrap text
+  const wrapText = (doc: jsPDF, text: string, maxWidth: number): string[] => {
+    return doc.splitTextToSize(text, maxWidth);
+  };
+
+  // Initialize PDF
+  drawHeader();
+  drawFooter(1);
+  drawTableHeader();
+
+  let pageNum = 1;
+
+  // Iterate over data and draw rows
+  filteredData.forEach((row: any) => {
+    const instDateFormatted = new Date(row.InstDate).toLocaleDateString('en-GB'); // Format as dd-mm-yyyy
+
+    const tableRow = [
+      row.BillNo,
+      wrapText(doc, row.InstBank, maxColumnWidths[1]), // Wrap Bank Name
+      wrapText(doc, row.Vazhipad, maxColumnWidths[2]), // Wrap Vazhipad
+      instDateFormatted,
+      row.InstNo,
+      row.Amount.toFixed(2),
+    ];
+
+    // Calculate the max height required for wrapped text in the row
+    const rowHeight = Math.max(
+      ...tableRow.map((cell, index) =>
+        Array.isArray(cell) ? cell.length * contentFontSize : lineHeight
+      )
+    );
+
+    // Check if a new page is needed
+    if (y + rowHeight > pageHeight - footerHeight - 10) {
+      doc.addPage();
+      pageNum++;
+      y = headerHeight + 5;
+      drawHeader();
+      drawFooter(pageNum);
+      drawTableHeader();
+    }
+
+    let x = 10;
+
+    // Draw each cell
+    doc.setFont("Helvetica", "normal");
+    doc.setFontSize(contentFontSize);
+
+    tableRow.forEach((cell, index) => {
+      if (Array.isArray(cell)) {
+        // Handle wrapped text
+        cell.forEach((line, lineIndex) => {
+          doc.text(line, x, y + 5 + lineIndex * contentFontSize);
+        });
+      } else {
+        if (index === 5) {
+          // Align Amount column to the right
+          doc.text(String(cell), x + maxColumnWidths[index] - 2, y + 5, { align: "right" });
+        } else {
+          // Left-align other columns
+          doc.text(String(cell), x, y + 5);
+        }
+      }
+      x += maxColumnWidths[index];
+    });
+
+    // Draw row grid lines
+    doc.setLineWidth(0.3);
+    doc.setDrawColor(200, 200, 200);
+    doc.line(10, y, pageWidth - 10, y);
+
+    grandTotalAmount += row.Amount;
+    y += rowHeight; // Move y position for the next row
+  });
+
+  // Add Grand Total row
+  const grandTotalRow = ["", "Grand Total", "", "", "", grandTotalAmount.toFixed(2)];
+  let x = 10;
+  doc.setFont("Helvetica", "bold");
+  doc.setFontSize(contentFontSize);
+  grandTotalRow.forEach((cell, index) => {
+    if (index === 5) {
+      doc.text(String(cell), x + maxColumnWidths[index] - 2, y + 5, { align: "right" });
+    } else {
+      doc.text(String(cell), x, y + 5);
+    }
+    x += maxColumnWidths[index];
+  });
+
+  // Draw grid line after Grand Total
+  doc.setLineWidth(0.3);
+  doc.setDrawColor(200, 200, 200);
+  doc.line(10, y, pageWidth - 10, y);
+
+  // Save PDF
+  doc.save('Cheque_Transaction_Report.pdf');
 }
+
 
 
 

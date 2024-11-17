@@ -12,6 +12,7 @@
         <span class="material-icons">grid_view</span>
     </button>
 </div>
+<div><h1 style="align-items: center;text-align: center; font-family: 'Times New Roman', Times, serif;font-weight:bold;">UPI TRANSACTION REPORT</h1></div>
 
 <div class="report-table">
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
@@ -21,24 +22,31 @@
         <td mat-cell *matCellDef="let element"> {{ element.BillNo }} </td>
       </ng-container>
 
-      <ng-container matColumnDef="Bank Name">
-        <th mat-header-cell *matHeaderCellDef> Bank Name </th>
-        <td mat-cell *matCellDef="let element"> {{ element.InstBank }} </td>
+      <ng-container matColumnDef="UPI-ID">
+        <th mat-header-cell *matHeaderCellDef> UPI-ID </th>
+        <td mat-cell *matCellDef="let element"> {{ element.InstNo }} </td>
       </ng-container>
 
       <ng-container matColumnDef="Vazhipad">
         <th mat-header-cell *matHeaderCellDef> Vazhipad </th>
         <td mat-cell *matCellDef="let element"> {{ element.Vazhipad }} </td>
       </ng-container>
-  
-      <ng-container matColumnDef="Cheq Date">
-        <th mat-header-cell *matHeaderCellDef>Cheq Date</th>
-        <td mat-cell *matCellDef="let element"> {{ element.InstDate }} </td>
+      <ng-container matColumnDef="NAME">
+        <th mat-header-cell *matHeaderCellDef> NAME </th>
+        <td mat-cell *matCellDef="let element"> {{ element.Name }} </td>
       </ng-container>
   
-      <ng-container matColumnDef="ChqueNo">
-        <th mat-header-cell *matHeaderCellDef> ChqueNo </th>
-        <td mat-cell *matCellDef="let element"> {{ element.InstNo }} </td>
+      <ng-container matColumnDef="STAR">
+        <th mat-header-cell *matHeaderCellDef> STAR</th>
+        <td mat-cell *matCellDef="let element"> {{ element.Star }} </td>
+      </ng-container>
+      <ng-container matColumnDef="QTY">
+        <th mat-header-cell *matHeaderCellDef> QTY </th>
+        <td mat-cell *matCellDef="let element"> {{ element.Qty }} </td>
+      </ng-container>
+      <ng-container matColumnDef="RATE">
+        <th mat-header-cell *matHeaderCellDef> RATE </th>
+        <td mat-cell *matCellDef="let element"> {{ element.Rate }} </td>
       </ng-container>
   
       <ng-container matColumnDef="Amount">

@@ -113,113 +113,165 @@ export class ReportOfferingComponent {
 
 
 
-
   generatePDF() {
+    const templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
+    const templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
     const doc = new jsPDF();
-
-    // Main Heading
-    const mainHeading = 'MAMMIYOOR DEVASWOM';
-    const subHeading = 'Under Malabar Devaswom Board, Guruvayur, Thrissur-680 101.';
-    const reportTitle = 'Total Vazhipadu Report';
-
-    // Get current date
-    const currentDate = new Date();
-    const reportDate = `${this.padZero(currentDate.getDate())}/${this.padZero(currentDate.getMonth() + 1)}/${currentDate.getFullYear()}`;
-
-    // Set initial header
-    this.addHeader(doc, mainHeading, subHeading, reportTitle, reportDate);
-
-    // Table Header
-    let yPosition = 50; // Adjusted starting y-position for the table headers
-    this.drawTableHeader(doc, yPosition);
-
-    // Set font to normal for data rows
-    doc.setFont('helvetica', 'normal');
-    yPosition += 8; // Move to the next row for data entries
-
-    // Generate the PDF content from consolidatedData
-    this.consolidatedData.forEach((item) => {
-        // Check for page overflow
-        if (yPosition > 280) {
-            doc.addPage();
-            this.addHeader(doc, mainHeading, subHeading, reportTitle, reportDate); // Add header on new page
-            yPosition = 45; // Reset yPosition for new page
-
-            // Redraw table header for new page
-            this.drawTableHeader(doc, yPosition);
-            yPosition += 8; // Move to next line after header
+    const pageWidth = doc.internal.pageSize.width;
+    const pageHeight = doc.internal.pageSize.height;
+    const headerHeight = 35; // Increased header height
+    const footerHeight = 8;
+    const lineHeight = 10;
+    const tableHeaderFontSize = 11;
+    const contentFontSize = 10;
+    const currentDate = new Date().toLocaleDateString();
+  
+    const maxColumnWidths = [30, 100, 30]; // Column widths for each column (adjusted)
+    const headers = ["SINO", "VAZHIPAD", "TOTAL QTY"];
+  
+    let y = headerHeight;
+    let grandTotalQty = 0;
+  
+    // Draw Header
+    const drawHeader = () => {
+      doc.setFontSize(12);
+      doc.setFont("Helvetica", "bold");
+      doc.text(templeName, pageWidth / 2, 12, { align: "center" });
+      doc.setFont("Helvetica", "normal");
+      doc.setFontSize(10);
+      doc.text(templeAddress, pageWidth / 2, 18, { align: "center" });
+  
+      doc.setFontSize(10);
+      doc.setFont("Helvetica", "bold");
+      doc.text("Vazhipad Report", pageWidth / 2, 27, { align: "center" });
+  
+      // Add current date below the report title but above the table header
+      doc.setFontSize(10);
+      doc.setFont("Helvetica", "normal");
+      doc.text(currentDate, pageWidth / 2, 32, { align: "center" });
+  
+      doc.setLineWidth(0.5);
+      doc.line(10, y, pageWidth - 10, y); // Line below header
+      y += 3; // Space below the line
+    };
+  
+    // Draw Footer (Centered page number)
+    const drawFooter = (pageNum: number) => {
+      doc.setFontSize(10);
+      doc.text(`Page ${pageNum}`, pageWidth / 2, pageHeight - footerHeight / 2, { align: "center" });
+    };
+  
+  
+    // Add Table Header
+    const drawTableHeader = () => {
+      doc.setFontSize(tableHeaderFontSize);
+      doc.setFont("Helvetica", "bold");
+      let x = 10;
+      headers.forEach((header, index) => {
+        doc.text(header, x, y + 5);
+        x += maxColumnWidths[index];
+      });
+      y += lineHeight;
+      doc.setLineWidth(0.3);
+      doc.setDrawColor(200, 200, 200); // Light gray color for grid lines
+      doc.line(10, y, pageWidth - 10, y); // Line below the table header
+      y += 2;
+    };
+  
+    // Initialize PDF
+    drawHeader();
+    drawFooter(1);
+    drawTableHeader();
+  
+    let pageNum = 1;
+    let siNo = 1; // Initialize serial number
+  
+    // Iterate over API data and draw rows
+    this.consolidatedData.forEach((row: any) => {
+      const tableRow = [
+        siNo.toString(), // Serial number as the first column
+        row.Vazhipad, // Vazhipad
+        row.TotalQty.toString(), // Total Quantity
+      ];
+  
+      // Calculate the max height required for wrapped text in the row
+      const rowHeight = Math.max(...tableRow.map((cell, index) => {
+        return Array.isArray(cell) ? cell.length * contentFontSize : lineHeight;
+      }));
+  
+      // Check if a new page is needed
+      if (y + rowHeight > pageHeight - footerHeight - 10) {
+        doc.addPage();
+        pageNum++;
+        y = headerHeight + 5;
+        drawHeader();
+        drawFooter(pageNum);
+        drawTableHeader();
+      }
+  
+      let x = 10;
+  
+      // Draw each cell with normal font
+      doc.setFont("Helvetica", "normal");
+      doc.setFontSize(contentFontSize);
+  
+      tableRow.forEach((cell, index) => {
+        if (index === 2) {
+          // Align "TOTAL QTY" column to the right
+          doc.text(String(cell), x + maxColumnWidths[index] - 2, y + 5, { align: "right" });
+        } else {
+          // Left-align other columns
+          doc.text(String(cell), x, y + 5);
         }
-
-        // Add row data
-        const serialNumber = (this.consolidatedData.indexOf(item) + 1).toString();
-        const vazhipadText = item.Vazhipad;
-        const qtyText = item.TotalQty.toString();
-
-        // Calculate right alignment for quantity
-        const qtyXPosition = 140; // Increased x-position for quantity column to add spacing
-        const qtyTextWidth = doc.getTextWidth(qtyText);
-        const qtyAlignedX = qtyXPosition - qtyTextWidth; // Right-align based on the column's starting point
-
-        doc.text(serialNumber, 14, yPosition); // Serial Number
-        doc.text(vazhipadText, 45, yPosition); // Vazhipad
-        doc.text(qtyText, qtyAlignedX, yPosition); // Right-aligned Quantity
-
-        yPosition += 8; // Move to the next row
+        x += maxColumnWidths[index];
+      });
+  
+      // Draw row grid lines
+      doc.setLineWidth(0.3); // Light line width for grid
+      doc.setDrawColor(200, 200, 200); // Light gray color
+      doc.line(10, y, pageWidth - 10, y); // Line at the bottom of the row
+  
+      // Increment the serial number for the next row
+      siNo++;
+  
+      // Accumulate total quantity
+      grandTotalQty += row.TotalQty;
+  
+      y += rowHeight; // Move y position for the next row
     });
-
-    // Add footer with underline
-    const totalYPosition = yPosition + 10; // Position for total amount
-    const totalText = `Total Entries: ${this.consolidatedData.length}`;
-    const totalTextWidth = doc.getTextWidth(totalText);
-    const rightAlignedX = doc.internal.pageSize.getWidth() - 14 - totalTextWidth; // Right-aligned position
-
-    doc.setFontSize(12);
-    doc.text(totalText, rightAlignedX, totalYPosition); // Right-aligned text
-    doc.line(14, totalYPosition + 3, 196, totalYPosition + 3); // Draw underline for the footer
-
-    // Save the PDF
-    doc.save('offering_vazhipad_Report.pdf');
-}
-
-// Function to add header to each page
-addHeader(doc: jsPDF, mainHeading: string, subHeading: string, reportTitle: string, reportDate: string) {
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    const mainHeadingWidth = doc.getTextWidth(mainHeading);
-    doc.text(mainHeading, (doc.internal.pageSize.getWidth() - mainHeadingWidth) / 2, 15);
-
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    const subHeadingWidth = doc.getTextWidth(subHeading);
-    doc.text(subHeading, (doc.internal.pageSize.getWidth() - subHeadingWidth) / 2, 22);
-    
-    doc.setFontSize(12);
-    const reportTitleWidth = doc.getTextWidth(reportTitle);
-    doc.text(reportTitle, (doc.internal.pageSize.getWidth() - reportTitleWidth) / 2, 30);
-    
-    doc.setFontSize(10); // Set font size for date
-    const reportDateWidth = doc.getTextWidth(`Date: ${reportDate}`);
-    doc.text(`Date: ${reportDate}`, (doc.internal.pageSize.getWidth() - reportDateWidth) / 2, 35); // Align date at center
-
-    // Draw underline for header
-    doc.line(14, 38, 196, 38); // Draw underline below header
-}
-
-// Function to draw table header
-drawTableHeader(doc: jsPDF, yPosition: number) {
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'bold'); // Bold for the table header
-    doc.text('S.No', 14, yPosition);
-    doc.text('VAZHIPAD', 45, yPosition);
-    doc.text('QUANTITY', 140, yPosition); // Column header for quantity with adjusted x-position
-}
-
-// Utility function to pad numbers with leading zeros
-padZero(num: number): string {
-    return num < 10 ? '0' + num : num.toString();
-}
-
-
-
+  
+    // Add Grand Total row
+    const grandTotalRow = [
+      "",
+      "Grand Total", 
+      grandTotalQty.toString()
+    ];
+  
+    let x = 10;
+    doc.setFont("Helvetica", "bold");
+    doc.setFontSize(contentFontSize);
+    grandTotalRow.forEach((cell, index) => {
+      if (index === 2) {
+        // Align "TOTAL QTY" column to the right
+        doc.text(String(cell), x + maxColumnWidths[index] - 2, y + 5, { align: "right" });
+      } else {
+        // Left-align other columns
+        doc.text(String(cell), x, y + 5);
+      }
+      x += maxColumnWidths[index];
+    });
+  
+    // Draw grid line after Grand Total
+    doc.setLineWidth(0.3);
+    doc.setDrawColor(200, 200, 200);
+    doc.line(10, y, pageWidth - 10, y);
+  
+    y += lineHeight; // Move y position for the Grand Total row
+  
+    // Save PDF
+    doc.save("VazhipadReport.pdf");
+  }
+  
+  
 
 }

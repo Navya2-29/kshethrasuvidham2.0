@@ -395,3 +395,24 @@ mat-option {
 .small {
     font-size:15px;
 }
+
+
+
+#thermal-print-content {
+  font-size: 12px;
+  font-family: 'Courier New', monospace;
+  width: 58mm; /* Adjust based on printer width (e.g., 58mm or 80mm) */
+  margin: auto;
+  text-align: left;
+  margin-left: 3px;
+}
+
+#thermal-print-content div {
+  margin-bottom: 8px;
+}
+
+#thermal-print-content hr {
+  border: none;
+  border-top: 1px dashed black;
+  margin: 5px 0;
+}
