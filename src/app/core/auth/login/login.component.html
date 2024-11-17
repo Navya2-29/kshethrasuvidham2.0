@@ -3,13 +3,13 @@
     <div class="content">
       <div class="left-side">
         <div style="display:flex;flex-direction: column;align-items: center;">
-          <img src="assets/images/temple-logo.png" style="width:50%;">
-         <h2 style="font-size:25.2pt;font-weight:500;color:white;line-height:30.6pt;">Padmanabha Swami Temple</h2>
+          <img [src]="getLogoUrl()" style="width:50%;">
+         <h2 style="font-size:25.2pt;font-weight:500;color:white;line-height:30.6pt;">{{templeName}}</h2>
         </div>
        
        <div style="width:100%;position:absolute;bottom:0px;display:flex;justify-content: space-between;padding:10px;align-items: center;justify-items: center;">
         <!-- <p style="color:white;">Version 1.0</p> -->
-        <p style="color:white;">Last Updated on: 15 Aug, 2024</p>
+        <p style="color:white;">Last Updated on: {{todayDate | date:'dd MMM yyyy'}}</p>
        </div>
     </div>
      

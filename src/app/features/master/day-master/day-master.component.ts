@@ -94,7 +94,9 @@ export class DayMasterComponent implements OnInit {
   private masterService = inject(MasterService);
   private formBuilder = inject(FormBuilder);
   private notification = inject(NotificationService);
+  templeName:string | null;
   constructor(private router:Router) {
+    this.templeName=localStorage.getItem('TempleName') 
     this.dayMasterForm = this.formBuilder.group({
       VM_Name: ['', [Validators.required]],
       selectedDays: this.formBuilder.array([],this.atLeastOneSelected()),

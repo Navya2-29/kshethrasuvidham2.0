@@ -132,8 +132,54 @@ formatDate(dateString: string | undefined): string {
 }
 
 generatePDF(): void {
-  
+  const doc = new jsPDF();
+  let yOffset = 20; // Initial vertical position
+
+  // Iterate over the filteredData (grouped by CounterId)
+  this.filteredData.forEach((group, groupIndex) => {
+    // Set the title for each group (CounterId)
+    doc.setFontSize(16);
+    doc.text(`Counter: ${group.counterId}`, 10, yOffset);
+    yOffset += 10;
+
+    // Table Header
+    doc.setFontSize(12);
+    doc.text('Bill No', 10, yOffset);
+    doc.text('Bank Name', 40, yOffset);
+    doc.text('Vazhipad', 80, yOffset);
+    doc.text('Cheque Date', 120, yOffset);
+    doc.text('Cheque No', 160, yOffset);
+    doc.text('Amount', 200, yOffset);
+
+    yOffset += 10;
+
+    // Add the data for the current counterId
+    group.items.forEach((item:any) => {
+      doc.text(item.BillNo, 10, yOffset);
+      doc.text(item.InstBank, 40, yOffset);
+      doc.text(item.Vazhipad, 80, yOffset);
+      doc.text(item.InstDate, 120, yOffset);
+      doc.text(item.InstNo, 160, yOffset);
+      doc.text(item.Amount.toString(), 200, yOffset);
+      yOffset += 10;
+
+      // Add a page break if we are near the bottom of the page
+      if (yOffset > 250) {
+        doc.addPage();
+        yOffset = 20; // Reset yOffset for the new page
+      }
+    });
+
+    // Add page break after each group if necessary
+    if (groupIndex < this.filteredData.length - 1) {
+      doc.addPage();
+      yOffset = 20; // Reset yOffset for the new page
+    }
+  });
+
+  doc.save('daily_statement_report.pdf'); // Download the PDF
 }
+
 
 
 

@@ -83,11 +83,13 @@ export class ReportDailystmtComponent {
   }
 
   generatePDF() {
+    const templeName=localStorage.getItem('TempleName')|| '' ;
+    const Adress=localStorage.getItem('Address') || '';
     const doc = new jsPDF();
 
     // Main Heading
-    const mainHeading = 'MAMMIYOOR DEVASWOM';
-    const subHeading = 'Under Malabar Devaswom Board, Guruvayur, Thrissur-680 101.';
+    const mainHeading= templeName  ;
+    const subHeading = Adress;
     const reportTitle = 'Daily Statement (Detailed)';
 
     // Get current date
@@ -95,7 +97,7 @@ export class ReportDailystmtComponent {
     const reportDate = `${this.padZero(currentDate.getDate())}/${this.padZero(currentDate.getMonth() + 1)}/${currentDate.getFullYear()}`;
 
     // Set initial header
-    this.addHeader(doc, mainHeading, subHeading, reportTitle, reportDate);
+    this.addHeader(doc, mainHeading , subHeading, reportTitle, reportDate);
 
     // Table Header
     let yPosition = 40; // Adjusted starting y-position for the table headers
@@ -153,25 +155,50 @@ export class ReportDailystmtComponent {
 }
 
 // Function to add header to each page
-addHeader(doc: jsPDF, mainHeading: string, subHeading: string, reportTitle: string, reportDate: string) {
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    const mainHeadingWidth = doc.getTextWidth(mainHeading);
-    doc.text(mainHeading, (doc.internal.pageSize.getWidth() - mainHeadingWidth) / 2, 15);
+// Function to add header to each page
 
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    const subHeadingWidth = doc.getTextWidth(subHeading);
-    doc.text(subHeading, (doc.internal.pageSize.getWidth() - subHeadingWidth) / 2, 22);
-    
-    doc.setFontSize(12);
-    const reportTitleWidth = doc.getTextWidth(reportTitle);
-    doc.text(reportTitle, (doc.internal.pageSize.getWidth() - reportTitleWidth) / 2, 30);
-    
-    doc.setFontSize(10); // Set font size for date
-    const reportDateWidth = doc.getTextWidth(`Date: ${reportDate}`);
-    doc.text(`Date: ${reportDate}`, (doc.internal.pageSize.getWidth() - reportDateWidth) / 2, 35); // Align date at center
+// Function to add header to each page
+// Function to add header to each page
+addHeader(doc: jsPDF, mainHeading: string, subHeading: string, reportTitle: string, reportDate: string) {
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  const mainHeadingWidth = doc.getTextWidth(mainHeading);
+  doc.text(mainHeading, (doc.internal.pageSize.getWidth() - mainHeadingWidth) / 2, 15);
+
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+
+  // Address (subHeading) centered
+  const subHeadingWidth = doc.getTextWidth(subHeading);
+  const availableWidth = doc.internal.pageSize.getWidth() - 20; // Page width minus padding (20px)
+
+  // Ensure the address fits within the available width
+  if (subHeadingWidth > availableWidth) {
+      let fontSize = 10; // Initial font size
+      doc.setFontSize(fontSize);
+
+      // While the text exceeds the available width, reduce the font size
+      while (subHeadingWidth > availableWidth && fontSize > 6) {
+          fontSize--;
+          doc.setFontSize(fontSize);
+      }
+  }
+
+  // Center the address
+  const subHeadingX = (doc.internal.pageSize.getWidth() - subHeadingWidth) / 2;
+  doc.text(subHeading, subHeadingX, 22); // 22 is the Y position for address
+
+  doc.setFontSize(12);
+  const reportTitleWidth = doc.getTextWidth(reportTitle);
+  doc.text(reportTitle, (doc.internal.pageSize.getWidth() - reportTitleWidth) / 2, 30);
+
+  doc.setFontSize(10); // Set font size for date
+  const reportDateWidth = doc.getTextWidth(`Date: ${reportDate}`);
+  doc.text(`Date: ${reportDate}`, (doc.internal.pageSize.getWidth() - reportDateWidth) / 2, 35); // Align date at center
 }
+
+
+
 
 // Function to draw table header
 drawTableHeader(doc: jsPDF, yPosition: number) {

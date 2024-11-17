@@ -55,7 +55,9 @@ export class SeasonalMasterComponent implements OnInit {
   private masterService = inject(MasterService);
   private formBuilder = inject(FormBuilder);
   private notification = inject(NotificationService);
+  templeName:string |null ;
   constructor(private datePipe: DatePipe,private router:Router) {
+    this.templeName=localStorage.getItem('TempleName') 
     const currentDate = new Date();
    
     this.today = this.datePipe.transform(currentDate,'yyyy-MM-dd');

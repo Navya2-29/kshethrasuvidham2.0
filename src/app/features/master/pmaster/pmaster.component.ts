@@ -70,8 +70,9 @@ export class PmasterComponent implements OnInit {
   private formBuilder = inject(FormBuilder);
   private notification = inject(NotificationService);
   private duplicateCheck = inject(DuplicatecheckService);
-
+templeName:string |null;
   constructor(private toastr: ToastrService) {
+    this.templeName=localStorage.getItem('TempleName') 
     this.loading = true;
     // form model
     this.pmasterForm = this.formBuilder.group({

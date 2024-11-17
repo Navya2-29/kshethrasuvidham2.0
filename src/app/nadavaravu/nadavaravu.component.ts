@@ -1,3 +1,4 @@
+import { Data } from './../features/Billing/search-by-bill-number/search-by-bill-number.component';
 import { Component, OnInit, Type } from '@angular/core';
 import {
   FormBuilder,
@@ -29,6 +30,10 @@ export class NadavaravuComponent implements OnInit {
   lastBillnumber: number;
   currentBillNumber: string;
   theLastBillNo: string;
+  nadavaravData:any[]=[];
+  filteredData:any[]=[];
+  searchForm: FormGroup;
+
   constructor(
     private fb: FormBuilder,
     private service: MasterService,
@@ -55,11 +60,16 @@ export class NadavaravuComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.searchForm = this.fb.group({
+      searchDate: [''],
+      searchBillNO:['']
+    });
     this.currentDate = this.getCurrentDateMMYY();
     this.getBillNumber();
     this.getStar();
     this.getNadavaravuItem();
     this.setupConditionalValidationForItemValue();
+    this.getNadavaravuData();
   }
 
   setupConditionalValidationForItemValue() {
@@ -191,4 +201,36 @@ export class NadavaravuComponent implements OnInit {
     const year = now.getFullYear().toString().slice(-2);
     return `${month}${year}`;
   }
+
+
+  getNadavaravuData(){
+    const payLoad={"Type":"NadavaravuBooking","Code":""}
+    this.service.getNadavaravBooking(payLoad).subscribe((data)=>{
+      console.log(data);
+this.nadavaravData=data;
+this.filteredData=this.nadavaravData;
+    })
+  }
+
+  onSearch(): void {
+    const searchBillNo = this.searchForm.get('searchBillNO')?.value?.trim().toLowerCase(); // Case insensitive
+  console.log(searchBillNo)
+    if (!searchBillNo) {
+      this.filteredData = this.nadavaravData; // Show all data if no input
+      return;
+    }
+  
+    this.filteredData = this.nadavaravData.filter((row) =>
+      row.BillNo?.toLowerCase().includes(searchBillNo) // Match bill number
+    );
+  
+    if (this.filteredData.length === 0) {
+      console.log('No records found for the entered bill number.');
+      
+    }
+  }
+  
+  
+
+
 }

@@ -31,8 +31,9 @@ private masterService = inject(MasterService);
 private formBuilder = inject(FormBuilder);
 private _snackBar = inject(MatSnackBar);
 private duplicateCheck=inject(DuplicatecheckService);
-
+templeName:string |null;
 constructor(){
+  this.templeName=localStorage.getItem('TempleName') 
   this.vihidhamMasterForm=this.formBuilder.group({
     vihidham_code:['',Validators.required],
     vihidham_name:['',Validators.required],

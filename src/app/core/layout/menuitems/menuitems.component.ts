@@ -13,5 +13,10 @@ import { RouterModule } from '@angular/router';
   styleUrl: './menuitems.component.css'
 })
 export class MenuitemsComponent {
+templeName:string |null;
+  constructor(){
+   this.templeName=localStorage.getItem('TempleName') 
+  }
 
+  
 }

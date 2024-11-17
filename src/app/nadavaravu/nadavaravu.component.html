@@ -112,11 +112,13 @@
             </div>
         </div>
         <div class="col-md-8 search">
-            <div style="display:flex;">
-                <input type="date" class="form-control formdate" style="width:15%;">
-                <button class="btn btn-primary" style="margin-right:15px;">Search</button>
-                <input type="text" class="form-control sps" placeholder="search by Bill No." style="width:25%;">
-                <button class="btn btn-primary">Search</button>
+            <div style="display:flex;" [formGroup]="searchForm">
+               
+                <!-- <input type="date" formControlName="searchDate"  class="form-control formdate" style="width:15%;"> -->
+                <!-- <button class="btn btn-primary" style="margin-right:15px;" (click)="onSearch()">Search</button> -->
+                <input type="text" formControlName="searchBillNO"  class="form-control sps" placeholder="search by Bill No." style="width:25%;">
+                <button class="btn btn-primary" (click)="onSearch()">Search</button>
+           
             </div>
             <div class="fixitems">
                 <table class="table">
@@ -127,208 +129,23 @@
                         <th>Name</th>
                         <th>Item</th>
                         <th>Qty</th>
-                        <th>Rpt Nos.</th>
+                        <th>Receipt_Amt</th>
                         <th></th>
                     </tr>
                    
-                    <tr>
-                        <td>5</td>
-                        <td>15-02-2024</td>
-                        <td>RCPT.150/2024/85</td>
-                        <td>Reghuraman</td>
-                        <td>Kalkkandam</td>
-                        <td>1Kg 0Gm 0Mg</td>
-                        <td>1</td>
+                    <tr *ngFor="let item of filteredData; let i=index;">
+                        <td>{{i+1}}</td>
+                        <td>{{item.Billdate | date: 'yyyy-MM-dd'}}</td>
+                        <td>{{item.BillNo}}</td>
+                        <td>{{item.Name}}</td>
+                        <td>{{item.weight}}-{{item.unit}}-</td>
+                        <td>{{item.Qty}}</td>
+                        <td>{{item.Receipt_Amt}}</td>
                         <mat-icon title="Edit" class="small">edit</mat-icon>
                         <mat-icon title="Delete" class="small">delete</mat-icon>
                     </tr>
-                    <tr>
-                        <td>6</td>
-                        <td>15-02-2024</td>
-                        <td>RCPT.150/2024/85</td>
-                        <td>Reghuraman</td>
-                        <td>Kalkkandam</td>
-                        <td>1Kg 0Gm 0Mg</td>
-                        <td>1</td>
-                        <mat-icon title="Edit" class="small">edit</mat-icon>
-                        <mat-icon title="Delete" class="small">delete</mat-icon>
-                    </tr>
-                    <tr>
-                        <td>7</td>
-                        <td>15-02-2024</td>
-                        <td>RCPT.150/2024/85</td>
-                        <td>Reghuraman</td>
-                        <td>Kalkkandam</td>
-                        <td>1Kg 0Gm 0Mg</td>
-                        <td>1</td>
-                        <mat-icon title="Edit" class="small">edit</mat-icon>
-                        <mat-icon title="Delete" class="small">delete</mat-icon>
-                    </tr>
-                    <tr>
-                        <td>8</td>
-                        <td>15-02-2024</td>
-                        <td>RCPT.150/2024/85</td>
-                        <td>Reghuraman</td>
-                        <td>Kalkkandam</td>
-                        <td>1Kg 0Gm 0Mg</td>
-                        <td>1</td>
-                        <mat-icon title="Edit" class="small">edit</mat-icon>
-                        <mat-icon title="Delete" class="small">delete</mat-icon>
-                    </tr>
-                    <tr>
-                        <td>9</td>
-                        <td>15-02-2024</td>
-                        <td>RCPT.150/2024/85</td>
-                        <td>Reghuraman</td>
-                        <td>Kalkkandam</td>
-                        <td>1Kg 0Gm 0Mg</td>
-                        <td>1</td>
-                        <mat-icon title="Edit" class="small">edit</mat-icon>
-                        <mat-icon title="Delete" class="small">delete</mat-icon>
-                    </tr>
-                    <tr>
-                        <td>10</td>
-                        <td>15-02-2024</td>
-                        <td>RCPT.150/2024/85</td>
-                        <td>Reghuraman</td>
-                        <td>Kalkkandam</td>
-                        <td>1Kg 0Gm 0Mg</td>
-                        <td>1</td>
-                        <mat-icon title="Edit" class="small">edit</mat-icon>
-                        <mat-icon title="Delete" class="small">delete</mat-icon>
-                    </tr>
-                    <tr>
-                        <td>11</td>
-                        <td>15-02-2024</td>
-                        <td>RCPT.150/2024/85</td>
-                        <td>Reghuraman</td>
-                        <td>Kalkkandam</td>
-                        <td>1Kg 0Gm 0Mg</td>
-                        <td>1</td>
-                        <mat-icon title="Edit" class="small">edit</mat-icon>
-                        <mat-icon title="Delete" class="small">delete</mat-icon>
-                    </tr>
-                    <tr>
-                        <td>12</td>
-                        <td>15-02-2024</td>
-                        <td>RCPT.150/2024/85</td>
-                        <td>Reghuraman</td>
-                        <td>Kalkkandam</td>
-                        <td>1Kg 0Gm 0Mg</td>
-                        <td>1</td>
-                        <mat-icon title="Edit" class="small">edit</mat-icon>
-                        <mat-icon title="Delete" class="small">delete</mat-icon>
-                    </tr>
-                    <tr>
-                        <td>13</td>
-                        <td>15-02-2024</td>
-                        <td>RCPT.150/2024/85</td>
-                        <td>Reghuraman</td>
-                        <td>Kalkkandam</td>
-                        <td>1Kg 0Gm 0Mg</td>
-                        <td>1</td>
-                        <mat-icon title="Edit" class="small">edit</mat-icon>
-                        <mat-icon title="Delete" class="small">delete</mat-icon>
-                    </tr>
-                    <tr>
-                        <td>14</td>
-                        <td>15-02-2024</td>
-                        <td>RCPT.150/2024/85</td>
-                        <td>Reghuraman</td>
-                        <td>Kalkkandam</td>
-                        <td>1Kg 0Gm 0Mg</td>
-                        <td>1</td>
-                        <mat-icon title="Edit" class="small">edit</mat-icon>
-                        <mat-icon title="Delete" class="small">delete</mat-icon>
-                    </tr>
-                    <tr>
-                        <td>15</td>
-                        <td>15-02-2024</td>
-                        <td>RCPT.150/2024/85</td>
-                        <td>Reghuraman</td>
-                        <td>Kalkkandam</td>
-                        <td>1Kg 0Gm 0Mg</td>
-                        <td>1</td>
-                        <mat-icon title="Edit" class="small">edit</mat-icon>
-                        <mat-icon title="Delete" class="small">delete</mat-icon>
-                    </tr>
-                    <tr>
-                        <td>16</td>
-                        <td>15-02-2024</td>
-                        <td>RCPT.150/2024/85</td>
-                        <td>Reghuraman</td>
-                        <td>Kalkkandam</td>
-                        <td>1Kg 0Gm 0Mg</td>
-                        <td>1</td>
-                        <mat-icon title="Edit" class="small">edit</mat-icon>
-                        <mat-icon title="Delete" class="small">delete</mat-icon>
-                    </tr>
-                    <tr>
-                        <td>17</td>
-                        <td>15-02-2024</td>
-                        <td>RCPT.150/2024/85</td>
-                        <td>Reghuraman</td>
-                        <td>Kalkkandam</td>
-                        <td>1Kg 0Gm 0Mg</td>
-                        <td>1</td>
-                        <mat-icon title="Edit" class="small">edit</mat-icon>
-                        <mat-icon title="Delete" class="small">delete</mat-icon>
-                    </tr>
-                    <tr>
-                        <td>18</td>
-                        <td>15-02-2024</td>
-                        <td>RCPT.150/2024/85</td>
-                        <td>Reghuraman</td>
-                        <td>Kalkkandam</td>
-                        <td>1Kg 0Gm 0Mg</td>
-                        <td>1</td>
-                        <mat-icon title="Edit" class="small">edit</mat-icon>
-                        <mat-icon title="Delete" class="small">delete</mat-icon>
-                    </tr>
-                    <tr>
-                        <td>19</td>
-                        <td>15-02-2024</td>
-                        <td>RCPT.150/2024/85</td>
-                        <td>Reghuraman</td>
-                        <td>Kalkkandam</td>
-                        <td>1Kg 0Gm 0Mg</td>
-                        <td>1</td>
-                        <mat-icon title="Edit" class="small">edit</mat-icon>
-                        <mat-icon title="Delete" class="small">delete</mat-icon>
-                    </tr>
-                    <tr>
-                        <td>20</td>
-                        <td>15-02-2024</td>
-                        <td>RCPT.150/2024/85</td>
-                        <td>Reghuraman</td>
-                        <td>Kalkkandam</td>
-                        <td>1Kg 0Gm 0Mg</td>
-                        <td>1</td>
-                        <mat-icon title="Edit" class="small">edit</mat-icon>
-                        <mat-icon title="Delete" class="small">delete</mat-icon>
-                    </tr>
-                    <tr>
-                        <td>21</td>
-                        <td>15-02-2024</td>
-                        <td>RCPT.150/2024/85</td>
-                        <td>Reghuraman</td>
-                        <td>Kalkkandam</td>
-                        <td>1Kg 0Gm 0Mg</td>
-                        <td>1</td>
-                        <mat-icon title="Edit" class="small">edit</mat-icon>
-                        <mat-icon title="Delete" class="small">delete</mat-icon>
-                    </tr>
-                    <tr>
-                        <td>22</td>
-                        <td>15-02-2024</td>
-                        <td>RCPT.150/2024/85</td>
-                        <td>Reghuraman</td>
-                        <td>Kalkkandam</td>
-                        <td>1Kg 0Gm 0Mg</td>
-                        <td>1</td>
-                        <mat-icon title="Edit" class="small">edit</mat-icon>
-                        <mat-icon title="Delete" class="small">delete</mat-icon>
-                    </tr>
+                   
+                    
     
                 </table>
             </div>

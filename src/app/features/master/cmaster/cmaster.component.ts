@@ -47,7 +47,9 @@ code:string;
   private notifiacation = inject(NotificationService);
   private duplicateCheck = inject(DuplicatecheckService);
   sortAscending:boolean=true;
+  templeName:string |null;
   constructor() {
+    this.templeName=localStorage.getItem('TempleName') 
     this.loading = true;
     this.cmasterForm = this.formBuilder.group({
       VC_Code: ['', [

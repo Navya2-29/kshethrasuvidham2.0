@@ -55,7 +55,9 @@ export class ItemMAterComponent {
   private formBuilder = inject(FormBuilder);
   private _snackBar = inject(MatSnackBar);
   private duplicateCheck = inject(DuplicatecheckService);
+  templeName:string |null ;
   constructor() {
+    this.templeName=localStorage.getItem('TempleName') 
     this.userId = localStorage.getItem('LoginId');
     this.itemMasterForm = this.formBuilder.group({
       NM_Code: [

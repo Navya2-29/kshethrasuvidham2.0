@@ -40,7 +40,9 @@ export class ComboMasterComponent implements OnInit {
   private formBuilder = inject(FormBuilder);
   private masterService = inject(MasterService);
   private _snackBar = inject(MatSnackBar);
+  templeName:string |null;
   constructor() {
+    this.templeName=localStorage.getItem('TempleName') 
     this.comboMasterForm = this.formBuilder.group({
       VM_Name: ['', [Validators.required]],
       combo_vname: this.formBuilder.array([],[Validators.required]),

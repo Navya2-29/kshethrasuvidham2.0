@@ -37,8 +37,9 @@ specialDayMaster: SpecialDayMaster[] = [];
   private formBuilder = inject(FormBuilder);
   private _snackBar = inject(MatSnackBar);
 
-
+templeName:string |null;
 constructor(){
+  this.templeName=localStorage.getItem('TempleName') 
 this.specialDayMasterForm=this.formBuilder.group({
   vazhipadName :['',[Validators.required]],
 	star :['',[Validators.required]],

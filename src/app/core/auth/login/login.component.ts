@@ -12,6 +12,7 @@ import { SpinnerComponent } from '../../../shared/component/spinner/spinner.comp
 import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { CouterPopupComponent } from '../../couter-popup/couter-popup.component';
+import { MasterService } from '../../../services/master/master.service';
 
 @Component({
   selector: 'app-login',
@@ -25,13 +26,16 @@ export class LoginComponent implements OnInit {
   loginForm:FormGroup;
   loading:boolean=false;
   errorMessage="";
+  templeName:string;
+  logo:string;
+  todayDate:Date=new Date();
   private readonly formBuilder=inject(FormBuilder);
   private readonly authService=inject(AuthService);
   private readonly router=inject(Router);
-  constructor(private http:HttpClient, private dialog: MatDialog){    
+  constructor(private http:HttpClient, private dialog: MatDialog, private  service:MasterService){    
   }
   ngOnInit(): void {
-
+this.getTempleData()
     const storedCounterId = localStorage.getItem('counterId');
     if (!storedCounterId) {
       // Open the dialog if the Counter ID is not found
@@ -113,5 +117,19 @@ autoLogin(){
   }
 }
 
+getTempleData(){
+  this.service.settingsData().subscribe((data)=>{
+    console.log(data);
+    this.templeName=data[0].Name;
+    this.logo=data[0].logo;
+    localStorage.setItem('TempleName',this.templeName);
+    localStorage.setItem('Address',data[0].Address);
+    
+  })
+}
+
+getLogoUrl(): string {
+  return `assets/images/${this.logo}`;  // Assuming logo images are stored in the 'assets/images' folder
+}
 
 }

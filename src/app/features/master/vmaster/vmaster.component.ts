@@ -76,7 +76,12 @@ export class VmasterComponent implements OnInit {
   private notification = inject(NotificationService);
   private router = inject(Router);
   sortAscending: boolean = true;
+  templeName:string | null;
   constructor() {
+
+    const domain = window.location.hostname;
+    console.log(domain,"domain name")
+    this.templeName=localStorage.getItem('TempleName') 
     this.vazhipadMasterForm = this.formBuilder.group({
       VM_Code: [
         '',

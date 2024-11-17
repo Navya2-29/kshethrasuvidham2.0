@@ -791,16 +791,29 @@ nadavaravBooking(payLoad:any){
   ); 
 }
 
+getNadavaravBooking(payLoad:any){
+  return this.http.post<any>(
+    Constant.BASE_URL + Constant.METHODS.GET_MASTER,
+    payLoad
+  );
+}
+
 
 getNadavaravBillNumber(payLoad:any){
- 
   return this.http.post<any>(
     Constant.BASE_URL + Constant.METHODS.GET_MASTER,
     payLoad
   ); 
-  
+}
 
-
+settingsData(){
+  const payLoad={
+    "Type":"Setting","code":""
+  }
+  return this.http.post<any>(
+    Constant.BASE_URL + Constant.METHODS.GET_MASTER,
+    payLoad
+  ); 
 }
 
 
