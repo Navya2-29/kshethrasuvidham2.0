@@ -1,0 +1,70 @@
+/* Container for centering the table */
+.table-container {
+    display: flex;
+    justify-content: center;  /* Horizontally centers the table */
+    padding: 20px;
+    margin: 20px auto;
+  }
+  
+  /* Table styling */
+  .report-table {
+    width: 80%;  /* Adjust the width as needed */
+    border-collapse: collapse;  /* Removes space between cells */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);  /* Subtle shadow for a floating effect */
+    margin: 20px 0;
+  }
+  
+  /* Header styling */
+  .report-table th {
+    background-color: #007bff;  /* Blue background for header */
+    color: white;
+    padding: 12px 15px;
+    text-align: left;
+    font-size: 1.1em;
+  }
+  
+  /* Table data cell styling */
+  .report-table td {
+    padding: 10px 15px;
+    border: 1px solid #ddd;  /* Light grey border */
+    text-align: left;
+    font-size: 1em;
+  }
+  
+  /* Right alignment for the total column */
+  .right-align {
+    text-align: right;
+  }
+  
+  /* Bold text for grand total */
+  .bold {
+    font-weight: bold;
+  }
+  
+  /* Hover effect on rows */
+  .report-table tr:hover {
+    background-color: #f1f1f1;
+    cursor: pointer;
+  }
+  
+  /* Table border color */
+  .report-table th, .report-table td {
+    border: 1px solid #ddd;  /* Soft borders between cells */
+  }
+  
+  /* Adjust font size for better readability */
+  .report-table {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+  }
+  .icon-container {
+    display: flex;
+    justify-content: flex-end; 
+    margin-bottom: 16px; 
+    padding-right: 16px; 
+  }
+  
+  .icon-container button {
+    margin-left: 8px; 
+    margin-top: 3px;
+  }

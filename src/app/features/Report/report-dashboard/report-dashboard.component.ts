@@ -82,8 +82,8 @@ export class ReportDashboardComponent {
     } else if (reportType === 'DailyStmt') {
       this.newTab = window.open(`./report-transaction${queryString}`, '_blank');
     }
-    else if (reportType === 'address') {
-      this.newTab = window.open(`./report-address${queryString}`, '_blank');
+    else if (reportType === 'report-counter-trnsaction') {
+      this.newTab = window.open(`./report-counter-trnsaction${queryString}`, '_blank');
     }
     else if (reportType === 'searching') {
       this.newTab = window.open(`./report-transaction${queryString}`, '_blank');

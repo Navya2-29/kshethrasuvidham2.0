@@ -1,0 +1,52 @@
+<app-header></app-header>
+<div class="icon-container">
+    <button mat-icon-button matTooltip="Back to previous page" (click)="goBack()">
+      <span class="material-icons">arrow_back</span>
+  </button>
+      <button mat-icon-button matTooltip="Make PDF" (click)="generatePDF()">
+          <span class="material-icons">print</span>
+      </button>
+      <button mat-icon-button matTooltip="Export to Spreadsheet" >
+          <span class="material-icons">grid_view</span>
+      </button>
+  </div>
+<div><h1 style="align-items: center;text-align: center; font-family: 'Times New Roman', Times, serif;font-weight:bold;">Daily Temple counter Collection</h1></div>
+
+<div class="table-container">
+    <table border="1" class="report-table">
+      <thead>
+        <tr>
+          <th>Primary Group (CounterId)</th>
+          <th>Secondary Group (TransMode)</th>
+          <th class="right-align">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Iterate over primary groups (CounterId) -->
+        <ng-container *ngFor="let counter of objectKeys(groupedData)">
+          <!-- Iterate over secondary groups (TransMode) -->
+          <ng-container *ngFor="let transMode of objectKeys(groupedData[counter]); let isFirst = first">
+            <!-- For the first row of each primary group (CounterId), display rowspan for CounterId -->
+            <tr *ngIf="isFirst">
+              <td [attr.rowspan]="getRowSpan(counter)">{{ counter }}</td>
+              <td>{{ transMode }}</td>
+              <td class="right-align">{{ groupedData[counter][transMode].total | number:'1.2-2' }}</td>
+            </tr>
+  
+            <!-- For subsequent rows within the same primary group (CounterId), just display TransMode and Total -->
+            <tr *ngIf="!isFirst">
+              <td>{{ transMode }}</td>
+              <td class="right-align">{{ groupedData[counter][transMode].total | number:'1.2-2' }}</td>
+            </tr>
+          </ng-container>
+        </ng-container>
+  
+        <!-- Grand Total Row -->
+        <tr>
+          <td colspan="2" class="right-align bold">Grand Total</td>
+          <td class="right-align bold">{{ getGrandTotal() | number:'1.2-2' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
