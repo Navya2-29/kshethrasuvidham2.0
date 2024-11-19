@@ -140,6 +140,7 @@ export class SearchByBillNumberComponent {
     this.openCancelRemarkDialog();
   }
 
+  
   // cancel reason dialog
 
   openCancelRemarkDialog() {
@@ -185,6 +186,7 @@ export class SearchByBillNumberComponent {
     console.log(this.cancellationReason, 'cancellarion reason');
 
     const payLoad = {
+      Type:"Booking",
       BillNo: this.lastBillNo,
       CancelBy: this.loginId,
       Remarks: this.cancellationReason,

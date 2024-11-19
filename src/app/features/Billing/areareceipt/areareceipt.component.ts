@@ -49,6 +49,7 @@ import { NumberDirective } from '../../../shared/directives/number/number.direct
 import { ReceiptPrintService } from '../../../shared/service/receipt-print.service';
 import { NgxPrintModule } from 'ngx-print';
 import { ConfirmationDialogComponent } from '../../../shared/component/confirmation-dialog/confirmation-dialog.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-areareceipt',
@@ -113,7 +114,8 @@ export class AreareceiptComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     public dialog: MatDialog,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private router:Router
   ) {
     this.form = this.fb.group({
       vazhipadinfo: this.fb.array([]),
@@ -141,6 +143,10 @@ export class AreareceiptComponent implements OnInit {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
+  }
+
+  onBack(){
+    this.router.navigate(['/front']);
   }
 
   createRow(): FormGroup {

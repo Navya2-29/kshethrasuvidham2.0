@@ -1,7 +1,13 @@
 <div class="card-body" style="background:white;">
+    <button 
+    class="btn btn-secondary rounded-circle back-btn" 
+    (click)="goBack()" 
+    title="Go Back">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
     <div class="row">
         <div class="col-md-4">
-            <h2>നട വരവ്</h2>
+            <h2 style="margin-left:100px ;">നട വരവ്</h2>
             <div [formGroup]="nadavaravForm"> 
             <table class="table">
                 <tr>
@@ -133,7 +139,7 @@
                         <th></th>
                     </tr>
                    
-                    <tr *ngFor="let item of filteredData; let i=index;">
+                    <tr *ngFor="let item of filteredData; let i=index;" [ngClass]="{'red-text': item.TrnStatus === 'C'}">
                         <td>{{i+1}}</td>
                         <td>{{item.Billdate | date: 'yyyy-MM-dd'}}</td>
                         <td>{{item.BillNo}}</td>
@@ -141,8 +147,8 @@
                         <td>{{item.weight}}-{{item.unit}}-</td>
                         <td>{{item.Qty}}</td>
                         <td>{{item.Receipt_Amt}}</td>
-                        <mat-icon title="Edit" class="small">edit</mat-icon>
-                        <mat-icon title="Delete" class="small">delete</mat-icon>
+                        <mat-icon title="Edit" class="small" >edit</mat-icon>
+                       <span ><mat-icon title="Cancel bill"  class="small" (click)="item.TrnStatus !== 'C' && cancellTheBill(item.BillNo)">delete</mat-icon></span> 
                     </tr>
                    
                     

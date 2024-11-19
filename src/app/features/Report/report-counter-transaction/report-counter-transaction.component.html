@@ -29,7 +29,7 @@
             <!-- For the first row of each primary group (CounterId), display rowspan for CounterId -->
             <tr *ngIf="isFirst">
               <td [attr.rowspan]="getRowSpan(counter)">{{ counter }}</td>
-              <td>{{ transMode }}</td>
+              <td>{{ getTransactionType(transMode) }}</td>
               <td class="right-align">{{ groupedData[counter][transMode].total | number:'1.2-2' }}</td>
             </tr>
   

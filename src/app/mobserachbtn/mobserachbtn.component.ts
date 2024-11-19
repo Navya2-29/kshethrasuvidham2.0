@@ -8,7 +8,7 @@ import { MobserachcontentsComponent } from '../features/Billing/mobserachcontent
 @Component({
   selector: 'app-mobserachbtn',
   standalone: true,
-  imports: [MatDialogModule, MatButtonModule, MobserachcontentsComponent],
+  imports: [MatDialogModule, MatButtonModule,],
   templateUrl: './mobserachbtn.component.html',
   styleUrl: './mobserachbtn.component.css'
 })

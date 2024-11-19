@@ -6,8 +6,10 @@ import {provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { headerInterceptor } from './shared/interceptor/header.interceptor';
 import { provideToastr } from 'ngx-toastr';
+import { HashLocationStrategy, LocationStrategy } from '@angular/common'; // Import HashLocationStrategy
+
 export const appConfig: ApplicationConfig = {
   providers: [provideRouter(routes), provideAnimationsAsync(),provideHttpClient(withInterceptors([headerInterceptor])),
-    provideAnimations(), provideToastr(),
+    provideAnimations(), provideToastr(), { provide: LocationStrategy, useClass: HashLocationStrategy }, 
   ]
 };

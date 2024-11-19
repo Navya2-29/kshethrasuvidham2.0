@@ -1,6 +1,10 @@
 <div class="row nowrap">
   <div class="col-md-12">
     <div class="card-body fixitems" id="details">
+       <!-- Back Button -->
+       <button class="rounded-back-button" (click)="onBack()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
       <div style="display: flex; flex-wrap: wrap">
         <form [formGroup]="form">
           <table class="table">
@@ -250,7 +254,7 @@
                     ></a
                   >
                 </td>
-                <td style="padding: 10px">
+                <td style="padding: 0px">
                   <a (click)="removeRow(i)">
                     <mat-icon>delete</mat-icon>
                   </a>

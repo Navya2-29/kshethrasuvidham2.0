@@ -8,8 +8,7 @@ import { PmasterComponent } from './features/master/pmaster/pmaster.component';
 import { CmasterComponent } from './features/master/cmaster/cmaster.component';
 import { VmasterComponent } from './features/master/vmaster/vmaster.component';
 import { PanjankamComponent } from './panjankam/panjankam.component';
-
-import { NgModule } from '@angular/core';
+import { LocationStrategy, HashLocationStrategy } from '@angular/common';import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { VazhipadBlockingComponent } from './features/master/vazhipad-blocking/vazhipad-blocking.component';
 import { SeasonalMasterComponent } from './features/master/seasonal-master/seasonal-master.component';

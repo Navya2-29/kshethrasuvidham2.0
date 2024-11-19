@@ -13,6 +13,9 @@ import { CommonModule } from '@angular/common';
 import { ItemMaster } from '../models/item-master.model';
 import { NotificationService } from '../services/notification/notification.service';
 import { ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { CancelBillRemarkComponent } from '../features/Billing/cancel-bill-remark/cancel-bill-remark.component';
 
 @Component({
   selector: 'app-nadavaravu',
@@ -24,6 +27,7 @@ import { ToastrService } from 'ngx-toastr';
 export class NadavaravuComponent implements OnInit {
   nadavaravForm: FormGroup;
   userId: string | null;
+  CounterId: string | null;
   nakshatham: any[];
   itemMaster: ItemMaster[] = [];
   currentDate: string;
@@ -33,14 +37,18 @@ export class NadavaravuComponent implements OnInit {
   nadavaravData:any[]=[];
   filteredData:any[]=[];
   searchForm: FormGroup;
-today:Date=new Date()
+today:Date=new Date();
+cancellationReason:string;
+cancelBillNumber:string;
   constructor(
     private fb: FormBuilder,
     private service: MasterService,
-    private notification: ToastrService
+    private notification: ToastrService,
+    private router:Router,
+    private dialog: MatDialog
   ) {
     this.userId = localStorage.getItem('LoginId');
-
+this.CounterId=localStorage.getItem('counterId');
     this.nadavaravForm = this.fb.group({
       BillNo: ['', [Validators.required]],
       Name: ['', [Validators.required]],
@@ -56,6 +64,7 @@ today:Date=new Date()
       Remarks: [''],
       TrnsMode: ['CS'],
       UserId: [this.userId],
+      CounterId:[this.CounterId]
     });
   }
 
@@ -146,6 +155,7 @@ today:Date=new Date()
       Remarks: '',
       TrnsMode: 'CS',
       UserId: this.userId,
+      CounterId:this.CounterId
     });
     this.getBillNumber();
   }
@@ -214,6 +224,7 @@ this.filteredData=this.nadavaravData;
   }
 
   onSearch(): void {
+ 
     const searchBillNo = this.searchForm.get('searchBillNO')?.value?.trim().toLowerCase(); // Case insensitive
   console.log(searchBillNo)
     if (!searchBillNo) {
@@ -232,9 +243,6 @@ this.filteredData=this.nadavaravData;
   }
   
   
-
-
-
   printReceipt() {
     const printContent = document.getElementById('thermal-print-content')?.innerHTML;
     if (printContent) {
@@ -266,6 +274,61 @@ this.filteredData=this.nadavaravData;
       `);
       printWindow?.document.close();
     }
+  }
+
+  goBack(){
+    this.router.navigate(['dashboard'])
+  }
+
+
+
+  openCancelRemarkDialog() {
+    const remarkDialogRef = this.dialog.open(CancelBillRemarkComponent, {
+      width: '400px',
+      data: { reason: this.cancellationReason }, // You can pass data to the new component here
+    });
+
+    remarkDialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.cancellationReason = result; // Update the cancellationReason with the value from the dialog
+        console.log('Updated Cancellation Reason:', this.cancellationReason);
+        this.OnCancelSubmit();
+      } else {
+        console.log('Dialog was closed without submitting the reason.');
+      }
+    });
+  }
+
+  cancellTheBill(billnumber:string) {
+    this.cancelBillNumber=billnumber
+    this.openCancelRemarkDialog();
+  }
+
+  OnCancelSubmit(){
+    this.cancellationReason;
+    console.log(this.cancellationReason, 'cancellarion reason');
+
+    const payLoad = {
+      Type:"Nadavaravu",
+      BillNo: this.cancelBillNumber,
+      CancelBy: this.userId,
+      Remarks: this.cancellationReason,
+    };
+    console.log(payLoad, 'payload');
+    this.service.cancellBill(payLoad).subscribe({
+      next: (data: any) => {
+        if (data.RespStatus === 'U') {
+          console.log(data, 'cancel bill response');
+          if (this.dialog) {
+            // this.dialog.close(); // This will close only the remark popup
+          }
+          // this.searchBillNumber();
+        }
+      },
+      error: (err) => {
+        console.log(err);
+      },
+    }); 
   }
 
 }

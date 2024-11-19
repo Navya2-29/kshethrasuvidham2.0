@@ -102,6 +102,7 @@ export class ReportCounterTransactionComponent {
   }
 
   getTransactionType(transmode: string): string {
+    console.log(transmode);
     switch (transmode) {
       case 'ba':
         return 'Bank';
@@ -115,6 +116,8 @@ export class ReportCounterTransactionComponent {
         return 'CHEQUE';
       case 'cr':
         return 'CREDIT';
+        case 'CS':
+        return 'CREDIT';
       case 'de':
         return 'DEBIT';
 
@@ -122,6 +125,7 @@ export class ReportCounterTransactionComponent {
         return 'Unknown';
     }
   }
+
   getRowSpan(counter: string): number {
     return Object.keys(this.groupedData[counter]).length;
   }
@@ -236,7 +240,5 @@ export class ReportCounterTransactionComponent {
     return rows;
   }
 
-
- 
 }
 

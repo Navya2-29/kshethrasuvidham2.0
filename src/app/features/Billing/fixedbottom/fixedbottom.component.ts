@@ -34,7 +34,7 @@ import html2canvas from 'html2canvas';
   imports: [
     MatInputModule,
     MatButtonModule,
-    MobserachbtnComponent,
+    
     ReactiveFormsModule,
     CommonModule,
     FormsModule,
@@ -630,4 +630,5 @@ templeNAme:string| null = '';
       this.address1Input.nativeElement.focus();
     }
   }
+
 }

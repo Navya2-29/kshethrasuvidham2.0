@@ -27,9 +27,12 @@ export class HeaderComponent {
   showFiller = false;
   userName: string | null = '';
   role:string |null='';
+  counterId:string |null='';
   constructor() {
     this.userName = localStorage.getItem('name');
-    this.role=localStorage.getItem('Role')
+    this.role=localStorage.getItem('Role');
+    this.counterId=localStorage.getItem('counterId');
+
   }
 
   logout() {
