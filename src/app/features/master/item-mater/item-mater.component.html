@@ -55,13 +55,21 @@
               </div>
 
               <tr>
-                <td> Item Reginla name<span class="text-danger">*</span><input type="text" appUpperCase formControlName="NM_RName" matInput
+                <td> Item Regional Name<span class="text-danger">*</span><input type="text" appUpperCase formControlName="NM_RName" matInput
                     class="form-control" placeholder="Enter RName"> </td>
 
               </tr>
               <tr>
+                <td> Category<span class="text-danger">*</span><select  class="form-control sps" style="width: 100%;"  name="" id="" formControlName="Category">
+                  <option value="">Select Category</option>
+                  <option value="metal">Sprecious/Metal</option>
+                  <option value="nonmetal">Non Sprecious/ or Non Metal</option>
+                  <option value="others">Others</option>
+                </select>
+              </tr>
+              <tr>
                 <td>
-                    Item Decription<textarea type="text" appUpperCase formControlName="NM_Description" class="form-control" placeholder="Enter Decription" matInput></textarea>
+                    Item Description<textarea type="text" appUpperCase formControlName="NM_Description" class="form-control" placeholder="Enter Decription" matInput></textarea>
                 </td>
               </tr>
               <tr>

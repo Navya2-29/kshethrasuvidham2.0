@@ -106,6 +106,12 @@ export class ReportDashboardComponent {
     else if (reportType === 'cancel') {
       this.newTab = window.open(`#/report-cancel${queryString}`, '_blank');
     }
+    else if (reportType === 'nadavaravu') {
+      this.newTab = window.open(`#/report-nadavaravu${queryString}`, '_blank');
+    }
+    else if (reportType === 'nadavaravu-cancel') {
+      this.newTab = window.open(`#/report-nadavaravu-cancel${queryString}`, '_blank');
+    }
 
     if (this.newTab) {
       this.newTab.focus();
@@ -121,6 +127,8 @@ export class ReportDashboardComponent {
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   }
-  
+  onBack(){
+    this.router.navigate(['/dashboard'])
+  }
 
 }

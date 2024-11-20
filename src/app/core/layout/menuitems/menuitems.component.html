@@ -10,28 +10,21 @@
                     </div>
                     <div class="card-body">
                        <ul class="list-group list-group-flush">
-                        <a routerLink="/pmaster" [mat-dialog-close]="true"><li class="list-group-item">Prathishta Details</li></a>
-                        <a routerLink="/cmaster" [mat-dialog-close]="true"><li class="list-group-item">Vazhipad Category</li></a>
-                        <a routerLink="/vmaster" [mat-dialog-close]="true"><li class="list-group-item">Vazhipad Master</li></a>
-                        <!-- <a href=""><li class="list-group-item">Vazhipad Allocation</li></a> -->
-                        <a routerLink="vazhipad-blocking" [mat-dialog-close]="true"><li class="list-group-item">Vazhipad Blocking</li></a>
-                        <a routerLink="seasonal" [mat-dialog-close]="true"><li class="list-group-item">Vazhipad Seasonal</li></a>
-                        <!-- <a href=""><li class="list-group-item">Vazhipad Booking Status</li></a> -->
-                        <a routerLink="vihidham-master" [mat-dialog-close]="true"><li class="list-group-item">Vihidham Master</li></a>
-                        <!-- <a href="vihidham-master"><li class="list-group-item">Vihidham Details</li></a> -->
-                        <a routerLink="member-master" [mat-dialog-close]="true"><li class="list-group-item">Member Master</li></a>
-                        <a routerLink="day-master" [mat-dialog-close]="true"><li class="list-group-item">Day-Master </li></a>
-                        <a routerLink="special-day-master" [mat-dialog-close]="true"><li class="list-group-item">Special day master </li></a>
-                        <a routerLink="combo-master" [mat-dialog-close]="true"><li class="list-group-item">Combo-master </li></a>
-                        <a routerLink="item-master" [mat-dialog-close]="true"><li class="list-group-item">Item Master </li></a>
-                        <!-- <a routerLink="star-master" [mat-dialog-close]="true"><li class="list-group-item">Star Master </li></a> -->
-
+                        <a 
+                *ngFor="let link of masterLinks"
+                [routerLink]="role === 'admin' ? link.path : null"
+                [class.disabled]="role !== 'admin'"
+                [mat-dialog-close]="role === 'admin' ? true : null"
+                (click)="onLinkClick($event)"
+                [attr.aria-disabled]="role !== 'admin'">
+                <li class="list-group-item">{{ link.label }}</li>
+              </a>
                       </ul>
 
                     </div>
                   </div>
             </div>
-            <div class="col-md-3.5">
+            <!-- <div class="col-md-3.5">
                 <div class="card">
                     <div class="card-header height" style="background-color:maroon;color:white;height:50px;">
                         <h3>Transactions</h3>
@@ -48,7 +41,7 @@
 
                     </div>
                   </div>
-            </div>
+            </div> -->
             <div class="col-md-2.5">
                 <div class="card">
                     <div class="card-header height" style="background-color:maroon;color:white;height:50px;">
@@ -70,12 +63,8 @@
                     </div>
                     <div class="card-body">
                       <ul class="list-group list-group-flush">
-                        <a href=""><li class="list-group-item" >Prathishta Details</li></a>
-                        <a href=""><li class="list-group-item">Vazhipad Category</li></a>
-                        <a href=""><li class="list-group-item">Vazhipad Master</li></a>
-                        <a href=""><li class="list-group-item">Vazhipad Allocation</li></a>
-                        <a routerLink="/mattinagal" [mat-dialog-close]="true"><li class="list-group-item">Mattinagal</li></a>
-                        <a routerLink="/userSignup" [mat-dialog-close]="true"><li class="list-group-item">Signup</li></a>
+                        <a routerLink="/mattinagal" [mat-dialog-close]="true"><li class="list-group-item">Nadavarav Booking</li></a>
+                        <a  *ngIf="role === 'admin' " routerLink="/userSignup" [mat-dialog-close]="true"><li class="list-group-item">Signup</li></a>
                       </ul>
 
                     </div>

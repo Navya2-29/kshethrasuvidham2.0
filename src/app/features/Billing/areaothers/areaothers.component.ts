@@ -14,7 +14,7 @@ import {MatTabsModule} from '@angular/material/tabs';
   selector: 'app-areaothers',
   standalone: true,
   providers: [provideNativeDateAdapter()],
-  imports: [MatButtonModule, MatExpansionModule, MatIconModule, MatFormFieldModule, MatInputModule, NadavaravuComponent, MatTabsModule, OthervazhipadComponent,CreditcollectionComponent],
+  imports: [MatButtonModule, MatExpansionModule, MatIconModule, MatFormFieldModule, MatInputModule, NadavaravuComponent, MatTabsModule,CreditcollectionComponent],
   templateUrl: './areaothers.component.html',
   styleUrl: './areaothers.component.css'
 })

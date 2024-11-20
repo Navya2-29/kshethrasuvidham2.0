@@ -816,7 +816,18 @@ settingsData(){
   ); 
 }
 
-
+getMaster(payLoad:any){
+  return this.http.post<any>(
+    Constant.BASE_URL + Constant.METHODS.GET_MASTER,
+    payLoad
+  ); 
+}
+deleteMaster(payLoad:any){
+  return this.http.post<any>(
+    Constant.BASE_URL + Constant.METHODS.DELETE_MASTER,
+    payLoad
+  ); 
+}
 
 updateNadavaravuBillNumber(currentbillnumber: any): Observable<any[]> {
   const payLoad = { Type: 'UpdateBillNoNadavaravu', code: currentbillnumber };
@@ -825,9 +836,16 @@ updateNadavaravuBillNumber(currentbillnumber: any): Observable<any[]> {
     payLoad
   );
 }
-  settingsmaster(){
-    
+  createStaffmanagement(payLoad:any){
+    return this.http.post<any>(
+      Constant.BASE_URL + Constant.METHODS.CREATE_STAFF,
+      payLoad
+    );
   }
+
+ 
+
+
   // error handling
   private errorHandler(error: HttpErrorResponse) {
     //

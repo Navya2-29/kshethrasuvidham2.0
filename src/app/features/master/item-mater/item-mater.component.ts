@@ -78,6 +78,7 @@ export class ItemMAterComponent {
         ],
       ],
       NM_RName: [''],
+      Category:[''],
       NM_Description: [''],
     });
   }

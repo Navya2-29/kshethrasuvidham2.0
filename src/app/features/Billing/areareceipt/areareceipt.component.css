@@ -410,3 +410,8 @@ margin: 0px;
 .rounded-back-button mat-icon {
   font-size: 20px;
 }
+
+a.text-danger:hover {
+  text-decoration: underline;
+  color: #dc3545; /* Ensure it stays red */
+}

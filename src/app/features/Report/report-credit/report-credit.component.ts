@@ -269,11 +269,5 @@ export class ReportCreditComponent {
     doc.save('Credit_Transaction_Report.pdf');
   }
 
-  
-  
-  
-  
-
-
-
+ 
 }

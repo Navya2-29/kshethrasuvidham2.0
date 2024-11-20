@@ -37,6 +37,8 @@ import { ReportCreditComponent } from './features/Report/report-credit/report-cr
 import { ReportCounterComponent } from './features/Report/report-counter/report-counter.component';
 import { ReportCancelComponent } from './features/Report/report-cancel/report-cancel.component';
 import { ReportCounterTransactionComponent } from './features/Report/report-counter-transaction/report-counter-transaction.component';
+import { ReportNadavaravComponent } from './features/Report/report-nadavarav/report-nadavarav.component';
+import { ReportNadavaravuCancelComponent } from './features/Report/report-nadavaravu-cancel/report-nadavaravu-cancel.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -141,7 +143,8 @@ export const routes: Routes = [
   { path: 'report-credit', component: ReportCreditComponent },
   { path: 'report-counter', component: ReportCounterComponent },
   { path: 'report-cancel', component: ReportCancelComponent },
-  { path: 'report-counter-trnsaction', component: ReportCounterTransactionComponent },
+  { path: 'report-nadavaravu', component: ReportNadavaravComponent },
+  { path: 'report-nadavaravu-cancel', component: ReportNadavaravuCancelComponent },
   {
     path: '**',
     pathMatch: 'full',

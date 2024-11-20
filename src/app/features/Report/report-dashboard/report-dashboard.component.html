@@ -125,6 +125,22 @@
           />
           Cancel
         </label>
+        <label>
+          <input
+            type="radio"
+            formControlName="vazhipadOption"
+            value="nadavaravu"
+          />
+          nadavaravu
+        </label>
+        <label>
+          <input
+            type="radio"
+            formControlName="vazhipadOption"
+            value="nadavaravu-cancel"
+          />
+          nadavaravu-cancel
+        </label>
       </div>
     </form>
   </div>
@@ -148,6 +164,10 @@
   <!-- Right side buttons -->
   <div class="right-buttons">
     <button class="action-button" (click)="onSearch()">Search</button>
+    
+  </div>
+  <div class="right-buttons">
+    <button class="action-button" (click)="onBack()">Back</button>
     
   </div>
 

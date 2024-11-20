@@ -81,6 +81,7 @@ export const Constant = {
     MULTIDAY_FILTER: 'MultiFilter',
     GET_REPORT:"GetReport",
     CANCEL_BILL:"CancelBill",
-    NADAVARAV_BOOKING:"NadavaravuBooking"
+    NADAVARAV_BOOKING:"NadavaravuBooking",
+    CREATE_STAFF:"AddStaffMaster"
   },
 };

@@ -125,3 +125,17 @@ input[type="text"]:focus {
     border-left:0px solid white;
     border-right:0px solid white;
 }
+
+input[type="email"] {
+    border-bottom:2px solid silver;
+    border-top:transparent;
+    border-left:transparent;
+    border-right:transparent;
+    padding-left:9px;
+}
+input[type="email"]:focus {
+    border-bottom:2px solid maroon;
+    border-top:0px solid white;
+    border-left:0px solid white;
+    border-right:0px solid white;
+}

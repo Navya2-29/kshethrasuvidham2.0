@@ -15,7 +15,7 @@ import { CommonModule } from '@angular/common';
     MatSidenavModule,
     MatIconModule,
     MenuComponent,
-    AreaComponent,
+    
     MatMenuModule,
     CommonModule
   ],

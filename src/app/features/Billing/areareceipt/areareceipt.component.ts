@@ -62,12 +62,11 @@ import { Router } from '@angular/router';
     MatAutocompleteModule,
     FormsModule,
     ReactiveFormsModule,
-    AsyncPipe,
+    
     MatIconModule,
     MatRadioModule,
-    MobserachbtnComponent,
-    MultidayComponent,
-    MorebuttonComponent,
+   
+    
     NumberDirective,
   ],
   templateUrl: './areareceipt.component.html',

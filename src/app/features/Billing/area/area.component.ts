@@ -8,7 +8,7 @@ import { PanjankamComponent } from '../../../panjankam/panjankam.component';
 @Component({
   selector: 'app-area',
   standalone: true,
-  imports: [MatIconModule, MatTabsModule, AreareceiptComponent, AreaothersComponent, PanjankamComponent],
+  imports: [MatIconModule, MatTabsModule, AreareceiptComponent, ],
   templateUrl: './area.component.html',
   styleUrl: './area.component.css'
 })

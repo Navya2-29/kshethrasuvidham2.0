@@ -8,6 +8,7 @@
             placeholder="Search by Bill Number"
             [(ngModel)]="billNumber"
             style="width: 150px"
+            class="phone "
           />
           <button
             class="btn btn-primary"
@@ -30,6 +31,7 @@
             placeholder="Search by Mob Number"
             [(ngModel)]="mobileNumber"
             style="width: 150px"
+            class="phone "
           />
           <button
             class="btn btn-secondary"
@@ -138,6 +140,7 @@
           >
             <input
               type="text"
+              maxlength="6"
               *ngIf="
                 customerdetailsForBillingForm.get('Trnsmode')?.value != 'cs'
               "

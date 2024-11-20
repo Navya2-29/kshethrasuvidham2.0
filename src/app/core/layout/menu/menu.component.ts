@@ -7,7 +7,7 @@ import { MenuitemsComponent } from '../menuitems/menuitems.component';
 @Component({
   selector: 'app-menu',
   standalone: true,
-  imports: [ MatDialogModule, MatButtonModule, MenuitemsComponent],
+  imports: [ MatDialogModule, MatButtonModule],
   templateUrl: './menu.component.html',
   styleUrl: './menu.component.css'
 })
