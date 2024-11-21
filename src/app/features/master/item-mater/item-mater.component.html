@@ -14,7 +14,7 @@
           <form [formGroup]="itemMasterForm">
             <table class="table">
               <tr>
-                <td> Item Code<span class="text-danger">*</span><input type="text" maxlength="3" (input)="onInputChange($event)" appUpperCase matInput formControlName="NM_Code" class="form-control sps"
+                <td > Item Code<span class="text-danger">*</span><input type="text" [readonly]="updateFlag"  maxlength="3" (input)="onInputChange($event)" appUpperCase matInput formControlName="NM_Code" class="form-control sps"
                     placeholder="Enter Code" style="width:126px;"> </td>
 
               </tr>
@@ -60,7 +60,7 @@
 
               </tr>
               <tr>
-                <td> Category<span class="text-danger">*</span><select  class="form-control sps" style="width: 100%;"  name="" id="" formControlName="Category">
+                <td> Category<span class="text-danger">*</span><select  class="form-control sps" style="width: 100%;"  name="" id="" formControlName="category">
                   <option value="">Select Category</option>
                   <option value="metal">Sprecious/Metal</option>
                   <option value="nonmetal">Non Sprecious/ or Non Metal</option>
@@ -84,12 +84,11 @@
           </form>
         </div>
         <div class="col-md-6 search">
-            <div style="display:flex;" class="search-container mt-3">
-                <input type="text" class="form-control sps search-input" (input)="onSearch(searchQuery)"
-                  placeholder="search by Code or Name" style="width:36%;" [(ngModel)]="searchQuery">
-                <!-- <button class="btn btn-primary" (click)="onSearch(searchQuery)">Search</button> -->
-                <mat-icon class="search-icon" (click)="onSearch(searchQuery)">search</mat-icon>
-              </div>
+          <div style="display:flex;" class="search-container mt-3">
+            <input type="text" class="form-control sps search-input" (input)="onSearch()"
+              placeholder="search by Code or Name" style="width:36%;" [(ngModel)]="searchQuery">
+            <mat-icon class="search-icon" (click)="onSearch()">search</mat-icon>
+          </div>
           <div class="fixitems prathishta">
             <table class="table">
               <tr style="border-bottom: 2px solid #223d61;">

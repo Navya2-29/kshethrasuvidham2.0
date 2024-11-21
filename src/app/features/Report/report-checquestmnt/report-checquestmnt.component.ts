@@ -55,7 +55,7 @@ export class ReportChecquestmntComponent implements OnInit{
       next: (data) => {
         console.log('Fetched report data:', data);
         this.data=data;
-         this.filteredData = this.data.filter(item => item.TrnsMode === 'ch');   
+         this.filteredData = this.data.filter(item => item.TrnsMode === 'CH');   
          this.filteredData = this.filteredData.sort((a:any, b:any) => {
           const [numA, denomA] = a.BillNo.split('/').map(Number);
           const [numB, denomB] = b.BillNo.split('/').map(Number);
@@ -105,7 +105,7 @@ formatDate(dateString: string | undefined): string {
 }
 
 generatePDF(): void {
-  const filteredData = this.data.filter(item => item.TrnsMode === 'ch');
+  const filteredData = this.data.filter(item => item.TrnsMode === 'CH');
 
   const templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
   const templeAddress = localStorage.getItem('Address') || 'Default Temple Address';

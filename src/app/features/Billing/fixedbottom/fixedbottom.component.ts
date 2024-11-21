@@ -90,11 +90,12 @@ export class FixedbottomComponent implements OnInit {
       Pincode: ['', [Validators.pattern('^[0-9]{6}$')]],
       Userid: [this.loginId],
       CounterId: [this.counterId],
-      Trnsmode: ['cs'],
+      Trnsmode: ['CS'],
       Instno: [''],
       Instdate: [today],
       InstBank: [''],
       Memberid: ['1'],
+      PaidStatus: ['Y'],
     });
   }
   ngOnInit(): void {
@@ -112,6 +113,7 @@ export class FixedbottomComponent implements OnInit {
     );
     this.subscribeToTrnsmodeChanges();
     this.printReceipt();
+    // this.resetForm();
   }
 
   private getCurrentDateMMYY(): string {
@@ -444,7 +446,7 @@ export class FixedbottomComponent implements OnInit {
 
             <div style="text-align: left; margin-top: 15px;">
               <p><strong>Transaction Mode:</strong> ${
-                Trnsmode.toLowerCase() === 'credit' ? 'Cash not paid' : Trnsmode
+                Trnsmode.toLowerCase() === 'CR' ? 'Cash not paid' : Trnsmode
               }</p>
             </div>
             <div style="display: flex; justify-content: space-between; font-size: 14px; margin-top: 0px;">
@@ -530,23 +532,31 @@ export class FixedbottomComponent implements OnInit {
   }
 
   private subscribeToTrnsmodeChanges() {
-    const mobileControl = this.customerdetailsForBillingForm.get('Mobile');
+    
     this.customerdetailsForBillingForm
       .get('Trnsmode')
       ?.valueChanges.subscribe((value) => {
-        if (value === 'cheque') {
+        if (value === 'CH') {
           this.setChequeValidators();
-        } else if (value === 'credit') {
+        } else if (value === 'CR' ) {
+          this.customerdetailsForBillingForm.patchValue({ PaidStatus: 'N' });
           this.clearChequeValidators();
-          mobileControl?.setValidators([Validators.required]); // Set as required
-        } else {
+          this.setCreditValidators();
+        } 
+        // else if (value === 'upi' || value === 'debit' || value === 'bank' ) {
+        //   // this.customerdetailsForBillingForm.patchValue({ PaidStatus: 'N' });
+        //   this.clearChequeValidators();
+        //   this.clearCreditValidators();
+        //   this.setUpiValidators();
+        // } 
+        else {
           this.clearChequeValidators();
-          mobileControl?.clearValidators();
-          mobileControl?.setValidators([Validators.pattern('^[0-9]{10}$')]);
+          this.clearCreditValidators();
+          this.clearUpiValidators();
         }
       });
-    mobileControl?.updateValueAndValidity();
   }
+
   private getFormattedDate(date: Date): string {
     return formatDate(date, 'yyyy-MM-dd', 'en'); // Input type="date" expects format yyyy-MM-dd
   }
@@ -564,6 +574,7 @@ export class FixedbottomComponent implements OnInit {
     formData.Instdate = this.formatToDDMMYYYY(new Date(formData.Instdate));
     this.totalService.setFirstComponentData(formData);
     this.totalService.emitClickEvent();
+    // this.resetForm();
   }
 
   private markAllFieldsAsTouched() {
@@ -625,6 +636,39 @@ export class FixedbottomComponent implements OnInit {
       }
     });
   }
+
+  private setCreditValidators() {
+    this.customerdetailsForBillingForm
+      .get('Mobile')
+      ?.setValidators([Validators.required]);
+
+    this.customerdetailsForBillingForm.get('Mobile')?.updateValueAndValidity();
+  }
+
+  private clearCreditValidators() {
+    this.customerdetailsForBillingForm.get('Mobile')?.clearValidators();
+    this.customerdetailsForBillingForm.get('Mobile')?.updateValueAndValidity();
+  }
+
+
+
+
+  private setUpiValidators() {
+    this.customerdetailsForBillingForm
+      .get('Instno')
+      ?.setValidators([Validators.required]);
+
+    this.customerdetailsForBillingForm.get('Instno')?.updateValueAndValidity();
+  }
+
+  private clearUpiValidators() {
+    this.customerdetailsForBillingForm.get('Instno')?.clearValidators();
+    this.customerdetailsForBillingForm.get('Instno')?.updateValueAndValidity();
+  }
+
+
+
+
 
   private formatToDDMMYYYY(date: Date): string {
     const day = ('0' + date.getDate()).slice(-2);
@@ -702,12 +746,26 @@ export class FixedbottomComponent implements OnInit {
       BillNo: this.lastBillnumber + 1,
       Billdate: today,
       Userid: this.loginId,
-      CounterId: '1',
-      Trnsmode: 'cs',
+      CounterId: this.counterId,
+      Trnsmode: 'CS',
       Instno: '',
       Instdate: today,
       InstBank: '',
       Memberid: '1',
+      PaidStatus: 'Y',
+
+
+     
+     
+      Mobile: '', 
+      Address1: '',
+      Address2: '',
+      Address3: '',
+      Email: '',
+      Pincode: '', 
+      
+      
+     
     });
   }
 

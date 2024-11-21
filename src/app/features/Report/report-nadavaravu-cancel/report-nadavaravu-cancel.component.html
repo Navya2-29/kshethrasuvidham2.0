@@ -12,8 +12,13 @@
         <span class="material-icons">grid_view</span>
     </button>
 </div>
+<h1>Cancel report</h1>
 
 <div class="report-table">
+  <mat-form-field>
+    <mat-label>Filter</mat-label>
+    <input matInput (keyup)="applyFilter($event)" placeholder="Search data" #input>
+  </mat-form-field>
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
       <ng-container matColumnDef="BillNo">
@@ -22,42 +27,53 @@
       </ng-container>
 
       <ng-container matColumnDef="BillDate">
-        <th mat-header-cell *matHeaderCellDef> Bill Date </th>
+        <th mat-header-cell *matHeaderCellDef> BillDate </th>
         <td mat-cell *matCellDef="let element"> {{ element.BillDate }} </td>
       </ng-container>
 
-      <ng-container matColumnDef="Vazhipad">
-        <th mat-header-cell *matHeaderCellDef> Vazhipad </th>
-        <td mat-cell *matCellDef="let element"> {{ element.Vazhipad }} </td>
+      <ng-container matColumnDef="CounterId">
+        <th mat-header-cell *matHeaderCellDef> CounterId </th>
+        <td mat-cell *matCellDef="let element"> {{ element.CounterId }} </td>
       </ng-container>
   
-      <ng-container matColumnDef="Name">
-        <th mat-header-cell *matHeaderCellDef>Name</th>
-        <td mat-cell *matCellDef="let element"> {{ element.Name }} </td>
+    
+  
+      <ng-container matColumnDef="NM_Name">
+        <th mat-header-cell *matHeaderCellDef> NM_Name </th>
+        <td mat-cell *matCellDef="let element"> {{ element.NM_Name }} </td>
       </ng-container>
   
-      <ng-container matColumnDef="Mobile">
-        <th mat-header-cell *matHeaderCellDef> Mobile </th>
-        <td mat-cell *matCellDef="let element"> {{ element.Mobile }} </td>
-      </ng-container>
-  
+
       <ng-container matColumnDef="Qty">
         <th mat-header-cell *matHeaderCellDef> Qty </th>
         <td mat-cell *matCellDef="let element"> {{ element.Qty }} </td>
       </ng-container>
-      <ng-container matColumnDef="Rate">
-        <th mat-header-cell *matHeaderCellDef> Rate </th>
-        <td mat-cell *matCellDef="let element"> {{ element.Rate }} </td>
+
+  
+
+      <ng-container matColumnDef="ItemValue">
+        <th mat-header-cell *matHeaderCellDef> ItemValue </th>
+        <td mat-cell *matCellDef="let element"> {{ element.ItemValue }} </td>
+      </ng-container>
+      <ng-container matColumnDef="Receipt_Amt">
+        <th mat-header-cell *matHeaderCellDef> Receipt_Amt </th>
+        <td mat-cell *matCellDef="let element"> {{ element.Receipt_Amt }} </td>
+      </ng-container>
+      <ng-container matColumnDef="Canceldt">
+        <th mat-header-cell *matHeaderCellDef> Canceldt </th>
+        <td mat-cell *matCellDef="let element"> {{ element.Canceldt }} </td>
       </ng-container>
 
-      <ng-container matColumnDef="Amount">
-        <th mat-header-cell *matHeaderCellDef> Amount </th>
-        <td mat-cell *matCellDef="let element"> {{ element.Amount }} </td>
+      <ng-container matColumnDef="CanceledBY">
+        <th mat-header-cell *matHeaderCellDef> CanceledBY </th>
+        <td mat-cell *matCellDef="let element"> {{ element.CanceledBY }} </td>
       </ng-container>
-      <ng-container matColumnDef="TransMode">
-        <th mat-header-cell *matHeaderCellDef> TransMode </th>
-        <td mat-cell *matCellDef="let element"> {{ element.TrnsMode }} </td>
+
+      <ng-container matColumnDef="Reason">
+        <th mat-header-cell *matHeaderCellDef> Reason </th>
+        <td mat-cell *matCellDef="let element"> {{ element.Reason }} </td>
       </ng-container>
+
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>

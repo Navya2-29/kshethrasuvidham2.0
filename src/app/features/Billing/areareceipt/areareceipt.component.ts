@@ -878,7 +878,7 @@ export class AreareceiptComponent implements OnInit {
     const formattedData = this.formatDateFields(updatedData);
     console.log(formattedData, 'formatteddataaaaaaaaaaaaa');
 
-    if (formattedData.Trnsmode !== 'cs') {
+    if (formattedData.Trnsmode !== 'CS') {
       const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
         data: { message: `Do you want to proceed with digital payment ?` },
       });

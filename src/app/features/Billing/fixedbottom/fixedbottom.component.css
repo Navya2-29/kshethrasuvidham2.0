@@ -139,3 +139,7 @@ input[type="email"]:focus {
     border-left:0px solid white;
     border-right:0px solid white;
 }
+.is-invalid {
+    border: 2px solid red !important; /* !important ensures it overrides other styles */
+    border-radius: 4px;
+  }

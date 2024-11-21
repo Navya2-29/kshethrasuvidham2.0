@@ -4,4 +4,5 @@ export interface ItemMaster{
     NM_RName:string;
     NM_Id:string;
     NM_Description:string;
+    category:string
 }

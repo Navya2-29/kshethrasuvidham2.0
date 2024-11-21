@@ -123,7 +123,7 @@ templeName:string |null;
       },
       error: (error) => {
         console.log(error);
-        this.loading = true;
+        // this.loading = true;
       },
     });
   }

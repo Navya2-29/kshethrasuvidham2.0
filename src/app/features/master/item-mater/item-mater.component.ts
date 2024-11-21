@@ -22,6 +22,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { ItemMaster } from '../../../models/item-master.model';
 import { DuplicatecheckService } from '../../../services/duplicateCheckValidator/duplicatecheck.service';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-item-mater',
   standalone: true,
@@ -46,14 +47,17 @@ export class ItemMAterComponent {
   filtereditemMaster: ItemMaster[] = [];
   showNoRecordsMessage: boolean = false;
   itemMasterForm: FormGroup;
+  loading: boolean = false;
   updateFlag: boolean = false;
   searchQuery: string = '';
   Id: string = '';
+  code: string;
   showMaxLengthError: boolean = false;
+  sortAscending: boolean = true;
   userId: string | null;
   private masterService = inject(MasterService);
   private formBuilder = inject(FormBuilder);
-  private _snackBar = inject(MatSnackBar);
+  private notification = inject(ToastrService);
   private duplicateCheck = inject(DuplicatecheckService);
   templeName:string |null ;
   constructor() {
@@ -66,7 +70,7 @@ export class ItemMAterComponent {
           Validators.required,
           Validators.maxLength(3),
           Validators.pattern('^[a-zA-Z0-9]+$'),
-          this.duplicateCodeValidator.bind(this),
+          
         ],
       ],
       NM_Name: [
@@ -74,19 +78,21 @@ export class ItemMAterComponent {
         [
           Validators.required,
           Validators.pattern('^[a-zA-Zs]+$'),
-          this.duplicateNameValidator.bind(this),
+          
         ],
       ],
       NM_RName: [''],
-      Category:[''],
+      category:['', Validators.required,],
       NM_Description: [''],
     });
   }
   ngOnInit(): void {
+    this.loading = true;
     this.getItemMaster();
   }
   // view prathishta
   getItemMaster() {
+    this.loading = true;
     const payLoad = {
       Type: 'NadavaravuALL',
       Code: '',
@@ -96,8 +102,10 @@ export class ItemMAterComponent {
         if (data && data.length > 0) {
           // console.log(data)
           this.itemMaster = data;
-          console.log(this.itemMaster);
           this.filtereditemMaster = this.itemMaster;
+          this.sortByCMCode();
+          console.log(this.itemMaster);
+          
           console.log(this.filtereditemMaster, 'filteredmaster');
         }
       },
@@ -124,20 +132,26 @@ export class ItemMAterComponent {
         NMName: data.NM_Name,
         NMRName: data.NM_RName,
         NMDescription: data.NM_Description,
+        Category:data.category,
         Cuser: this.userId,
         Type: 'INSERT',
       };
 
       this.masterService.createItemMaster(payload).subscribe({
         next: (res) => {
-          this.openSnackBar(
-            ' Item Details created sussess fully',
-            'close',
-            'success-snackbar'
-          );
+
+          if(res.RespStatus==='I'){
+            this.notification.success(
+              ' Item Details created successfully',
+             
+              'success'
+            );
+          }
+          
           this.getItemMaster();
           console.log(res, 'respobs');
           this.onReset();
+          this.loading = false;
         },
         error: (error) => {
           console.log(error);
@@ -145,16 +159,19 @@ export class ItemMAterComponent {
       });
     } else {
       this.markFormGroupTouched(this.itemMasterForm);
+      this.notification.success(' Please fill the  details');
     }
   }
   // resetting form controls
   onReset() {
     this.itemMasterForm.reset();
     this.updateFlag = false;
+    this.loading = false;
   }
 
   //for editing the form fields
   onEdit(data: ItemMaster) {
+    this.loading = true;
     console.log(data);
     this.Id = data.NM_Id;
     this.updateFlag = true;
@@ -163,32 +180,51 @@ export class ItemMAterComponent {
       NM_Name: data.NM_Name,
       NM_RName: data.NM_RName,
       NM_Description: data.NM_Description,
+      category:data.category
     });
+    this.loading = false;
   }
 
   //update data
   onUpdate(updatedata: ItemMaster) {
     console.log(updatedata, 'hhhhhhhhhhhhhhhh');
+    this.loading = true;
     const payload = {
       NMId: this.Id,
       NMCode: updatedata.NM_Code,
       NMName: updatedata.NM_Name,
       NMRName: updatedata.NM_RName,
       NMDescription: updatedata.NM_Description,
+      Category:updatedata.category,
       Cuser: this.userId,
       Type: 'UPDATE',
     };
-    this.masterService.updateItemMaster(payload).subscribe((res) => {
-      this.openSnackBar(
-        ' Item Details updated sussess fully',
-        'close',
-        'success-snackbar'
-      );
+    if (this.itemMasterForm.valid) {
 
-      console.log(res);
-      this.getItemMaster();
-      this.itemMasterForm.reset();
-    });
+      this.masterService.updateItemMaster(payload).subscribe((res) => {
+
+        if(res.RespStatus==='U'){
+          this.loading = false;
+          this.notification.success(
+            ' Item Details updated successfully',
+           
+            'success'
+          );
+        }
+       
+  
+        console.log(res);
+        this.getItemMaster();
+        this.itemMasterForm.reset();
+      });
+
+    }
+    else {
+      this.markFormGroupTouched(this.itemMasterForm);
+      this.loading = false;
+      this.notification.success(' Please Fill the  details');
+    }
+    
   }
 
   // deleteData
@@ -196,10 +232,10 @@ export class ItemMAterComponent {
     console.log(id);
     const payLoad = { Type: 'Nadavaravu', Id: id };
     this.masterService.deleteItemMaster(payLoad).subscribe((res) => {
-      this.openSnackBar(
-        ' Item Details deleted sussess fully',
-        'close',
-        'success-snackbar'
+      this.notification.success(
+        ' Item Details deleted successfully',
+       
+        'success'
       );
       this.getItemMaster();
       console.log(res);
@@ -207,25 +243,22 @@ export class ItemMAterComponent {
   }
 
   // search functionality by pname
-  onSearch(searchQuery: string) {
+  onSearch() {
     if (!this.searchQuery.trim()) {
       this.filtereditemMaster = this.itemMaster;
     } else {
       this.filtereditemMaster = this.itemMaster.filter((data) => {
         console.log(data);
-        return data.NM_Name.toLowerCase().includes(this.searchQuery);
+        return (
+          data.NM_Name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+          data.NM_Code.toLowerCase().includes(this.searchQuery.toLowerCase())
+        );
       });
     }
+    this.showNoRecordsMessage = this.filtereditemMaster.length === 0;
   }
 
-  // snack  message
-  openSnackBar(message: string, action: string, classname: string) {
-    this._snackBar.open(message, action, {
-      panelClass: classname,
-      horizontalPosition: 'end',
-      verticalPosition: 'top',
-    });
-  }
+  
 
   onInputChange(event: any) {
     const inputValue: string = event.target.value;
@@ -250,24 +283,28 @@ export class ItemMAterComponent {
   // duplicate code check validators
   duplicateCodeValidator(control: AbstractControl): ValidationErrors | null {
     const code = control.value;
-    if (
-      this.duplicateCheck.itemMastercheckDuplicateCode(code, this.itemMaster)
-    ) {
-      return { duplicateCode: true };
+    if (this.updateFlag) {
+      return null;
+    } else {
+      if (this.duplicateCheck.itemMastercheckDuplicateCode(code, this.itemMaster)) {
+        return { duplicateCode: true };
+      }
+      return null;
     }
-    return null;
   }
 
   // duplicate name check validators
-  duplicateNameValidator(control: AbstractControl): ValidationErrors | null {
-    const name = control.value;
-    if (
-      this.duplicateCheck.itemMastercheckDuplicateName(name, this.itemMaster)
-    ) {
-      return { duplicateName: true };
-    }
-    return null;
-  }
+  
+  sortByCMCode() {
+    this.filtereditemMaster.sort((a, b) => {
+      const codeA = parseInt(a.NM_Code, 10);
+      const codeB = parseInt(b.NM_Code, 10);
 
+      if (isNaN(codeA)) return 1; // Consider NaN as the highest value if sorting
+      if (isNaN(codeB)) return -1;
+
+      return this.sortAscending ? codeA - codeB : codeB - codeA;
+    });
+  }
   
 }

@@ -164,9 +164,16 @@ export class DuplicatecheckService {
 
   itemMastercheckDuplicateName(
     name: string,
-    ImasterData: ItemMaster[]
+    pmasterData: ItemMaster[],
+    code: string
   ): boolean {
-    return ImasterData.some((I) => I.NM_Name === name);
+    const matchingPmaster = pmasterData.find((p) => p.NM_Name === name);
+    console.log(matchingPmaster);
+    if (matchingPmaster) {
+      return matchingPmaster.NM_Code === code;
+    }
+
+    return false;
   }
   vihidhamMastercheckDuplicateCode(
     code: string,
