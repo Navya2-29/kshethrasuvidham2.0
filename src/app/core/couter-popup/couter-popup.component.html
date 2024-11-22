@@ -5,7 +5,7 @@
     </p>
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Counter ID</mat-label>
-      <input matInput placeholder="Enter Counter ID" [(ngModel)]="counterId"   (keydown.enter)="save()"/>
+      <input matInput placeholder="Enter Counter ID" [(ngModel)]="counterId" type="number"  (keydown.enter)="save()"/>
     </mat-form-field>
     <div class="dialog-actions">
       <button mat-flat-button color="primary" class="custom-button" (click)="save()">Submit</button>

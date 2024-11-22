@@ -109,8 +109,17 @@ export class ReportDashboardComponent {
     else if (reportType === 'nadavaravu') {
       this.newTab = window.open(`#/report-nadavaravu${queryString}`, '_blank');
     }
+    else if (reportType === 'debit') {
+      this.newTab = window.open(`#/report-debit${queryString}`, '_blank');
+    }
     else if (reportType === 'nadavaravu-cancel') {
       this.newTab = window.open(`#/report-nadavaravu-cancel${queryString}`, '_blank');
+    }
+    else if (reportType === 'moneyorder') {
+      this.newTab = window.open(`#/report-moneyorder${queryString}`, '_blank');
+    }
+    else if (reportType === 'online') {
+      this.newTab = window.open(`#/report-online${queryString}`, '_blank');
     }
 
     if (this.newTab) {

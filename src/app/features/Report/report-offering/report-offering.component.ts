@@ -8,6 +8,8 @@ import { jsPDF } from 'jspdf';
 import {ReportData} from '../../../models/poornam-report'
 import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 interface ConsolidatedData {
   Vazhipad: string;
@@ -16,7 +18,7 @@ interface ConsolidatedData {
 @Component({
   selector: 'app-report-offering',
   standalone: true,
-  imports: [CommonModule,MatTableModule,MatPaginatorModule,HeaderComponent,MatTooltipModule],
+  imports: [CommonModule,MatTableModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule],
   templateUrl: './report-offering.component.html',
   styleUrl: './report-offering.component.css'
 })
@@ -109,7 +111,10 @@ export class ReportOfferingComponent {
   }
 
 
-
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
 
 
 

@@ -2,9 +2,9 @@
   <div class="col-md-12">
     <div class="card-body fixitems" id="details">
        <!-- Back Button -->
-       <button class="rounded-back-button" (click)="onBack()">
+       <!-- <button class="rounded-back-button" (click)="onBack()">
         <mat-icon>arrow_back</mat-icon>
-      </button>
+      </button> -->
       <div style="display: flex; flex-wrap: wrap">
         <form [formGroup]="form">
           <table class="table">
@@ -264,7 +264,7 @@
           </table>
           <div class="button-container">
             <a class="text-danger d-flex align-items-center justify-content-center" style="cursor: pointer;" (click)="clearAll()">
-              <i class="fas fa-trash me-2"></i> Clear All
+              <i class="fas fa-trash me-2 "></i><span class="ml-1"> Clear All</span>
             </a>
           </div>
         </form>

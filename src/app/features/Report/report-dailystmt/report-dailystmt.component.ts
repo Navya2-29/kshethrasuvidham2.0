@@ -10,11 +10,13 @@ import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Location } from '@angular/common';
 import autoTable from 'jspdf-autotable';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-report-dailystmt',
   standalone: true,
-  imports: [CommonModule,MatTableModule,MatPaginatorModule,HeaderComponent,MatTooltipModule],
+  imports: [CommonModule,MatTableModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule],
   templateUrl: './report-dailystmt.component.html',
   styleUrl: './report-dailystmt.component.css'
 })
@@ -40,7 +42,10 @@ export class ReportDailystmtComponent {
     });
   }
 
-
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
 
  // Call your API service to get the report data
   fetchReportData(type: string, fromDate: string, toDate: string): void {
@@ -114,7 +119,7 @@ export class ReportDailystmtComponent {
     
       doc.setFontSize(10);
       doc.setFont("Helvetica", "bold");
-      doc.text("Transaction Report", pageWidth / 2, 27, { align: "center" });
+      doc.text("DAILY STATEMENT(DETAILED) REPORT", pageWidth / 2, 27, { align: "center" });
     
       // Add current date below the report title but above the table header
       doc.setFontSize(10);

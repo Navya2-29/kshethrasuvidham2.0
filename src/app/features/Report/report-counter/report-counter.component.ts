@@ -12,7 +12,9 @@ import { jsPDF } from 'jspdf';
 import { ReportData } from '../../../models/poornam-report';
 import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import html2pdf from 'html2pdf.js';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+
 
 @Component({
   selector: 'app-report-counter',
@@ -21,7 +23,7 @@ import html2pdf from 'html2pdf.js';
     MatTableModule,
     MatPaginatorModule,
     HeaderComponent,
-    MatTooltipModule,],
+    MatTooltipModule,MatFormFieldModule, MatInputModule,],
   templateUrl: './report-counter.component.html',
   styleUrl: './report-counter.component.css'
 })
@@ -316,7 +318,10 @@ export class ReportCounterComponent {
   
   // Helper function to wrap text for a given column width
  
-  
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
   
 
   getTransactionType(transmode: string): string {

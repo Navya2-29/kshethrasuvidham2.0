@@ -8,12 +8,14 @@ import { jsPDF } from 'jspdf';
 import {ReportData} from '../../../models/poornam-report'
 import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 
 @Component({
   selector: 'app-report-upi',
   standalone: true,
-  imports: [CommonModule,MatTableModule,MatPaginatorModule,HeaderComponent,MatTooltipModule],
+  imports: [CommonModule,MatTableModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
   templateUrl: './report-upi.component.html',
   styleUrl: './report-upi.component.css'
 })
@@ -50,7 +52,7 @@ export class ReportUpiComponent {
       next: (data) => {
         console.log('Fetched report data:', data);
         this.data=data;
-         this.filteredData = this.data.filter(item => item.TrnsMode === 'up');   
+         this.filteredData = this.data.filter(item => item.TrnsMode === 'UP');   
          this.filteredData = this.filteredData.sort((a:any, b:any) => {
           const [numA, denomA] = a.BillNo.split('/').map(Number);
           const [numB, denomB] = b.BillNo.split('/').map(Number);
@@ -82,10 +84,15 @@ export class ReportUpiComponent {
     console.log('Going back...'); // Log to verify method execution
     this.router.navigate(['/getReport']);
   }
+  
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
 
   generatePDF(): void {
     // Filter data for entries with transmode 'ch'
-    const filteredData = this.data.filter(item => item.TrnsMode === 'up');
+    const filteredData = this.data.filter(item => item.TrnsMode === 'UP');
   
     const templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
     const templeAddress = localStorage.getItem('Address') || 'Default Temple Address';

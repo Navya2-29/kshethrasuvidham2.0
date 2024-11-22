@@ -31,7 +31,7 @@ this.userForm=this.fb.group({
   Address1:['',Validators.required],
   Role:['',Validators.required],
   Type:["INSERT"],
-  Active:[true]
+  Active:["Y"]
 })
 
 }
@@ -65,7 +65,7 @@ reset(){
   this.userForm.reset({
     LoginId:this.loginId,
     Type:"INSERT",
-    Active:true
+    Active:"Y"
   })
 }
 onEdit(item:any){

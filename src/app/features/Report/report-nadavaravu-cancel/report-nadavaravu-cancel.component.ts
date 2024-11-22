@@ -8,8 +8,6 @@ import { jsPDF } from 'jspdf';
 import {ReportData} from '../../../models/poornam-report'
 import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Location } from '@angular/common';
-
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
@@ -21,9 +19,8 @@ import { MatInputModule } from '@angular/material/input';
   styleUrl: './report-nadavaravu-cancel.component.css'
 })
 
-
 export class ReportNadavaravuCancelComponent {
-  displayedColumns: string[] = ['BillNo','BillDate','CounterId', 'NM_Name',  'Qty','Receipt_Amt','ItemValue','Canceldt','CanceledBY','Reason'];
+  displayedColumns: string[] = ['BillNo','BillDate','CounterId', 'Name','Star','NM_Name', 'weight','unit', 'Qty','Receipt_Amt','ItemValue','Canceldt','CanceledBY','Reason'];
   dataSource = new MatTableDataSource<ReportData>();
   length = 0;
   pageSize = 5;
@@ -34,8 +31,6 @@ export class ReportNadavaravuCancelComponent {
   groupedData: { [key: string]: ReportData[] } = {};
   filteredData:ReportData[]=[];
   constructor(private route: ActivatedRoute, private service: ReportService,private router: Router) {}
-
-
 
 ngOnInit() {
   this.route.queryParams.subscribe((params) => {
@@ -120,8 +115,8 @@ generatePDF() {
   const contentFontSize = 8;
   const currentDate = new Date().toLocaleDateString();
 
-  const maxColumnWidths = [20, 20, 40,15,15, 15, 15, 20, 25]; // Column widths for each column
-  const headers = ["Bill No.", "BillDate", "Vazhipad","Date", "Qty", "Rate",  "Amount",'Canceldt','Remarks'];
+  const maxColumnWidths = [20, 20, 40,15, 15, 25, 20, 30]; // Column widths for each column
+  const headers = ["Bill No.", "BillDate", "Item", "Qty", "I-Value",  "Rct.Amount",'Canceldt','Remarks'];
 
   let y = headerHeight;
   let grandTotalRate = 0;
@@ -138,7 +133,7 @@ generatePDF() {
   
     doc.setFontSize(10);
     doc.setFont("Helvetica", "bold");
-    doc.text("Canceled Booking Report", pageWidth / 2, 27, { align: "center" });
+    doc.text("Canceled Nadavaravu Booking Report", pageWidth / 2, 27, { align: "center" });
   
     // Add current date below the report title but above the table header
     doc.setFontSize(10);
@@ -191,15 +186,15 @@ generatePDF() {
       row.BillNo,
       row.BillDate,
       
-      wrapText(doc, row.Vazhipad, maxColumnWidths[2]), 
+      wrapText(doc, row.NM_Name, maxColumnWidths[2]), 
            // Wrap Name
-          row. VazhiDate,
+          
       row.Qty,
      
-      row.Rate.toFixed(2),
-      row.Amount.toFixed(2),
+      Number(row.ItemValue).toFixed(2),
+      Number(row.Receipt_Amt).toFixed(2),
       row.Canceldt,
-      wrapText(doc, row.Remarks, maxColumnWidths[7]),
+      wrapText(doc, row.Reason, maxColumnWidths[7]),
     ];
 
     // Calculate the max height required for wrapped text in the row
@@ -222,7 +217,6 @@ generatePDF() {
     // Draw each cell with normal font
     doc.setFont("Helvetica", "normal");
     doc.setFontSize(contentFontSize);
-
     tableRow.forEach((cell, index) => {
       if (Array.isArray(cell)) {
         // Handle wrapped text
@@ -247,8 +241,8 @@ generatePDF() {
     doc.line(10, y, pageWidth - 10, y); // Line at the bottom of the row
 
     // Accumulate grand totals
-    grandTotalRate += row.Rate;
-    grandTotalAmount += row.Amount;
+    grandTotalRate += row.ItemValue;
+    grandTotalAmount += row.Receipt_Amt;
 
     y += rowHeight; // Move y position for the next row
   });
@@ -290,6 +284,6 @@ generatePDF() {
   y += lineHeight; // Move y position for the Grand Total row
 
   // Save PDF
-  doc.save("bookinbCancelReport.pdf");
+  doc.save("NadavaravuCancel.pdf");
 }
 }

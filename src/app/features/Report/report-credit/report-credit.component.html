@@ -8,12 +8,16 @@
     <button mat-icon-button matTooltip="Make PDF" (click)="generatePDF()">
         <span class="material-icons">print</span>
     </button>
-    <button mat-icon-button matTooltip="Export to Spreadsheet" >
+    <!-- <button mat-icon-button matTooltip="Export to Spreadsheet" >
         <span class="material-icons">grid_view</span>
-    </button>
+    </button> -->
 </div>
 
 <div class="report-table">
+  <mat-form-field>
+    <mat-label>Filter</mat-label>
+    <input matInput (keyup)="applyFilter($event)" placeholder="Search data" #input>
+  </mat-form-field>
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
       <ng-container matColumnDef="BillNo">
@@ -38,7 +42,7 @@
   
       <ng-container matColumnDef="Mobile">
         <th mat-header-cell *matHeaderCellDef> Mobile </th>
-        <td mat-cell *matCellDef="let element"> {{ element.Mobile }} </td>
+        <td mat-cell *matCellDef="let element"> {{ element.MobileNo }} </td>
       </ng-container>
   
       <ng-container matColumnDef="Qty">

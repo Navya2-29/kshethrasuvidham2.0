@@ -10,10 +10,12 @@ import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Location } from '@angular/common';
 import autoTable from 'jspdf-autotable';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 @Component({
   selector: 'app-report-credit',
   standalone: true,
-  imports: [CommonModule,MatTableModule,MatPaginatorModule,HeaderComponent,MatTooltipModule],
+  imports: [CommonModule,MatTableModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
   templateUrl: './report-credit.component.html',
   styleUrl: './report-credit.component.css'
 })
@@ -45,7 +47,7 @@ export class ReportCreditComponent {
  // Call your API service to get the report data
   fetchReportData(type: string, fromDate: string, toDate: string): void {
     const payLoad = {
-      Type: 'DailyStmt',
+      Type: 'DailyStmtDetaild',
       FromDate: fromDate,
       ToDate: toDate,
     };
@@ -53,7 +55,7 @@ export class ReportCreditComponent {
       next: (data) => {
         console.log('Fetched report data:', data);
         this.data=data;
-         this.filteredData = this.data.filter(item => item.TrnsMode === 'cr');   
+         this.filteredData = this.data.filter(item => item.TrnsMode === 'CR');   
          this.filteredData = this.filteredData.sort((a:any, b:any) => {
           const [numA, denomA] = a.BillNo.split('/').map(Number);
           const [numB, denomB] = b.BillNo.split('/').map(Number);
@@ -86,11 +88,14 @@ export class ReportCreditComponent {
     this.router.navigate(['/getReport']);
   }
 
-
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
 
   generatePDF(): void {
     // Filter data for entries with transmode 'ch'
-    const filteredData = this.data.filter(item => item.TrnsMode === 'cr');
+    const filteredData = this.data.filter(item => item.TrnsMode === 'CR');
   
     const templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
     const templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
@@ -175,7 +180,7 @@ export class ReportCreditComponent {
         row.BillNo,
         wrapText(doc, row.Vazhipad, maxColumnWidths[1]), // Wrap Vazhipad
         wrapText(doc, row.Name, maxColumnWidths[2]),     // Wrap Name
-        row.InstNo,
+        row.MobileNo,
         row.Qty,
         row.Rate.toFixed(2),
         row.Amount.toFixed(2),

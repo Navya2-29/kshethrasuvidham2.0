@@ -3,33 +3,48 @@ import { ReportService } from '../service/report.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { jsPDF } from 'jspdf'; 
-import {ReportData} from '../../../models/poornam-report'
+import {
+  MatPaginator,
+  MatPaginatorModule,
+  PageEvent,
+} from '@angular/material/paginator';
+import { jsPDF } from 'jspdf';
+import { ReportData } from '../../../models/poornam-report';
 import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Location } from '@angular/common';
-import autoTable from 'jspdf-autotable';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { NadavaravReport } from '../../../models/nadavarav.model';
+
 @Component({
   selector: 'app-report-nadavarav',
   standalone: true,
-  imports: [CommonModule,MatTableModule,MatPaginatorModule,HeaderComponent,MatTooltipModule],
+  imports: [CommonModule,
+    MatTableModule,
+    MatPaginatorModule,
+    HeaderComponent,
+    MatTooltipModule,MatFormFieldModule, MatInputModule,],
   templateUrl: './report-nadavarav.component.html',
   styleUrl: './report-nadavarav.component.css'
 })
 export class ReportNadavaravComponent implements  OnInit {
-
-  displayedColumns: string[] = ['BillNo','BillDate','Vazhipad', 'Name', 'Mobile','Qty','Rate',  'Amount', 'TransMode'  ];
-  dataSource = new MatTableDataSource<ReportData>();
+  
+  displayedColumns: string[] = ['BillNo','BillDate','NM_Name', 'Name', 'Star', 'Qty', 'ItemValue','weight', 'Receipt_Amt',  'TrnMode','Remarks' ];
+  dataSource = new MatTableDataSource<NadavaravReport>();
   length = 0;
   pageSize = 5;
-  pageSizeOptions: number[] = [5, 7,10, 20, 50];
+  pageSizeOptions: number[] = [5, 7, 10, 20, 50];
   pageIndex = 0;
-  data:ReportData[]=[];
+  data: NadavaravReport[] = [];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  groupedData: { [key: string]: ReportData[] } = {};
-  filteredData:ReportData[]=[];
-  constructor(private route: ActivatedRoute, private service: ReportService,private router: Router) {}
+  groupedData: { [key: string]: NadavaravReport[] } = {};
+  currentDate: string = '';
+  currentPage: number = 1;
+  constructor(
+    private route: ActivatedRoute,
+    private service: ReportService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
@@ -40,35 +55,30 @@ export class ReportNadavaravComponent implements  OnInit {
     });
   }
 
-
-
- // Call your API service to get the report data
+  // Call your API service to get the report data
   fetchReportData(type: string, fromDate: string, toDate: string): void {
     const payLoad = {
-      Type: 'CancelRptNadavaravu',
+      Type: "NadavaravuRpt",
       FromDate: fromDate,
       ToDate: toDate,
     };
     this.service.getReport(payLoad).subscribe({
       next: (data) => {
         console.log('Fetched report data:', data);
-        this.data=data;
-         this.filteredData = this.data.filter(item => item.TrnsMode === 'cr');   
-         this.filteredData = this.filteredData.sort((a:any, b:any) => {
+        this.data = data;
+        this.groupDataByTransactionMode(this.data); // Group the data
+        this.data = data.sort((a: any, b: any) => {
           const [numA, denomA] = a.BillNo.split('/').map(Number);
           const [numB, denomB] = b.BillNo.split('/').map(Number);
-          
+
           // Compare the two parts: first compare the numerator, then the denominator
           return numA - numB || denomA - denomB;
-      });
-      console.log(this.filteredData,"aaaaaaaaaaaaaaaaaaa")  
-
-        this.dataSource.data = this.filteredData
-        console.log( this.dataSource.data)
-        this.length =this.filteredData .length; 
+        });
+        this.dataSource.data = this.data;
+        this.length = data.length;
         this.dataSource.paginator = this.paginator;
-        
-        console.log(this.filteredData);
+
+        console.log(this.groupedData);
       },
       error: (error) => {
         console.error('Error fetching report data:', error);
@@ -76,40 +86,53 @@ export class ReportNadavaravComponent implements  OnInit {
     });
   }
 
+  // Grouping function
+  groupDataByTransactionMode(data: NadavaravReport[]): void {
+    this.groupedData = data.reduce((acc, item) => {
+      (acc[item.category] = acc[item.category] || []).push(item);
+      return acc;
+    }, {} as { [key: string]: NadavaravReport[] });
+  }
+
   onPageChange(event: PageEvent) {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
   }
-  
+
   goBack(): void {
     console.log('Going back...'); // Log to verify method execution
     this.router.navigate(['/getReport']);
   }
 
-
-
-  generatePDF(): void {
-    // Filter data for entries with transmode 'ch'
-    const filteredData = this.data.filter(item => item.TrnsMode === 'cr');
   
+  generatePDF() {
     const templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
     const templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.width;
     const pageHeight = doc.internal.pageSize.height;
-    const headerHeight = 35;
-    const footerHeight = 8;
+  
+    const headerHeight = 30;
+    const footerHeight = 20;
     const lineHeight = 10;
-    const tableHeaderFontSize = 11;
-    const contentFontSize = 10;
-    const currentDate = new Date().toLocaleDateString();
+    const tableHeaderFontSize = 10;
+    const contentFontSize = 9;
   
-    const maxColumnWidths = [20, 55, 40, 30, 15, 15, 15]; // Column widths for each column
-    const headers = ["Bill No.", "VAZHIPAD", "NAME", "MOBILE", "ENNAM", "RATE", "TOTAL"];
+    // Adjusted column widths for BillNo, Name, Vazhipad, Star, Ennam (Qty), Rate, and Amount
+    const maxColumnWidths = [20, 40, 35, 25, 25, 25, 25]; // BillNo, Name, Vazhipad, Star, Ennam (Qty), Rate, Amount
+    
+    let y = headerHeight; // Initial Y position after header
+    let grandTotal = 0; // Initialize grand total
   
-    let y = headerHeight;
-    let grandTotalRate = 0;
-    let grandTotalAmount = 0;
+    // Data grouped by TransactionMode (example grouping key)
+    const groupedData = this.data.reduce((acc, current) => {
+      const key = current.category; // Change this key if grouping by something else
+      if (!acc[key]) {
+        acc[key] = [];
+      }
+      acc[key].push(current);
+      return acc;
+    }, {} as { [key: string]: NadavaravReport[] });
   
     // Draw Header
     const drawHeader = () => {
@@ -119,16 +142,11 @@ export class ReportNadavaravComponent implements  OnInit {
       doc.setFont("Helvetica", "normal");
       doc.setFontSize(10);
       doc.text(templeAddress, pageWidth / 2, 18, { align: "center" });
-    
+  
       doc.setFontSize(10);
       doc.setFont("Helvetica", "bold");
-      doc.text("Credit Transaction Report", pageWidth / 2, 27, { align: "center" });
-    
-      // Add current date below the report title but above the table header
-      doc.setFontSize(10);
-      doc.setFont("Helvetica", "normal");
-      doc.text(currentDate, pageWidth / 2, 32, { align: "center" });
-    
+      doc.text("Nadavaravu Booking Report", pageWidth / 2, 27, { align: "center" });
+  
       doc.setLineWidth(0.5);
       doc.line(10, y, pageWidth - 10, y); // Line below header
       y += 3; // Space below the line
@@ -137,29 +155,25 @@ export class ReportNadavaravComponent implements  OnInit {
     // Draw Footer
     const drawFooter = (pageNum: number) => {
       doc.setFontSize(10);
-      doc.text(`Page ${pageNum}`, pageWidth / 2, pageHeight - footerHeight / 2, { align: "center" });
+      const footerText = `Page ${pageNum}`;
+      doc.text(footerText, pageWidth / 2, pageHeight - footerHeight / 2, { align: "center" });
     };
   
     // Add Table Header
     const drawTableHeader = () => {
       doc.setFontSize(tableHeaderFontSize);
       doc.setFont("Helvetica", "bold");
+      const headers = ["BillNo.", "VAZHIPAD", "NAME", "STAR", "QTY", "I-Value", "RCPT.AMT"];
       let x = 10;
       headers.forEach((header, index) => {
         doc.text(header, x, y + 5);
         x += maxColumnWidths[index];
       });
-      y += lineHeight;
-      doc.setLineWidth(0.3);
-      doc.setDrawColor(200, 200, 200); // Light gray color for grid lines
-      doc.line(10, y, pageWidth - 10, y); // Line below the table header
-      y += 2;
-    };
   
-    // Helper to Wrap Text
-    const wrapText = (doc: jsPDF, text: string, maxWidth: number): string[] => {
-      const lines = doc.splitTextToSize(text, maxWidth);
-      return lines;
+      y += lineHeight;
+      doc.setLineWidth(0.5);
+      doc.line(10, y, pageWidth - 10, y); // Line below the header
+      y += 2; // Space below the line
     };
   
     // Initialize PDF
@@ -169,111 +183,159 @@ export class ReportNadavaravComponent implements  OnInit {
   
     let pageNum = 1;
   
-    // Iterate over data and draw rows
-    this.filteredData.forEach((row: any) => {
-      const tableRow = [
-        row.BillNo,
-        wrapText(doc, row.Vazhipad, maxColumnWidths[1]), // Wrap Vazhipad
-        wrapText(doc, row.Name, maxColumnWidths[2]),     // Wrap Name
-        row.InstNo,
-        row.Qty,
-        row.Rate.toFixed(2),
-        row.Amount.toFixed(2),
-      ];
-  
-      // Calculate the max height required for wrapped text in the row
-      const rowHeight = Math.max(...tableRow.map((cell, index) => {
-        return Array.isArray(cell) ? cell.length * contentFontSize : lineHeight;
-      }));
-  
-      // Check if a new page is needed
-      if (y + rowHeight > pageHeight - footerHeight - 10) {
+    // Render Grouped Data
+    for (const [group, entries] of Object.entries(groupedData)) {
+      // Check if enough space for group header, add page if not
+      if (y + lineHeight > pageHeight - footerHeight - 20) {
         doc.addPage();
         pageNum++;
-        y = headerHeight + 5;
+        y = headerHeight + 5; // Reset y position after new page
         drawHeader();
         drawFooter(pageNum);
         drawTableHeader();
       }
   
-      let x = 10;
+      // Draw Group Header with extra spacing to avoid overlap with the table header line
+      doc.setFontSize(12);
+      doc.setFont("Helvetica", "bold");
   
-      // Draw each cell with normal font
-      doc.setFont("Helvetica", "normal");
-      doc.setFontSize(contentFontSize);
+      y += lineHeight; // Increase spacing between the group name and table header
+      doc.text(` ${group}`, 10, y);
+      y += lineHeight; // Additional space below group header
   
-      tableRow.forEach((cell, index) => {
-        if (Array.isArray(cell)) {
-          // Handle wrapped text
-          cell.forEach((line, lineIndex) => {
-            doc.text(line, x, y + 5 + (lineIndex * contentFontSize));
-          });
-        } else {
-          if (index === 5 || index === 6) {
-            // Align Rate and Total columns to the right
-            doc.text(String(cell), x + maxColumnWidths[index] - 2, y + 5, { align: "right" });
-          } else {
-            // Left-align other columns
-            doc.text(String(cell), x, y + 5);
-          }
+      let groupTotal = 0; // Initialize group total
+  
+      // Draw Entries in Table Format
+      for (const entry of entries) {
+        // Ensure Rate and Amount are numbers
+        const rate = Number(entry.ItemValue);  // Convert Rate to number
+        const amount = Number(entry.Receipt_Amt);  // Convert Amount to number
+  
+        // Apply .toFixed() only after conversion to number
+        const rateFormatted = isNaN(rate) ? '0.00' : rate.toFixed(2);  // Check if Rate is a valid number
+        const amountFormatted = isNaN(amount) ? '0.00' : amount.toFixed(2);  // Check if Amount is a valid number
+  
+        // Check if enough space for the row, add page if not
+        if (y + lineHeight > pageHeight - footerHeight - 10) {
+          doc.addPage();
+          pageNum++;
+          y = headerHeight + 5; // Reset y position after new page
+          drawHeader();
+          drawFooter(pageNum);
+          drawTableHeader();
         }
-        x += maxColumnWidths[index];
-      });
   
-      // Draw row grid lines
-      doc.setLineWidth(0.3); // Light line width for grid
-      doc.setDrawColor(200, 200, 200); // Light gray color
-      doc.line(10, y, pageWidth - 10, y); // Line at the bottom of the row
+        doc.setFontSize(contentFontSize);
+        doc.setFont("Helvetica", "normal");
   
-      // Accumulate grand totals
-      grandTotalRate += row.Rate;
-      grandTotalAmount += row.Amount;
+        const row = [
+          entry.BillNo,
+          this.wrapText(doc, entry.NM_Name, maxColumnWidths[1] - 5), // Wrap Name text
+          this.wrapText(doc, entry.Name, maxColumnWidths[2] - 5), // Wrap Vazhipad text
+          entry.Star,
+          entry.Qty,  // Ennam (Qty) data goes under Qty column
+          rateFormatted,  // Use formatted Rate
+          amountFormatted,  // Use formatted Amount
+        ];
+        let x = 10;
   
-      y += rowHeight; // Move y position for the next row
-    });
+        row.forEach((cell, index) => {
+          if (index === 4 || index === 5 || index === 6) {
+            // Right-align for Qty (Ennam), Rate, and Amount
+            doc.text(String(cell), x + maxColumnWidths[index] - 10, y + 5, { align: "right" });
+          } else {
+            doc.text(String(cell), x, y + 5);  // Left-align the others
+          }
+          x += maxColumnWidths[index];
+        });
   
-    // Add Grand Total row
-    const grandTotalRow = [
-      "",
-      "Grand Total", 
-      "",
-      "", 
-      "", 
-      "", 
-      grandTotalAmount.toFixed(2)
-    ];
-  
-    let x = 10;
-    doc.setFont("Helvetica", "bold");
-    doc.setFontSize(contentFontSize);
-    grandTotalRow.forEach((cell, index) => {
-      if (index === 5 || index === 6) {
-        // Align Rate and Total columns to the right
-        doc.text(String(cell), x + maxColumnWidths[index] - 2, y + 5, { align: "right" });
-      } else {
-        // Left-align other columns
-        doc.text(String(cell), x, y + 5);
+        groupTotal += amount; // Add to group total
+        grandTotal += amount; // Add to grand total
+        y += lineHeight;
       }
-      x += maxColumnWidths[index];
-    });
   
-    // Draw grid line after Grand Total
-    doc.setLineWidth(0.3);
-    doc.setDrawColor(200, 200, 200);
-    doc.line(10, y, pageWidth - 10, y);
+      // Draw Group Total
+      if (y + lineHeight > pageHeight - footerHeight - 10) {
+        doc.addPage();
+        pageNum++;
+        y = headerHeight + 5; // Reset y position after new page
+        drawHeader();
+        drawFooter(pageNum);
+        drawTableHeader();
+      }
   
-    y += lineHeight; // Move y position for the Grand Total row
+      // Add group total at the end
+      doc.setFontSize(12);
+      doc.setFont("Helvetica", "bold");
+      doc.text("Group Total:", 10, y + 5); // Label for the group total
+      doc.text(groupTotal.toFixed(2), pageWidth - 20, y + 5, { align: "right" }); // Total amount aligned to the right
+  
+      y += lineHeight + 5; // Add space after the total for the next group or footer
+    }
+  
+    // Add Grand Total below the last Group Total
+    doc.setFontSize(12);
+    doc.setFont("Helvetica", "bold");
+    doc.text("Grand Total:", 10, y + 5); // Label for the grand total
+    doc.text(grandTotal.toFixed(2), pageWidth - 20, y + 5, { align: "right" }); // Grand total aligned to the right
+  
+    y += lineHeight + 10; // Space after the grand total
   
     // Save PDF
-   
-    doc.save('Credit_Transaction_Report.pdf');
+    doc.save("Nadavaravu_Report.pdf");
   }
-
+  
+  
+  
+  // Helper function to wrap text for a given column width
+  wrapText(doc: jsPDF, text: string, maxWidth: number): string {
+    const words = text.split(' ');
+    let currentLine = '';
+    let wrappedText = '';
+  
+    words.forEach(word => {
+      if (doc.getTextWidth(currentLine + word) < maxWidth) {
+        currentLine += word + ' ';
+      } else {
+        wrappedText += currentLine.trim() + '\n';
+        currentLine = word + ' ';
+      }
+    });
+  
+    wrappedText += currentLine.trim();
+    return wrappedText;
+  }
   
   
   
   
+  
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+  
+  
 
+  getTransactionType(transmode: string): string {
+    switch (transmode) {
+      case 'ba':
+        return 'Bank';
+      case 'cs':
+        return 'CASH';
+      case 'mo':
+        return 'MONEY ORDER';
+      case 'up':
+        return 'UPI';
+      case 'ch':
+        return 'CHEQUE';
+      case 'cr':
+        return 'CREDIT';
+      case 'de':
+        return 'DEBIT';
 
-
+      default:
+        return 'Unknown';
+    }
+  }
 }

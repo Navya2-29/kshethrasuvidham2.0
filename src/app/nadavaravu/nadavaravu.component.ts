@@ -11,7 +11,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MasterService } from '../services/master/master.service';
 import { CommonModule } from '@angular/common';
 import { ItemMaster } from '../models/item-master.model';
-import { NotificationService } from '../services/notification/notification.service';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -27,6 +26,7 @@ import { CancelBillRemarkComponent } from '../features/Billing/cancel-bill-remar
 export class NadavaravuComponent implements OnInit {
   nadavaravForm: FormGroup;
   userId: string | null;
+  role: string | null;
   CounterId: string | null;
   nakshatham: any[];
   itemMaster: ItemMaster[] = [];
@@ -48,6 +48,7 @@ cancelBillNumber:string;
     private dialog: MatDialog
   ) {
     this.userId = localStorage.getItem('LoginId');
+    this.role=localStorage.getItem('Role');
 this.CounterId=localStorage.getItem('counterId');
     this.nadavaravForm = this.fb.group({
       BillNo: ['', [Validators.required]],

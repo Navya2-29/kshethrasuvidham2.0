@@ -6,7 +6,7 @@
     <mat-icon>arrow_back</mat-icon>
   </button>
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-5">
             <h2 style="margin-left:100px ;">നട വരവ്</h2>
             <div [formGroup]="nadavaravForm"> 
             <table class="table">
@@ -14,9 +14,7 @@
                     <td colspan="2">
                         <input type="text" placeholder="Bill No." formControlName="BillNo" readonly class="form-control sps" style="width:150px;">
                     </td>
-                    <td>
-                       <a (click)="resetForm()"><mat-icon>delete</mat-icon> </a>
-                    </td>
+                    
                 </tr>
                 <tr>
                     <td colspan="2">
@@ -35,7 +33,7 @@
                 </tr>
                 <tr>
                     <td colspan="3">
-                        <input type="text" placeholder="Address" formControlName="Address" class="form-control sps">
+                        <textarea  placeholder="Address" formControlName="Address" class="form-control sps" rows="5" ></textarea>
                     </td>
                 </tr>
                 <tr>
@@ -90,8 +88,9 @@
                         <input type="text" formControlName="ItemValue" placeholder="Item Value" class="form-control sps">
                     </td>
                     <td>
-                        <input type="text" formControlName="Remarks" placeholder="Remark" class="form-control sps">
+                        <input type="text" formControlName="ReceiptAmount" placeholder=" Receipts Amount" class="form-control sps">
                     </td>
+                    
                     <td>
                         <!-- <button class="btn btn-primary">Save</button> -->
                     </td>
@@ -99,24 +98,29 @@
                 </tr>
                 <tr>
                     <td>
-                        <input type="text" formControlName="ReceiptAmount" placeholder=" Receipts Amount" class="form-control sps">
+                        <input type="text" formControlName="Remarks" placeholder="Remark" class="form-control sps">
                     </td>
+                   
                     <td>
                         <select class="form-control" formControlName="TrnsMode" style="width:100%;height:30.6px;">
                             <option value="">Select Payment mode</option>
                             <option value="CS">Cash</option>
-                            <option value="UPI">UPI</option> 
+                            <option value="UP">UPI</option> 
                             <option value="CH">Cheque</option>   
                           </select>
                     </td>
                     <td>
                         <button class="btn btn-primary" (click)="onSubmit()">Save</button>
-                    </td>        
+                    
+                    
+                    
+                        <button (click)="resetForm()"class="btn btn-danger ml-2">Cancel </button>
+                     </td>
                 </tr>
             </table>
             </div>
         </div>
-        <div class="col-md-8 search">
+        <div class="col-md-7 search">
             <div style="display:flex;" [formGroup]="searchForm">
                
                 <!-- <input type="date" formControlName="searchDate"  class="form-control formdate" style="width:15%;"> -->
@@ -147,7 +151,7 @@
                         <td>{{item.Qty}}</td>
                         <td>{{item.Receipt_Amt}}</td>
                         <mat-icon title="Edit" class="small" >edit</mat-icon>
-                       <span ><mat-icon title="Cancel bill"  class="small" (click)="item.TrnStatus !== 'C' && cancellTheBill(item.BillNo)">delete</mat-icon></span> 
+                       <span ><mat-icon title="Cancel bill" *ngIf="role==='admin'"  class="small" (click)="item.TrnStatus !== 'C' && cancellTheBill(item.BillNo)">delete</mat-icon></span> 
                     </tr>
                 </table>
             </div>
