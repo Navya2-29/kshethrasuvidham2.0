@@ -124,6 +124,7 @@ getTempleData(){
     this.logo=data[0].logo;
     localStorage.setItem('TempleName',this.templeName);
     localStorage.setItem('Address',data[0].Address);
+    localStorage.setItem('Logo',this.logo)
     
   })
 }

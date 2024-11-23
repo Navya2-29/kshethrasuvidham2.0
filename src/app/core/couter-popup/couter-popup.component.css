@@ -33,3 +33,8 @@
   .custom-button:active {
     background-color: #3949ab; /* Darker shade on click */
   }
+  .error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 8px;
+  }

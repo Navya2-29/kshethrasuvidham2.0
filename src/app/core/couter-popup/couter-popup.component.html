@@ -1,13 +1,35 @@
 <div class="dialog-container">
-    <h2 mat-dialog-title>Welcome!</h2>
-    <p class="dialog-message">
-      Please enter your Counter ID to continue.
-    </p>
+  <h2 mat-dialog-title>Welcome!</h2>
+  <p class="dialog-message">Please enter your Counter ID to continue.</p>
+  <form [formGroup]="counterForm">
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Counter ID</mat-label>
-      <input matInput placeholder="Enter Counter ID" [(ngModel)]="counterId" type="number"  (keydown.enter)="save()"/>
+      <input
+        matInput
+        placeholder="Enter Counter ID"
+        formControlName="counterId"
+        required
+      />
+      <!-- Show error message based on the form validation -->
+      <mat-error *ngIf="counterId?.hasError('required')">
+        Counter ID is required.
+      </mat-error>
+      <mat-error *ngIf="counterId?.hasError('pattern')">
+        Only numeric characters are allowed.
+      </mat-error>
     </mat-form-field>
-    <div class="dialog-actions">
-      <button mat-flat-button color="primary" class="custom-button" (click)="save()">Submit</button>
-    </div>
+  </form>
+  <!-- Show additional error message after pressing the Submit button -->
+  <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
+  <div class="dialog-actions">
+    <button
+      mat-flat-button
+      color="primary"
+      class="custom-button"
+      [disabled]="!counterForm.valid && !errorMessage"
+      (click)="save()"
+    >
+      Submit
+    </button>
   </div>
+</div>

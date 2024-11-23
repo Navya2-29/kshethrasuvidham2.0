@@ -70,7 +70,7 @@ export class PmasterComponent implements OnInit {
   private formBuilder = inject(FormBuilder);
   private notification = inject(NotificationService);
   private duplicateCheck = inject(DuplicatecheckService);
-templeName:string |null;
+  templeName:string |null;
   constructor(private toastr: ToastrService) {
     this.templeName=localStorage.getItem('TempleName') 
     this.loading = true;
@@ -152,7 +152,7 @@ templeName:string |null;
     if (this.pmasterForm.valid) {
       this.masterService.createPmaster(this.pmasterForm.value).subscribe({
         next: (res) => {
-          if (res) {
+          if (res.RespStatus=='I') {
             this.notification.showSuccess(
               ' Prathishta Details created successfully'
             );

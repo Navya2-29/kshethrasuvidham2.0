@@ -8,7 +8,7 @@ export interface Pmaster {
     Type:string;
     Unit_ID:string;
     Cuser:string;
-    
+    RespStatus?:string;
   }
 
  

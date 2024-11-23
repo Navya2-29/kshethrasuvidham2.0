@@ -1,5 +1,6 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -7,19 +8,38 @@ import { MatInputModule } from '@angular/material/input';
 @Component({
   selector: 'app-couter-popup',
   standalone: true,
-  imports: [MatFormFieldModule, MatInputModule, FormsModule],
+  imports: [MatFormFieldModule, MatInputModule, FormsModule,FormsModule,ReactiveFormsModule,CommonModule],
   templateUrl: './couter-popup.component.html',
   styleUrl: './couter-popup.component.css'
 })
 export class CouterPopupComponent {
 
-  counterId: string = '';
-  constructor(public dialogRef: MatDialogRef<CouterPopupComponent>) {} 
+  counterForm: FormGroup;
+  errorMessage: string = '';
 
-  save(): void {
-    this.dialogRef.close(this.counterId);
+  constructor(
+    private fb: FormBuilder,
+    public dialogRef: MatDialogRef<CouterPopupComponent>
+  ) {
+    // Initialize the form group with validation
+    this.counterForm = this.fb.group({
+      counterId: ['', [Validators.required, Validators.pattern('^[0-9]*$')]], // Numeric validation
+    });
   }
 
+  get counterId() {
+    return this.counterForm.get('counterId');
+  }
 
-
+  save(): void {
+    if (this.counterForm.valid) {
+      this.dialogRef.close(this.counterId?.value);
+    } else {
+      if (this.counterId?.hasError('pattern')) {
+        this.errorMessage = 'Only numeric characters are allowed';
+      } else if (this.counterId?.hasError('required')) {
+        this.errorMessage = 'Counter ID is required';
+      }
+    }
+  }
 }

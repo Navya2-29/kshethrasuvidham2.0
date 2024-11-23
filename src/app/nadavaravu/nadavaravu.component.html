@@ -1,78 +1,143 @@
-<div class="card-body" style="background:white;">
-    <button 
-    class="btn btn-secondary rounded-circle back-btn" 
-    (click)="goBack()" 
-    title="Go Back">
+<div class="card-body" style="background: white">
+  <button
+    class="btn btn-secondary rounded-circle back-btn"
+    (click)="goBack()"
+    title="Go Back"
+  >
     <mat-icon>arrow_back</mat-icon>
   </button>
-    <div class="row">
-        <div class="col-md-5">
-            <h2 style="margin-left:100px ;">നട വരവ്</h2>
-            <div [formGroup]="nadavaravForm"> 
-            <table class="table">
-                <tr>
-                    <td colspan="2">
-                        <input type="text" placeholder="Bill No." formControlName="BillNo" readonly class="form-control sps" style="width:150px;">
-                    </td>
-                    
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <input type="text" 
-                        [ngClass]="{ 'is-invalid': nadavaravForm.get('Name')?.invalid && nadavaravForm.get('Name')?.touched }" 
-                        placeholder="Name." formControlName="Name"  class="form-control sps">
+  <div class="row">
+    <div class="col-md-5">
+      <h2 style="margin-left: 100px">നട വരവ്</h2>
+      <div [formGroup]="nadavaravForm">
+        <table class="table">
+          <tr>
+            <td colspan="2">
+              <input
+                type="text"
+                placeholder="Bill No."
+                formControlName="BillNo"
+                readonly
+                class="form-control sps"
+                style="width: 150px"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <input
+                type="text"
+                [ngClass]="{
+                  'is-invalid':
+                    nadavaravForm.get('Name')?.invalid &&
+                    nadavaravForm.get('Name')?.touched
+                }"
+                placeholder="Name."
+                formControlName="Name"
+                class="form-control sps"
+              />
+            </td>
+            <td>
+              <select
+                class="form-control"
+                formControlName="Star"
+                style="width: 100%; height: 30.6px"
+              >
+                <option value="">Select Star</option>
+                <option
+                  *ngFor="let nakshtra of nakshatham"
+                  [value]="nakshtra.id"
+                >
+                  {{ nakshtra.SM_NameEng }}
+                </option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">
+              <textarea
+                placeholder="Address"
+                formControlName="Address"
+                class="form-control sps"
+                rows="5"
+              ></textarea>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">
+              <input
+                type="text"
+                placeholder="Description"
+                formControlName="Description"
+                class="form-control sps"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <select
+                class="form-control"
+                formControlName="NMId"
+                style="width: 100%; height: 30.6px"
+                [ngClass]="{
+                  'is-invalid':
+                    nadavaravForm.get('NMId')?.invalid &&
+                    nadavaravForm.get('NMId')?.touched
+                }"
+              >
+                <option value="">Select Item</option>
 
-                    </td>
-                    <td>
-                        <select class="form-control" formControlName="Star" style="width:100%;height:30.6px;">
-                            <option value="">Select Star</option>
-                            <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_NameEng}}</option>
-                           
-                          </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="3">
-                        <textarea  placeholder="Address" formControlName="Address" class="form-control sps" rows="5" ></textarea>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="3">
-                        <input type="text" placeholder="Description" formControlName="Description" class="form-control sps">
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <select class="form-control" formControlName="NMId" style="width:100%;height:30.6px;"
-                        [ngClass]="{ 'is-invalid': nadavaravForm.get('NMId')?.invalid && nadavaravForm.get('NMId')?.touched }" >
-                            <option value="">Select Item</option>
-                            
-                            <option *ngFor="let item of itemMaster" [value]="item.NM_Id"> {{item.NM_Name}}</option>
+                <option *ngFor="let item of itemMaster" [value]="item.NM_Id">
+                  {{ item.NM_Name }}
+                </option>
+              </select>
+            </td>
+            <!-- <td><input type="checkbox">&nbsp;&nbsp;Kanikka</td> -->
+          </tr>
+          <tr>
+            <td>
+                <label for="Qty">Quantity</label>
+                <input 
+                  type="text" 
+                  id="Qty" 
+                  formControlName="Qty" 
+                  placeholder="Enter qty" 
+                  class="form-control sps">
+              </td>
+            <td>
+                <label for="weight">Weight</label>
+              <input
+                type="text"
+                formControlName="weight"
+                placeholder="Enter weight"
+                class="form-control sps"
+                [ngClass]="{
+                  'is-invalid':
+                    nadavaravForm.get('weight')?.invalid &&
+                    nadavaravForm.get('weight')?.touched
+                }"
+              />
+            </td>
 
-                           
-                          </select>
-                    </td>
-                    <!-- <td><input type="checkbox">&nbsp;&nbsp;Kanikka</td> -->
-                </tr>
-                <tr>
-                 <td><input type="text" formControlName="Qty" placeholder="Enter qty" class="form-control sps"></td>
-                 <td><input type="text" formControlName="weight" placeholder="Enter weight" class="form-control sps"
-                    [ngClass]="{ 'is-invalid': nadavaravForm.get('weight')?.invalid && nadavaravForm.get('weight')?.touched }"  
-                    ></td>
-
-                    <td>
-                        <select class="form-control" formControlName="unit" style="width:100%;height:30.6px;"
-                        [ngClass]="{ 'is-invalid': nadavaravForm.get('unit')?.invalid && nadavaravForm.get('unit')?.touched }" 
-
-                        >
-                            <option value="">Select Unit</option>
-                            <option value="KG">Kg</option>
-                            <option value="GM">  Gm</option>
-                            <option value="MG"> Mg</option>
-                            
-                          </select>
-                    </td>
-                    <!-- <td>
+            <td>
+                <label for="unit">select Unit</label>
+              <select
+                class="form-control"
+                formControlName="unit"
+                style="width: 100%; height: 30.6px"
+                [ngClass]="{
+                  'is-invalid':
+                    nadavaravForm.get('unit')?.invalid &&
+                    nadavaravForm.get('unit')?.touched
+                }"
+              >
+                <option value="">Select Unit</option>
+                <option value="KG">Kg</option>
+                <option value="GM">Gm</option>
+                <option value="MG">Mg</option>
+              </select>
+            </td>
+            <!-- <td>
                         Qty (Kg)<input type="number" class="form-control" placeholder="Qty" value="1" style="vertical-align: middle;text-align:center;">
                     </td>
                     <td>
@@ -81,117 +146,167 @@
                     <td>
                         Qty (Mg)<input type="number" class="form-control" placeholder="Qty" value="1" style="vertical-align: middle;text-align:center;">
                     </td> -->
-                </tr>
-                <tr>
-                    
-                    <td>
-                        <input type="text" formControlName="ItemValue" placeholder="Item Value" class="form-control sps">
-                    </td>
-                    <td>
-                        <input type="text" formControlName="ReceiptAmount" placeholder=" Receipts Amount" class="form-control sps">
-                    </td>
-                    
-                    <td>
-                        <!-- <button class="btn btn-primary">Save</button> -->
-                    </td>
-                    
-                </tr>
-                <tr>
-                    <td>
-                        <input type="text" formControlName="Remarks" placeholder="Remark" class="form-control sps">
-                    </td>
-                   
-                    <td>
-                        <select class="form-control" formControlName="TrnsMode" style="width:100%;height:30.6px;">
-                            <option value="">Select Payment mode</option>
-                            <option value="CS">Cash</option>
-                            <option value="UP">UPI</option> 
-                            <option value="CH">Cheque</option>   
-                          </select>
-                    </td>
-                    <td>
-                        <button class="btn btn-primary" (click)="onSubmit()">Save</button>
-                    
-                    
-                    
-                        <button (click)="resetForm()"class="btn btn-danger ml-2">Cancel </button>
-                     </td>
-                </tr>
-            </table>
-            </div>
-        </div>
-        <div class="col-md-7 search">
-            <div style="display:flex;" [formGroup]="searchForm">
-               
-                <!-- <input type="date" formControlName="searchDate"  class="form-control formdate" style="width:15%;"> -->
-                <!-- <button class="btn btn-primary" style="margin-right:15px;" (click)="onSearch()">Search</button> -->
-                <input type="text" formControlName="searchBillNO"  class="form-control sps" placeholder="search by Bill No." style="width:25%;">
-                <button class="btn btn-primary" (click)="onSearch()">Search</button>
-           
-            </div>
-            <div class="fixitems">
-                <table class="table">
-                    <tr style="border-bottom: 2px solid #223d61;">
-                        <th>Sl No.</th>
-                        <th>Date</th>
-                        <th>Recceipt No.</th>
-                        <th>Name</th>
-                        <th>Item</th>
-                        <th>Qty</th>
-                        <th>Receipt_Amt</th>
-                        <th></th>
-                    </tr>
-                   
-                    <tr *ngFor="let item of filteredData; let i=index;" [ngClass]="{'red-text': item.TrnStatus === 'C'}">
-                        <td>{{i+1}}</td>
-                        <td>{{item.Billdate | date: 'yyyy-MM-dd'}}</td>
-                        <td>{{item.BillNo}}</td>
-                        <td>{{item.Name}}</td>
-                        <td>{{item.weight}}-{{item.unit}}-</td>
-                        <td>{{item.Qty}}</td>
-                        <td>{{item.Receipt_Amt}}</td>
-                        <mat-icon title="Edit" class="small" >edit</mat-icon>
-                       <span ><mat-icon title="Cancel bill" *ngIf="role==='admin'"  class="small" (click)="item.TrnStatus !== 'C' && cancellTheBill(item.BillNo)">delete</mat-icon></span> 
-                    </tr>
-                </table>
-            </div>
-            
-        </div>
-    </div>
-    
-</div>
+          </tr>
+          <tr>
+            <!-- <td> -->
+            <!-- <input type="text" formControlName="ItemValue" placeholder="Item Value" class="form-control sps"> -->
+            <!-- </td> -->
+            <td>
+              <label for="ItemValue">Item Value</label>
+              <input
+                type="text"
+                id="ItemValue"
+                formControlName="ItemValue"
+                placeholder="Item Value"
+                class="form-control sps"
+              />
+            </td>
+            <td>
+                <label for="ReceiptAmount">Receipt Amount</label>
+                <input 
+                  type="text" 
+                  id="ReceiptAmount" 
+                  formControlName="ReceiptAmount" 
+                  placeholder="Receipt Amount" 
+                  class="form-control sps">
+              </td>
 
-<div id="thermal-print-content" style="font-size: 12px; font-family: 'Courier New', monospace; width: 58mm;display: none;">
-    <div style="text-align: center;">
-      <strong>പയ്യന്നൂർ</strong><br />
-      <strong>സുബ്രഹ്മണ്യ ക്ഷേത്രം</strong><br />
-      പയ്യന്നൂർ, കേരളം<br />
-      Ph: 9400135116, 04985205166
+            <td>
+              <!-- <button class="btn btn-primary">Save</button> -->
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input
+                type="text"
+                formControlName="Remarks"
+                placeholder="Remark"
+                class="form-control sps"
+              />
+            </td>
+
+            <td>
+              <select
+                class="form-control"
+                formControlName="TrnsMode"
+                style="width: 100%; height: 30.6px"
+              >
+                <option value="">Select Payment mode</option>
+                <option value="CS">Cash</option>
+                <option value="UP">UPI</option>
+                <option value="CH">Cheque</option>
+              </select>
+            </td>
+            <td>
+              <button class="btn btn-primary" (click)="onSubmit()">Save</button>
+
+              <button (click)="resetForm()" class="btn btn-danger ml-2">
+                Cancel
+              </button>
+            </td>
+          </tr>
+        </table>
+      </div>
     </div>
-    <hr />
-    <div>
-      <p><strong>രസീത്</strong></p>
-      <p><strong>ബിൽ നമ്പർ:</strong> {{ nadavaravForm.value.BillNo }}</p>
-      <p><strong>ബിൽ തീയതി:</strong> {{ today |date:'dd-MM-YYYY' }}</p>
-    </div>
-    <hr />
-    <div>
-      <p><strong>പേരറുമാന്റെ വിവരങ്ങൾ</strong></p>
-      <p><strong>പേര്:</strong> {{ nadavaravForm.value.Name }}</p>
-      <p><strong>നക്ഷത്രം:</strong> {{ nadavaravForm.value.Star }}</p>
-      <p><strong>തീയതി:</strong> {{today |date:'dd-MM-YYYY' }}</p>
-      <p><strong>പൂജ:</strong> {{ nadavaravForm.value.NMId }}</p>
-      <p><strong>എണ്ണം:</strong> {{ nadavaravForm.value.Qty }}</p>
-      <p><strong>നിരക്ക്:</strong> {{ nadavaravForm.value.ReceiptAmount }}</p>
-    </div>
-    <hr />
-    <div>
-      <p><strong>മൊത്തം തുക:</strong> {{ nadavaravForm.value.ReceiptAmount }}</p>
-      <p><strong>പേയ്മെന്റ് മോഡ്:</strong> {{ nadavaravForm.value.TrnsMode }}</p>
-    </div>
-    <hr />
-    <div style="text-align: center;">
-      <p>WWW.KSHETHRASUVIDHAM.COM</p>
+    <div class="col-md-7 search">
+      <div style="display: flex" [formGroup]="searchForm">
+        <!-- <input type="date" formControlName="searchDate"  class="form-control formdate" style="width:15%;"> -->
+        <!-- <button class="btn btn-primary" style="margin-right:15px;" (click)="onSearch()">Search</button> -->
+        <input
+          type="text"
+          formControlName="searchBillNO"
+          class="form-control sps"
+          placeholder="search by Bill No."
+          style="width: 25%"
+        />
+        <button class="btn btn-primary" (click)="onSearch()">Search</button>
+      </div>
+      <div class="fixitems">
+        <table class="table">
+          <tr style="border-bottom: 2px solid #223d61">
+            <th>Sl No.</th>
+            <th>Date</th>
+            <th>Receipt No.</th>
+            <th>Name</th>
+            <th>Item</th>
+            <th>Category</th>
+            <th>Weight</th>
+            <th>Qty</th>
+            <th>Receipt Amount</th>
+            <th>Transaction Mode</th>
+            <th></th>
+          </tr>
+
+          <tr
+            *ngFor="let item of filteredData; let i = index"
+            [ngClass]="{ 'red-text': item.TrnStatus === 'C' }"
+          >
+            <td>{{ i + 1 }}</td>
+            <td>{{ item.Billdate | date : "yyyy-MM-dd" }}</td>
+            <td>{{ item.BillNo }}</td>
+            <td>{{ item.Name }}</td>
+            <td>{{item.NM_Id}}</td>
+            <td>{{item.item}}</td>
+            <td>{{ item.weight }}-{{ item.unit }}-</td>
+            <td>{{ item.Qty }}</td>
+            <td>{{ item.Receipt_Amt }}</td>
+            <td>{{ item.TrnMode }}-{{item.TrnStatus}}</td>
+            
+            <mat-icon title="Edit" class="small">edit</mat-icon>
+            <span
+              ><mat-icon
+                title="Cancel bill"
+                *ngIf="role === 'admin'"
+                class="small"
+                (click)="item.TrnStatus !== 'C' && cancellTheBill(item.BillNo)"
+                >delete</mat-icon
+              ></span
+            >
+          </tr>
+        </table>
+      </div>
     </div>
   </div>
-  
+</div>
+
+<div
+  id="thermal-print-content"
+  style="
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
+    width: 58mm;
+    display: none;
+  "
+>
+  <div style="text-align: center">
+    <strong>പയ്യന്നൂർ</strong><br />
+    <strong>സുബ്രഹ്മണ്യ ക്ഷേത്രം</strong><br />
+    പയ്യന്നൂർ, കേരളം<br />
+    Ph: 9400135116, 04985205166
+  </div>
+  <hr />
+  <div>
+    <p><strong>രസീത്</strong></p>
+    <p><strong>ബിൽ നമ്പർ:</strong> {{ nadavaravForm.value.BillNo }}</p>
+    <p><strong>ബിൽ തീയതി:</strong> {{ today | date : "dd-MM-YYYY" }}</p>
+  </div>
+  <hr />
+  <div>
+    <p><strong>പേരറുമാന്റെ വിവരങ്ങൾ</strong></p>
+    <p><strong>പേര്:</strong> {{ nadavaravForm.value.Name }}</p>
+    <p><strong>നക്ഷത്രം:</strong> {{ nadavaravForm.value.Star }}</p>
+    <p><strong>തീയതി:</strong> {{ today | date : "dd-MM-YYYY" }}</p>
+    <p><strong>പൂജ:</strong> {{ nadavaravForm.value.NMId }}</p>
+    <p><strong>എണ്ണം:</strong> {{ nadavaravForm.value.Qty }}</p>
+    <p><strong>നിരക്ക്:</strong> {{ nadavaravForm.value.ReceiptAmount }}</p>
+  </div>
+  <hr />
+  <div>
+    <p><strong>മൊത്തം തുക:</strong> {{ nadavaravForm.value.ReceiptAmount }}</p>
+    <p><strong>പേയ്മെന്റ് മോഡ്:</strong> {{ nadavaravForm.value.TrnsMode }}</p>
+  </div>
+  <hr />
+  <div style="text-align: center">
+    <p>WWW.KSHETHRASUVIDHAM.COM</p>
+  </div>
+</div>

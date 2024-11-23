@@ -2,7 +2,7 @@
   <div class="content">
     <div class="left-side">
       <div style="display: flex; flex-direction: column; align-items: center">
-        <img src="assets/images/temple-logo.png" style="width: 50%" />
+        <img [src]="getLogoUrl()" style="width: 50%" />
         <h2
           style="
             font-size: 18pt;
@@ -11,7 +11,7 @@
             line-height: 30.6pt;
           "
         >
-          Padmanabha Swami Temple
+          {{templeName}}
         </h2>
       </div>
 
@@ -25,10 +25,12 @@
           padding: 10px;
           align-items: center;
           justify-items: center;
+          text-align: center;
+        
         "
       >
         <!-- <p style="color:white;">Version 1.0</p> -->
-        <p style="color: white">Last Updated on: 15 Aug, 2024</p>
+        <p style="color: white;   padding: 9px;">Last Updated on: {{todayDate | date:'dd MMM yyyy'}}</p>
       </div>
     </div>
 
@@ -75,7 +77,7 @@
           ബില്ലിംഗ്</a
         >
         <a
-          routerLink="/front"
+          routerLink="/getReport"
           mat-raised-button
           style="
             text-decoration: none;
@@ -91,7 +93,7 @@
           വഴിപാട് വിവരം</a
         >
         <a
-          routerLink="/front"
+          routerLink="/mattinagal"
           mat-raised-button
           style="
             text-decoration: none;
@@ -103,10 +105,10 @@
           "
           class="col-md-12"
         >
-          മറ്റിനങ്ങൾ</a
+        നടവരവ് ബില്ലിംഗ്</a
         >
-        <a
-          routerLink="/front"
+        <!-- <a
+          routerLink="/mattinagal"
           mat-raised-button
           style="
             text-decoration: none;
@@ -119,7 +121,7 @@
           class="col-md-12"
         >
           പഞ്ചാംഗം</a
-        >
+        > -->
       </div>
     </div>
   </div>

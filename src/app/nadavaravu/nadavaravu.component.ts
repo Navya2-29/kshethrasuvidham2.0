@@ -123,6 +123,7 @@ this.CounterId=localStorage.getItem('counterId');
             next: (data) => {
               console.log(data, 'update');
               this.getBillNumber();
+              this.getNadavaravuData();
             },
             error: (err) => {},
           });

@@ -6,7 +6,8 @@
             <div class="col-md-3.5">
                 <div class="card">
                     <div class="card-header height" style="background-color:maroon;color:white;height:50px;">
-                        <h3>Masters</h3>
+                        <!-- <h3>Masters</h3> -->
+                        <h3> മാസ്റ്റേഴ്സ്</h3>
                     </div>
                     <div class="card-body">
                        <ul class="list-group list-group-flush">
@@ -45,12 +46,13 @@
             <div class="col-md-2.5">
                 <div class="card">
                     <div class="card-header height" style="background-color:maroon;color:white;height:50px;">
-                        <h3>Reports</h3>
+                        <!-- <h3>Reports</h3> -->
+                        <h3>റിപ്പോർട്ടുകൾ</h3>
                     </div>
                     <div class="card-body">
                       <ul class="list-group list-group-flush">
-                        <a routerLink="getReport" [mat-dialog-close]="true"><li class="list-group-item">Reports</li></a>
-                       
+                        <!-- <a routerLink="getReport" [mat-dialog-close]="true"><li class="list-group-item">Reports</li></a> -->
+                        <a routerLink="getReport" [mat-dialog-close]="true"><li class="list-group-item">റിപ്പോർട്ടുകൾ</li></a>
                       </ul>
 
                     </div>
@@ -59,12 +61,19 @@
             <div class="col-md-2.5">
                 <div class="card">
                     <div class="card-header height" style="background-color:maroon;color:white;height:50px;">
-                        <h3>Utilities</h3>
+                        <!-- <h3>Utilities</h3> -->
+                        <h3> യൂട്ടിലിറ്റികൾ</h3>
                     </div>
                     <div class="card-body">
-                      <ul class="list-group list-group-flush">
-                        <a routerLink="/mattinagal" [mat-dialog-close]="true"><li class="list-group-item">Nadavarav Booking</li></a>
-                        <a  *ngIf="role === 'admin' " routerLink="/userSignup" [mat-dialog-close]="true"><li class="list-group-item">Signup</li></a>
+                      <ul class="list-group list-group-flush">  
+                        <!-- <a routerLink="/dashboard" [mat-dialog-close]="true"><li class="list-group-item">Billing </li></a> -->
+                        <a routerLink="/dashboard" [mat-dialog-close]="true"><li class="list-group-item">ബുക്കിംഗ് </li></a>
+
+                        <!-- <a routerLink="/mattinagal" [mat-dialog-close]="true"><li class="list-group-item">Nadavarav Booking</li></a> -->
+                        <a routerLink="/mattinagal" [mat-dialog-close]="true"><li class="list-group-item">നടവരവ് എൻട്രി</li></a>
+                        <a  *ngIf="role === 'admin' " routerLink="/userSignup" [mat-dialog-close]="true"><li class="list-group-item">സൈൻ അപ്പ് ചെയ്യുക</li></a>
+                        <!-- <a  *ngIf="role === 'admin' " routerLink="/userSignup" [mat-dialog-close]="true"><li class="list-group-item">Signup</li></a> -->
+
                       </ul>
 
                     </div>
@@ -73,8 +82,6 @@
         </div>
     </div>
 </mat-dialog-content>
-
-
 <mat-dialog-actions align="end" class="menuend">
   <!-- <button mat-button mat-dialog-close>Cancel</button> -->
   <button mat-button [mat-dialog-close]="true">Close</button>

@@ -23,17 +23,24 @@ export class MenuitemsComponent {
   }
 
   masterLinks = [
-    { label: 'Prathishta Details', path: '/pmaster' },
-    { label: 'Vazhipad Category', path: '/cmaster' },
-    { label: 'Vazhipad Master', path: '/vmaster' },
-    { label: 'Vazhipad Blocking', path: '/vazhipad-blocking' },
-    { label: 'Vazhipad Seasonal', path: '/seasonal' },
-    { label: 'Vihidham Master', path: '/vihidham-master' },
-    { label: 'Member Master', path: '/member-master' },
-    { label: 'Day-Master', path: '/day-master' },
-    { label: 'Special day master', path: '/special-day-master' },
-    { label: 'Combo-master ', path: '/combo-master' },
-    { label: 'Item Master', path: '/item-master' },
+  
+    // { label: 'Category Master', path: '/cmaster' },
+    { label: 'വിഭാഗം  മാസ്റ്റർ', path: '/cmaster' },
+    // { label: 'Prathishta Master', path: '/pmaster' },
+    { label: 'പ്രതിഷ്ഠ മാസ്റ്റർ', path: '/pmaster' },
+    // { label: 'Vazhipad Master', path: '/vmaster' },
+    { label: 'വഴിപാട് മാസ്റ്റർ ', path: '/vmaster' },
+    // { label: 'Vazhipad Blocking', path: '/vazhipad-blocking' },
+    { label: 'വഴിപാട് സീസണൽ ', path: '/seasonal' },
+    // { label: 'Vazhipad Seasonal', path: '/seasonal' },
+    // { label: 'Vihidham Master', path: '/vihidham-master' },
+    // { label: 'Member Master', path: '/member-master' },
+    // { label: 'Day-Master', path: '/day-master' },
+    { label: 'ദിവസം മാസ്റ്റർ ', path: '/day-master' },
+    // { label: 'Special day master', path: '/special-day-master' },
+    // { label: 'Combo-master ', path: '/combo-master' },
+    // { label: 'Item/Nadavarav Master', path: '/item-master' },
+    { label: 'ഇനം/നടവരവ്  മാസ്റ്റർ', path: '/item-master' },
     
   ];
 

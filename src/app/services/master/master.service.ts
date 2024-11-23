@@ -63,6 +63,7 @@ this.userId=localStorage.getItem('LoginId');
       Cuser: this.userId,
       PMImage: obj.PM_Image,
     };
+    console.log(payload)
     return this.http
       .post<Pmaster>(
         Constant.BASE_URL + Constant.METHODS.CREATE_PMASTER,
