@@ -6,6 +6,16 @@
     "mega": {
       "projectType": "application",
       "schematics": {},
+      "i18n": {
+        "sourceLocale":"en",
+        "locales": {
+          "es":"src/assets/i18n/en.json",
+          "ml":"src/assets/i18n/ml.json",
+          "tm":"src/assets/i18n/tm.json",
+          "hn":"src/assets/i18n/hn.json"
+
+        }
+      },
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",

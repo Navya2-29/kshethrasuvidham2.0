@@ -319,23 +319,23 @@ export class ReportNadavaravComponent implements  OnInit {
 
   getTransactionType(transmode: string): string {
     switch (transmode) {
-      case 'ba':
-        return 'Bank';
-      case 'cs':
+      case 'ON':
+        return 'ONLINE';
+      case 'CS':
         return 'CASH';
-      case 'mo':
+      case 'MO':
         return 'MONEY ORDER';
-      case 'up':
+      case 'UP':
         return 'UPI';
-      case 'ch':
+      case 'CH':
         return 'CHEQUE';
-      case 'cr':
+      case 'CR':
         return 'CREDIT';
-      case 'de':
+      case 'DE':
         return 'DEBIT';
 
       default:
-        return 'Unknown';
+        return 'OTHERS';
     }
   }
 }

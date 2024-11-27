@@ -151,6 +151,7 @@ export const routes: Routes = [
   { path: 'report-moneyorder', component: ReportMoneyOrderComponent },
   { path: 'report-nadavaravu-cancel', component: ReportNadavaravuCancelComponent },
   { path: 'report-online', component: ReportOnlineComponent },
+  { path: 'report-counter-trnsaction', component: ReportCounterTransactionComponent },
   {
     path: '**',
     pathMatch: 'full',

@@ -18,6 +18,9 @@
     background-image:url('/assets/images/login-bg.jpg');background-position: center;background-size: cover;
     
 }
+.is-invalid {
+  border: 1px solid red !important;
+}
 
 .content{
     width:100%;

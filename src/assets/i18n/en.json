@@ -1,0 +1,45 @@
+{
+  "VAZHIPAD": "Vazhipad",
+  "NAME": "Name",
+  "STAR": "Star",
+  "PRATHISTA": "Prathista",
+  "QUANTITY": "Quantity",
+  "RATE": "Rate",
+  "DATE": "Date",
+  "TIME": "Time",
+  "TODAYCOLLECTION": "Today Collection",
+  "LastBillNo": "Last Bill No.",
+  "Cash": "Cash",
+  "credit": "credit",
+  "UPI": "Upi",
+  "Debit": "Debit",
+  "Online": "Online",
+  "cheque": "Cheque",
+  "Money order": "Money Order",
+
+  "PLACEHOLDER": {
+    "VAZHIPAD": "Select Vazhipad",
+    "NAME": "Enter your Name",
+    "STAR": "Select star",
+    "PRATHISTA": "Select prathista",
+    "QUANTITY": "Quantity",
+    "RATE": "Rate",
+    "DATE": "dd/mm/yyyy",
+    "TIME": "Select Time",
+    "MOBILENUMBER": "മൊബൈൽ നമ്പർ ",
+    "ADDRESS1": " Enter Address 1",
+    "ADDRESS2": "Enter Address 2",
+    "ADDRESS3": "Enter Address 3",
+    "PINCODE": "Enter pincode ",
+    "PHONE": "Enter Mobile No.",
+    "EMAIL": "Enter Email ",
+    "CHEQUENO": "Upi/cheque/DD/",
+    "BANKNAME": "Enter your bank Name"
+  },
+  "OPTIONS": {
+    "TIME1": "Morning",
+    "TIME2": "Afternoon",
+    "TIME3": "Evening",
+    "TIME4": "after noon"
+  }
+}

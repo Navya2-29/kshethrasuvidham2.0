@@ -213,7 +213,7 @@ export class MultidayitemsComponent implements OnInit {
   createDevotee(): FormGroup {
     return this.fb.group({
       Name: ['', [Validators.required]],
-      Star: ['', ],
+      Star: ['',[Validators.required] ],
       Name2: [''],
       Star2: [''],
     });
@@ -465,7 +465,11 @@ export class MultidayitemsComponent implements OnInit {
       .getVazhipadeByCode(vazhipadcode)
       .subscribe((res: any) => {
         console.log(res, 'vazhipad details');
-        this.form.get('Rate')?.setValue(res[0].VM_Amt);
+        if (res[0].VM_Amt != 0) {
+          this.form.get('Rate')?.setValue(res[0].VM_Amt);
+        } else {
+          this.form.get('Rate')?.setValue('');
+        }
         this.form.get('multiName')?.setValue(res[0].VM_MultiName);
         this.form.get('VTime')?.setValue(res[0].VM_Time);
         this.rateChange = res[0].VM_Rate_Change;
@@ -549,10 +553,7 @@ export class MultidayitemsComponent implements OnInit {
           +dateParts[1] - 1,
           +dateParts[0]
         );
-        // const formattedVazhipadDate = this.datePipe.transform(
-        //   formattedDisdate,
-        //   'dd-MM-yyyy'
-        // );
+        
         devoteeArray.forEach((devotee: any) => {
           finalArray.push({ ...devotee, VazhipadDate: formattedDisdate });
         });
@@ -865,9 +866,7 @@ this.form.patchValue({
       console.log('Last Date:', endDate);
     }
 
-    // this.form.patchValue({
-    //   NoOfDays : this.multiDayList.length
-    // });
+   
   }
 
 

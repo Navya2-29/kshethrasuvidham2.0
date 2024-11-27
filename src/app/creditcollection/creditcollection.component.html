@@ -3,46 +3,59 @@
         <div class="col-md-4">
             <h2>
                 ക്രെഡിറ്റ് കളക്ഷൻ‍</h2>
+                <form [formGroup]="CreditForm">
             <table class="table">
+             
+                <tr>
+                    <td colspan="2"><input type="text" readonly placeholder="BillNo" formControlName="BillNo" class="form-control sps"></td>
+                    <td colspan="2"><input type="text" readonly placeholder="RefNo" formControlName="RefNo" class="form-control sps"></td>
+
+                </tr>
                 <tr>
                     <td colspan="2">
-                        <input matInput
+                        <!-- <input matInput
                       aria-label="fname"
                       [matAutocomplete]="auto"
                       [formControl]="fnameCtrl" autofocus class="form-control sps" placeholder="Name">
                         <mat-autocomplete #auto="matAutocomplete">
                           @for (fname of filteredfname | async; track fname) {
                             <mat-option [value]="fname.name" style="padding-left:15px;padding-top:0px;">
-                              <!-- <img alt="" class="example-option-img" [src]="vazhipad.flag" height="25"> -->
-                              <span style="font-size:11pt;color:maroon;margin:0px;padding:0px;">{{fname.name}}</span> 
+                             <img alt="" class="example-option-img" [src]="vazhipad.flag" height="25"> -->
+                              <!-- <span style="font-size:11pt;color:maroon;margin:0px;padding:0px;">{{fname.name}}</span>  -->
                               <!-- <small>Population: {{vazhipad.population}}</small> -->
-                            </mat-option>
-                          }
-                        </mat-autocomplete>
+                            <!-- </mat-option> -->
+                          <!-- } -->
+                        <!-- </mat-autocomplete> --> 
+                        <input type="text" placeholder="Name" readonly formControlName="Name" class="form-control sps">
                     </td>
                     <td>
-                        <input type="text" placeholder="Mobile Number" class="form-control sps">
+                        <input type="text" readonly placeholder="Mobile Number" formControlName="Mobile" class="form-control sps">
                     </td>
                 </tr>
-                
                 <tr>
                     <td colspan="3">
-                        <input type="text" placeholder="Address" class="form-control sps">
+                        <input type="text" readonly placeholder="Address" formControlName="Address" class="form-control sps">
                     </td>
                     
                 </tr>
+                <!-- <tr>
+                    <td colspan="3">
+                        <input type="text" placeholder="Remark"  class="form-control sps">
+                    </td>
+                    
+                </tr> -->
                 <tr>
-                    <td style="text-align:center; vertical-align: middle; border:2px solid silver;padding-top:3%;background:#223d61;color:white;">
+                    <!-- <td style="text-align:center; vertical-align: middle; border:2px solid silver;padding-top:3%;background:#223d61;color:white;">
                         <span>Balance Amount</span>
                         <h4 style="font-weight:700;">Rs. 12500</h4>
-                    </td>
-                    <td style="text-align:center; vertical-align: middle; border:2px solid silver;padding-top:3%;margin:25px;">
+                    </td> -->
+                    <!-- <td style="text-align:center; vertical-align: middle; border:2px solid silver;padding-top:3%;margin:25px;">
                         <span>Amount Paid</span>
                         <h4 style="font-weight:700;">Rs. 2500</h4>
-                    </td>
+                    </td> -->
                     <td style="text-align:center; vertical-align: middle; border:2px solid silver;padding-top:3%;margin:25px;">
-                        <span>Total Amount</span>
-                        <h4 style="font-weight:700;">Rs. 15000</h4>
+                        <span >Total Amount</span>
+                        <h4 style="font-weight:700;" formControlName="TotalAmount">{{totalAmount || '0.00'}} </h4>
                     </td>
                 </tr>
                 
@@ -50,168 +63,82 @@
                 
                 <tr>
                     <td style="width:25%;">
-                        <input type="text" placeholder="Amount" class="form-control sps">
+                        <input type="text" placeholder="Amount"  readonly formControlName="Amount" class="form-control sps">
                     </td>
                     <td colspan="2" style="border:1px solid gray;padding:6px;text-align:center;vertical-align:middle;">
                         <span style="font-weight:700;">Payment Method: &nbsp;&nbsp; </span>
-                        <select>
-                             <option>Cash</option>
-                             <option>DD</option>
-                             <option>MO</option>
-                             <option>UPI</option>
+                        <select formControlName="TrnsMode">
+                             <option value="CS">Cash</option>
+                             
+                             <option value="UP">UPI</option>
+                             <option value="CH">Cheque</option>
+                             <option Value="MO">Money Order</option>
                         </select>
-                        <input type="text" placeholder="Remakrs" placeholder="Enter Number - Cheque/DD/MO/UPI" class="form-control sps">
+                        <input type="text" placeholder="Remakrs" formControlName="Remarks" placeholder="Enter Number - Cheque/DD/MO/UPI" class="form-control sps"
+                        [ngClass]="{
+                            'is-invalid':
+                              CreditForm.get('Remarks')?.invalid &&
+                              CreditForm.get('Remarks')?.touched
+                          }">
                     </td>
                     
                 </tr>
                 <tr>
                     <td colspan="3" style="text-align:right;padding:9px;">
-                        <button class="btn btn-primary">Save</button>
+                        <button class="btn btn-primary" (click)="onSubmit()">Save</button>
+                        <button class="btn btn-danger ml-3" (click)="Reset()">Cancel</button>
                     </td>
                 </tr>
-            </table>
+            </table> </form>
         </div>
         <div class="col-md-8 search">
+            <form [formGroup]="searchForm">
             <div style="display:flex;">
-                <input type="date" class="form-control formdate" style="width:15%;">
-                <button class="btn btn-primary" style="margin-right:15px;">Search</button>
-                <input type="text" class="form-control sps" placeholder="search by Name" style="width:25%;">
-                <button class="btn btn-primary">Search</button>
+                
+                <input type="date" class="form-control formdate"  formControlName="searchBillDate" style="width:15%;">
+                <button class="btn btn-primary" style="margin-right:15px;" (click)="onSearchByBillDate()" >Search</button>
+                <input type="text" class="form-control sps" formControlName="searchBillNo" placeholder="search by Name" style="width:25%;">
+                <button class="btn btn-primary" (click)="onSearchByBillNumber()">Search</button>
+           
             </div>
+        </form>
             <div class="fixitems">
                 <table class="table credit">
                     <tr style="border-bottom: 2px solid #223d61;">
                         <th>Sl No.</th>
+                        <th>Bill No.</th>
+                        <th>Bill Date</th>
                         <th>Name</th>
-                        <th>Mobile Number</th>
-                        <th>Balance Amount</th>
-                        <th>Amount Paid</th>
+                        <th>Mobile </th>
                         <th>Total</th>
+                        
                         <th></th>
                     </tr>
                    
-                    <tr>
-                        <td>1</td>
-                        <td style="text-align:left;">Rohit</td>
-                        <td>9876543210</td>
-                        <td>Rs. 12500</td>
-                        <td>Rs. 2500</td>
-                        <td> Rs. 15000</td>
-                        <mat-icon title="Edit" class="small">edit</mat-icon>
+                    <tr *ngFor="let data of filteredData;let i=index ">
+                        <td>{{i+1}}</td>
+                        <td>{{data.BillNo }}</td>
+                        
+                        <td>{{ data.BillDate | date :"dd/MM/YYYY"}}</td>
+                       
+                        <td style="text-align:left;"><p>{{data.Name}}</p><p>{{data.Name2}}</p></td>
+                        <td>{{data.MobileNo}}</td>
+                        <td>{{data.Amount}}</td>
+                        
+                        <mat-icon title="Edit" title="edit credit" class="small" (click)="onEdit(data)">edit</mat-icon>
+                        <span
+                        ><mat-icon
+                          title="Cancel bill"
+                          *ngIf="role === 'admin'"
+                          class="small"
+                         
+                          >delete</mat-icon
+                        ></span>
                     </tr>
-                    <tr>
-                        <td>2</td>
-                        <td style="text-align:left;">Mohan Kumar</td>
-                        <td>9876543210</td>
-                        <td>Rs. 12500</td>
-                        <td>Rs. 2500</td>
-                        <td> Rs. 15000</td>
-                        <mat-icon title="Edit" class="small">edit</mat-icon>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td style="text-align:left;">Ravi Kumar</td>
-                        <td>9876543210</td>
-                        <td>Rs. 12500</td>
-                        <td>Rs. 2500</td>
-                        <td>Rs. 15000</td>
-                        <mat-icon title="Edit" class="small">edit</mat-icon>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td style="text-align:left;">Namboothiripadu</td>
-                        <td>654321987</td>
-                        <td>Rs. 12500</td>
-                        <td>Rs. 2500</td>
-                        <td>Rs. 15000</td>
-                        <mat-icon title="Edit" class="small">edit</mat-icon>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td style="text-align:left;">Namboothiripadu</td>
-                        <td>654321987</td>
-                        <td>Rs. 12500</td>
-                        <td>Rs. 2500</td>
-                        <td>Rs. 15000</td>
-                        <mat-icon title="Edit" class="small">edit</mat-icon>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td style="text-align:left;">Namboothiripadu</td>
-                        <td>654321987</td>
-                        <td>Rs. 12500</td>
-                        <td>Rs. 2500</td>
-                        <td>Rs. 15000</td>
-                        <mat-icon title="Edit" class="small">edit</mat-icon>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td style="text-align:left;">Namboothiripadu</td>
-                        <td>654321987</td>
-                        <td>Rs. 12500</td>
-                        <td>Rs. 2500</td>
-                        <td>Rs. 15000</td>
-                        <mat-icon title="Edit" class="small">edit</mat-icon>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td style="text-align:left;">Namboothiripadu</td>
-                        <td>654321987</td>
-                        <td>Rs. 12500</td>
-                        <td>Rs. 2500</td>
-                        <td>Rs. 15000</td>
-                        <mat-icon title="Edit" class="small">edit</mat-icon>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td style="text-align:left;">Namboothiripadu</td>
-                        <td>654321987</td>
-                        <td>Rs. 12500</td>
-                        <td>Rs. 2500</td>
-                        <td>Rs. 15000</td>
-                        <mat-icon title="Edit" class="small">edit</mat-icon>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td style="text-align:left;">Namboothiripadu</td>
-                        <td>654321987</td>
-                        <td>Rs. 12500</td>
-                        <td>Rs. 2500</td>
-                        <td>Rs. 15000</td>
-                        <mat-icon title="Edit" class="small">edit</mat-icon>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td style="text-align:left;">Namboothiripadu</td>
-                        <td>654321987</td>
-                        <td>Rs. 12500</td>
-                        <td>Rs. 2500</td>
-                        <td>Rs. 15000</td>
-                        <mat-icon title="Edit" class="small">edit</mat-icon>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td style="text-align:left;">Namboothiripadu</td>
-                        <td>654321987</td>
-                        <td>Rs. 12500</td>
-                        <td>Rs. 2500</td>
-                        <td>Rs. 15000</td>
-                        <mat-icon title="Edit" class="small">edit</mat-icon>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td style="text-align:left;">Namboothiripadu</td>
-                        <td>654321987</td>
-                        <td>Rs. 12500</td>
-                        <td>Rs. 2500</td>
-                        <td>Rs. 15000</td>
-                        <mat-icon title="Edit" class="small">edit</mat-icon>
-                    </tr>
+                   
                 </table>
             </div>
             
         </div>
     </div>
-                    
-    
 </div>

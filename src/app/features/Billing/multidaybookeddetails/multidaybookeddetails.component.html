@@ -22,7 +22,7 @@
                                 <td>{{getNakshthram(devottee.Star)}}</td>
                                 <td>{{devottee.VazhipadDate | date:'dd-MMM-yyyy'}}</td>
                                 <td *ngIf="devottee.Name2.length>0">{{devottee.Name2}}</td>
-                                <td *ngIf="devottee.Star2.length>0">{{getNakshthram(devottee.Star2 )}}|| "N/A"</td>
+                                <td *ngIf="devottee.Star2.length>0">{{getNakshthram(devottee.Star2 )|| "N/A"}}</td>
                             </tr>
                             </tbody>
                         </table>

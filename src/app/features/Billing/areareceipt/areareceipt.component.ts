@@ -1,6 +1,6 @@
-// import { vazhipad } from './../../../othervazhipad/othervazhipad.component';
+import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-// import { VMList } from './../../../models/day-master.model';
+
 import {
   Component,
   ElementRef,
@@ -17,6 +17,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { DatePipe, formatDate } from '@angular/common';
+
 import {
   AbstractControl,
   FormArray,
@@ -50,6 +51,7 @@ import { ReceiptPrintService } from '../../../shared/service/receipt-print.servi
 import { NgxPrintModule } from 'ngx-print';
 import { ConfirmationDialogComponent } from '../../../shared/component/confirmation-dialog/confirmation-dialog.component';
 import { Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-areareceipt',
@@ -66,7 +68,7 @@ import { Router } from '@angular/router';
     MatIconModule,
     MatRadioModule,
    
-    
+    TranslateModule,
     NumberDirective,
   ],
   templateUrl: './areareceipt.component.html',
@@ -75,7 +77,7 @@ import { Router } from '@angular/router';
 })
 export class AreareceiptComponent implements OnInit {
   // private multidayService = inject(MultidayService);
-  language: string[] = ['English', 'malayalam', 'Hindi'];
+  // language: string[] = ['English', 'malayalam', 'Hindi'];
   form: FormGroup;
   row: FormArray;
   filteredOptions: any[] = [];
@@ -104,7 +106,7 @@ export class AreareceiptComponent implements OnInit {
   filteredStarOptions: Observable<string[]>;
   @ViewChildren('nameInput') nameInputs!: QueryList<ElementRef>;
   @ViewChild('firstInput') firstInputElement!: ElementRef;
-  
+  lang:string | null;
   private subscription: Subscription;
   private masterservice = inject(MasterService);
   private eventService = inject(TotalAmountService);
@@ -114,8 +116,17 @@ export class AreareceiptComponent implements OnInit {
     private fb: FormBuilder,
     public dialog: MatDialog,
     private datePipe: DatePipe,
-    private router:Router
+    private router:Router,
+    private ts:TranslateService
   ) {
+
+this.lang=localStorage.getItem('Language') || 'en';
+    const userLang=navigator.language || "en";
+    const languageCode=userLang.split('-')[0];
+    this.ts.setDefaultLang(languageCode);
+    this.ts.use(this.lang || 'en');
+
+
     this.form = this.fb.group({
       vazhipadinfo: this.fb.array([]),
     });
@@ -497,10 +508,10 @@ export class AreareceiptComponent implements OnInit {
   }
 
   vazhipadtime = [
-    { id: '0', name: 'Any Time' },
-    { id: '1', name: 'Morning' },
-    { id: '2', name: 'Evening' },
-    { id: '3', name: 'AfterNoon' },
+    { id: '0', key: 'TIME1' },
+    { id: '1', key: 'TIME2' },
+    { id: '2', key: 'TIME3' },
+    { id: '3', key: 'TIME4' },
   ];
 
   onSelect(event: MatAutocompleteSelectedEvent, index: number): void {
@@ -1158,10 +1169,12 @@ export class AreareceiptComponent implements OnInit {
     this.firstInputElement.nativeElement.focus();
   }
 
+  changeLanguage(lang:any){
+    const selectedlang=lang.target.value;
 
-
- 
-
+    localStorage.setItem('Language',selectedlang)
+    this.ts.use(selectedlang);
+  }
 
 
 }

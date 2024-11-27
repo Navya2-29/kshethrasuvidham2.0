@@ -19,6 +19,13 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     font-style: normal;
   }
   
+  @font-face {
+    font-family: 'indulekha';
+    src: url('assets/fonts/malayalam/FML-TT-Indulekha.ttf')  format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
   /* Optional: Include bold font if available */
   /* @font-face {
     font-family: 'Noto Sans Malayalam Bold';

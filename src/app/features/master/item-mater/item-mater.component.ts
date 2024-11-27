@@ -81,9 +81,9 @@ export class ItemMAterComponent {
           
         ],
       ],
-      NM_RName: [''],
+      NM_RName: ['',Validators.required,],
       category:['', Validators.required,],
-      NM_Description: [''],
+      NM_Description: ['',Validators.required,],
     });
   }
   ngOnInit(): void {
@@ -159,7 +159,7 @@ export class ItemMAterComponent {
       });
     } else {
       this.markFormGroupTouched(this.itemMasterForm);
-      this.notification.success(' Please fill the  details');
+      this.notification.success(' Please fill the  details of item');
     }
   }
   // resetting form controls

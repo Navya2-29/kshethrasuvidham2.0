@@ -13,24 +13,24 @@
                 <!-- <select (change)="onLanguageChange($event)"><option *ngFor="let lan of language" [value]="lan">{{lan}}</option></select> -->
                 
                 <!-- <th style="width: 20%">Vazhipad</th> -->
-                <th style="width: 20%">വഴിപ്പാട്</th>
+                <th style="width: 20%">{{ "VAZHIPAD" | translate}}</th>
                 <!-- <th style="width: 25%">Name</th> -->
-                <th style="width: 25%">പേര്</th>
+                <th style="width: 25%">{{"NAME" |translate}}</th>
                 <!-- <th style="width: 8%">Star</th> -->
-                <th style="width: 8%">നക്ഷത്രം</th>
+                <th style="width: 8%">{{"STAR" |translate }}</th>
                 <!-- <th style="width: 8%">Diety</th> -->
-                <th style="width: 8%">പ്രതിഷ്ഠ</th>
+                <th style="width: 8%">{{"PRATHISTA" |translate }}</th>
                 <!-- <th style="width: 1%; text-align: center">Qty</th> -->
                 <!-- <th style="width: 1%; text-align: center">Qty</th> -->
-                <th style="width: 1%; text-align: center">അളവ്</th>
+                <th style="width: 1%; text-align: center">{{"QUANTITY" |translate  }}</th>
                 <!-- <th style="width: 2%; text-align: center">Rate</th> -->
-                <th style="width: 2%; text-align: center">നിരക്ക്  </th>
+                <th style="width: 2%; text-align: center">{{"RATE" |translate  }}  </th>
                 <!-- <th style="width: 4%; text-align: center">Amount</th> -->
                 <!-- <th style="width: 8%; text-align: center">Date</th> -->
-                <th style="width: 8%; text-align: center">തീയതി</th>
+                <th style="width: 8%; text-align: center">{{"DATE" |translate  }}</th>
                 <!-- <td style="width: 7%; text-align: center">Single/Multi</td> -->
                 <!-- <th style="width: 8%; text-align: center">Time</th> -->
-                <th style="width: 8%; text-align: center">സമയം</th>
+                <th style="width: 8%; text-align: center">{{"TIME" |translate  }}</th>
                 <!-- <th> Name 2</th>
                 <th>Star 2</th> -->
                 <th></th>
@@ -50,7 +50,8 @@
                 <td>
                   <input
                     type="text"
-                    placeholder="Select vazhipad"
+                    [placeholder]="'PLACEHOLDER.VAZHIPAD' | translate"
+                    
                     matInput
                     #nameInput
                     #firstInput
@@ -78,7 +79,7 @@
                   <input
                     type="text"
                     class="form-control"
-                    placeholder="Enter Name"
+                    [placeholder]="'PLACEHOLDER.NAME' | translate"
                     formControlName="Name"
                     [readonly]="multidayBooking[i]"
                     (keydown)="onKeyDown($event, 'Name', i)"
@@ -99,7 +100,7 @@
 
                   <input
                   type="text"
-                  placeholder="Select Star"
+                  [placeholder]="'PLACEHOLDER.STAR' | translate"
                   matInput
                  
                   class="form-control sps"
@@ -127,7 +128,9 @@
                     formControlName="Prethista"
                     class="form-control"
                     style="width: 100%; height: 30.6px"
+                   
                   >
+                  <option value="">{{'PLACEHOLDER.PRATHISTA' | translate}}</option>
                     <option *ngFor="let prathishta of prathishtaOptions[i]" [value]="prathishta.name" >{{prathishta.name}}</option>
                     
                   </select>
@@ -139,7 +142,7 @@
                   [min]="1"
                     type="number"
                     class="form-control"
-                    placeholder="Qty"
+                    [placeholder]="'PLACEHOLDER.QUANTITY' | translate"
                     formControlName="Qty"
                     [readonly]="multidayBooking[i]"
                   />
@@ -149,7 +152,7 @@
                   <input
                     type="text"
                     appNumber
-                    placeholder="Rate"
+                    [placeholder]="'PLACEHOLDER.RATE' | translate"
                     class="form-control"
                     formControlName="Rate"
                     [readOnly]="row.get('ratechange')?.value ==='N'"
@@ -189,7 +192,7 @@
                     style="width: 80%; height: 30.6px"
                   >
                   <!-- (keypress)="handleTimeFieldKeyPress($event, row,i)" -->
-                    <option *ngFor="let time of vazhipadtime" [value]="time.id">{{time.name}}</option>
+                    <option *ngFor="let time of vazhipadtime" [value]="time.id" >   {{ 'OPTIONS.' + time.key | translate }}</option>
                     
                   </select>
                 </td>
@@ -271,6 +274,12 @@
             </tbody>
           </table>
           <div class="button-container">
+            <!-- <select (change)="changeLanguage($event)">
+              <option [selected]="lang==='en'" value="en">English</option>
+              <option [selected]="lang==='ml'" value="ml">malayalam</option>
+              <option [selected]="lang==='hn'" value="hn">Hindi</option>
+              <option [selected]="lang==='tm'" value="tm">Tamil</option>
+            </select> -->
             <a class="text-danger d-flex align-items-center justify-content-center" style="cursor: pointer;" (click)="clearAll()">
               <i class="fas fa-trash me-2 "></i><span class="ml-1"> Clear All</span>
             </a>

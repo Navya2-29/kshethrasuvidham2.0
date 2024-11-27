@@ -1,0 +1,46 @@
+{
+  "VAZHIPAD": "വഴിപ്പാട്",
+  "NAME": "പേര്",
+  "STAR": "നക്ഷത്രം",
+  "PRATHISTA": "പ്രതിഷ്ഠ",
+  "QUANTITY": "എണ്ണം ",
+  "RATE": "നിരക്ക്",
+  "DATE": "തീയതി",
+  "TIME": "സമയം",
+  "TODAYCOLLECTION": "ആകെ വരവ്",
+  "LastBillNo": "അവസാന ബിൽ നമ്പർ",
+  "Cash": "ക്യാഷ്",
+  "credit": "ക്രെഡിറ്റ്",
+  "UPI": "UPI",
+  "Debit": "ഡെബിറ്റ്",
+  "Online": "ഓൺലൈൻ ",
+  "cheque": "ചെക്ക്",
+  "Money order": "Money Order",
+
+  "PLACEHOLDER": {
+    "VAZHIPAD": "വഴിപാട് തിരഞ്ഞെടുക്കുക",
+    "NAME": "നിങ്ങളുടെ പേര് ",
+    "STAR": "നക്ഷത്രം തിരഞ്ഞെടുക്കുക",
+    "PRATHISTA": "പ്രതിഷ്ഠ തിരഞ്ഞെടുക്കുക ",
+    "QUANTITY": "എണ്ണം",
+    "RATE": "നിരക്ക് ",
+    "DATE": "തീയതി   ",
+    "TIME": "സമയം",
+    "MOBILENUMBER": "മൊബൈൽ നമ്പർ ",
+    "ADDRESS1": "വിലാസം1",
+    "ADDRESS2": "വിലാസം2",
+    "ADDRESS3": "വിലാസം3",
+    "PINCODE": "പിൻ കോഡ് ",
+    "PHONE": "മൊബൈൽ നമ്പർ",
+    "EMAIL": "ഇമെയിൽ ",
+    "CHEQUENO": "",
+    "BANKNAME": ""
+  },
+
+  "OPTIONS": {
+    "TIME1": "രാവിലെ",
+    "TIME2": "ഉച്ചയ്ക്ക്",
+    "TIME3": "വൈകുന്നേരം",
+    "TIME4": "ഉച്ചക്കുശേഷം"
+  }
+}

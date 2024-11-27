@@ -1,28 +1,22 @@
 import { NgPluralCase } from '@angular/common';
 
 export const Constant = {
- 
-   BASE_URL: 'http://panchiyammaapi.suvidham.in/api/KshetramAPI/',
+  BASE_URL: 'http://api.suvidham.in/api/KshetramAPI/',
 
   METHODS: {
     // master view
     GET_MASTER: 'ViewMasters',
     // delete masters
     DELETE_MASTER: 'DeleteMasters',
-
     // pmaster
     CREATE_PMASTER: 'AddPrathista',
-
     // cmaster
     CREATE_CMASTER: 'AddVazhipadCategory',
     Type: 'Category',
-
     // vmaster
     CREATE_VMASTER: 'AddVazhipadMaster',
-
     // daymaster
     CREATE_VDAY: 'DayMaster',
-
     // SPECIAL master
     GET_VSPECIAL: 'specialDay',
     GET_ALL_SPECIAL: 'getall',
@@ -79,9 +73,10 @@ export const Constant = {
     SEARCHBYMOBILENUMBER: 'ViewMasters',
     STARDATA: 'ListStar',
     MULTIDAY_FILTER: 'MultiFilter',
-    GET_REPORT:"GetReport",
-    CANCEL_BILL:"CancelBill",
-    NADAVARAV_BOOKING:"NadavaravuBooking",
-    CREATE_STAFF:"AddStaffMaster"
+    GET_REPORT: 'GetReport',
+    CANCEL_BILL: 'CancelBill',
+    NADAVARAV_BOOKING: 'NadavaravuBooking',
+    CREATE_STAFF: 'AddStaffMaster',
+  CREDITCOLLECT:"CreditCollect",
   },
 };

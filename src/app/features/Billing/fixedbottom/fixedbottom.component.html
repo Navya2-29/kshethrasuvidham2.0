@@ -5,7 +5,7 @@
         <div>
           <input
             type="text"
-            placeholder="Search by Bill Number"
+            [placeholder]="'PLACEHOLDER.MOBILENUMBER' | translate"
             [(ngModel)]="billNumber"
             style="width: 150px"
             class="phone "
@@ -28,7 +28,7 @@
         <div>
           <input
             type="text"
-            placeholder="Search by Mob Number"
+            [placeholder]="'PLACEHOLDER.MOBILENUMBER' | translate"
             [(ngModel)]="mobileNumber"
             style="width: 150px"
             class="phone "
@@ -54,12 +54,12 @@
             column-gap: 0px;
           "
         >
-          <p style="font-weight: 800">Collection - Today</p>
+          <p style="font-weight: 800">{{"TODAYCOLLECTION" |translate}}</p>
           <p style="font-size: 12pt; font-weight: 800; margin-top: -9px">
             Rs. {{ (todayCollection ? todayCollection : 0) | number : "1.2-2" }}
           </p>
           <p style="border: 1px solid silver; padding: 5px">
-            Last Bill No.
+            {{"LastBillNo" |translate}}.
             <span style="color: #3f51b5; font-weight: 800"
               >{{ theLastBillNo }}
             </span>
@@ -83,19 +83,19 @@
               type="text"
               formControlName="Address1"
               #address1Input
-              placeholder="Enter Address1"
+              [placeholder]="'PLACEHOLDER.ADDRESS1' | translate"
               class="form-control phone"
             />
             <input
               type="text"
               formControlName="Address2"
-              placeholder="Enter Address2"
+              [placeholder]="'PLACEHOLDER.ADDRESS2' | translate"
               class="form-control phone"
             />
             <input
               type="text"
               formControlName="Address3"
-              placeholder="Enter Address3"
+              [placeholder]="'PLACEHOLDER.ADDRESS3' | translate"
               class="form-control phone"
             />
           </div>
@@ -112,13 +112,14 @@
             <input
               type="text"
               formControlName="Pincode"
-              placeholder="Enter pincode"
+              [placeholder]="'PLACEHOLDER.PINCODE' | translate"
               class="form-control phone"
             />
             <input
               type="text"
               formControlName="Mobile"
-              placeholder="Enter Phone Number"
+              maxlength="11"
+              [placeholder]="'PLACEHOLDER.PHONE' | translate"
               class="form-control phone"
               [class.is-invalid]="customerdetailsForBillingForm.get('Mobile')?.invalid && customerdetailsForBillingForm.get('Mobile')?.touched"
             />
@@ -126,7 +127,7 @@
             <input
               type="email"
               formControlName="Email"
-              placeholder="Enter email"
+              [placeholder]="'PLACEHOLDER.EMAIL' | translate"
               class="form-control phone"
             />
           </div>
@@ -190,13 +191,13 @@
                   padding-bottom: 0px;
                 "
               >
-                <option value="CS">Cash</option>
-                <option value="UP">UPI</option>
-                <option value="DE">Debit Card</option>
-                <option value="CR">Credit/Due</option>
-                <option value="CH">Cheque</option>
-                <option value="MO">Money order</option>
-                <option value="ON">Online</option>
+                <option value="CS">{{"Cash" | translate}}</option>
+                <option value="UP">{{"UPI"|translate}}</option>
+                <option value="DE">{{"Debit" |translate}}</option>
+                <option value="CR">{{"credit" |translate}}</option>
+                <option value="CH">{{"cheque"| translate}}</option>
+                <option value="MO">{{"Money order" |translate}}</option>
+                <option value="ON">{{"Online" | translate}}</option>
               </select>
             </div>
             <button

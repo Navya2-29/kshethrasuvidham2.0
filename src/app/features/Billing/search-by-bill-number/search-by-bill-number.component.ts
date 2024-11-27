@@ -19,6 +19,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { CancelBillRemarkComponent } from '../cancel-bill-remark/cancel-bill-remark.component';
 import { NotificationService } from '../../../services/notification/notification.service';
+
 export interface Data {
   vazhipad: string;
   name: string;
@@ -69,6 +70,8 @@ export class SearchByBillNumberComponent {
   loginId: string | null;
   displayTrnsmode: string;
   counterId: string | null;
+  templeName:string |null;
+  logo:string |null;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   cancellationReason: string = '';
@@ -91,6 +94,8 @@ export class SearchByBillNumberComponent {
     this.role = localStorage.getItem('Role');
     this.loginId = localStorage.getItem('LoginId');
     this.counterId = localStorage.getItem('counterId');
+    this.templeName=localStorage.getItem('TempleName');
+    this.logo=localStorage.getItem('Logo');
   }
 
   ngOnInit() {
@@ -301,7 +306,7 @@ export class SearchByBillNumberComponent {
 
       const receiptContent = `
           <div class="receipt-page">
-              <h1>Koduvayur Sree Subrahmanya Swami Kshethram</h1>
+              <h1>${this.templeName}</h1>
               <div style="display: flex; justify-content: space-between;">
                   <strong style="color: green;">Vazhipad: ${vazhipad}</strong>
                   <strong>Bill Date: ${

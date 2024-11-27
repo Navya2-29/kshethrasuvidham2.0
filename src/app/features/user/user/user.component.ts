@@ -1,102 +1,220 @@
+import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { MasterService } from './../../../services/master/master.service';
 import { Component } from '@angular/core';
 import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { CommonModule } from '@angular/common';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 import { MatIconModule } from '@angular/material/icon';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 
 @Component({
   selector: 'app-user',
   standalone: true,
-  imports: [HeaderComponent,CommonModule,SpinnerComponent,MatIconModule,FormsModule,ReactiveFormsModule],
+  imports: [
+    HeaderComponent,
+    CommonModule,
+    SpinnerComponent,
+    MatIconModule,
+    FormsModule,
+    ReactiveFormsModule,
+  ],
   templateUrl: './user.component.html',
-  styleUrl: './user.component.css'
+  styleUrl: './user.component.css',
 })
 export class UserComponent {
-loading:boolean=false;
-userForm:FormGroup;
-loginId:string |null;
-staffList:any[]=[];
-updateFlag:boolean=false;
-id:string;
-constructor(private fb:FormBuilder, private service:MasterService ,   ){
-this.loginId=localStorage.getItem('LoginId');
-this.userForm=this.fb.group({
-  LoginId:[this.loginId],
-  username:['',Validators.required],
-  password:['',Validators.required],
-  email:['',Validators.required],
-  mobile:['',Validators.required],
-  Address1:['',Validators.required],
-  Role:['',Validators.required],
-  Type:["INSERT"],
-  Active:["Y"]
-})
+  loading: boolean = false;
+  userForm: FormGroup;
+  loginId: string | null;
+  staffList: any[] = [];
+  updateFlag: boolean = false;
+  id: string;
+  constructor(
+    private fb: FormBuilder,
+    private service: MasterService,
+    private notification: ToastrService,
+    private router:Router
+  ) {
+    this.loginId = localStorage.getItem('LoginId');
 
-}
-ngOnInit() {
-this.getStaffList();
-}
-
-
-
-
-getStaffList(){
-  const payLoad={"Type":"ListStaff","Code":""}
- this.service.getMaster(payLoad).subscribe((data)=>{
-  console.log(data);
-  this.staffList=data;
- })  
-}
-
-
-onSubmit(){
-this.service.createStaffmanagement(this.userForm.value).subscribe({
-  next:(data)=>{
-    console.log(data);
-    this.getStaffList();
-    this.reset()
+    this.userForm = this.fb.group({
+      LoginId: [''],
+      username: ['', Validators.required],
+      password: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      mobile: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(/^\d{10}$/), // Ensures a 10-digit number
+        ],
+      ],
+      Address1: [''],
+      Role: ['', Validators.required],
+      Type: ['INSERT'],
+      Active: [true],
+    });
   }
-})
-}
 
-reset(){
-  this.userForm.reset({
-    LoginId:this.loginId,
-    Type:"INSERT",
-    Active:"Y"
-  })
-}
-onEdit(item:any){
-  this.id=item.UId;
-  this.updateFlag=true;
-  this.userForm.patchValue({
-    username:item.UName,
-    password:item.UPwd,
-    email:item.UEmailId,
-    mobile:item.Umobile,
-    Address1:item.Address1,
-    Role:item.Role,
-    Type:"UPDATE"
-  })
-}
-
-
-
-onUpdate(){
-this.service.createStaffmanagement(this.userForm.value).subscribe((data)=>{
-  console.log(data);
-  this.getStaffList();
-})
-}
-
-
-onDelete(id:string){
-  const payLoad={"Type":"Staff","Id":id}
-  this.service.deleteMaster(payLoad).subscribe((data)=>{
-    console.log(data);
+  ngOnInit() {
     this.getStaffList();
-  })
-}
+  }
+
+  getStaffList() {
+    const payLoad = { Type: 'ListStaff', Code: '' };
+    this.service.getMaster(payLoad).subscribe({
+      next: (data) => {
+        console.log(data);
+        this.staffList = data;
+      },
+      error: (err) => {
+        this.notification.error(
+          'Failed to load staff list. Please try again later.'
+        );
+        console.error(err);
+      },
+    });
+  }
+
+  onSubmit() {
+    if (this.userForm.invalid) {
+      if (this.userForm.get('username')?.errors?.['required']) {
+        this.notification.error('Username is required', 'Validation Error');
+      }
+      if (this.userForm.get('password')?.errors?.['required']) {
+        this.notification.error('password is required', 'Validation Error');
+      }
+
+      if (this.userForm.get('mobile')?.errors?.['required']) {
+        this.notification.error(
+          'Mobile number is required',
+          'Validation Error'
+        );
+      } else if (this.userForm.get('mobile')?.errors?.['pattern']) {
+        this.notification.error(
+          'Mobile number must be a 10-digit number',
+          'Validation Error'
+        );
+      }
+
+      if (this.userForm.get('email')?.errors?.['required']) {
+        this.notification.error(' Email is required', 'Validation Error');
+      } else if (this.userForm.get('email')?.errors?.['email']) {
+        this.notification.error('Invalid email format', 'Validation Error');
+      }
+
+      if (this.userForm.get('Role')?.errors?.['Role']) {
+        this.notification.error('Please select the role', 'Validation Error');
+      }
+      return;
+    }
+
+    const payLoad = {
+      LoginId: '',
+      username: this.userForm.value.username,
+      password: this.userForm.value.password,
+      email: this.userForm.value.email,
+      mobile: this.userForm.value.mobile,
+      Address1: this.userForm.value.Address1,
+      Role: this.userForm.value.Role,
+      Type: 'INSERT',
+      Active: this.userForm.value.Active == true ? 'Y' : 'N',
+    };
+    console.log(payLoad, 'new onedata');
+    this.service.createStaffmanagement(payLoad).subscribe({
+      next: (data) => {
+        if (data.RespStatus === 'I') {
+          console.log(data);
+          this.getStaffList();
+          this.reset();
+        } else {
+          this.notification.error(
+            'something went wrong please try after some time'
+          );
+        }
+      },
+    });
+  }
+
+  reset() {
+    this.userForm.reset({
+      LoginId: '',
+      Type: 'INSERT',
+      Active: true,
+      username: '',
+      password: '',
+      email: '',
+      mobile: '',
+      Address1: '',
+      Role: '',
+    });
+  }
+
+  onEdit(item: any) {
+    this.id = item.UId;
+    this.updateFlag = true;
+    console.log(item);
+    this.userForm.patchValue({
+      LoginId: item.UId,
+      username: item.UName,
+      password: item.UPwd,
+      email: item.UEmailId,
+      mobile: item.Umobile,
+      Address1: item.Address1,
+      Role: item.Role,
+      Type: 'UPDATE',
+      Active: item.Active === 'Y' ? true : false,
+    });
+  }
+
+  onUpdate() {
+    console.log(this.userForm.value, 'update');
+    const payLoad = {
+      LoginId: this.id,
+      username: this.userForm.value.username,
+      password: this.userForm.value.password,
+      email: this.userForm.value.email,
+      mobile: this.userForm.value.mobile,
+      Address1: this.userForm.value.Address1,
+      Role: this.userForm.value.Role,
+      Type: 'UPDATE',
+      Active: this.userForm.value.Active == true ? 'Y' : 'N',
+    };
+    console.log(payLoad, 'upload payoa');
+    this.service.createStaffmanagement(payLoad).subscribe((data) => {
+      console.log(data);
+
+      if (data.RespStatus === 'U') {
+        this.notification.success('User Data Updated successfully');
+        this.getStaffList();
+        this.updateFlag = false;
+        this.reset();
+      } else {
+        this.notification.error(
+          'something went wrong please try after some time'
+        );
+      }
+    });
+  }
+
+  onDelete(id: string) {
+    if (confirm('Are you sure you want to delete this user?')) {
+      const payLoad = { Type: 'Staff', Id: id };
+      this.service.deleteMaster(payLoad).subscribe((data) => {
+        console.log(data);
+        this.getStaffList();
+      });
+    }
+  }
+
+
+  gotoBack(){
+    this.router.navigate(['/dashboard'])
+  }
 }

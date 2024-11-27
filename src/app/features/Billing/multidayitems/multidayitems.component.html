@@ -181,6 +181,9 @@
                           class="form-control select-star"
                           style="width: fit-content; height: 30.6px"
                           formControlName="Star"
+                          [ngClass]="{
+                            'invalid-control': devotee.get('Star')?.invalid && devotee.get('Star')?.touched
+                          }" 
                         >
                         <option value="">Select</option>
                          <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_NameEng}}</option>

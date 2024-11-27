@@ -34,22 +34,22 @@ export class NadavaravuComponent implements OnInit {
   lastBillnumber: number;
   currentBillNumber: string;
   theLastBillNo: string;
-  nadavaravData:any[]=[];
-  filteredData:any[]=[];
+  nadavaravData: any[] = [];
+  filteredData: any[] = [];
   searchForm: FormGroup;
-today:Date=new Date();
-cancellationReason:string;
-cancelBillNumber:string;
+  today: Date = new Date();
+  cancellationReason: string;
+  cancelBillNumber: string;
   constructor(
     private fb: FormBuilder,
     private service: MasterService,
     private notification: ToastrService,
-    private router:Router,
+    private router: Router,
     private dialog: MatDialog
   ) {
     this.userId = localStorage.getItem('LoginId');
-    this.role=localStorage.getItem('Role');
-this.CounterId=localStorage.getItem('counterId');
+    this.role = localStorage.getItem('Role');
+    this.CounterId = localStorage.getItem('counterId');
     this.nadavaravForm = this.fb.group({
       BillNo: ['', [Validators.required]],
       Name: ['', [Validators.required]],
@@ -65,14 +65,14 @@ this.CounterId=localStorage.getItem('counterId');
       Remarks: [''],
       TrnsMode: ['CS'],
       UserId: [this.userId],
-      CounterId:[this.CounterId]
+      CounterId: [this.CounterId],
     });
   }
 
   ngOnInit() {
     this.searchForm = this.fb.group({
       searchDate: [''],
-      searchBillNO:['']
+      searchBillNO: [''],
     });
     this.currentDate = this.getCurrentDateMMYY();
     this.getBillNumber();
@@ -82,6 +82,8 @@ this.CounterId=localStorage.getItem('counterId');
     this.getNadavaravuData();
   }
 
+
+  
   setupConditionalValidationForItemValue() {
     this.nadavaravForm.get('ItemValue')?.valueChanges.subscribe((value) => {
       if (value) {
@@ -97,11 +99,13 @@ this.CounterId=localStorage.getItem('counterId');
     });
   }
 
+
+
   onSubmit() {
     if (this.nadavaravForm.invalid) {
       this.notification.error(
-        'Please fix the errors in the form before saving.',
-        'Validation Error'
+        'Please fill the form before saving.',
+        'Nadavarav'
       );
       this.markAllFieldsAsTouched();
       return;
@@ -141,6 +145,7 @@ this.CounterId=localStorage.getItem('counterId');
       control?.markAsTouched({ onlySelf: true });
     });
   }
+
   resetForm() {
     this.nadavaravForm.reset({
       BillNo: '',
@@ -157,7 +162,7 @@ this.CounterId=localStorage.getItem('counterId');
       Remarks: '',
       TrnsMode: 'CS',
       UserId: this.userId,
-      CounterId:this.CounterId
+      CounterId: this.CounterId,
     });
     this.getBillNumber();
   }
@@ -215,38 +220,39 @@ this.CounterId=localStorage.getItem('counterId');
     return `${month}${year}`;
   }
 
-
-  getNadavaravuData(){
-    const payLoad={"Type":"NadavaravuBooking","Code":""}
-    this.service.getNadavaravBooking(payLoad).subscribe((data)=>{
+  getNadavaravuData() {
+    const payLoad = { Type: 'NadavaravuBooking', Code: '' };
+    this.service.getNadavaravBooking(payLoad).subscribe((data) => {
       console.log(data);
-this.nadavaravData=data;
-this.filteredData=this.nadavaravData;
-    })
+      this.nadavaravData = data;
+      this.filteredData = this.nadavaravData;
+    });
   }
 
   onSearch(): void {
- 
-    const searchBillNo = this.searchForm.get('searchBillNO')?.value?.trim().toLowerCase(); // Case insensitive
-  console.log(searchBillNo)
+    const searchBillNo = this.searchForm
+      .get('searchBillNO')
+      ?.value?.trim()
+      .toLowerCase(); // Case insensitive
+    console.log(searchBillNo);
     if (!searchBillNo) {
       this.filteredData = this.nadavaravData; // Show all data if no input
       return;
     }
-  
-    this.filteredData = this.nadavaravData.filter((row) =>
-      row.BillNo?.toLowerCase().includes(searchBillNo) // Match bill number
+
+    this.filteredData = this.nadavaravData.filter(
+      (row) => row.BillNo?.toLowerCase().includes(searchBillNo) // Match bill number
     );
-  
+
     if (this.filteredData.length === 0) {
       console.log('No records found for the entered bill number.');
-      
     }
   }
-  
-  
+
   printReceipt() {
-    const printContent = document.getElementById('thermal-print-content')?.innerHTML;
+    const printContent = document.getElementById(
+      'thermal-print-content'
+    )?.innerHTML;
     if (printContent) {
       const printWindow = window.open('', '_blank', 'width=300,height=400');
       printWindow?.document.write(`
@@ -278,11 +284,9 @@ this.filteredData=this.nadavaravData;
     }
   }
 
-  goBack(){
-    this.router.navigate(['dashboard'])
+  goBack() {
+    this.router.navigate(['dashboard']);
   }
-
-
 
   openCancelRemarkDialog() {
     const remarkDialogRef = this.dialog.open(CancelBillRemarkComponent, {
@@ -301,17 +305,17 @@ this.filteredData=this.nadavaravData;
     });
   }
 
-  cancellTheBill(billnumber:string) {
-    this.cancelBillNumber=billnumber
+  cancellTheBill(billnumber: string) {
+    this.cancelBillNumber = billnumber;
     this.openCancelRemarkDialog();
   }
 
-  OnCancelSubmit(){
+  OnCancelSubmit() {
     this.cancellationReason;
     console.log(this.cancellationReason, 'cancellarion reason');
 
     const payLoad = {
-      Type:"Nadavaravu",
+      Type: 'Nadavaravu',
       BillNo: this.cancelBillNumber,
       CancelBy: this.userId,
       Remarks: this.cancellationReason,
@@ -330,7 +334,6 @@ this.filteredData=this.nadavaravData;
       error: (err) => {
         console.log(err);
       },
-    }); 
+    });
   }
-
 }

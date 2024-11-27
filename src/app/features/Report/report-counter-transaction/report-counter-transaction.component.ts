@@ -104,25 +104,24 @@ export class ReportCounterTransactionComponent {
   getTransactionType(transmode: string): string {
     console.log(transmode);
     switch (transmode) {
-      case 'ba':
+      case 'ON':
         return 'Bank';
-      case 'cs':
+      case 'CS':
         return 'CASH';
-      case 'mo':
+      case 'MO':
         return 'MONEY ORDER';
-      case 'up':
+      case 'UP':
         return 'UPI';
-      case 'ch':
+      case 'CH':
         return 'CHEQUE';
-      case 'cr':
+      case 'CR':
         return 'CREDIT';
-        case 'CS':
-        return 'CREDIT';
-      case 'de':
+        
+      case 'DE':
         return 'DEBIT';
 
       default:
-        return 'Unknown';
+        return 'OTHERS';
     }
   }
 

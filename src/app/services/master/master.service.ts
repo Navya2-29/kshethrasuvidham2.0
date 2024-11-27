@@ -844,7 +844,20 @@ updateNadavaravuBillNumber(currentbillnumber: any): Observable<any[]> {
     );
   }
 
- 
+  createCreditCollection(payLoad:any){
+    return this.http.post<any>(
+      Constant.BASE_URL + Constant.METHODS.CREDITCOLLECT,
+      payLoad
+    );
+  }
+
+  updatecreditBillNumber(currentbillnumber: any): Observable<any[]> {
+    const payLoad = { Type: 'UpdateBillNoCredit', code: currentbillnumber };
+    return this.http.post<any>(
+      Constant.BASE_URL + Constant.METHODS.SEARCHBYMOBILENUMBER,
+      payLoad
+    );
+  }
 
 
   // error handling
