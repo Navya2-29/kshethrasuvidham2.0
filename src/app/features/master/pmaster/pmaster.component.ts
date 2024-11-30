@@ -89,7 +89,7 @@ export class PmasterComponent implements OnInit {
         '',
         [
           Validators.required,
-          Validators.pattern('[a-zA-Z\\s]*'),
+          
           Validators.maxLength(100),
           this.duplicateNameValidator.bind(this),
         ],
@@ -253,6 +253,8 @@ export class PmasterComponent implements OnInit {
     this.showNoRecordsMessage = this.filteredPmaster.length === 0;
   }
 
+
+
   //  preview  the image
   previewImage(event: any) {
     const file = event.target.files[0];
@@ -308,6 +310,7 @@ export class PmasterComponent implements OnInit {
     }
   }
 
+
   // cancel uploded image only
   removeImagePreview() {
     this.fileInput.nativeElement.value = '';
@@ -316,6 +319,7 @@ export class PmasterComponent implements OnInit {
     this.errorMessage = '';
     this.pmasterForm.patchValue({ PM_Image: '' });
   }
+
 
   // validation
   markFormGroupTouched(formGroup: FormGroup) {
@@ -339,6 +343,8 @@ export class PmasterComponent implements OnInit {
       return null;
     }
   }
+
+
   // duplicate name check validators
 
   duplicateNameValidator(control: AbstractControl): ValidationErrors | null {
@@ -362,6 +368,7 @@ export class PmasterComponent implements OnInit {
       return null;
     }
   }
+
 
   // duplicate regional check validators
   duplicateRegionalNameValidator(
@@ -393,4 +400,7 @@ export class PmasterComponent implements OnInit {
       return null;
     }
   }
+
+
+  
 }

@@ -10,11 +10,11 @@
   "TODAYCOLLECTION": "Today Collection",
   "LastBillNo": "Last Bill No.",
   "Cash": "Cash",
-  "credit": "credit",
+  "Credit": "Credit",
   "UPI": "Upi",
   "Debit": "Debit",
   "Online": "Online",
-  "cheque": "Cheque",
+  "Cheque": "Cheque",
   "Money order": "Money Order",
 
   "PLACEHOLDER": {
@@ -26,7 +26,8 @@
     "RATE": "Rate",
     "DATE": "dd/mm/yyyy",
     "TIME": "Select Time",
-    "MOBILENUMBER": "മൊബൈൽ നമ്പർ ",
+    "BILLNUMBER":"Bill number",
+    "MOBILENUMBER": "Enter Mobile number ",
     "ADDRESS1": " Enter Address 1",
     "ADDRESS2": "Enter Address 2",
     "ADDRESS3": "Enter Address 3",
@@ -37,9 +38,9 @@
     "BANKNAME": "Enter your bank Name"
   },
   "OPTIONS": {
-    "TIME1": "Morning",
-    "TIME2": "Afternoon",
+    "TIME1": "Any Time",
+    "TIME2": "Morning",
     "TIME3": "Evening",
-    "TIME4": "after noon"
+    "TIME4": "Night"
   }
 }

@@ -5,8 +5,10 @@ import {
   HostListener,
   inject,
   OnInit,
+  QueryList,
   Type,
   ViewChild,
+  ViewChildren,
 } from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -64,11 +66,23 @@ export class FixedbottomComponent implements OnInit {
   theLastBillNo: string;
   loginId: string | null = '';
   counterId: string | null = '';
-  templeNAme: string | null = '';
+  templeName: string | null = '';
   templeAddress: string | null = '';
   billType: string;
   lang:string | null;
+  logo:string | null;
+  templeLogoUrl: string = '';
+  name:string | null;
   @ViewChild('address1Input', { static: true }) address1Input!: ElementRef;
+  @ViewChildren('address1, address2, address3, pincode, phone, email')
+  inputs!: QueryList<ElementRef>;
+  // inputs!: QueryList<ElementRef>;
+   // 2D navigation grid
+   navigationGrid = [
+    [0, 3], // Address 1 -> Pincode
+    [1, 4], // Address 2 -> Phone
+    [2, 5], // Address 3 -> Email
+  ];
   constructor(
     private fb: FormBuilder,
     public dialog: MatDialog,
@@ -85,8 +99,14 @@ export class FixedbottomComponent implements OnInit {
 
     this.loginId = localStorage.getItem('LoginId');
     this.counterId = localStorage.getItem('counterId');
-    this.templeNAme = localStorage.getItem('TempleName');
+    this.templeName = localStorage.getItem('TempleName');
     this.templeAddress = localStorage.getItem('Address');
+    this.logo=localStorage.getItem('Logo');
+    this.name=localStorage.getItem('name');
+    if(this.logo){
+      console.log( this.templeLogoUrl)
+      this.templeLogoUrl=`assets/images/${this.logo}`;
+    }
     this.currentDate = this.getCurrentDateMMYY();
     this.getLastBillNumber();
     this.loggedInUserLastBillNumber();
@@ -140,16 +160,16 @@ export class FixedbottomComponent implements OnInit {
   getLastBillNumber() {
     this.masterService.getLastBillNumber().subscribe({
       next: (data) => {
-        console.log(data[0].billno);
-        this.lastBillnumber = data[0].billno;
+        console.log(data[0].billno,"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        this.lastBillnumber = data[0].billno-1
         this.theLastBillNo =
           this.lastBillnumber.toString() + '/' + this.currentDate;
-        console.log(this.theLastBillNo);
+        console.log(this.theLastBillNo,"last bilnumberrrrrrrrrrrrrrrrrrrrrr");
         this.currentBillNumber =
-          (this.lastBillnumber + 1).toString() + '/' + this.currentDate;
-        this.customerdetailsForBillingForm.patchValue({
-          BillNo: this.currentBillNumber,
-        });
+          (this.lastBillnumber).toString() + '/' + this.currentDate;
+        // this.customerdetailsForBillingForm.patchValue({
+        //   BillNo: this.currentBillNumber,
+        // });
         // console.log(this.currentBillNumber);
       },
     });
@@ -170,200 +190,244 @@ export class FixedbottomComponent implements OnInit {
   }
 
   printReceipt() {
-    this.receiptPrinrservice.receiptData$.subscribe((data) => {
+    this.receiptPrinrservice.receiptData$.subscribe((data: any) => {
       this.printReceipts(data);
       this.getTodayCollection();
       console.log(data, 'printing details');
     });
-  }
+}
 
-  private printReceipts(data: any) {
-    const {
-      BillNo,
-      Billdate,
-      Trnsmode,
-      Mobile,
-      Address1,
-      Address2,
-      Address3,
-      Email,
-      Pincode,
-      vazhipadinfo,
-    } = data;
+private printReceipts(data: any) {
+  const {
+    BillNo,
+    Billdate,
+    Trnsmode,
+    Mobile,
+    Address1,
+    Address2,
+    Address3,
+    Email,
+    Pincode,
+    vazhipadinfo,
+  } = data;
 
-    const starNameMapping = {
-      '1': 'ASWATHY',
-      '2': 'BHARANI',
-      '3': 'KARTHIKA',
-      '4': 'ROHINI',
-      '5': 'MAKAYIRAM',
-      '6': 'THIRUVATHIRA',
-      '7': 'PUNARTHAM',
-      '8': 'POOYAM',
-      '9': 'AYILYAM',
-      '10': 'MAKAM',
-      '11': 'POORAM',
-      '12': 'UTHRAM',
-      '13': 'ATHAM',
-      '14': 'CHITHIRA',
-      '15': 'CHOTHI',
-      '16': 'VISHAKAM',
-      '17': 'ANIZHAM',
-      '18': 'THRIKKETTA',
-      '19': 'MOOLAM',
-      '20': 'POORADAM',
-      '21': 'UTHRADAM',
-      '22': 'THIRUVONAM',
-      '23': 'AVITTAM',
-      '24': 'CHATHAYAM',
-      '25': 'PURUTTATHI',
-      '26': 'UTHRITTATHI',
-      '27': 'REVATHI',
-      '28': 'OHM',
-    };
+  // Define the mapping for star names
+  const starNameMapping: { [key: string]: string } = {
+    "1": "അശ്വതി",
+  "2": "ഭരണി",
+  "3": "കാർത്തിക",
+  "4": "രോഹിണി",
+  "5": "മകയിരം",
+  "6": "തിരുവാതിര",
+  "7": "പുണർതം",
+  "8": "പൂയം",
+  "9": "ആയില്യം",
+  "10": "മകം",
+  "11": "പൂരം",
+  "12": "ഉത്രം",
+  "13": "അത്തം",
+  "14": "ചിത്തിര",
+  "15": "ചോതി",
+  "16": "വിശാഖം",
+  "17": "അനിഴം",
+  "18": "തൃക്കേട്ട",
+  "19": "മൂലം",
+  "20": "പൂരാടം",
+  "21": "ഉത്രാടം",
+  "22": "തിരുവോണം",
+  "23": "അവിട്ടം",
+  "24": "ചതയം",
+  "25": "പൂരുട്ടാതി",
+  "26": "ഉതൃട്ടാതി",
+  "27": "രേവതി",
+  "28": "ഓം"
+  };
 
-    const groupedByPrathistaVazhipad = vazhipadinfo.reduce(
-      (acc: any, item: any) => {
-        const key = `${item.Prethista}-${item.Vazhipad}`;
-        if (!acc[key]) {
-          acc[key] = [];
-        }
-        acc[key].push(item);
-        return acc;
-      },
-      {}
+  // Group by Prathista and Vazhipad
+  const groupedByPrathistaVazhipad = vazhipadinfo.reduce((acc: { [key: string]: any[] }, item: any) => {
+    const key = `${item.Prethista}-${item.Vazhipad}`;
+    if (!acc[key]) {
+      acc[key] = [];
+    }
+    acc[key].push(item);
+    return acc;
+  }, {});
+
+  let allReceiptsContent = '';
+  const prathistaVazhipadKeys = Object.keys(groupedByPrathistaVazhipad);
+
+  // Loop through grouped data
+  for (let i = 0; i < prathistaVazhipadKeys.length; i++) {
+    const key = prathistaVazhipadKeys[i];
+    const items = groupedByPrathistaVazhipad[key];
+    const [prathista, vazhipad] = key.split('-');
+
+    // Calculate the total amount for the group
+    const totalAmount = items.reduce(
+      (total: number, item: any) => total + parseFloat(item.Amount || '0'),
+      0
     );
 
-    let allReceiptsContent = '';
-    const prathistaVazhipadKeys = Object.keys(groupedByPrathistaVazhipad);
-
-    for (let i = 0; i < prathistaVazhipadKeys.length; i++) {
-      const key = prathistaVazhipadKeys[i];
-      const items = groupedByPrathistaVazhipad[key];
-      const [prathista, vazhipad] = key.split('-');
-
-      const totalAmount = items.reduce(
-        (total: number, item: any) => total + parseFloat(item.Amount || '0'),
-        0
-      );
-
-      const vazhipadRows = items
-        .map(
-          (item: any) => `
-          <tr>
-            <td>${item.Name || 'N/A'}<p>${item.Name2 || ' '}</p></td>
-            <td>${
-              starNameMapping[item.Star as keyof typeof starNameMapping] || ' '
-            }<p>${
-            starNameMapping[item.Star2 as keyof typeof starNameMapping] || ' '
-          }</p></td>
+    // Prepare the rows for each item in the group
+    const vazhipadRows = items
+      .map(
+        (item: any) => `
+        <tr>
+          <td>${item.Name || 'N/A'}<br /><span>${item.Name2 || ' '}</span></td>
+          <td>${starNameMapping[item.Star as keyof typeof starNameMapping] || ' '}</td>
           <td>${item.VazhipadDate || 'N/A'}</td>
-            <td>${item.Qty || '0'}</td>
-            <td>${item.Rate || '0'}</td>
-            <td>${item.Amount || '0'}</td>
-          </tr>`
-        )
-        .join('');
-      const displayTrnsmode =
-        Trnsmode.toLowerCase() === 'credit' ? 'Cash not paid' : Trnsmode;
-      const receiptContent = `
-        <div class="receipt-page">
-          <h1>${this.templeNAme}</h1>
-          <div>
-            <div style="display: flex; justify-content: space-between;">
-            <strong style="color: green;">Vazhipad: ${vazhipad}</strong>
-              <strong>Bill Date: ${Billdate || 'N/A'}</strong>
-            </div>
-            <div style="display: flex; justify-content: space-between;">
+          <td>${item.Qty || '0'}</td>
+          <td>${item.Rate || '0'}</td>
+          <td>${item.Amount || '0'}</td>
+        </tr>`
+      )
+      .join('');
 
-              <strong style="color: red;">Prathista: ${prathista}</strong>
-               <strong>Bill No: ${BillNo || 'N/A'}</strong>
+    const displayTrnsmode =
+      Trnsmode.toLowerCase() === 'cr' ? 'Cash not paid' : Trnsmode;
 
-            </div>
-            <table>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Star</th>
-                  <th>Date</th>
-                  <th>Qty</th>
-
-                  <th>Rate</th>
-                  <th>Amount</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${vazhipadRows}
-                <tr>
-                  <td colspan="5" class="total-label"><strong>Total Amount:</strong></td>
-                  <td class="total-amount"><strong>${totalAmount.toFixed(
-                    2
-                  )}</strong></td>
-                </tr>
-              </tbody>
-            </table>
-         <div style="text-align: right; margin-top: 20px;">
-        <strong>Login ID: ${this.loginId}</strong><br />
-        <strong>Transaction Mode: ${displayTrnsmode}</strong>
-      </div>
+    const receiptContent = `
+      <div class="receipt-page">
+        <div class="receipt-header">
+          <!-- Temple Logo on the left -->
+          <img src="${this.templeLogoUrl}" alt="Temple Logo" class="temple-logo" />
+          
+          <div class="header-text">
+            <h1>${this.templeName}</h1>
+            <p>${this.templeAddress}</p>
+            <h2 class="receipt-heading">വഴിപാട് രസീത്</h2>
           </div>
-          ${
-            i < prathistaVazhipadKeys.length - 1
-              ? '<div class="page-break"></div>'
-              : ''
+        </div>
+        <div>
+          <div style="display: flex; justify-content: space-between;">
+            <strong style="color: red;">പ്രതിഷ്ഠ: ${prathista}</strong>
+            <strong>തീയതി: ${Billdate || 'N/A'}</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <strong style="color: green;">വഴിപാട്: ${vazhipad}</strong>
+            <strong>നമ്പർ: ${BillNo || 'N/A'}</strong>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>പേര് </th>
+                <th>നക്ഷത്രം </th>
+                <th>തീയതി</th>
+                <th>എണ്ണം</th>
+                <th>നിരക്ക്</th>
+                <th>തുക</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${vazhipadRows}
+              <tr>
+                <td colspan="5" class="total-label"><strong>ആകെ തുക :</strong></td>
+                <td class="total-amount"><strong>${totalAmount.toFixed(2)}</strong></td>
+              </tr>
+            </tbody>
+          </table>
+         <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+            <!-- Left side content (Counter ID and Duplicate stacked vertically) -->
+            <div style="display: flex; flex-direction: column;">
+                <strong style="margin-right: 15px;">Counter ID: ${
+                  this.counterId
+                }</strong>
+                <strong>Secretory</strong>
+            </div>
+            <!-- Right side content (Login ID and Transaction Mode stacked vertically) -->
+            <div style="display: flex; flex-direction: column;">
+                <strong style="margin-right: 15px;">Login: ${
+                  this.name
+                }</strong>
+                <strong>Transaction Mode: ${this.getTransactionType(Trnsmode)}</strong>
+            </div>
+        </div>
+
+          </div>
+        ${i < prathistaVazhipadKeys.length - 1 ? '<div class="page-break"></div>' : ''}
+      </div>`;
+
+    allReceiptsContent += receiptContent;
+  }
+
+  // Print the receipt content
+  const printContent = `
+    <html>
+      <head>
+        <title>Receipt</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 0; padding: 0; color: #333; }
+          .receipt-page { padding: 10px; page-break-inside: avoid; }
+          .receipt-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+          .temple-logo { max-width: 150px; }
+          .header-text { text-align: center; flex-grow: 1; }
+          .receipt-heading { color: #4CAF50; margin: 10px 0; font-size: 1.5em; }
+          .page-break { page-break-after: always; }
+          h1 { text-align: center; color: #4CAF50; margin: 5px 0; }
+          table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+          th, td { border: 1px solid #ddd; padding: 5px; text-align: left; }
+          th { background-color: #3f51b5; color: white; }
+          .total-label { text-align: right; }
+          .total-amount { background-color: #e0f7fa; }
+          td span { font-size: 0.85em; color: #666; }
+          @media print {
+            @page { margin: 0; size: A4; }
+            body { margin: 10mm; }
+            .no-print { display: none; }
           }
-        </div>`;
-      allReceiptsContent += receiptContent;
-    }
+        </style>
+      </head>
+      <body>
+        ${allReceiptsContent}
+      </body>
+    </html>`;
 
-    const printContent = `
-      <html>
-        <head>
-          <title>Receipt</title>
-          <style>
-            body { font-family: Arial, sans-serif; margin: 0; padding: 0; color: #333; }
-            .receipt-page { padding: 10px; page-break-inside: avoid; }
-            .page-break { page-break-after: always; }
-            h1 { text-align: center; color: #4CAF50; margin: 5px 0; }
-            table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-            th, td { border: 1px solid #ddd; padding: 5px; text-align: left; }
-            th { background-color: #3f51b5; color: white; }
-            .total-label { text-align: right; }
-            .total-amount { background-color: #e0f7fa; }
-            @media print {
-              @page { margin: 0; size: A4; }
-              body { margin: 10mm; }
-              .no-print { display: none; }
-            }
-          </style>
-        </head>
-        <body>
-          ${allReceiptsContent}
-        </body>
-      </html>`;
+  this.printContent(printContent);
+}
 
-    this.printContent(printContent);
+private printContent(content: string) {
+  const printWindow = window.open('', '_blank', 'width=800,height=600');
+
+  if (printWindow) {
+    printWindow.document.open();
+    printWindow.document.write(content);
+    printWindow.document.close();
+    printWindow.onload = () => {
+      printWindow.print();
+      printWindow.close(); // Close the print window after printing
+    };
+    this.resetForm();
+  } else {
+    console.error('Failed to open the print window.');
   }
+}
 
-  private printContent(content: string) {
-    const printWindow = window.open('', '_blank', 'width=800,height=600');
+  
 
-    if (printWindow) {
-      printWindow.document.open();
-      printWindow.document.write(content);
-      printWindow.document.close();
-      printWindow.onload = () => {
-        printWindow.print();
-        printWindow.close(); // Close the print window after printing
-      };
-      this.resetForm();
-    } else {
-      console.error('Failed to open the print window.');
-    }
+
+getTransactionType(transmode: string): string {
+  console.log(transmode);
+  switch (transmode) {
+    case 'ON':
+      return 'Bank';
+    case 'CS':
+      return 'CASH';
+    case 'MO':
+      return 'MONEY ORDER';
+    case 'UP':
+      return 'UPI';
+    case 'CH':
+      return 'CHEQUE';
+    case 'CR':
+      return 'Cash not paid';
+      
+    case 'DE':
+      return 'DEBIT';
+
+    default:
+      return 'OTHERS';
   }
-
-
-
+}
 
   private subscribeToTrnsmodeChanges() {
     
@@ -401,14 +465,13 @@ export class FixedbottomComponent implements OnInit {
       this.markAllFieldsAsTouched();
       return;
     }
-    // const newBillNo = this.generateBillNumber();
-    // this.customerdetailsForBillingForm.patchValue({ BillNo: newBillNo });
+    
     const formData = { ...this.customerdetailsForBillingForm.value };
     formData.Billdate = this.formatToDDMMYYYY(new Date(formData.Billdate));
     formData.Instdate = this.formatToDDMMYYYY(new Date(formData.Instdate));
     this.totalService.setFirstComponentData(formData);
     this.totalService.emitClickEvent();
-    // this.resetForm();
+   
   }
 
   private markAllFieldsAsTouched() {
@@ -575,7 +638,7 @@ export class FixedbottomComponent implements OnInit {
     this.customerdetailsForBillingForm.reset();
     const today = this.getFormattedDate(new Date());
     this.customerdetailsForBillingForm.patchValue({
-      BillNo: this.lastBillnumber + 1,
+      BillNo: this.lastBillnumber,
       Billdate: today,
       Userid: this.loginId,
       CounterId: this.counterId,
@@ -701,6 +764,29 @@ export class FixedbottomComponent implements OnInit {
     }
   }
 
+
+  handleKeyDowns(event: KeyboardEvent, row: number, col: number) {
+    const keyMap = {
+      ArrowRight: { row, col: col + 1 }, // Move right
+      ArrowLeft: { row, col: col - 1 }, // Move left
+      ArrowUp: { row: row - 1, col },   // Move up
+      ArrowDown: { row: row + 1, col }, // Move down
+    };
+
+    const movement = keyMap[event.key as keyof typeof keyMap];
+    if (movement) {
+      event.preventDefault(); // Prevent default browser action
+      this.focusInput(movement.row, movement.col);
+    }
+  }
+
+  focusInput(row: number, col: number) {
+    if (row >= 0 && row < this.navigationGrid.length && col >= 0 && col < 2) {
+      const index = this.navigationGrid[row][col];
+      const input = this.inputs.toArray()[index];
+      input?.nativeElement.focus();
+    }
+  }
 
   
 }

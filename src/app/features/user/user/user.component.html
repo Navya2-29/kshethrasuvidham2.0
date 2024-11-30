@@ -19,7 +19,17 @@
                     class="form-control sps" placeholder="Enter username" style="width:126px;">
                 </td>
               </tr>
-             
+              <div
+                *ngIf="pmasterFormFormControl['username'].invalid && (pmasterFormFormControl['username'].dirty || pmasterFormFormControl['username'].touched)"
+                class="pl-1 text-danger">
+                <div *ngIf="pmasterFormFormControl['username'].hasError('required')">
+                  Name is required.
+                </div>
+                <div *ngIf="pmasterFormFormControl['username'].hasError('duplicateName')" class="text-danger">
+                  Name already exists.
+                </div>
+                
+              </div>
               <tr>
                 <td>Password<span class="text-danger">*</span><input type="password" matInput
                     formControlName="password" maxlength="50" class="form-control" placeholder="Enter password" appUpperCase>

@@ -188,4 +188,34 @@ export class DuplicatecheckService {
   ): boolean {
     return vihidhamData.some((v) => v.vihidham_name === name);
   }
+
+
+
+
+  checkDuplicateuserCode(code: string, userData: any[]): boolean {
+    return userData.some((u) => u.UName == code);
+  }
+
+
+
+  checkDuplicateUpdateUserName(
+    name: string,
+    userData: any[],
+    code: number
+  ): boolean {
+    const matchingPmaster = userData.find((p) => p.UName === name);
+    console.log(matchingPmaster);
+    if (matchingPmaster) {
+      return matchingPmaster.UId === code;
+    }
+
+    return false;
+  }
+
+
+
+
+  checkDuplicateUName(name: string, userData: any[]): boolean {
+    return userData.some((p) => p.UName === name);
+  }
 }

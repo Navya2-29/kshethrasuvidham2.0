@@ -6,7 +6,7 @@
         <mat-icon>arrow_back</mat-icon>
       </button> -->
       <div style="display: flex; flex-wrap: wrap">
-        <form [formGroup]="form">
+        <form [formGroup]="form"  >
           <table class="table">
             <thead>
               <tr style="background: #203b5e; color: white" >
@@ -59,6 +59,8 @@
                     formControlName="Vazhipad"
                     [matAutocomplete]="auto"
                     [readonly]="multidayBooking[i]"
+                    #inputRef
+                    (keydown)="onKeydown($event, i)"
                   />
                   <mat-autocomplete
                     autoActiveFirstOption
@@ -68,7 +70,7 @@
                   >
                     <mat-option
                       *ngFor="let option of filteredOptions[i]"
-                      [value]="option.VM_Name"
+                      [value]="option.VM_RName"
                     >
                     <p style="margin-bottom: 0px;padding-bottom: 0px;font-size: 12px;line-height: normal;">{{option.VM_Code}}-{{ option.VM_Name }}</p><p style="font-size: 12px;margin-top: 0px;padding-top: 0px;">{{option.VM_RName}}</p>
                     </mat-option>
@@ -82,7 +84,8 @@
                     [placeholder]="'PLACEHOLDER.NAME' | translate"
                     formControlName="Name"
                     [readonly]="multidayBooking[i]"
-                    (keydown)="onKeyDown($event, 'Name', i)"
+                    #inputRefs
+                    (keydown)="onKeydown($event, i)"
                   />
                 </td>
                 <td>
@@ -102,11 +105,13 @@
                   type="text"
                   [placeholder]="'PLACEHOLDER.STAR' | translate"
                   matInput
-                 
+                  [(ngModel)]="input2" 
                   class="form-control sps"
                   formControlName="starName"
                   [matAutocomplete]="str"
                   [readonly]="multidayBooking[i]"
+                  #inputRefs
+                    (keydown)="onKeydown($event, i)"
                 />
                 <mat-autocomplete
                   autoActiveFirstOption
@@ -118,7 +123,8 @@
                     *ngFor="let option of starFilteredOption[i]"
                     [value]="option.SM_Name"
                   >
-                  <p style="margin-bottom: 0px;padding-bottom: 0px;font-size: 12px;line-height: normal;">{{option.SM_Id}}-{{option.SM_Name}}</p></mat-option>
+                  <p style="margin-bottom: 0px;padding-bottom: 0px;font-size: 10px;line-height: normal;">{{option.SM_Id}}-{{ option.SM_Name }}</p><p style="font-size: 12px;margin-top: 0px;padding-top: 0px;">{{option.SM_RName}}</p>
+                  </mat-option>
                 </mat-autocomplete>
                 </td>
                 <td>
@@ -126,12 +132,12 @@
                   *ngIf="!multidayBooking[i]"
                     class="form-control"
                     formControlName="Prethista"
-                    class="form-control"
+                    class="form-control" #input3Ref
                     style="width: 100%; height: 30.6px"
-                   
+                    
                   >
-                  <option value="">{{'PLACEHOLDER.PRATHISTA' | translate}}</option>
-                    <option *ngFor="let prathishta of prathishtaOptions[i]" [value]="prathishta.name" >{{prathishta.name}}</option>
+                  
+                    <option *ngFor="let prathishta of prathishtaOptions[i]" [value]="prathishta.rname" >{{prathishta.rname}}</option>
                     
                   </select>
                   <span *ngIf="multidayBooking[i]"><input type="text" class="form-control" readOnly formControlName="Prethista"></span>
@@ -191,25 +197,12 @@
                     formControlName="VTime"
                     style="width: 80%; height: 30.6px"
                   >
-                  <!-- (keypress)="handleTimeFieldKeyPress($event, row,i)" -->
                     <option *ngFor="let time of vazhipadtime" [value]="time.id" >   {{ 'OPTIONS.' + time.key | translate }}</option>
                     
                   </select>
                 </td>
                 
-                <!-- <td style="text-align: center; vertical-align: middle"> -->
-                  <!-- <input
-                    type="radio"
-                    name="singleMulti_{{ i }}"
-                    value="s"
-                  
-                    checked
-                  /><span style="margin-left: 5px">S</span> -->
-                 
-                <!-- </td> -->
-                <!-- <td> -->
-                 
-                <!-- </td> -->
+               
                 
                 <td
                   [ngStyle]="{
@@ -237,7 +230,7 @@
                 style="width: 100%; height: 30.6px"
               >
               <option value="">Select</option>
-              <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_Name}}</option>
+              <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra. SM_Id"> {{nakshtra.SM_RName}}</option>
               </select>
                 </td>
                 <td>

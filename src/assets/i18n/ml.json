@@ -10,11 +10,11 @@
   "TODAYCOLLECTION": "ആകെ വരവ്",
   "LastBillNo": "അവസാന ബിൽ നമ്പർ",
   "Cash": "ക്യാഷ്",
-  "credit": "ക്രെഡിറ്റ്",
+  "Credit": "ക്രെഡിറ്റ്",
   "UPI": "UPI",
   "Debit": "ഡെബിറ്റ്",
   "Online": "ഓൺലൈൻ ",
-  "cheque": "ചെക്ക്",
+  "Cheque": "ചെക്ക്",
   "Money order": "Money Order",
 
   "PLACEHOLDER": {
@@ -26,6 +26,7 @@
     "RATE": "നിരക്ക് ",
     "DATE": "തീയതി   ",
     "TIME": "സമയം",
+    "BILLNUMBER":"ബിൽ നമ്പർ    ",
     "MOBILENUMBER": "മൊബൈൽ നമ്പർ ",
     "ADDRESS1": "വിലാസം1",
     "ADDRESS2": "വിലാസം2",
@@ -38,9 +39,10 @@
   },
 
   "OPTIONS": {
-    "TIME1": "രാവിലെ",
-    "TIME2": "ഉച്ചയ്ക്ക്",
+    "TIME1": "ഏതെങ്കിലും സമയം",
+    "TIME2": "രാവിലെ",
     "TIME3": "വൈകുന്നേരം",
-    "TIME4": "ഉച്ചക്കുശേഷം"
+    "TIME4": "രാത്രി"
   }
 }
+ 

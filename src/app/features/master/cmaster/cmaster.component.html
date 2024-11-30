@@ -109,7 +109,7 @@
                 <tr *ngFor="let data of filteredCmaster ; let i=index">
                   <!-- <td>{{data.VC_ID}}</td> -->
                   <td style="text-align:left;padding-left: 20px;">{{data.VC_Code}}</td>
-                  <td style="text-align:left;">{{data.VC_Name}}-{{data.VC_RegName}}</td>
+                  <td style="text-align:left;width:50%" class="wrap-text">{{data.VC_Name}}-{{data.VC_RegName}}</td>
                   <td>
                     <mat-icon title="Edit" class="small" style="vertical-align: middle;"
                       (click)="onEdit(data)">edit</mat-icon>

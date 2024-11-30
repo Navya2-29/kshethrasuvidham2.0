@@ -19,6 +19,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { CancelBillRemarkComponent } from '../cancel-bill-remark/cancel-bill-remark.component';
 import { NotificationService } from '../../../services/notification/notification.service';
+import { MatSelectModule } from '@angular/material/select';
 
 export interface Data {
   vazhipad: string;
@@ -44,6 +45,9 @@ export interface Data {
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
+    MatSelectModule, // Add this
+    MatInputModule, // Add this
+    MatFormFieldModule,
   ],
   templateUrl: './search-by-bill-number.component.html',
   styleUrl: './search-by-bill-number.component.css',
@@ -54,11 +58,11 @@ export class SearchByBillNumberComponent {
     'Vazhipad',
     'Name',
     'Star',
-
     'Date',
     'Qty',
     'Rate',
     'Amount',
+    'Actions',
   ];
   dataSource: MatTableDataSource<Data>;
   lastBillNo: any;
@@ -70,8 +74,9 @@ export class SearchByBillNumberComponent {
   loginId: string | null;
   displayTrnsmode: string;
   counterId: string | null;
-  templeName:string |null;
-  logo:string |null;
+  templeName: string | null;
+  nakshatham: any[];
+  logo: string | null;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   cancellationReason: string = '';
@@ -94,8 +99,8 @@ export class SearchByBillNumberComponent {
     this.role = localStorage.getItem('Role');
     this.loginId = localStorage.getItem('LoginId');
     this.counterId = localStorage.getItem('counterId');
-    this.templeName=localStorage.getItem('TempleName');
-    this.logo=localStorage.getItem('Logo');
+    this.templeName = localStorage.getItem('TempleName');
+    this.logo = localStorage.getItem('Logo');
   }
 
   ngOnInit() {
@@ -110,7 +115,8 @@ export class SearchByBillNumberComponent {
     const payLoad = { Type: 'ListStar', Code: '' };
     this.masterService.getStarData(payLoad).subscribe({
       next: (data: any[]) => {
-        console.log(data); // Specify that data is an array of Star
+        console.log(data);
+        this.nakshatham = data; // Specify that data is an array of Star
         this.starData = data.reduce(
           (acc: { [id: string]: string }, star: any) => {
             acc[star.id] = star.SM_NameEng;
@@ -145,7 +151,6 @@ export class SearchByBillNumberComponent {
     this.openCancelRemarkDialog();
   }
 
-  
   // cancel reason dialog
 
   openCancelRemarkDialog() {
@@ -191,7 +196,7 @@ export class SearchByBillNumberComponent {
     console.log(this.cancellationReason, 'cancellarion reason');
 
     const payLoad = {
-      Type:"Booking",
+      Type: 'Booking',
       BillNo: this.lastBillNo,
       CancelBy: this.loginId,
       Remarks: this.cancellationReason,
@@ -221,7 +226,22 @@ export class SearchByBillNumberComponent {
     // Emit the event to notify PrintComponent
     // this.printService.triggerProceedEvent();
     if (this.TrnStatus === 'S') {
-      this.printReceipts(this.duplicatebilldata);
+      console.log(this.duplicatebilldata);
+
+      const payLoad={
+        "BillNo":this.lastBillNo,
+        "UserId":this.loginId,
+        "CounterId":this.counterId,
+        "Type":"Booking"
+      }
+
+console.log(payLoad)
+      this.masterService.duplicateCount(payLoad).subscribe((data)=>{
+        console.log(data,"dupi")
+        this.printReceipts(this.duplicatebilldata);
+
+      })
+      
     } else {
       this.notification.showError(
         'This bill is cancell so you couldnot get duplicate bill'
@@ -342,7 +362,7 @@ export class SearchByBillNumberComponent {
             <!-- Left side content (Counter ID and Duplicate stacked vertically) -->
             <div style="display: flex; flex-direction: column;">
                 <strong style="margin-right: 15px;">Counter ID: ${
-                  this.loginId
+                  this.counterId
                 }</strong>
                 <strong>Duplicate</strong>
             </div>
@@ -411,11 +431,64 @@ export class SearchByBillNumberComponent {
     }
   }
 
+
+
+
+
+
+  getTransactionType(transmode: string): string {
+  console.log(transmode);
+  switch (transmode) {
+    case 'ON':
+      return 'Bank';
+    case 'CS':
+      return 'CASH';
+    case 'MO':
+      return 'MONEY ORDER';
+    case 'UP':
+      return 'UPI';
+    case 'CH':
+      return 'CHEQUE';
+    case 'CR':
+      return 'Cash not paid';
+      
+    case 'DE':
+      return 'DEBIT';
+
+    default:
+      return 'OTHERS';
+  }
+}
   formatDate(date: string | Date): string {
     const d = new Date(date);
     const day = d.getDate().toString().padStart(2, '0'); // Add leading zero if day is single digit
     const month = (d.getMonth() + 1).toString().padStart(2, '0'); // Add leading zero if month is single digit
     const year = d.getFullYear();
     return `${day}-${month}-${year}`;
+  }
+
+  editRow(row: any) {
+    console.log(row);
+    row.isEditing = true;
+  }
+  saveRow(row: any) {
+    row.isEditing = false;
+    console.log('Row saved:', row);
+    const payLoad = {
+      BillId: row.BillId,
+      Name: row.Name,
+      Star: row.Star,
+      Name2: row.Name2,
+      Star2: row.Star2,
+    };
+    // Example: Update the backend API with new values
+    this.masterService.editBilllingDetils(payLoad).subscribe({
+      next: (response) => {
+        console.log('Row updated successfully:', response);
+      },
+      error: (error) => {
+        console.error('Error updating row:', error);
+      },
+    });
   }
 }

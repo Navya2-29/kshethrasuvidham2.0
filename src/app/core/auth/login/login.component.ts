@@ -36,13 +36,6 @@ export class LoginComponent implements OnInit {
   }
   ngOnInit(): void {
 this.getTempleData()
-    const storedCounterId = localStorage.getItem('counterId');
-    if (!storedCounterId) {
-      // Open the dialog if the Counter ID is not found
-      this.openCounterIdDialog();
-    }
-
-
     this.loginForm=this.formBuilder.group({
       username:['',[Validators.required]],
       password:['',[Validators.required]]
@@ -51,16 +44,25 @@ this.getTempleData()
   }
 
 
-
   openCounterIdDialog(): void {
     const dialogRef = this.dialog.open(CouterPopupComponent, {
       width: '300px',
+      disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         // Store the entered Counter ID in localStorage
-        localStorage.setItem('counterId', result);
+        const payLoad = {
+          Type:"CounterId",
+          Code:result
+        };
+  
+        this.service.getMaster(payLoad).subscribe((data) => {
+       console.log(data);
+       localStorage.setItem('counterId', result);
+        });
+
       }
     });
   }
@@ -86,6 +88,7 @@ submitLogin(login:Login){
           localStorage.setItem('LoginId',response.LoginId);
           localStorage.setItem('loggedIn', 'true');
           // Optional: Redirect to the dashboard or another page
+          
           this.router.navigate(['/front']);
         } else {
           // Handle case when login is not successful
@@ -107,6 +110,7 @@ submitLogin(login:Login){
   }
 }
 
+
 autoLogin(){
   const login=localStorage.getItem('loggedIn');
   console.log(login);
@@ -117,6 +121,7 @@ autoLogin(){
   }
 }
 
+
 getTempleData(){
   this.service.settingsData().subscribe((data)=>{
     console.log(data);
@@ -124,13 +129,17 @@ getTempleData(){
     this.logo=data[0].logo;
     localStorage.setItem('TempleName',this.templeName);
     localStorage.setItem('Address',data[0].Address);
-    localStorage.setItem('Logo',this.logo)
-    
+    localStorage.setItem('Logo',this.logo);
+    localStorage.setItem('Counter',data[0].Counter);
   })
 }
+
+
 
 getLogoUrl(): string {
   return `assets/images/${this.logo}`;  // Assuming logo images are stored in the 'assets/images' folder
 }
+
+
 
 }

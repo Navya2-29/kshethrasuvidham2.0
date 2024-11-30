@@ -1,18 +1,21 @@
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { MasterService } from './../../../services/master/master.service';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { CommonModule } from '@angular/common';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 import { MatIconModule } from '@angular/material/icon';
 import {
+  AbstractControl,
   FormBuilder,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
+  ValidationErrors,
   Validators,
 } from '@angular/forms';
+import { DuplicatecheckService } from '../../../services/duplicateCheckValidator/duplicatecheck.service';
 
 @Component({
   selector: 'app-user',
@@ -35,6 +38,8 @@ export class UserComponent {
   staffList: any[] = [];
   updateFlag: boolean = false;
   id: string;
+  code: number;
+  private duplicateCheck = inject(DuplicatecheckService);
   constructor(
     private fb: FormBuilder,
     private service: MasterService,
@@ -45,7 +50,10 @@ export class UserComponent {
 
     this.userForm = this.fb.group({
       LoginId: [''],
-      username: ['', Validators.required],
+      username: ['', [ Validators.required,
+        Validators.pattern('[a-zA-Z\\s]*'),
+        Validators.maxLength(100),
+        this.duplicateNameValidator.bind(this),]],
       password: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       mobile: [
@@ -217,4 +225,34 @@ export class UserComponent {
   gotoBack(){
     this.router.navigate(['/dashboard'])
   }
+
+  
+// duplicate code check validators
+duplicateNameValidator(control: AbstractControl): ValidationErrors | null {
+  const name = control.value;
+  const code = this.id;
+
+  if (this.updateFlag) {
+    if (
+      this.duplicateCheck.checkDuplicateUpdatePname(name, this.staffList, code)
+    ) {
+      return null;
+    } else if (this.duplicateCheck.checkDuplicateName(name, this.staffList)) {
+      return { duplicateName: true };
+    } else {
+      return null;
+    }
+  } else {
+    if (this.duplicateCheck.checkDuplicateName(name, this.staffList)) {
+      return { duplicateName: true };
+    }
+    return null;
+  }
+}
+
+get pmasterFormFormControl() {
+  return this.userForm.controls;
+}
+
+
 }

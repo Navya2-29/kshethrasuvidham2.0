@@ -46,7 +46,7 @@ export class VazhipadBlockingComponent {
   private formBuilder = inject(FormBuilder);
   private masterService = inject(MasterService);
   private notification = inject(NotificationService);
-templeName:string | null;
+  templeName:string | null;
   toppings = new FormControl('');
   toppingList: string[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Saturday'];
   constructor(private datePipe: DatePipe , private router:Router) {

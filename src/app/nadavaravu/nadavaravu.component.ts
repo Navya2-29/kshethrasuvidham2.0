@@ -1,3 +1,4 @@
+import { ItemMaster } from './../models/item-master.model';
 import { Data } from './../features/Billing/search-by-bill-number/search-by-bill-number.component';
 import { Component, OnInit, Type } from '@angular/core';
 import {
@@ -10,7 +11,6 @@ import {
 import { MatIconModule } from '@angular/material/icon';
 import { MasterService } from '../services/master/master.service';
 import { CommonModule } from '@angular/common';
-import { ItemMaster } from '../models/item-master.model';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -40,6 +40,15 @@ export class NadavaravuComponent implements OnInit {
   today: Date = new Date();
   cancellationReason: string;
   cancelBillNumber: string;
+  nadavaravuDataPrint:any;
+  templeName:string |null;
+  templeAddress:string |null;
+  logo:string |null;
+  name:string |null;
+  templeLogoUrl: string = '';
+starName:string;
+  dupliacteBillData:any;
+  itemName:string;
   constructor(
     private fb: FormBuilder,
     private service: MasterService,
@@ -50,6 +59,16 @@ export class NadavaravuComponent implements OnInit {
     this.userId = localStorage.getItem('LoginId');
     this.role = localStorage.getItem('Role');
     this.CounterId = localStorage.getItem('counterId');
+    this.templeName=localStorage.getItem('TempleName');
+    this.templeAddress=localStorage.getItem('Address');
+    this.logo=localStorage.getItem('Logo');
+    this.name=localStorage.getItem('name');
+    
+    if(this.logo){
+
+      this.templeLogoUrl=`assets/images/${this.logo}`;
+      console.log( this.templeLogoUrl);
+    }
     this.nadavaravForm = this.fb.group({
       BillNo: ['', [Validators.required]],
       Name: ['', [Validators.required]],
@@ -93,7 +112,6 @@ export class NadavaravuComponent implements OnInit {
         this.nadavaravForm.get('weight')?.clearValidators();
         this.nadavaravForm.get('unit')?.clearValidators();
       }
-
       this.nadavaravForm.get('weight')?.updateValueAndValidity();
       this.nadavaravForm.get('unit')?.updateValueAndValidity();
     });
@@ -112,15 +130,48 @@ export class NadavaravuComponent implements OnInit {
     }
     console.log(this.nadavaravForm.value);
     // const payLoad = {};
-    this.service.nadavaravBooking(this.nadavaravForm.value).subscribe({
+     // Get the Star ID from the form
+  const starId = this.nadavaravForm.get('Star')?.value;
+  console.log(starId,"iiiiiiiiiiii");
+  const starName = this.getStarNameById(starId);
+  this.starName=this.getStarNameById(starId); // Map the Star ID to Star Name
+console.log(starName,"")
+
+  const itemName=this.getItemById(this.nadavaravForm.value?.NMId)
+  console.log(itemName,"aaaaaaaaaaaaaaaaaaaaaaa")
+  this.itemName=itemName
+  const formData = this.nadavaravForm.value;
+  formData.Star = starName; 
+  console.log(formData); 
+
+  // Continue with your service call to submit the form data
+  this.nadavaravuDataPrint = formData;
+    const payLoad={
+      "BillNo": this.nadavaravForm.value?.BillNo,
+      "Name": this.nadavaravForm.value?.Name,
+      "Star": starId,
+      "Address": this.nadavaravForm.value?.Address,
+      "Description":this.nadavaravForm.value?.Description,
+      "NMId":this.nadavaravForm.value?.NMId,
+      "Qty":this.nadavaravForm.value?.Qty,
+      "weight": this.nadavaravForm.value?.weight,
+      "unit": this.nadavaravForm.value?.BillNo,
+      "ItemValue": this.nadavaravForm.value?.ItemValue,
+      "ReceiptAmount": this.nadavaravForm.value?.ReceiptAmount,
+      "Remarks": this.nadavaravForm.value?.Remarks,
+      "TrnsMode": this.nadavaravForm.value?.TrnsMode,
+      "UserId":this.nadavaravForm.value?.UserId,
+      "CounterId": this.nadavaravForm.value?.CounterId
+  }
+    this.service.nadavaravBooking(payLoad).subscribe({
       next: (data) => {
         console.log(data);
 
         if (data.RespStatus == 'I') {
-          this.printReceipt();
+         
           this.notification.success(data.RespMsg);
           this.resetForm();
-
+          this.printNadavaravuData()
           const currentBillnumber = this.lastBillnumber + 1;
           console.log(currentBillnumber, '_1');
           this.service.updateNadavaravuBillNumber(currentBillnumber).subscribe({
@@ -167,6 +218,7 @@ export class NadavaravuComponent implements OnInit {
     this.getBillNumber();
   }
 
+
   getStar() {
     const payLoad = { Type: 'ListStar', Code: '' };
     this.service.getStarData(payLoad).subscribe((res) => {
@@ -174,6 +226,7 @@ export class NadavaravuComponent implements OnInit {
       console.log(this.nakshatham);
     });
   }
+
 
   getNadavaravuItem() {
     const payLoad = {
@@ -183,11 +236,12 @@ export class NadavaravuComponent implements OnInit {
 
     this.service.getItemMaster(payLoad).subscribe({
       next: (data) => {
-        console.log(data);
+        console.log(data,"bbbbbbbbbbbbbbbbbb");
         this.itemMaster = data;
       },
     });
   }
+
 
   getBillNumber() {
     const payLoad = {
@@ -249,40 +303,7 @@ export class NadavaravuComponent implements OnInit {
     }
   }
 
-  printReceipt() {
-    const printContent = document.getElementById(
-      'thermal-print-content'
-    )?.innerHTML;
-    if (printContent) {
-      const printWindow = window.open('', '_blank', 'width=300,height=400');
-      printWindow?.document.write(`
-        <html>
-          <head>
-            <title>Receipt</title>
-            <style>
-              body {
-                font-family: 'Courier New', monospace;
-                font-size: 12px;
-                text-align: left;
-                margin: 0;
-                padding: 0;
-                width: 58mm;
-              }
-              hr {
-                border: none;
-                border-top: 1px dashed black;
-                margin: 5px 0;
-              }
-            </style>
-          </head>
-          <body onload="window.print(); window.close();">
-            ${printContent}
-          </body>
-        </html>
-      `);
-      printWindow?.document.close();
-    }
-  }
+  
 
   goBack() {
     this.router.navigate(['dashboard']);
@@ -336,4 +357,44 @@ export class NadavaravuComponent implements OnInit {
       },
     });
   }
+
+
+  duplicateBill(item:any){
+   console.log(item,"dattataaa") 
+   this.dupliacteBillData=item
+   console.log(this.dupliacteBillData,"dattataaa") 
+  }
+ 
+
+  
+  printNadavaravuData() {
+    const printSection = document.getElementById('nadavaravuPrintSection');
+    if (printSection) {
+      // Open a new window for printing
+      const printWindow = window.open('', '_blank', 'width=600,height=400');
+      printWindow?.document.write('<html><head><title>Print Receipt</title></head><body>');
+      printWindow?.document.write(printSection.innerHTML); // Add the content to the print window
+      printWindow?.document.write('</body></html>');
+      printWindow?.document.close(); // Close the document for rendering
+      printWindow?.print(); // Trigger the print dialog
+    }
+
+
+  }
+
+  getStarNameById(starId: number): string {
+    console.log(starId,"zxcz");
+    const star = this.nakshatham.find((s) => s.id == starId);
+    console.log(star);
+    return star ? star.SM_NameEng : ''; // Return the name if found, otherwise return an empty string
+  }
+
+
+  getItemById(itemid: any): string {
+    console.log(itemid,"zxcz");
+    const star = this.itemMaster.find((s) => s.NM_Id == itemid);
+    console.log(star);
+    return star ? star.NM_Name : ''; // Return the name if found, otherwise return an empty string
+  }
+
 }

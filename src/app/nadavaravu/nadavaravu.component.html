@@ -262,6 +262,8 @@
                 >delete</mat-icon
               ></span
             >
+            <span class="material-icons small" (click)="duplicateBill(item)">print</span>
+          
           </tr>
         </table>
       </div>
@@ -269,44 +271,104 @@
   </div>
 </div>
 
-<div
-  id="thermal-print-content"
-  style="
-    font-size: 12px;
-    font-family: 'Courier New', monospace;
-    width: 58mm;
-    display: none;
-  "
->
-  <div style="text-align: center">
-    <strong>പയ്യന്നൂർ</strong><br />
-    <strong>സുബ്രഹ്മണ്യ ക്ഷേത്രം</strong><br />
-    പയ്യന്നൂർ, കേരളം<br />
-    Ph: 9400135116, 04985205166
+
+
+
+<div id="nadavaravuPrintSection" style="display: none; font-family: 'Arial', sans-serif; padding: 20px;">
+  <!-- Temple Information Section -->
+  <div style="text-align: center; padding-bottom: 20px; border-bottom: 2px solid #003366;">
+    <!-- Temple Logo -->
+    <img src="../../assets/images/temple-logo.png" alt="Temple Logo" style="width: 120px; height: auto;">
+    <h2 style="font-size: 24px; color: #003366; font-weight: bold;">{{templeName}}</h2>
+    <p style="font-size: 16px; color: #666;">{{templeAddress}}</p>
   </div>
-  <hr />
-  <div>
-    <p><strong>രസീത്</strong></p>
-    <p><strong>ബിൽ നമ്പർ:</strong> {{ nadavaravForm.value.BillNo }}</p>
-    <p><strong>ബിൽ തീയതി:</strong> {{ today | date : "dd-MM-YYYY" }}</p>
+
+  <!-- <hr style="border: 1px solid #ccc; margin-top: 20px;"/> -->
+
+  <!-- Nadavaravu Details in Table Format -->
+  <h3 style="font-size: 20px; font-weight: bold; text-align: center; margin-top: 20px;">Nadavaravu Bill</h3>
+  <h2>{{itemName}}</h2>
+  <table border="1" style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+    <thead style="background-color: #f2f2f2; font-weight: bold; color: #333;">
+      <tr>
+        <th style="padding: 10px; text-align: left;">Name</th>
+        <th style="padding: 10px; text-align: left;">Star</th>
+        <th style="padding: 10px; text-align: center;">Qty</th>
+        <th style="padding: 10px; text-align: right;">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="padding: 8px;">{{ nadavaravForm.get('Name')?.value }}</td>
+        <td style="padding: 8px;">{{ starName }}</td>
+        <td style="padding: 8px; text-align: center;">{{ nadavaravForm.get('Qty')?.value }}</td>
+        <td style="padding: 8px; text-align: right;">{{ nadavaravForm.get('ReceiptAmount')?.value  }}</td>
+      </tr>
+
+      <!-- Total Amount Row -->
+      <tr style="font-weight: bold; background-color: #f9f9f9;">
+        <td colspan="3" style="padding: 8px; text-align: right;">Total Amount</td>
+        <td style="padding: 8px; text-align: right;">{{ nadavaravForm.get('ReceiptAmount')?.value  }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- <hr style="border: 1px solid #ccc; margin-top: 20px;"/> -->
+
+  <!-- Additional Info / Footer Section -->
+  <div style="text-align: center; margin-top: 30px; font-size: 14px; color: #999;">
+    <p>Thank you for your donation!</p>
+    <!-- <p>If you have any questions, feel free to contact us at: <strong>{{ templeContact }}</strong></p> -->
   </div>
-  <hr />
-  <div>
-    <p><strong>പേരറുമാന്റെ വിവരങ്ങൾ</strong></p>
-    <p><strong>പേര്:</strong> {{ nadavaravForm.value.Name }}</p>
-    <p><strong>നക്ഷത്രം:</strong> {{ nadavaravForm.value.Star }}</p>
-    <p><strong>തീയതി:</strong> {{ today | date : "dd-MM-YYYY" }}</p>
-    <p><strong>പൂജ:</strong> {{ nadavaravForm.value.NMId }}</p>
-    <p><strong>എണ്ണം:</strong> {{ nadavaravForm.value.Qty }}</p>
-    <p><strong>നിരക്ക്:</strong> {{ nadavaravForm.value.ReceiptAmount }}</p>
+</div>
+
+
+
+
+
+<div id="nadavaravuPrintSectionDuplicate" style="display: none; font-family: 'Arial', sans-serif; padding: 20px;">
+  <!-- Temple Information Section -->
+  <div style="text-align: center; padding-bottom: 20px; border-bottom: 2px solid #003366;">
+    <!-- Temple Logo -->
+    <img src="../../assets/images/temple-logo.png" alt="Temple Logo" style="width: 120px; height: auto;">
+    <h2 style="font-size: 24px; color: #003366; font-weight: bold;">{{templeName}}</h2>
+    <p style="font-size: 16px; color: #666;">{{templeAddress}}</p>
   </div>
-  <hr />
-  <div>
-    <p><strong>മൊത്തം തുക:</strong> {{ nadavaravForm.value.ReceiptAmount }}</p>
-    <p><strong>പേയ്മെന്റ് മോഡ്:</strong> {{ nadavaravForm.value.TrnsMode }}</p>
-  </div>
-  <hr />
-  <div style="text-align: center">
-    <p>WWW.KSHETHRASUVIDHAM.COM</p>
+
+  <!-- <hr style="border: 1px solid #ccc; margin-top: 20px;"/> -->
+
+  <!-- Nadavaravu Details in Table Format -->
+  <h3 style="font-size: 20px; font-weight: bold; text-align: center; margin-top: 20px;">Nadavaravu Duplicate Bill</h3>
+  <table border="1" style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+    <thead style="background-color: #f2f2f2; font-weight: bold; color: #333;">
+      <tr>
+        <th style="padding: 10px; text-align: left;">Name</th>
+        <th style="padding: 10px; text-align: left;">Star</th>
+        <th style="padding: 10px; text-align: center;">Qty</th>
+        <th style="padding: 10px; text-align: right;">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <!-- <td style="padding: 8px;">{{ dupliacteBillData.Name }}</td>
+        <td style="padding: 8px;">{{ dupliacteBillData.Star}}</td>
+        <td style="padding: 8px; text-align: center;">{{ dupliacteBillData.Qty }}</td>
+        <td style="padding: 8px; text-align: right;">{{ dupliacteBillData.Receipt_Amt}}</td> -->
+      </tr>
+
+      <!-- Total Amount Row -->
+      <tr style="font-weight: bold; background-color: #f9f9f9;">
+        <td colspan="3" style="padding: 8px; text-align: right;">Total Amount</td>
+        <td style="padding: 8px; text-align: right;">{{ nadavaravForm.get('ReceiptAmount')?.value | currency }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- <hr style="border: 1px solid #ccc; margin-top: 20px;"/> -->
+
+  <!-- Additional Info / Footer Section -->
+  <div style="text-align: center; margin-top: 30px; font-size: 14px; color: #999;">
+    <p>Thank you for your donation!</p>
+    <!-- <p>If you have any questions, feel free to contact us at: <strong>{{ templeContact }}</strong></p> -->
   </div>
 </div>

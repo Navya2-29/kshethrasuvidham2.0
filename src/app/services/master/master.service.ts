@@ -718,6 +718,9 @@ this.userId=localStorage.getItem('LoginId');
       payLoad
     );
   }
+
+// getting last locktable number
+
   getLastBillNumber(): Observable<any[]> {
     const payLoad = { Type: 'Maxbillno', Code: '' };
     return this.http.post<any>(
@@ -725,6 +728,8 @@ this.userId=localStorage.getItem('LoginId');
       payLoad
     );
   }
+
+
 
   getloggedInUserLastBillNumber(): Observable<any[]> {
     const loggedinUserId = localStorage.getItem('LoginId');
@@ -859,6 +864,29 @@ updateNadavaravuBillNumber(currentbillnumber: any): Observable<any[]> {
     );
   }
 
+  editBilllingDetils(payLoad: any): Observable<any[]> {
+   
+    return this.http.post<any>(
+      Constant.BASE_URL + Constant.METHODS.UPDATEBILL,
+      payLoad
+    );
+  }
+
+
+  duplicateCount(payLoad: any): Observable<any[]> {
+   
+    return this.http.post<any>(
+      Constant.BASE_URL + Constant.METHODS.DUPLICATECOUNT,
+      payLoad
+    );
+  }
+  ADDCOUNTER(payLoad: any): Observable<any[]> {
+   
+    return this.http.post<any>(
+      Constant.BASE_URL + Constant.METHODS.ADDCOUNTER,
+      payLoad
+    );
+  }
 
   // error handling
   private errorHandler(error: HttpErrorResponse) {

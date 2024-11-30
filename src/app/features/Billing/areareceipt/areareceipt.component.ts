@@ -64,10 +64,10 @@ import { TranslateModule } from '@ngx-translate/core';
     MatAutocompleteModule,
     FormsModule,
     ReactiveFormsModule,
-    
+
     MatIconModule,
     MatRadioModule,
-   
+
     TranslateModule,
     NumberDirective,
   ],
@@ -76,8 +76,6 @@ import { TranslateModule } from '@ngx-translate/core';
   providers: [DatePipe],
 })
 export class AreareceiptComponent implements OnInit {
-  // private multidayService = inject(MultidayService);
-  // language: string[] = ['English', 'malayalam', 'Hindi'];
   form: FormGroup;
   row: FormArray;
   filteredOptions: any[] = [];
@@ -104,9 +102,17 @@ export class AreareceiptComponent implements OnInit {
   readonlyDate: boolean = false;
   nearestAllowedDate: any;
   filteredStarOptions: Observable<string[]>;
+  billNumberFormatDate: string;
+  lockTableLastbillNumber: number;
+  generatedCurrentBillnumber: string;
+  CounterId: string | null;
+  input1 = '';
+  input2 = '';
+  input3 = '';
   @ViewChildren('nameInput') nameInputs!: QueryList<ElementRef>;
   @ViewChild('firstInput') firstInputElement!: ElementRef;
-  lang:string | null;
+  @ViewChildren('inputRef') inputRefs: QueryList<ElementRef>;
+  lang: string | null;
   private subscription: Subscription;
   private masterservice = inject(MasterService);
   private eventService = inject(TotalAmountService);
@@ -116,16 +122,16 @@ export class AreareceiptComponent implements OnInit {
     private fb: FormBuilder,
     public dialog: MatDialog,
     private datePipe: DatePipe,
-    private router:Router,
-    private ts:TranslateService
+    private router: Router,
+    private ts: TranslateService
   ) {
-
-this.lang=localStorage.getItem('Language') || 'en';
-    const userLang=navigator.language || "en";
-    const languageCode=userLang.split('-')[0];
+    this.CounterId = localStorage.getItem('counterId');
+    this.billNumberFormatDate = this.getCurrentDateMMYY();
+    this.lang = localStorage.getItem('Language') || 'en';
+    const userLang = navigator.language || 'en';
+    const languageCode = userLang.split('-')[0];
     this.ts.setDefaultLang(languageCode);
     this.ts.use(this.lang || 'en');
-
 
     this.form = this.fb.group({
       vazhipadinfo: this.fb.array([]),
@@ -155,7 +161,7 @@ this.lang=localStorage.getItem('Language') || 'en';
     }
   }
 
-  onBack(){
+  onBack() {
     this.router.navigate(['/front']);
   }
 
@@ -180,7 +186,6 @@ this.lang=localStorage.getItem('Language') || 'en';
       VazhipadDate: ['', [Validators.required]],
       TotalAmt: [this.totalAmount],
       VTime: ['0', [Validators.required]],
-      // multidaybookedDetails: this.fb.array([]),
       Name2: [''],
       Star2: [''],
       Postal: ['0'],
@@ -214,30 +219,19 @@ this.lang=localStorage.getItem('Language') || 'en';
   }
 
   checkVazhipadDate(row: FormGroup) {
-    console.log('Form Group:', row);
-
     // Retrieve values from the form
     const vazhipadDateStr = row.get('VazhipadDate')?.value;
     const fromDateStr = row.get('seasonalDates.fromDate')?.value;
     const toDateStr = row.get('seasonalDates.toDate')?.value;
     if (fromDateStr && toDateStr) {
-      console.log('Vazhipad Date String:', vazhipadDateStr);
-      console.log('From Date String:', fromDateStr);
-      console.log('To Date String:', toDateStr);
-
       // Convert string dates to Date objects
       const vazhipadDate = vazhipadDateStr ? new Date(vazhipadDateStr) : null;
       const fromDate = fromDateStr ? new Date(fromDateStr) : null;
       const toDate = toDateStr ? new Date(toDateStr) : null;
 
-      console.log('Parsed Vazhipad Date:', vazhipadDate);
-      console.log('Parsed From Date:', fromDate);
-      console.log('Parsed To Date:', toDate);
-
       // Validate date ranges
       if (vazhipadDate && fromDate && toDate) {
         if (vazhipadDate < fromDate || vazhipadDate > toDate) {
-          console.log('Date is out of range');
           row.get('VazhipadDate')?.setErrors({ invalidDateRange: true });
           this.notification.error(
             `Vazhipad date must be within ${
@@ -245,11 +239,9 @@ this.lang=localStorage.getItem('Language') || 'en';
             } - ${toDate.toISOString().split('T')[0]}`
           );
         } else {
-          console.log('Date is within range');
           row.get('VazhipadDate')?.setErrors(null);
         }
       } else {
-        console.log('Date values are invalid or missing');
         row.get('VazhipadDate')?.setErrors({ invalidDateRange: true });
       }
     }
@@ -276,10 +268,7 @@ this.lang=localStorage.getItem('Language') || 'en';
       this.vazhipadinfo.length > 0 &&
       !this.vazhipadinfo.at(this.vazhipadinfo.length - 1).valid
     ) {
-      //  this.notification.success("Plese fill the details");
       const row = this.vazhipadinfo.at(index) as FormGroup;
-      //  row.markAllAsTouched();
-      //   return;
 
       if (row.invalid) {
         if (row.get('Vazhipad')?.errors?.['required']) {
@@ -307,7 +296,7 @@ this.lang=localStorage.getItem('Language') || 'en';
         return; // Stop adding new row if current row is invalid
       }
     }
-    console.log(index);
+
     const currentRow = this.vazhipadinfo.at(index) as FormGroup;
     const currentName = currentRow.get('Name')?.value;
     const currentStar = currentRow.get('Star')?.value;
@@ -334,8 +323,6 @@ this.lang=localStorage.getItem('Language') || 'en';
   }
 
   removeRow(index: number) {
-    console.log(index + 'Sssssssssssssssssssss');
-
     if (this.vazhipadinfo.length > 1) {
       this.vazhipadinfo.removeAt(index);
       this.updateTotalAmount();
@@ -364,7 +351,7 @@ this.lang=localStorage.getItem('Language') || 'en';
   setupAutocomplete(index: number): void {
     const row = this.vazhipadinfo.at(index) as FormGroup;
     const control = row.get('Vazhipad');
-    console.log(control, 'vavaaaaaaaaaaaaaaaaaaaaaaaa');
+
     control?.valueChanges
       .pipe(
         startWith(''),
@@ -376,7 +363,6 @@ this.lang=localStorage.getItem('Language') || 'en';
   }
 
   private _filter(value: string | null | undefined): any[] {
-    console.log(value, 'dcdssssssssssssss');
     if (value === null || value === undefined) {
       return [];
     }
@@ -413,45 +399,45 @@ this.lang=localStorage.getItem('Language') || 'en';
 
   setupStarAutocomplete(index: number): void {
     const row = this.vazhipadinfo.at(index) as FormGroup;
-    console.log(row, 'kkkkkkkkk');
+
     const control = row.get('starName');
-    console.log(control?.value, 'jjjjjjjjjjjjj');
+
     control?.valueChanges
       .pipe(
         startWith(''),
         map((value) => this._filterStar(value))
       )
       .subscribe((filteredOptions) => {
-        console.log(filteredOptions, 'hhhhhhhhhhhhhh');
         this.starFilteredOption[index] = filteredOptions;
       });
   }
 
   private _filterStar(value: string | null | undefined): any[] {
-    console.log(value, 'dcdssssssssssssss');
     if (value === null || value === undefined) {
       return [];
     }
 
     const filterValue = value.toLowerCase();
-    // const normalizedValue = value.normalize('NFC');
+    const normalizedValue = value.normalize('NFC');
 
     // Check if the entered value is a number
     const isNumber = !isNaN(Number(value));
-    console.log(isNumber);
+
     let filteredList = this.nakshatham.filter((option) => {
       const name = option.SM_Name ? option.SM_Name.toLowerCase() : '';
       const starCode = option.SM_Id
         ? option.SM_Id.toString().toLowerCase()
         : '';
-      // const starRName = option.VM_RName ? option.VM_RName.normalize('NFC') : '';
+      const starRName = option.VM_RName ? option.VM_RName.normalize('NFC') : '';
 
       return (
-        name.includes(filterValue) || starCode.includes(filterValue)
+        name.includes(filterValue) ||
+        starCode.includes(filterValue) ||
+        starRName.includes(normalizedValue)
         // vmRName.includes(normalizedValue)
       );
     });
-    console.log(filteredList, 'fffffffffffffffffff');
+
     // If the entered value is a number, sort the filtered list by VM_Code in ascending order
     if (isNumber) {
       filteredList = filteredList.sort((a, b) => {
@@ -480,7 +466,6 @@ this.lang=localStorage.getItem('Language') || 'en';
     const payLoad = { Type: 'ListStar', Code: '' };
     this.masterservice.getStarData(payLoad).subscribe((res) => {
       // this.nakshatham = res;
-      console.log(this.nakshatham);
 
       this.nakshatham = res.map((item) => ({
         SM_Id: item.id,
@@ -488,13 +473,12 @@ this.lang=localStorage.getItem('Language') || 'en';
         SM_Code: item.SM_Code,
         SM_RName: item.SM_Name,
       }));
-      console.log(this.nakshatham);
     });
   }
 
   vazhipadValidator(control: AbstractControl): ValidationErrors | null {
     const vazhipad = control.value;
-    const vmExists = this.VMList.some((vm) => vm.VM_Name === vazhipad);
+    const vmExists = this.VMList.some((vm) => vm.VM_RName === vazhipad);
     if (!vmExists) {
       return { invalidVazhipad: true };
     }
@@ -515,55 +499,40 @@ this.lang=localStorage.getItem('Language') || 'en';
   ];
 
   onSelect(event: MatAutocompleteSelectedEvent, index: number): void {
-    console.log(index);
     const selectedVazhipad = event.option.value;
-    console.log(selectedVazhipad);
+
     const selectedRow = this.vazhipadinfo.at(index) as FormGroup;
     selectedRow.get('Vazhipad')?.setValue(selectedVazhipad);
-    console.log(selectedRow);
+
     // Fetch vazhipad details
-    console.log(this.VMList);
+
     const selectedVazhipadItem = this.VMList.find(
-      (item) => item.VM_Name === selectedVazhipad
+      (item) => item.VM_RName === selectedVazhipad
     );
-    console.log(selectedVazhipadItem);
 
     if (selectedVazhipadItem) {
       selectedRow.get('Vazhid')?.setValue(selectedVazhipadItem.VM_Id);
-      console.log(selectedRow);
+
       // Fetch vazhipad details using VM_Code
       this.getSeasnalalVazhipadData(selectedVazhipadItem.VM_Id, index);
       this.getDatamasterdateCheck(selectedVazhipadItem.VM_Id, index);
       const vazhipadCode = selectedVazhipadItem.VM_Code;
-      console.log(vazhipadCode);
+
       this.fetchVazhipadDetails(vazhipadCode, index);
     } else {
-      console.error('Selected vazhipad item not found in VMList');
       // Handle error or feedback if needed
     }
   }
 
   onStarSelect(event: MatAutocompleteSelectedEvent, index: number): void {
-    console.log(event.option.value);
-
     const selectedStar = event.option.value;
-    console.log(selectedStar);
     const selectedRow = this.vazhipadinfo.at(index) as FormGroup;
-    // selectedRow.get('Star')?.setValue();
-    console.log(selectedRow);
-    // Fetch vazhipad details
-    console.log(this.nakshatham);
     const selectedStarData = this.nakshatham.find(
       (item) => item.SM_Name === selectedStar
     );
-    console.log(selectedStarData);
 
     if (selectedStarData) {
       selectedRow.get('Star')?.setValue(selectedStarData.SM_Id.toString());
-      console.log(
-        selectedRow,
-        'jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjffffffffffffffffff'
-      );
     } else {
       console.error('Selected vazhipad item not found in VMList');
       // Handle error or feedback if needed
@@ -574,9 +543,8 @@ this.lang=localStorage.getItem('Language') || 'en';
     this.masterservice
       .getVazhipadeByCode(vazhipadcode)
       .subscribe((res: any) => {
-        console.log(res);
         const selectedRow = this.vazhipadinfo.at(index) as FormGroup;
-        console.log(selectedRow);
+
         if (res[0].VM_Amt != 0) {
           selectedRow.get('Rate')?.setValue(res[0].VM_Amt);
         } else {
@@ -591,7 +559,6 @@ this.lang=localStorage.getItem('Language') || 'en';
         this.selectedVazhipadPrathistaDetails(vazhipadcode, index);
 
         this.setVazhipadDate(index);
-        console.log(selectedRow);
       });
   }
 
@@ -603,7 +570,7 @@ this.lang=localStorage.getItem('Language') || 'en';
     const allowedDays =
       (selectedRow.get('allowedDays')?.value as number[]) || [];
     const seasonaldays = selectedRow.get('seasonalDates')?.value;
-    console.log(allowedDays + 'fffffffffffffffffffffff');
+
     this.tomorrowDate = new Date(this.currentDate);
     this.tomorrowDate.setDate(this.currentDate.getDate() + 1);
     const fromDate = seasonaldays ? seasonaldays.fromDate : null;
@@ -647,17 +614,17 @@ this.lang=localStorage.getItem('Language') || 'en';
     const selectedRow = this.vazhipadinfo.at(index) as FormGroup;
     this.masterservice.getVazhipadByCodeForDiety(vazhipadcode).subscribe({
       next: (res: any) => {
-        console.log(res);
+        console.log(res)
         this.prathishtaOptions[index] = res.map((item: any) => ({
           id: item.PM_ID,
           name: item.PM_Name,
+          rname:item.PM_RegName
         }));
         const selectedRow = this.vazhipadinfo.at(index) as FormGroup;
         if (this.prathishtaOptions[index].length > 0) {
-          console.log(this.prathishtaOptions[index]);
-          const defaultPrathishta = this.prathishtaOptions[index][0].name;
+          const defaultPrathishta = this.prathishtaOptions[index][0].rname;
           const defaultPrathishtaId = this.prathishtaOptions[index][0].id;
-          console.log(defaultPrathishta);
+
           this.vazhipadinfo
             .at(index)
             .get('Prethista')
@@ -671,7 +638,7 @@ this.lang=localStorage.getItem('Language') || 'en';
             .get('Prethista')
             ?.valueChanges.subscribe((selectedPrathishta) => {
               const selectedPrathishtaObj = this.prathishtaOptions[index].find(
-                (option: any) => option.name === selectedPrathishta
+                (option: any) => option.rname === selectedPrathishta
               );
               if (selectedPrathishtaObj) {
                 selectedRow.get('PMid')?.setValue(selectedPrathishtaObj.id); // Set PMid based on selected Prathishta
@@ -694,7 +661,6 @@ this.lang=localStorage.getItem('Language') || 'en';
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        console.log('Dialog closed with MULTIDAY DATAAAAAAdata:', result);
         // this.handleDialogData(result);
 
         this.handleMultiDayBookingResult(result, rowIndex);
@@ -726,12 +692,10 @@ this.lang=localStorage.getItem('Language') || 'en';
 
   private handleMultiDayBookingResult(result: any, rowIndex: number): void {
     const row = this.vazhipadinfo.at(rowIndex) as FormGroup;
-    console.log(row);
-    console.log(result[0]);
+
     let lastIndex = result.length - 1;
     const data = result[0];
-    console.log(data.Prethista);
-    console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaa', result);
+
     // Assuming data.VazhipadDate is a Date object
     const startDate = new Date(data.VazhipadDate); // This should be the start date
     const endDate = new Date(result[lastIndex].VazhipadDate); // This should be the end date
@@ -743,7 +707,6 @@ this.lang=localStorage.getItem('Language') || 'en';
       };
     });
 
-    console.log('hhhhhhhhhhhhhhhhhhhhhhhhhhhhhh', formattedDates);
     this.multidayBooking[rowIndex] = formattedDates;
     row.patchValue({
       Vazhipad: data.Vazhipad,
@@ -803,7 +766,6 @@ this.lang=localStorage.getItem('Language') || 'en';
   }
 
   private cleanVazhipadInfo(item: any) {
-    console.log(item, 'testttttttttttttttttttttttttttttttttttt');
     return {
       Amount: item.Amount, // Including Amount
       Mday: item.Mday, // Including Mday
@@ -887,8 +849,7 @@ this.lang=localStorage.getItem('Language') || 'en';
       vazhipadinfo: combinedVazhipadinfo,
     };
     const formattedData = this.formatDateFields(updatedData);
-    console.log(formattedData, 'formatteddataaaaaaaaaaaaa');
-
+    console.log(formattedData, 'Bill Data aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
     if (formattedData.Trnsmode !== 'CS') {
       const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
         data: { message: `Do you want to proceed with digital payment ?` },
@@ -906,6 +867,13 @@ this.lang=localStorage.getItem('Language') || 'en';
     }
   }
 
+  private getCurrentDateMMYY(): string {
+    const now = new Date();
+    const month = ('0' + (now.getMonth() + 1)).slice(-2);
+    const year = now.getFullYear().toString().slice(-2);
+    return `${month}${year}`;
+  }
+
   // confirm printing
   prnitConfirmDialog(formattedData: any) {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
@@ -913,9 +881,8 @@ this.lang=localStorage.getItem('Language') || 'en';
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.receiptPrintService.setReceiptData(formattedData);
+        // this.receiptPrintService.setReceiptData(formattedData);   this is originallllllll print calll
         this.sendBillingDataApiCall(formattedData);
-        console.log('Print service values set. Ready to print.');
       } else {
         this.sendBillingDataApiCall(formattedData);
         // User did not confirm, save the data to the database
@@ -925,27 +892,77 @@ this.lang=localStorage.getItem('Language') || 'en';
 
   // api call send billinf data to db
   sendBillingDataApiCall(formattedData: any) {
+    console.log(formattedData, 'sendBillingDataApiCall at last');
+
+    this.masterservice.getLastBillNumber().subscribe((data) => {
+      console.log(data, 'ffrfrere');
+
+      if (data[0].billno) {
+        this.lockTableLastbillNumber = data[0].billno;
+        console.log(this.lockTableLastbillNumber);
+        console.log(this.billNumberFormatDate);
+        this.generatedCurrentBillnumber =
+          this.lockTableLastbillNumber.toString() +
+          '/' +
+          this.billNumberFormatDate;
+        console.log(this.generatedCurrentBillnumber);
+        formattedData.BillNo = this.generatedCurrentBillnumber;
+        console.log(formattedData, 'after add bill number');
+
+        const payLoad = {
+          Type: 'BookingBillLock',
+          Code: this.CounterId + 'Lock',
+        };
+        console.log(payLoad);
+        this.masterservice.getMaster(payLoad).subscribe((data) => {
+          console.log(data, 'locked billapi reposnse');
+          this.onSubmitBookingDetailsApiCall(formattedData);
+        });
+       
+      } else {
+        this.retryFetchBillNumber(formattedData);
+      }
+    });
+  }
+
+  retryFetchBillNumber(formattedData: any, retryCount = 0) {
+    if (retryCount >= 3) {
+      this.notification.error(
+        'Unable to fetch a unique bill number. Please contact support.'
+      );
+      return;
+    }
+
+    setTimeout(() => {
+      this.sendBillingDataApiCall(formattedData);
+    }, 2000); // Retry after 2 seconds
+  }
+
+  onSubmitBookingDetailsApiCall(formattedData: any) {
+    console.log(formattedData,"data send to api before the submission");
     this.masterservice.vazhipadBooking(formattedData).subscribe((res: any) => {
       if (res) {
         if (res.RespStatus === 'I') {
+          this.receiptPrintService.setReceiptData(formattedData); 
           this.notification.success(res.RespMsg);
           this.resetForm();
-          this.masterservice.getLastBillNumber().subscribe({
-            next: (lastbillno) => {
-              const lastBillNumber = lastbillno[0].billno;
-              const currentBillnumber = lastBillNumber + 1;
+          // this.masterservice.getLastBillNumber().subscribe({
+          //   next: (lastbillno) => {
+              // const lastBillNumber = lastbillno[0].billno;
+              // const currentBillnumber = lastBillNumber + 1;
+              // console.log(currentBillnumber)
               this.masterservice
-                .updateLastBillNumber(currentBillnumber)
+                .updateLastBillNumber(this.lockTableLastbillNumber+1)
                 .subscribe({
                   next: (data) => {
                     this.eventService.notifytheupdateLastbillnumber();
                   },
                   error: (err) => {},
                 });
-            },
-          });
+
+
+           
           this.isDataSaved = true;
-          // this.printReceipt();
         }
       } else {
         this.notification.error('Please check your connection and try agin');
@@ -999,8 +1016,6 @@ this.lang=localStorage.getItem('Language') || 'en';
     return formattedData;
   }
 
-
-
   // show validatin error
   showValidationErrors(row: FormGroup): void {
     Object.keys(row.controls).forEach((key) => {
@@ -1023,21 +1038,17 @@ this.lang=localStorage.getItem('Language') || 'en';
     });
   }
 
-
-  
   // getseasonal vazhipad data
   getSeasnalalVazhipadData(vid: string, index: number) {
-    console.log(vid + ' ssssssssss');
     this.masterservice.getSeasonalVazhipadDateCheck(vid).subscribe({
       next: (data) => {
-        console.log(data);
         // Check if the response data is empty or not
         if (data && data.length > 0) {
           const seasonalDates = {
             fromDate: data[0].VS_FromDate,
             toDate: data[0].VS_ToDate,
           };
-          console.log(seasonalDates);
+
           const row = this.vazhipadinfo.at(index) as FormGroup;
           const formattedFromDate = this.datePipe.transform(
             seasonalDates.fromDate,
@@ -1053,10 +1064,7 @@ this.lang=localStorage.getItem('Language') || 'en';
             toDate: formattedToDate,
           });
           this.setVazhipadDate(index);
-          console.log(row);
         } else {
-          // Handle the case when data is empty
-          console.warn('No seasonal data available for the provided ID');
           const row = this.vazhipadinfo.at(index) as FormGroup;
           row.get('seasonalDates')?.patchValue({ fromDate: '', toDate: '' });
           row.get('vazhipadDate')?.patchValue('');
@@ -1064,7 +1072,6 @@ this.lang=localStorage.getItem('Language') || 'en';
         }
       },
       error: (err) => {
-        console.error('Error fetching seasonal vazhipad data:', err);
         // Handle error case by resetting seasonal dates
         const row = this.vazhipadinfo.at(index) as FormGroup;
         row.get('seasonalDates')?.patchValue({ fromDate: '', toDate: '' });
@@ -1083,9 +1090,9 @@ this.lang=localStorage.getItem('Language') || 'en';
     this.masterservice.getDayMastervazhipaddateCheck(vid).subscribe({
       next: (data) => {
         // Extract only the 'Day' field from each object in the response
-        console.log(data);
+
         const allowedDays = data.map((item: any) => item.Day);
-        console.log(allowedDays);
+
         // Get the 'allowDays' FormArray from the current row
         const allowDaysFormArray = row.get('allowedDays') as FormArray;
 
@@ -1128,30 +1135,7 @@ this.lang=localStorage.getItem('Language') || 'en';
     this.resetForm();
   }
 
-  onKeyDown(event: KeyboardEvent, field: string, index: number) {
-    const currentRow = this.vazhipadinfo.at(index) as FormGroup;
 
-    // if (event.key === 'Enter') {
-    //   event.preventDefault(); // Prevent form submission on Enter key
-    //   this.addRow(index); // Optionally, call addRow if you want to add a new row on Enter key
-    //   return; // Exit the method
-    // }
-    // Handle the Backspace key
-    if (event.key === 'Backspace') {
-      const nameField = currentRow.get(field);
-      if (nameField && nameField.value) {
-        const inputElement = event.target as HTMLInputElement;
-        const start = inputElement.selectionStart;
-        const end = inputElement.selectionEnd;
-
-        // If all text is selected, clear the field
-        if (start === 0 && end === nameField.value.length) {
-          nameField.setValue(''); // Clear the field if all text is selected
-          event.preventDefault(); // Prevent default backspace action
-        }
-      }
-    }
-  }
 
   handleTabKeyDown(event: KeyboardEvent, index: number): void {
     // Check if the Tab key is pressed
@@ -1169,12 +1153,43 @@ this.lang=localStorage.getItem('Language') || 'en';
     this.firstInputElement.nativeElement.focus();
   }
 
-  changeLanguage(lang:any){
-    const selectedlang=lang.target.value;
+  changeLanguage(lang: any) {
+    const selectedlang = lang.target.value;
 
-    localStorage.setItem('Language',selectedlang)
+    localStorage.setItem('Language', selectedlang);
     this.ts.use(selectedlang);
   }
 
+  handleKeyDowns(event: KeyboardEvent, index: number): void {
+    if (event.key === 'ArrowLeft') {
+      // Prevent default behavior of the left arrow key
+      event.preventDefault();
 
+      // Get the previous input element in the row
+      const inputs = document.querySelectorAll(
+        'form [formControlName]'
+      ) as NodeListOf<HTMLInputElement>;
+
+      // Focus the previous input element (if any)
+      if (inputs[index - 1]) {
+        (inputs[index - 1] as HTMLInputElement).focus();
+      }
+    }
+  }
+
+
+  onKeydown(event: KeyboardEvent, index: number) {
+    const inputElements = this.inputRefs.toArray();  // Convert the QueryList to an array of ElementRef
+
+    if (event.key === 'ArrowLeft') {
+      // Find the current element's index in the inputRefs list
+      const currentIndex = inputElements.findIndex(input => input.nativeElement === event.target);
+      
+      // Move to the previous element if it's not the first one
+      if (currentIndex > 0) {
+        inputElements[currentIndex - 1].nativeElement.focus();
+        event.preventDefault(); // Prevent default behavior of the left arrow key
+      }
+    }
+  }
 }

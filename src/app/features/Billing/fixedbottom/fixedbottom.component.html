@@ -5,7 +5,7 @@
         <div>
           <input
             type="text"
-            [placeholder]="'PLACEHOLDER.MOBILENUMBER' | translate"
+            [placeholder]="'PLACEHOLDER.BILLNUMBER' | translate"
             [(ngModel)]="billNumber"
             style="width: 150px"
             class="phone "
@@ -82,21 +82,27 @@
             <input
               type="text"
               formControlName="Address1"
-              #address1Input
+              #address1 Input
               [placeholder]="'PLACEHOLDER.ADDRESS1' | translate"
               class="form-control phone"
+              
+              (keydown)="handleKeyDowns($event, 0, 0)"
             />
             <input
               type="text"
               formControlName="Address2"
               [placeholder]="'PLACEHOLDER.ADDRESS2' | translate"
               class="form-control phone"
+              #address2
+              (keydown)="handleKeyDowns($event, 1, 0)"
             />
             <input
               type="text"
               formControlName="Address3"
               [placeholder]="'PLACEHOLDER.ADDRESS3' | translate"
               class="form-control phone"
+              #address3
+              (keydown)="handleKeyDowns($event, 2, 0)"
             />
           </div>
           <div
@@ -114,6 +120,8 @@
               formControlName="Pincode"
               [placeholder]="'PLACEHOLDER.PINCODE' | translate"
               class="form-control phone"
+              #pincode
+              (keydown)="handleKeyDowns($event, 0, 1)"
             />
             <input
               type="text"
@@ -121,6 +129,8 @@
               maxlength="11"
               [placeholder]="'PLACEHOLDER.PHONE' | translate"
               class="form-control phone"
+              #phone
+              (keydown)="handleKeyDowns($event, 1, 1)"
               [class.is-invalid]="customerdetailsForBillingForm.get('Mobile')?.invalid && customerdetailsForBillingForm.get('Mobile')?.touched"
             />
 
@@ -129,6 +139,8 @@
               formControlName="Email"
               [placeholder]="'PLACEHOLDER.EMAIL' | translate"
               class="form-control phone"
+              #email
+              (keydown)="handleKeyDowns($event, 2, 1)"
             />
           </div>
           <div
@@ -194,8 +206,8 @@
                 <option value="CS">{{"Cash" | translate}}</option>
                 <option value="UP">{{"UPI"|translate}}</option>
                 <option value="DE">{{"Debit" |translate}}</option>
-                <option value="CR">{{"credit" |translate}}</option>
-                <option value="CH">{{"cheque"| translate}}</option>
+                <option value="CR">{{"Credit" |translate}}</option>
+                <option value="CH">{{"Cheque"| translate}}</option>
                 <option value="MO">{{"Money order" |translate}}</option>
                 <option value="ON">{{"Online" | translate}}</option>
               </select>

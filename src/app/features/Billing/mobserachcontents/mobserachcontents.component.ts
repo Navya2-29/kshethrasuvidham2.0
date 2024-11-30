@@ -48,6 +48,7 @@ export class MobserachcontentsComponent implements OnInit {
     'Qty',
     'Rate',
     'Amount',
+    
   ];
   dataSource: MatTableDataSource<Data>;
   mobilenumber: string = '';
@@ -105,4 +106,9 @@ export class MobserachcontentsComponent implements OnInit {
     
 this.masterService.cancellBill
   }
+
+
+
+
+
 }
