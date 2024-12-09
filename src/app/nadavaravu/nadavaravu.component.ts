@@ -15,11 +15,13 @@ import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { CancelBillRemarkComponent } from '../features/Billing/cancel-bill-remark/cancel-bill-remark.component';
+import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-nadavaravu',
   standalone: true,
-  imports: [MatIconModule, CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [MatIconModule, TranslateModule,CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './nadavaravu.component.html',
   styleUrl: './nadavaravu.component.css',
 })
@@ -49,13 +51,20 @@ export class NadavaravuComponent implements OnInit {
 starName:string;
   dupliacteBillData:any;
   itemName:string;
+  lang:string |null;
   constructor(
     private fb: FormBuilder,
     private service: MasterService,
     private notification: ToastrService,
     private router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private ts: TranslateService
   ) {
+    this.lang=localStorage.getItem('Language')
+    const userLang = navigator.language || 'en';
+    const languageCode = userLang.split('-')[0];
+    this.ts.setDefaultLang(languageCode);
+    this.ts.use(this.lang || 'en');
     this.userId = localStorage.getItem('LoginId');
     this.role = localStorage.getItem('Role');
     this.CounterId = localStorage.getItem('counterId');

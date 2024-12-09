@@ -47,7 +47,7 @@ export class ReportCreditComponent {
  // Call your API service to get the report data
   fetchReportData(type: string, fromDate: string, toDate: string): void {
     const payLoad = {
-      Type: 'DailyStmtDetaild',
+      Type: 'CreditPending',
       FromDate: fromDate,
       ToDate: toDate,
     };
@@ -55,22 +55,21 @@ export class ReportCreditComponent {
       next: (data) => {
         console.log('Fetched report data:', data);
         this.data=data;
-         this.filteredData = this.data.filter(item => item.TrnsMode === 'CR');   
-         this.filteredData = this.filteredData.sort((a:any, b:any) => {
-          const [numA, denomA] = a.BillNo.split('/').map(Number);
-          const [numB, denomB] = b.BillNo.split('/').map(Number);
+        //  this.filteredData = this.data.filter(item => item.TrnsMode === 'CR');   
+        //  this.filteredData = this.filteredData.sort((a:any, b:any) => {
+        //   const [numA, denomA] = a.BillNo.split('/').map(Number);
+        //   const [numB, denomB] = b.BillNo.split('/').map(Number);
           
-          // Compare the two parts: first compare the numerator, then the denominator
-          return numA - numB || denomA - denomB;
-      });
-      console.log(this.filteredData,"aaaaaaaaaaaaaaaaaaa")  
+        //   // Compare the two parts: first compare the numerator, then the denominator
+        //   return numA - numB || denomA - denomB;
+      // });
+      
 
-        this.dataSource.data = this.filteredData
+        this.dataSource.data = this.data
         console.log( this.dataSource.data)
-        this.length =this.filteredData .length; 
+        this.length =this.data .length; 
         this.dataSource.paginator = this.paginator;
-        
-        console.log(this.filteredData);
+       
       },
       error: (error) => {
         console.error('Error fetching report data:', error);
@@ -95,7 +94,7 @@ export class ReportCreditComponent {
 
   generatePDF(): void {
     // Filter data for entries with transmode 'ch'
-    const filteredData = this.data.filter(item => item.TrnsMode === 'CR');
+    const filteredData = this.data
   
     const templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
     const templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
@@ -175,7 +174,7 @@ export class ReportCreditComponent {
     let pageNum = 1;
   
     // Iterate over data and draw rows
-    this.filteredData.forEach((row: any) => {
+    this.data.forEach((row: any) => {
       const tableRow = [
         row.BillNo,
         wrapText(doc, row.Vazhipad, maxColumnWidths[1]), // Wrap Vazhipad

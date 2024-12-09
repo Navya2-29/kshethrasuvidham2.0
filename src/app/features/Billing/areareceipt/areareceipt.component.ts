@@ -105,7 +105,9 @@ export class AreareceiptComponent implements OnInit {
   billNumberFormatDate: string;
   lockTableLastbillNumber: number;
   generatedCurrentBillnumber: string;
+  selectedVazhipadItem:any;
   CounterId: string | null;
+  
   input1 = '';
   input2 = '';
   input3 = '';
@@ -113,6 +115,8 @@ export class AreareceiptComponent implements OnInit {
   @ViewChild('firstInput') firstInputElement!: ElementRef;
   @ViewChildren('inputRef') inputRefs: QueryList<ElementRef>;
   lang: string | null;
+  role:string|null;
+  selectedStarData:any;
   private subscription: Subscription;
   private masterservice = inject(MasterService);
   private eventService = inject(TotalAmountService);
@@ -126,6 +130,7 @@ export class AreareceiptComponent implements OnInit {
     private ts: TranslateService
   ) {
     this.CounterId = localStorage.getItem('counterId');
+    this.role = localStorage.getItem('Role');
     this.billNumberFormatDate = this.getCurrentDateMMYY();
     this.lang = localStorage.getItem('Language') || 'en';
     const userLang = navigator.language || 'en';
@@ -428,7 +433,7 @@ export class AreareceiptComponent implements OnInit {
       const starCode = option.SM_Id
         ? option.SM_Id.toString().toLowerCase()
         : '';
-      const starRName = option.VM_RName ? option.VM_RName.normalize('NFC') : '';
+      const starRName = option.SM_RName ? option.SM_RName.normalize('NFC') : '';
 
       return (
         name.includes(filterValue) ||
@@ -478,7 +483,15 @@ export class AreareceiptComponent implements OnInit {
 
   vazhipadValidator(control: AbstractControl): ValidationErrors | null {
     const vazhipad = control.value;
-    const vmExists = this.VMList.some((vm) => vm.VM_RName === vazhipad);
+    var vmExists;
+    if(this.lang==='en'){
+       vmExists = this.VMList.some((vm) => vm.VM_Name === vazhipad);
+       console.log(vmExists,"uyuyuyuyy")
+    }
+   else if(this.lang==='ml'){
+       vmExists = this.VMList.some((vm) => vm.VM_RName === vazhipad);
+    }
+    // const vmExists = this.VMList.some((vm) => vm.VM_RName === vazhipad);
     if (!vmExists) {
       return { invalidVazhipad: true };
     }
@@ -505,18 +518,26 @@ export class AreareceiptComponent implements OnInit {
     selectedRow.get('Vazhipad')?.setValue(selectedVazhipad);
 
     // Fetch vazhipad details
+if(this.lang==='en'){
 
-    const selectedVazhipadItem = this.VMList.find(
-      (item) => item.VM_RName === selectedVazhipad
-    );
+  this.selectedVazhipadItem = this.VMList.find(
+    (item) => item.VM_Name === selectedVazhipad
+  );
 
-    if (selectedVazhipadItem) {
-      selectedRow.get('Vazhid')?.setValue(selectedVazhipadItem.VM_Id);
+}else if(this.lang==='ml'){
+  this.selectedVazhipadItem = this.VMList.find(
+    (item) => item.VM_RName === selectedVazhipad
+  );
+}
+   
+console.log(this.selectedVazhipadItem)
+    if (this.selectedVazhipadItem) {
+      selectedRow.get('Vazhid')?.setValue(this.selectedVazhipadItem.VM_Id);
 
       // Fetch vazhipad details using VM_Code
-      this.getSeasnalalVazhipadData(selectedVazhipadItem.VM_Id, index);
-      this.getDatamasterdateCheck(selectedVazhipadItem.VM_Id, index);
-      const vazhipadCode = selectedVazhipadItem.VM_Code;
+      this.getSeasnalalVazhipadData(this.selectedVazhipadItem.VM_Id, index);
+      this.getDatamasterdateCheck(this.selectedVazhipadItem.VM_Id, index);
+      const vazhipadCode = this.selectedVazhipadItem.VM_Code;
 
       this.fetchVazhipadDetails(vazhipadCode, index);
     } else {
@@ -527,14 +548,24 @@ export class AreareceiptComponent implements OnInit {
   onStarSelect(event: MatAutocompleteSelectedEvent, index: number): void {
     const selectedStar = event.option.value;
     const selectedRow = this.vazhipadinfo.at(index) as FormGroup;
-    const selectedStarData = this.nakshatham.find(
-      (item) => item.SM_Name === selectedStar
-    );
+    selectedRow.get('Star')?.setValue(selectedStar);
 
-    if (selectedStarData) {
-      selectedRow.get('Star')?.setValue(selectedStarData.SM_Id.toString());
+    if(this.lang=='en'){
+       this.selectedStarData = this.nakshatham.find(
+        (item) => item.SM_Name == selectedStar
+      );
+    }
+    else if(this.lang=='ml'){
+       this.selectedStarData = this.nakshatham.find(
+        (item) => item.SM_RName === selectedStar
+      );
+    }
+   
+
+    if (this.selectedStarData) {
+      selectedRow.get('Star')?.setValue(this.selectedStarData.SM_Id.toString());
     } else {
-      console.error('Selected vazhipad item not found in VMList');
+      console.error('Selected star item not found in VMList');
       // Handle error or feedback if needed
     }
   }
@@ -621,30 +652,64 @@ export class AreareceiptComponent implements OnInit {
           rname:item.PM_RegName
         }));
         const selectedRow = this.vazhipadinfo.at(index) as FormGroup;
-        if (this.prathishtaOptions[index].length > 0) {
-          const defaultPrathishta = this.prathishtaOptions[index][0].rname;
-          const defaultPrathishtaId = this.prathishtaOptions[index][0].id;
 
-          this.vazhipadinfo
-            .at(index)
-            .get('Prethista')
-            ?.setValue(defaultPrathishta);
-          this.vazhipadinfo
-            .at(index)
-            .get('PMid')
-            ?.setValue(defaultPrathishtaId);
+        if(this.lang=='en'){
 
-          selectedRow
-            .get('Prethista')
-            ?.valueChanges.subscribe((selectedPrathishta) => {
-              const selectedPrathishtaObj = this.prathishtaOptions[index].find(
-                (option: any) => option.rname === selectedPrathishta
-              );
-              if (selectedPrathishtaObj) {
-                selectedRow.get('PMid')?.setValue(selectedPrathishtaObj.id); // Set PMid based on selected Prathishta
-              }
-            });
+          if (this.prathishtaOptions[index].length > 0) {
+            const defaultPrathishta = this.prathishtaOptions[index][0].name;
+            const defaultPrathishtaId = this.prathishtaOptions[index][0].id;
+  
+            this.vazhipadinfo
+              .at(index)
+              .get('Prethista')
+              ?.setValue(defaultPrathishta);
+            this.vazhipadinfo
+              .at(index)
+              .get('PMid')
+              ?.setValue(defaultPrathishtaId);
+  
+            selectedRow
+              .get('Prethista')
+              ?.valueChanges.subscribe((selectedPrathishta) => {
+                const selectedPrathishtaObj = this.prathishtaOptions[index].find(
+                  (option: any) => option.name === selectedPrathishta
+                );
+                if (selectedPrathishtaObj) {
+                  selectedRow.get('PMid')?.setValue(selectedPrathishtaObj.id); // Set PMid based on selected Prathishta
+                }
+              });
+          }
+
+
+
+
+        }else if(this.lang==='ml'){
+          if (this.prathishtaOptions[index].length > 0) {
+            const defaultPrathishta = this.prathishtaOptions[index][0].rname;
+            const defaultPrathishtaId = this.prathishtaOptions[index][0].id;
+  
+            this.vazhipadinfo
+              .at(index)
+              .get('Prethista')
+              ?.setValue(defaultPrathishta);
+            this.vazhipadinfo
+              .at(index)
+              .get('PMid')
+              ?.setValue(defaultPrathishtaId);
+  
+            selectedRow
+              .get('Prethista')
+              ?.valueChanges.subscribe((selectedPrathishta) => {
+                const selectedPrathishtaObj = this.prathishtaOptions[index].find(
+                  (option: any) => option.rname === selectedPrathishta
+                );
+                if (selectedPrathishtaObj) {
+                  selectedRow.get('PMid')?.setValue(selectedPrathishtaObj.id); // Set PMid based on selected Prathishta
+                }
+              });
+          }
         }
+        
       },
       error: (err) => {
         console.log('error in getting prathishta');

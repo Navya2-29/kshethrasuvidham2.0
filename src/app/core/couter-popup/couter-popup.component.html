@@ -22,10 +22,20 @@
   <!-- Show additional error message after pressing the Submit button -->
   <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
   <div class="dialog-actions">
+    
     <button
+    mat-flat-button
+    color="danger"
+    class="custom-button"
+    
+    (click)="Back()"
+  >
+    Cancel
+  </button>
+  <button
       mat-flat-button
       color="primary"
-      class="custom-button"
+      class="custom-button ml-3"
       [disabled]="!counterForm.valid && !errorMessage"
       (click)="save()"
     >

@@ -8,8 +8,7 @@ import { jsPDF } from 'jspdf';
 import {ReportData} from '../../../models/poornam-report'
 import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Location } from '@angular/common';
-import autoTable from 'jspdf-autotable';
+
 @Component({
   selector: 'app-report-view',
   standalone: true,
@@ -91,7 +90,6 @@ export class ReportViewComponent implements OnInit {
   
     const title = 'Vazhipad Report';
     const currentDate = new Date().toLocaleDateString('en-IN');
-  
     const lineHeight = 8; // Row height for the table
     const smallSpacing = 4; // Space between groups
     const headerSpacing = 6; // Space between header and content

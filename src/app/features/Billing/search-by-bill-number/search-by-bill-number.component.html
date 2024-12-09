@@ -64,7 +64,7 @@
                       {{ star.SM_NameEng }}
                     </option>
                   </select></p> 
-                  <p *ngIf="row.Star2"> <select [(ngModel)]="row.Star2" class="form-control">
+                  <p *ngIf="row.Star2 && row.Star2 !='0'"> <select [(ngModel)]="row.Star2" class="form-control">
                     <option *ngFor="let star of nakshatham" [value]="star.id">
                       {{ star.SM_NameEng }}
                     </option>
@@ -72,7 +72,7 @@
                   </ng-container>
                   <ng-template #viewStar><p>{{
                     getNakshthram(row.Star)
-                  }}</p><p *ngIf="row.Star2">{{
+                  }}</p><p *ngIf="row.Star2 && row.Star2 !='0'">{{
                     getNakshthram(row.Star2)
                   }}</p></ng-template>
                 </td>

@@ -42,6 +42,7 @@ import { ReportNadavaravuCancelComponent } from './features/Report/report-nadava
 import { ReportDebitComponent } from './features/Report/report-debit/report-debit.component';
 import { ReportMoneyOrderComponent } from './features/Report/report-money-order/report-money-order.component';
 import { ReportOnlineComponent } from './features/Report/report-online/report-online.component';
+import { ReportCreditCollectionComponent } from './features/Report/report-credit-collection/report-credit-collection.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -152,6 +153,7 @@ export const routes: Routes = [
   { path: 'report-nadavaravu-cancel', component: ReportNadavaravuCancelComponent },
   { path: 'report-online', component: ReportOnlineComponent },
   { path: 'report-counter-trnsaction', component: ReportCounterTransactionComponent },
+  { path: 'report-credit-Collection', component: ReportCreditCollectionComponent },
   {
     path: '**',
     pathMatch: 'full',

@@ -1,3 +1,4 @@
+import { ToastrService } from 'ngx-toastr';
 import { Component } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -31,30 +32,35 @@ export class FrontComponent {
   templeName: string | null;
   logo: string | null;
   todayDate: Date = new Date();
-
+  Role: string | null;
+  countercount: number;
+  allowedContercount: number | null;
   constructor(
     private http: HttpClient,
     private dialog: MatDialog,
     private service: MasterService,
-    
-  ) {}
-  ngOnInit(): void {
+    private notification: ToastrService
+  ) {
     this.templeName = localStorage.getItem('TempleName');
     this.logo = localStorage.getItem('Logo');
+    // this.Role = localStorage.getItem('Role');
+    this.allowedContercount = Number(localStorage.getItem('Counter'));
+    this.Role = localStorage.getItem('Role');
+    console.log(this.allowedContercount, 'ss');
+    this.getcounterCount();
+
+    console.log(this.countercount > this.allowedContercount, 'bbb');
+  }
+  ngOnInit(): void {
     const storedCounterId = localStorage.getItem('counterId');
-          if (!storedCounterId) {
-           
-            this.openCounterIdDialog();
-            
-          }
+    if (!storedCounterId) {
+      this.openCounterIdDialog();
+    }
   }
 
   getLogoUrl(): string {
     return `assets/images/${this.logo}`; // Assuming logo images are stored in the 'assets/images' folder
   }
-
-
-
 
   openCounterIdDialog(): void {
     const dialogRef = this.dialog.open(CouterPopupComponent, {
@@ -62,21 +68,67 @@ export class FrontComponent {
       disableClose: true,
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         // Store the entered Counter ID in localStorage
-        const payLoad = {
-          Type:"CounterId",
-          Code:result
-        };
-  
-        this.service.getMaster(payLoad).subscribe((data) => {
-       console.log(data);
-       localStorage.setItem('counterId', result);
-        });
+        this.getcounterCount();
+        if (this.Role == 'admin') {
+          localStorage.setItem('counterId', result);
+        } else {
+
+          const payLoad = {
+            Type: 'CounterId',
+            Code: result,
+          };
+          if (
+            this.countercount != null &&
+            this.allowedContercount != null &&
+            this.countercount >= this.allowedContercount
+          ) {
+            this.notification.error(
+              'Counter limit exceeded. Please contact the Kshethrasuvidham for assistance.'
+            );
+            this.openCounterIdDialog();
+          } else {
+           
+              this.service.ADDCOUNTER(payLoad).subscribe((data: any) => {
+                console.log(data, 'sass');
+                if (data.RespStatus === 'I') {
+                  localStorage.setItem('counterId', result);
+                } else {
+                  this.openCounterIdDialog();
+                }
+              });
+            
+          }
+
+
+        }
+       
+
+
+
 
       }
+
+
+
+
     });
   }
 
+  getcounterCount() {
+    const payLoad = {
+      Type: 'CounterCount',
+      Code: '',
+    };
+    this.service.getMaster(payLoad).subscribe((data) => {
+      console.log(data);
+      this.countercount = data[0].cnt;
+      console.log(this.countercount, 'cc');
+      // if (this.countercount != null && this.allowedContercount != null && this.countercount > this.allowedContercount) {
+      //   this.openCounterIdDialog()
+      // }
+    });
+  }
 }

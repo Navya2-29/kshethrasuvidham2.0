@@ -16,6 +16,21 @@
   "Online": "Online",
   "Cheque": "Cheque",
   "Money order": "Money Order",
+  "Nadavaravu":"Nadavaravu",
+  "Credit Collection":"Credit Collection",
+"START DATE":"Starting date",
+"NUMBER OF DAYS":"No. Of days ",
+"END DATE":"End date ",
+
+"ADD DEVOTEE":"Add devotee",
+"starwise":"Starwisw",
+"Malayalam Monthwise":"Malayalam Monthwise",
+"daywise":"Daywise",
+"Malayalam Datewise":"Malayalam Datewise",
+"English Datewise":"English Datewise",
+"Thithi":"Thithi",
+"Filter Options":"Filter Options",
+"Day List":"Day List",
 
   "PLACEHOLDER": {
     "VAZHIPAD": "Select Vazhipad",
@@ -28,6 +43,7 @@
     "TIME": "Select Time",
     "BILLNUMBER":"Bill number",
     "MOBILENUMBER": "Enter Mobile number ",
+    "ADDRESS": " Enter Address",
     "ADDRESS1": " Enter Address 1",
     "ADDRESS2": "Enter Address 2",
     "ADDRESS3": "Enter Address 3",
@@ -35,7 +51,8 @@
     "PHONE": "Enter Mobile No.",
     "EMAIL": "Enter Email ",
     "CHEQUENO": "Upi/cheque/DD/",
-    "BANKNAME": "Enter your bank Name"
+    "BANKNAME": "Enter your bank Name",
+    "Description":"Description"
   },
   "OPTIONS": {
     "TIME1": "Any Time",

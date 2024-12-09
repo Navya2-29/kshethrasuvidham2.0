@@ -63,17 +63,39 @@
                     (keydown)="onKeydown($event, i)"
                   />
                   <mat-autocomplete
+                  
                     autoActiveFirstOption
                     #auto="matAutocomplete"
                     class="large-autocomplete-panel"
                     (optionSelected)="onSelect($event, i)"
                   >
-                    <mat-option
-                      *ngFor="let option of filteredOptions[i]"
-                      [value]="option.VM_RName"
-                    >
-                    <p style="margin-bottom: 0px;padding-bottom: 0px;font-size: 12px;line-height: normal;">{{option.VM_Code}}-{{ option.VM_Name }}</p><p style="font-size: 12px;margin-top: 0px;padding-top: 0px;">{{option.VM_RName}}</p>
-                    </mat-option>
+                  <ng-container *ngIf="lang === 'en'">
+                  <mat-option
+                    *ngFor="let option of filteredOptions[i]"
+                    [value]="option.VM_Name"
+                  >
+                    <p style="margin-bottom: 0; padding-bottom: 0; font-size: 12px; line-height: normal;">
+                      {{ option.VM_Code }}-{{ option.VM_Name }}
+                    </p>
+                    <!-- <p style="font-size: 12px; margin-top: 0; padding-top: 0;">
+                      {{ option.VM_RName }}
+                    </p> -->
+                  </mat-option>
+                </ng-container>
+
+
+                <ng-container *ngIf="lang === 'ml'">
+                  <mat-option
+                    *ngFor="let option of filteredOptions[i]"
+                    [value]="option.VM_RName"
+                  >
+                    <p style="margin-bottom: 0; padding-bottom: 0; font-size: 12px; line-height: normal;">
+                      {{ option.VM_Code }}-
+                    
+                      {{ option.VM_RName }}
+                    </p>
+                  </mat-option>
+                </ng-container>
                   </mat-autocomplete>
                  
                 </td>
@@ -105,7 +127,7 @@
                   type="text"
                   [placeholder]="'PLACEHOLDER.STAR' | translate"
                   matInput
-                  [(ngModel)]="input2" 
+                  
                   class="form-control sps"
                   formControlName="starName"
                   [matAutocomplete]="str"
@@ -119,12 +141,25 @@
                   class="large-autocomplete-panel"
                   (optionSelected)="onStarSelect($event, i)"
                 >
+
+                <ng-container *ngIf="lang=='en'">
                   <mat-option
-                    *ngFor="let option of starFilteredOption[i]"
-                    [value]="option.SM_Name"
-                  >
-                  <p style="margin-bottom: 0px;padding-bottom: 0px;font-size: 10px;line-height: normal;">{{option.SM_Id}}-{{ option.SM_Name }}</p><p style="font-size: 12px;margin-top: 0px;padding-top: 0px;">{{option.SM_RName}}</p>
-                  </mat-option>
+                  *ngFor="let option of starFilteredOption[i]"
+                  [value]="option.SM_Name"
+                >
+                <p style="margin-bottom: 0px;padding-bottom: 0px;font-size: 10px;line-height: normal;">{{option.SM_Id}}-{{ option.SM_Name }}</p>
+                </mat-option>
+                </ng-container>
+                <ng-container *ngIf="lang=='ml'">
+
+                  <mat-option
+                  *ngFor="let option of starFilteredOption[i]"
+                  [value]="option.SM_RName"
+                >
+                <p style="margin-bottom: 0px;padding-bottom: 0px;font-size: 10px;line-height: normal;">{{option.SM_Id}}-{{ option.SM_RName }}</p>
+                </mat-option>
+                </ng-container>
+                 
                 </mat-autocomplete>
                 </td>
                 <td>
@@ -133,12 +168,12 @@
                     class="form-control"
                     formControlName="Prethista"
                     class="form-control" #input3Ref
-                    style="width: 100%; height: 30.6px"
-                    
+                    style="width: 100%; height: 30.6px"    
                   >
-                  
-                    <option *ngFor="let prathishta of prathishtaOptions[i]" [value]="prathishta.rname" >{{prathishta.rname}}</option>
-                    
+                  <ng-container *ngIf="lang=='en'"> <option *ngFor="let prathishta of prathishtaOptions[i]" [value]="prathishta.name" >{{prathishta.name}}</option>
+                  </ng-container>
+                  <ng-container *ngIf="lang=='ml'"> <option *ngFor="let prathishta of prathishtaOptions[i]" [value]="prathishta.rname" >{{prathishta.rname}}</option>
+                  </ng-container>
                   </select>
                   <span *ngIf="multidayBooking[i]"><input type="text" class="form-control" readOnly formControlName="Prethista"></span>
                  
@@ -202,8 +237,6 @@
                   </select>
                 </td>
                 
-               
-                
                 <td
                   [ngStyle]="{
                     display:
@@ -230,7 +263,14 @@
                 style="width: 100%; height: 30.6px"
               >
               <option value="">Select</option>
-              <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra. SM_Id"> {{nakshtra.SM_RName}}</option>
+              <ng-container *ngIf="lang=='en'">
+                <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra. SM_Id"> {{nakshtra.SM_Name}}</option>
+              </ng-container>
+              <ng-container *ngIf="lang=='ml'">
+                <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra. SM_Id"> {{nakshtra.SM_RName}}</option>
+              </ng-container>
+              
+             
               </select>
                 </td>
                 <td>

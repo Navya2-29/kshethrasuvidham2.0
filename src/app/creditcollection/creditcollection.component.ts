@@ -27,7 +27,8 @@ import { ToastrService } from 'ngx-toastr';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { CancelBillRemarkComponent } from '../features/Billing/cancel-bill-remark/cancel-bill-remark.component';
-
+import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 @Component({
   selector: 'app-creditcollection',
   standalone: true,
@@ -41,7 +42,7 @@ import { CancelBillRemarkComponent } from '../features/Billing/cancel-bill-remar
     MorebuttonComponent,
     FormsModule,
     ReactiveFormsModule,
-    CommonModule,
+    CommonModule,TranslateModule
   ],
   templateUrl: './creditcollection.component.html',
   styleUrl: './creditcollection.component.css',
@@ -64,14 +65,20 @@ export class CreditcollectionComponent {
   today: Date = new Date();
   cancellationReason: string;
   cancelBillNumber: string;
-  
+  lang:string |null;
   constructor(
     private service: MasterService,
     private fb: FormBuilder,
     private notification: ToastrService,
     private router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private ts: TranslateService
   ) {
+    this.lang=localStorage.getItem('Language')
+    const userLang = navigator.language || 'en';
+    const languageCode = userLang.split('-')[0];
+    this.ts.setDefaultLang(languageCode);
+    this.ts.use(this.lang || 'en');
     this.userId = localStorage.getItem('LoginId');
     this.role = localStorage.getItem('Role');
     this.CounterId = localStorage.getItem('counterId');
@@ -199,8 +206,6 @@ export class CreditcollectionComponent {
   }
 
   onSubmit() {
-
-
     if (this.CreditForm.valid) {
       const payLoad = {
         BillNo: this.CreditForm.value.BillNo,
@@ -234,8 +239,6 @@ export class CreditcollectionComponent {
       this.notification.error('Please click corresponding user edit button on the table before proceed.', 'Credit Collection');
       this.CreditForm.markAllAsTouched();
     }
-    
-   
   }
 
   Reset() {

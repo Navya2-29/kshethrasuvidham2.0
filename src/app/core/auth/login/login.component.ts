@@ -29,13 +29,14 @@ export class LoginComponent implements OnInit {
   templeName:string;
   logo:string;
   todayDate:Date=new Date();
+  Language:string='en'
   private readonly formBuilder=inject(FormBuilder);
   private readonly authService=inject(AuthService);
   private readonly router=inject(Router);
   constructor(private http:HttpClient, private dialog: MatDialog, private  service:MasterService){    
   }
   ngOnInit(): void {
-this.getTempleData()
+    this.getTempleData()
     this.loginForm=this.formBuilder.group({
       username:['',[Validators.required]],
       password:['',[Validators.required]]
@@ -87,6 +88,8 @@ submitLogin(login:Login){
           localStorage.setItem('Role', response.Role);
           localStorage.setItem('LoginId',response.LoginId);
           localStorage.setItem('loggedIn', 'true');
+          localStorage.setItem('Language',this.Language)
+          localStorage.setItem('Printer',"Normal")
           // Optional: Redirect to the dashboard or another page
           
           this.router.navigate(['/front']);
@@ -132,6 +135,10 @@ getTempleData(){
     localStorage.setItem('Logo',this.logo);
     localStorage.setItem('Counter',data[0].Counter);
   })
+
+
+
+  
 }
 
 

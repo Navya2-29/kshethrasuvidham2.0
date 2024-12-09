@@ -80,7 +80,8 @@ export class SearchByBillNumberComponent {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   cancellationReason: string = '';
-
+  templeAddress: string | null;
+  lang: string | null;
   @ViewChild('dialogTemplate') dialogTemplate!: TemplateRef<any>;
   remarkDialogRef: MatDialogRef<any>;
   constructor(
@@ -101,10 +102,13 @@ export class SearchByBillNumberComponent {
     this.counterId = localStorage.getItem('counterId');
     this.templeName = localStorage.getItem('TempleName');
     this.logo = localStorage.getItem('Logo');
+    this.templeAddress = localStorage.getItem('Address');
+    this.lang = localStorage.getItem('Language');
   }
 
   ngOnInit() {
     this.loadStarData();
+    // this.getStarData();
   }
 
   getNakshthram(id: string): string {
@@ -228,20 +232,18 @@ export class SearchByBillNumberComponent {
     if (this.TrnStatus === 'S') {
       console.log(this.duplicatebilldata);
 
-      const payLoad={
-        "BillNo":this.lastBillNo,
-        "UserId":this.loginId,
-        "CounterId":this.counterId,
-        "Type":"Booking"
-      }
+      const payLoad = {
+        BillNo: this.lastBillNo,
+        UserId: this.loginId,
+        CounterId: this.counterId,
+        Type: 'Booking',
+      };
 
-console.log(payLoad)
-      this.masterService.duplicateCount(payLoad).subscribe((data)=>{
-        console.log(data,"dupi")
+      console.log(payLoad);
+      this.masterService.duplicateCount(payLoad).subscribe((data) => {
+        console.log(data, 'dupi');
         this.printReceipts(this.duplicatebilldata);
-
-      })
-      
+      });
     } else {
       this.notification.showError(
         'This bill is cancell so you couldnot get duplicate bill'
@@ -251,37 +253,6 @@ console.log(payLoad)
 
   // print data
   printReceipts(data: any[]) {
-    const starNameMapping = {
-      '1': 'ASWATHY',
-      '2': 'BHARANI',
-      '3': 'KARTHIKA',
-      '4': 'ROHINI',
-      '5': 'MAKAYIRAM',
-      '6': 'THIRUVATHIRA',
-      '7': 'PUNARTHAM',
-      '8': 'POOYAM',
-      '9': 'AYILYAM',
-      '10': 'MAKAM',
-      '11': 'POORAM',
-      '12': 'UTHRAM',
-      '13': 'ATHAM',
-      '14': 'CHITHIRA',
-      '15': 'CHOTHI',
-      '16': 'VISHAKAM',
-      '17': 'ANIZHAM',
-      '18': 'THRIKKETTA',
-      '19': 'MOOLAM',
-      '20': 'POORADAM',
-      '21': 'UTHRADAM',
-      '22': 'THIRUVONAM',
-      '23': 'AVITTAM',
-      '24': 'CHATHAYAM',
-      '25': 'PURUTTATHI',
-      '26': 'UTHRITTATHI',
-      '27': 'REVATHI',
-      '28': 'OHM',
-    };
-
     // Group items by Prathista and Vazhipad
     const groupedByPrathistaVazhipad = data.reduce((acc: any, item: any) => {
       const key = `${item.Prathista}-${item.Vazhipad}`;
@@ -307,11 +278,9 @@ console.log(payLoad)
           (item: any) => `
           <tr>
               <td>${item.Name || 'N/A'}<p>${item.Name2 || ' '}</p></td>
-                      <td>${
-                        starNameMapping[
-                          item.Star as keyof typeof starNameMapping
-                        ] || ' '
-                      }</td>
+                       <td>${
+                         item.Star
+                       }<br/><span>${this.getStarbyId(item.Star2)}</span></td>
 
               <td>${this.formatDate(item.EvazDate) || 'N/A'}</td>
               <td>${item.Qty || '0'}</td>
@@ -327,16 +296,21 @@ console.log(payLoad)
       const receiptContent = `
           <div class="receipt-page">
               <h1>${this.templeName}</h1>
-              <div style="display: flex; justify-content: space-between;">
-                  <strong style="color: green;">Vazhipad: ${vazhipad}</strong>
-                  <strong>Bill Date: ${
-                    this.formatDate(items[0].BillDate) || 'N/A'
-                  }</strong>
-              </div>
-              <div style="display: flex; justify-content: space-between;">
-                  <strong style="color: red;">Prathista: ${prathista}</strong>
-                  <strong>Bill No: ${items[0].BillNo || 'N/A'}</strong>
-              </div>
+            <p>${this.templeAddress}</p>
+            <h2 class="receipt-heading">വഴിപാട് രസീത്</h2>
+          </div>
+        </div>
+        <div>
+          <div style="display: flex; justify-content: space-between;">
+            <strong style="color: red;">പ്രതിഷ്ഠ: ${prathista}</strong>
+            <strong>തീയതി: ${
+              this.formatDate(items[0].BillDate) || 'N/A'
+            }</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <strong style="color: green;">വഴിപാട്: ${vazhipad}</strong>
+            <strong>നമ്പർ: ${items[0].BillNo || 'N/A'}</strong>
+          </div>
               <table>
                   <thead>
                       <tr>
@@ -431,34 +405,29 @@ console.log(payLoad)
     }
   }
 
-
-
-
-
-
   getTransactionType(transmode: string): string {
-  console.log(transmode);
-  switch (transmode) {
-    case 'ON':
-      return 'Bank';
-    case 'CS':
-      return 'CASH';
-    case 'MO':
-      return 'MONEY ORDER';
-    case 'UP':
-      return 'UPI';
-    case 'CH':
-      return 'CHEQUE';
-    case 'CR':
-      return 'Cash not paid';
-      
-    case 'DE':
-      return 'DEBIT';
+    console.log(transmode);
+    switch (transmode) {
+      case 'ON':
+        return 'Bank';
+      case 'CS':
+        return 'CASH';
+      case 'MO':
+        return 'MONEY ORDER';
+      case 'UP':
+        return 'UPI';
+      case 'CH':
+        return 'CHEQUE';
+      case 'CR':
+        return 'Cash not paid';
 
-    default:
-      return 'OTHERS';
+      case 'DE':
+        return 'DEBIT';
+
+      default:
+        return 'OTHERS';
+    }
   }
-}
   formatDate(date: string | Date): string {
     const d = new Date(date);
     const day = d.getDate().toString().padStart(2, '0'); // Add leading zero if day is single digit
@@ -490,5 +459,33 @@ console.log(payLoad)
         console.error('Error updating row:', error);
       },
     });
+  }
+
+  // getStarData() {
+  //   const payLoad = { Type: 'ListStar', Code: '' };
+  //   this.masterService.getStarData(payLoad).subscribe((res) => {
+  //     this.nakshatham = res;
+  // console.log(this.nakshatham,"sdsfsddss")
+  //     this.nakshatham = res.map((item) => ({
+  //       SM_Id: item.id,
+  //       SM_Name: item.SM_NameEng,
+  //       SM_Code: item.SM_Code,
+  //       SM_RName: item.SM_Name,
+  //     }));
+  //     console.log(this.nakshatham,"stttttttttttttt")
+  //   });
+  // }
+
+  getStarbyId(id: string) {
+    console.log(id, 'star id');
+    if (this.lang == 'en') {
+      const star = this.nakshatham.find((item) => item.SM_Id == id);
+      return star ? star.SM_NameEng : '';
+    } else if (this.lang == 'ml') {
+      const star = this.nakshatham.find((item) => item.SM_Id == id);
+      return star ? star.SM_Name : '';
+    }
+
+    // console.log(star,"sssssssssssssssss")
   }
 }

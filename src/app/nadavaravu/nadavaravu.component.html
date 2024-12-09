@@ -8,14 +8,14 @@
   </button>
   <div class="row">
     <div class="col-md-5">
-      <h2 style="margin-left: 100px">നട വരവ്</h2>
+      <h2 style="margin-left: 100px">{{"Nadavaravu"|translate }}</h2>
       <div [formGroup]="nadavaravForm">
         <table class="table">
           <tr>
             <td colspan="2">
               <input
                 type="text"
-                placeholder="Bill No."
+                [placeholder]="'PLACEHOLDER.BILLNUMBER' | translate"
                 formControlName="BillNo"
                 readonly
                 class="form-control sps"
@@ -32,7 +32,7 @@
                     nadavaravForm.get('Name')?.invalid &&
                     nadavaravForm.get('Name')?.touched
                 }"
-                placeholder="Name."
+                [placeholder]="'PLACEHOLDER.NAME' | translate"
                 formControlName="Name"
                 class="form-control sps"
               />
@@ -43,7 +43,7 @@
                 formControlName="Star"
                 style="width: 100%; height: 30.6px"
               >
-                <option value="">Select Star</option>
+                <option value="">{{"STAR" |translate}}</option>
                 <option
                   *ngFor="let nakshtra of nakshatham"
                   [value]="nakshtra.id"
@@ -56,7 +56,7 @@
           <tr>
             <td colspan="3">
               <textarea
-                placeholder="Address"
+              [placeholder]="'PLACEHOLDER.ADDRESS' | translate"
                 formControlName="Address"
                 class="form-control sps"
                 rows="5"
@@ -67,7 +67,8 @@
             <td colspan="3">
               <input
                 type="text"
-                placeholder="Description"
+                [placeholder]="'PLACEHOLDER.Description' | translate"
+                
                 formControlName="Description"
                 class="form-control sps"
               />
@@ -101,7 +102,9 @@
                   type="text" 
                   id="Qty" 
                   formControlName="Qty" 
-                  placeholder="Enter qty" 
+                  [placeholder]="'PLACEHOLDER.QUANTITY' | translate"
+
+              
                   class="form-control sps">
               </td>
             <td>
@@ -191,10 +194,10 @@
                 formControlName="TrnsMode"
                 style="width: 100%; height: 30.6px"
               >
-                <option value="">Select Payment mode</option>
-                <option value="CS">Cash</option>
+                <!-- <option value="">Select Payment mode</option> -->
+                <option value="CS">{{"Cash" | translate}}</option>
                 <option value="UP">UPI</option>
-                <option value="CH">Cheque</option>
+                
               </select>
             </td>
             <td>
@@ -245,7 +248,7 @@
             <td>{{ item.Billdate | date : "yyyy-MM-dd" }}</td>
             <td>{{ item.BillNo }}</td>
             <td>{{ item.Name }}</td>
-            <td>{{item.NM_Id}}</td>
+            <td>{{getItemById(item.NM_Id)}}</td>
             <td>{{item.item}}</td>
             <td>{{ item.weight }}-{{ item.unit }}-</td>
             <td>{{ item.Qty }}</td>

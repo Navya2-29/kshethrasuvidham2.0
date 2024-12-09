@@ -11,15 +11,15 @@
          
               <div style="padding: 0px; margin-bottom: 18px">
                 <table class="">
-                  <tr><td style="width: 100px;" colspan="2">Vazhipad</td>
+                  <tr><td style="width: 100px;" colspan="2">{{ "VAZHIPAD" | translate}}</td>
              
-                      <td>Rate</td>
-                    <td>Prathista</td></tr>
+                      <td>{{"RATE" |translate  }}  </td>
+                    <td>{{"PRATHISTA" |translate }}</td></tr>
                       <tr>
                         <td colspan="2">  <input
                           type="text"
                           style="width: 100%;"
-                          placeholder="Vazhipad"
+                          [placeholder]="'PLACEHOLDER.VAZHIPAD' | translate"
                           matInput
                           class="form-control sps"
                           formControlName="Vazhipad"
@@ -34,20 +34,29 @@
                           (optionSelected)="onSelect($event)"
                         >
                         @for (option of filteredOptions | async; track option) {
+                         
                           <mat-option
-                           
+                           *ngIf="lang=='en'"
                             [value]="option.VM_Name"
                           >
                         
                             {{option.VM_Code}}-{{ option.VM_Name }}
                           </mat-option>
+                          <mat-option
+                           *ngIf="lang=='ml'"
+                            [value]="option.VM_RName"
+                          >
+                        
+                            {{option.VM_Code}}-{{ option.VM_RName }}
+                          </mat-option>
+
                         }
                         </mat-autocomplete></td>
   
                         <td><input
                           type="text"
                           class="form-control formdate"
-                          placeholder="Rate"
+                          [placeholder]="'PLACEHOLDER.RATE' | translate"
                           formControlName="Rate"
                           appNumber
                           [readOnly]="rateChange==='N'"
@@ -60,17 +69,28 @@
                             class="form-control"
                             formControlName="Prethista"
                             style="width: 100%; height: 30.6px"
-                            placeholder="Prethista"
+                            
                             [ngClass]="{
                               'invalid-control': form.get('Prethista')?.invalid && form.get('Prethista')?.touched
                             }"
                           >
-                          <option
+                          <ng-container *ngIf="lang=='en'">
+                            <option
                           *ngFor="let prathishta of prathishtaOptions"
                           value="prathishta.PM_Name"
                         >
                           {{prathishta.PM_Name}}
                         </option>
+                          </ng-container>
+                          
+                          <ng-container *ngIf="lang=='ml'">
+                            <option
+                          *ngFor="let prathishta of prathishtaOptions"
+                          value="prathishta.PM_RegName"
+                        >
+                          {{prathishta.PM_RegName}}
+                        </option>
+                          </ng-container>
                             
                           </select>
                          
@@ -78,10 +98,11 @@
                         <td></td>
                       </tr>
                     <tr>
-                      <th >Starting Date</th>
-                      <th>No. of Days</th>
-                      <th>Qty</th>
-                      <th>End Date</th>
+                      <th >{{"START DATE" |translate  }}</th>
+                      <th>{{"NUMBER OF DAYS" |translate}}</th>
+                      <th>{{"QUANTITY" |translate  }}</th>
+                      <th>{{"END DATE"| translate }}</th>
+                      <th>{{"TIME"| translate }}</th>
                     </tr>
                     <tr>
                       <td>
@@ -146,7 +167,7 @@
                 "
               >
                 <button class="btn btn-primary" (click)=" addDevotee()" >
-                  Add Devotee
+                  {{"ADD DEVOTEE" |translate }}
                 </button>  
               </div>
               <div>
@@ -186,7 +207,14 @@
                           }" 
                         >
                         <option value="">Select</option>
-                         <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_NameEng}}</option>
+                        <ng-container *ngIf="lang=='en'">
+                           <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_NameEng}}</option>
+ 
+                         </ng-container>
+                         <ng-container *ngIf="lang=='ml'">
+                           <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_Name}}</option>
+ 
+                         </ng-container>
                         </select>
   
   
@@ -218,7 +246,15 @@
                           formControlName="Star2"
                         >
                         <option value="">Select</option>
-                        <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_NameEng}}</option>
+                        <ng-container
+                         *ngIf="lang=='en'">
+                          <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_NameEng}}</option>
+
+                        </ng-container>
+                        <ng-container *ngIf="lang=='ml'">
+                          <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_Name}}</option>
+
+                        </ng-container>
                         </select>
                       </td>
                     </tr>  
@@ -228,7 +264,6 @@
             </div>
           </div>
         </form>
-  
       </div>
     
 
@@ -254,12 +289,12 @@
           <table class="table" >
             <thead>
               <tr style="background-color: #223d61; color: white">
-                <th colspan="2">Filter Options</th>
+                <th colspan="2">{{"Filter Options" |translate}}</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>Starwise</td>
+                <td> {{"starwise" |translate }}</td>
                 <td>
                   <select
                         class="form-control select-star"
@@ -272,7 +307,7 @@
                 </td>
               </tr>
               <tr>
-                <td style="line-height: 11.7pt">Malayalam Monthwise</td>
+                <td style="line-height: 11.7pt">{{"Malayalam Monthwise" |translate}}</td>
                 <td>
                   <select class="form-control select-star"
                   style="width: 100%; height: 30.6px" 
@@ -284,7 +319,7 @@
                 </td>
               </tr>
               <tr>
-                <td>Daywise</td>
+                <td> {{"daywise" |translate }}</td>
                 <td>
                   <select class="form-control select-star"
                   style="width: 100%; height: 30.6px" formControlName="EngMonth">
@@ -300,7 +335,7 @@
                 </td>
               </tr>
               <tr>
-                <td style="line-height: 11.7pt">Malayalam Datewise</td>
+                <td style="line-height: 11.7pt">{{"Malayalam Datewise"|translate}}</td>
                 <td>
                   <select class="form-control select-star"  formControlName="MalDay"
                   style="width: 100%; height: 30.6px" >
@@ -311,7 +346,7 @@
                 </td>
               </tr>
               <tr>
-                <td style="line-height: 11.7pt">English Datewise</td>
+                <td style="line-height: 11.7pt">{{"English Datewise" |translate}}</td>
                 <td>
                   <select class="form-control select-star"
                   style="width:100%; height: 30.6px" formControlName="EngishDay" >
@@ -322,7 +357,7 @@
                 </td>
               </tr>
               <tr>
-                <td style="line-height: 11.7pt"> Thithi</td>
+                <td style="line-height: 11.7pt"> {{"Thithi"|translate }}</td>
                 <td>
                   <select class="form-control select-star"  formControlName="Thithi"
                   style="width: 100%; height: 30.6px" >
@@ -347,7 +382,7 @@
           <table class="table" >
             <thead>
               <tr style="background-color: #223d61; color: white">
-                <th colspan="2">Day List</th>
+                <th colspan="2">{{"Day List"| translate}}</th>
               </tr>
             </thead>
           </table>

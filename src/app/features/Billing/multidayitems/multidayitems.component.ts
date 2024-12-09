@@ -1,5 +1,6 @@
 // import { multiDayFilter } from './../../../models/multidayFilter.model';
 import { Component, inject, Inject, OnInit } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
 import {
   MAT_DIALOG_DATA,
   MatDialog,
@@ -35,6 +36,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MasterService } from '../../../services/master/master.service';
 import { NotificationService } from '../../../services/notification/notification.service';
 import { multiDayFilter } from '../../../models/multidayFilter.model';
+import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-multidayitems',
   standalone: true,
@@ -51,6 +53,7 @@ import { multiDayFilter } from '../../../models/multidayFilter.model';
     FormsModule,
     MatInputModule,
     NumberDirective,
+    TranslateModule
   ],
   templateUrl: './multidayitems.component.html',
   styleUrl: './multidayitems.component.css',
@@ -68,9 +71,11 @@ export class MultidayitemsComponent implements OnInit {
   tomorrowDate: Date;
   minDate: any;
   amountPerDevotee: number = 0;
+  lang:string |null;
   // dayList: { date: Date | string; kollavarshamData: any }[] = [];
   // kollavarsham: any[] = [];
   daysList: any[] = [];
+  selectedVazhipadItem:any;
   updatedDayList: any[] = [];
   devotees: FormArray;
   rateChange: string = 'N';
@@ -150,15 +155,21 @@ export class MultidayitemsComponent implements OnInit {
   multidayFilterForm: FormGroup;
   multiDayList: multiDayFilter[] = [];
   updatedmultiDayList: multiDayFilter[] = [];
-  lastChanged: 'English' | 'Malayalam' | null = null;
+  
 
   private readonly masterservice = inject(MasterService);
   constructor(
     private fb: FormBuilder,
     private notification: NotificationService,
     public dialogRef: MatDialogRef<MultidayitemsComponent>,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private ts: TranslateService
   ) {
+    this.lang=localStorage.getItem('Language')
+    const userLang = navigator.language || 'en';
+    const languageCode = userLang.split('-')[0];
+    this.ts.setDefaultLang(languageCode);
+    this.ts.use(this.lang || 'en');
     this.tomorrowDate = new Date();
     this.tomorrowDate.setDate(this.tomorrowDate.getDate() + 1); // Add 1 day to get tomorrow
     const formattedDate = this.datePipe.transform(
@@ -391,7 +402,8 @@ export class MultidayitemsComponent implements OnInit {
     return this.VMList.filter(
       (option) =>
         option.VM_Name.toLowerCase().includes(filterValue) ||
-        option.VM_Code.toLowerCase().includes(filterValue)
+        option.VM_Code.toLowerCase().includes(filterValue)||
+        option.VM_RName.toLowerCase().includes(filterValue)
     );
   }
 
@@ -416,6 +428,7 @@ export class MultidayitemsComponent implements OnInit {
         VM_Id: item.VM_Id,
         VM_Name: item.VM_Name,
         VM_Code: item.VM_Code,
+        VM_RName: item.VM_RName,
       }));
     });
   }
@@ -443,15 +456,23 @@ export class MultidayitemsComponent implements OnInit {
   onSelect(event: MatAutocompleteSelectedEvent): void {
     const selectedVazhipad = event.option.value;
     this.form.get('Vazhipad')?.setValue(selectedVazhipad);
-    const selectedVazhipadItem = this.VMList.find(
-      (item) => item.VM_Name === selectedVazhipad
-    );
-    console.log(selectedVazhipadItem);
-    if (selectedVazhipadItem) {
+
+    if (this.lang=='en'){
+      this.selectedVazhipadItem = this.VMList.find(
+        (item) => item.VM_Name === selectedVazhipad
+      );
+    }else if(this.lang=='ml'){
+      this.selectedVazhipadItem = this.VMList.find(
+        (item) => item.VM_RName === selectedVazhipad
+      );
+    }
+   
+    console.log(this.selectedVazhipadItem);
+    if (this.selectedVazhipadItem) {
       // Fetch vazhipad details using VM_Code
-      console.log(selectedVazhipadItem);
-      this.form.get('Vazhid')?.setValue(selectedVazhipadItem.VM_Id);
-      const vazhipadCode = selectedVazhipadItem.VM_Code;
+      console.log(this.selectedVazhipadItem);
+      this.form.get('Vazhid')?.setValue(this.selectedVazhipadItem.VM_Id);
+      const vazhipadCode = this.selectedVazhipadItem.VM_Code;
       console.log(vazhipadCode);
       this.fetchVazhipadDetails(vazhipadCode);
     } else {
@@ -485,11 +506,21 @@ export class MultidayitemsComponent implements OnInit {
             this.prathishtaOptions = data;
             console.log(this.prathishtaOptions);
             if (this.prathishtaOptions.length > 0) {
-              const defaultPrathishta = this.prathishtaOptions[0].PM_Name;
-              const defaultPrathishtaId = this.prathishtaOptions[0].PM_ID;
-              console.log(this.prathishtaOptions[0].PM_Name);
-              this.form.get('Prethista')?.setValue(defaultPrathishta);
-              this.form.get('PMid')?.setValue(defaultPrathishtaId);
+              if(this.lang==='en'){
+                const defaultPrathishta = this.prathishtaOptions[0].PM_Name;
+                const defaultPrathishtaId = this.prathishtaOptions[0].PM_ID;
+                console.log(this.prathishtaOptions[0].PM_Name);
+                this.form.get('Prethista')?.setValue(defaultPrathishta);
+                this.form.get('PMid')?.setValue(defaultPrathishtaId);
+              }
+              else if(this.lang=='ml'){
+                const defaultPrathishta = this.prathishtaOptions[0].PM_RegName;
+                const defaultPrathishtaId = this.prathishtaOptions[0].PM_ID;
+                console.log(this.prathishtaOptions[0].PM_RegName);
+                this.form.get('Prethista')?.setValue(defaultPrathishta);
+                this.form.get('PMid')?.setValue(defaultPrathishtaId);
+              }
+              
             }
           });
       });
@@ -837,7 +868,13 @@ this.form.patchValue({
 
   vazhipadValidator(control: AbstractControl): ValidationErrors | null {
     const vazhipad = control.value;
-    const vmExists = this.VMList.some((vm) => vm.VM_Name === vazhipad);
+    var vmExists;
+    if(this.lang==='en'){
+       vmExists = this.VMList.some((vm) => vm.VM_Name === vazhipad);
+    }else if(this.lang=='ml'){
+      vmExists = this.VMList.some((vm) => vm.VM_RName === vazhipad);
+    }
+   
     if (!vmExists) {
       return { invalidVazhipad: true };
     }

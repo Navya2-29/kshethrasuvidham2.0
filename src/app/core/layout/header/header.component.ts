@@ -43,6 +43,9 @@ export class HeaderComponent {
     localStorage.removeItem('LoginId');
     localStorage.removeItem('username');
     localStorage.removeItem('password');
+    if(this.role==='admin'){
+      localStorage.removeItem('counterId');
+    }
     this.router.navigate(['/login']);
   }
   

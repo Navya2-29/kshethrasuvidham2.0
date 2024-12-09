@@ -17,7 +17,7 @@ export class MenuitemsComponent {
   templeName: string | null;
   role: string | null;
   lang:string | null;
-  constructor( private ts:TranslateService ,private cdRef: ChangeDetectorRef) {
+  constructor( private ts:TranslateService ) {
     this.lang=localStorage.getItem('Language') || 'en';
     this.templeName = localStorage.getItem('TempleName');
     this.role = localStorage.getItem('Role');
@@ -32,7 +32,7 @@ export class MenuitemsComponent {
     // { label: 'പ്രതിഷ്ഠ മാസ്റ്റർ', path: '/pmaster' },
     { label: 'Vazhipad Master', path: '/vmaster' },
     // { label: 'വഴിപാട് മാസ്റ്റർ ', path: '/vmaster' },
-    // { label: 'Vazhipad Blocking', path: '/vazhipad-blocking' },
+    { label: 'Vazhipad Blocking', path: '/vazhipad-blocking' },
     // { label: 'വഴിപാട് സീസണൽ ', path: '/seasonal' },
     { label: 'Vazhipad Seasonal', path: '/seasonal' },
     // { label: 'Vihidham Master', path: '/vihidham-master' },
@@ -52,12 +52,12 @@ export class MenuitemsComponent {
     }
   }
   
-  changeLanguage(lang:any){
-    const selectedlang=lang.target.value;
-    localStorage.setItem('Language',selectedlang)
-    this.ts.use(selectedlang);
-    this.cdRef.detectChanges();
+  // changeLanguage(lang:any){
+  //   const selectedlang=lang.target.value;
+  //   localStorage.setItem('Language',selectedlang)
+  //   this.ts.use(selectedlang);
+  //   this.cdRef.detectChanges();
     
-  }
+  // }
 
 }

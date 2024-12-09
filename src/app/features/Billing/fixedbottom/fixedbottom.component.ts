@@ -57,6 +57,7 @@ export class FixedbottomComponent implements OnInit {
   LoggedInUserLastnumber: string;
   currentBillNumber: string;
   todayCollection: string = '0';
+  printerLayOut:string | null;
   @ViewChild('payButton', { static: true }) payButton!: ElementRef;
   private subscription: Subscription = new Subscription();
   private totalService = inject(TotalAmountService);
@@ -73,6 +74,7 @@ export class FixedbottomComponent implements OnInit {
   logo:string | null;
   templeLogoUrl: string = '';
   name:string | null;
+  nakshatham:any[];
   @ViewChild('address1Input', { static: true }) address1Input!: ElementRef;
   @ViewChildren('address1, address2, address3, pincode, phone, email')
   inputs!: QueryList<ElementRef>;
@@ -87,16 +89,16 @@ export class FixedbottomComponent implements OnInit {
     private fb: FormBuilder,
     public dialog: MatDialog,
     private receiptPrinrservice: ReceiptPrintService,
-    private ts:TranslateService
+    private ts:TranslateService,
+    private service :MasterService,
+    
   ) {
-
-
     this.lang=localStorage.getItem('Language') || 'en';
     const userLang=navigator.language || "en";
     const languageCode=userLang.split('-')[0];
     this.ts.setDefaultLang(languageCode);
     this.ts.use(this.lang || 'en');
-
+    this.printerLayOut = localStorage.getItem('Printer');
     this.loginId = localStorage.getItem('LoginId');
     this.counterId = localStorage.getItem('counterId');
     this.templeName = localStorage.getItem('TempleName');
@@ -115,7 +117,7 @@ export class FixedbottomComponent implements OnInit {
     this.customerdetailsForBillingForm = this.fb.group({
       BillNo: [''],
       Billdate: [today, [Validators.required]],
-      Mobile: ['', [Validators.pattern('^[0-9]{11}$')]],
+      Mobile: ['', [Validators.pattern('^[0-9]{10}$'),Validators.minLength(10),]],
       Address1: [''],
       Address2: [''],
       Address3: [''],
@@ -130,11 +132,13 @@ export class FixedbottomComponent implements OnInit {
       Memberid: ['1'],
       PaidStatus: ['Y'],
     });
+
+    this.getStarData();
   }
 
   ngOnInit(): void {
     this.getTodayCollection();
-
+   
     this.totalService.totalAmount$.subscribe((amount) => {
       this.totalAmount = amount;
     });
@@ -148,6 +152,9 @@ export class FixedbottomComponent implements OnInit {
     this.subscribeToTrnsmodeChanges();
     this.printReceipt();
     // this.resetForm();
+   
+
+    
   }
 
   private getCurrentDateMMYY(): string {
@@ -191,7 +198,15 @@ export class FixedbottomComponent implements OnInit {
 
   printReceipt() {
     this.receiptPrinrservice.receiptData$.subscribe((data: any) => {
-      this.printReceipts(data);
+      if(this.printerLayOut=="Normal"){
+        this.printReceipts(data);
+      }else if(this.printerLayOut=="inkJet"){
+        this.printReceiptsinkJet(data);
+      }
+      else if(this.printerLayOut=="thermal"){
+        this.printReceiptsThermal(data);
+      }
+     
       this.getTodayCollection();
       console.log(data, 'printing details');
     });
@@ -202,46 +217,10 @@ private printReceipts(data: any) {
     BillNo,
     Billdate,
     Trnsmode,
-    Mobile,
-    Address1,
-    Address2,
-    Address3,
-    Email,
-    Pincode,
     vazhipadinfo,
   } = data;
 
-  // Define the mapping for star names
-  const starNameMapping: { [key: string]: string } = {
-    "1": "അശ്വതി",
-  "2": "ഭരണി",
-  "3": "കാർത്തിക",
-  "4": "രോഹിണി",
-  "5": "മകയിരം",
-  "6": "തിരുവാതിര",
-  "7": "പുണർതം",
-  "8": "പൂയം",
-  "9": "ആയില്യം",
-  "10": "മകം",
-  "11": "പൂരം",
-  "12": "ഉത്രം",
-  "13": "അത്തം",
-  "14": "ചിത്തിര",
-  "15": "ചോതി",
-  "16": "വിശാഖം",
-  "17": "അനിഴം",
-  "18": "തൃക്കേട്ട",
-  "19": "മൂലം",
-  "20": "പൂരാടം",
-  "21": "ഉത്രാടം",
-  "22": "തിരുവോണം",
-  "23": "അവിട്ടം",
-  "24": "ചതയം",
-  "25": "പൂരുട്ടാതി",
-  "26": "ഉതൃട്ടാതി",
-  "27": "രേവതി",
-  "28": "ഓം"
-  };
+ 
 
   // Group by Prathista and Vazhipad
   const groupedByPrathistaVazhipad = vazhipadinfo.reduce((acc: { [key: string]: any[] }, item: any) => {
@@ -274,7 +253,7 @@ private printReceipts(data: any) {
         (item: any) => `
         <tr>
           <td>${item.Name || 'N/A'}<br /><span>${item.Name2 || ' '}</span></td>
-          <td>${starNameMapping[item.Star as keyof typeof starNameMapping] || ' '}</td>
+          <td>${this.getStarbyId(item.Star)}<br/><span>${this.getStarbyId(item.Star2)}</span></td>
           <td>${item.VazhipadDate || 'N/A'}</td>
           <td>${item.Qty || '0'}</td>
           <td>${item.Rate || '0'}</td>
@@ -339,7 +318,7 @@ private printReceipts(data: any) {
                 <strong style="margin-right: 15px;">Login: ${
                   this.name
                 }</strong>
-                <strong>Transaction Mode: ${this.getTransactionType(Trnsmode)}</strong>
+                <strong>Payment Mode: ${this.getTransactionType(Trnsmode)}</strong>
             </div>
         </div>
 
@@ -481,7 +460,7 @@ getTransactionType(transmode: string): string {
   private setChequeValidators() {
     this.customerdetailsForBillingForm
       .get('Instno')
-      ?.setValidators([Validators.required]);
+      ?.setValidators([Validators.required,Validators.minLength(6)]);
     this.customerdetailsForBillingForm
       .get('InstBank')
       ?.setValidators([Validators.required]);
@@ -532,6 +511,13 @@ getTransactionType(transmode: string): string {
         if (controlErrors['email']) {
           this.notiication.showError('Invalid email format.');
         }
+        if (controlErrors['minLength']) {
+          if (key === 'Mobile') {
+            this.notiication.showError(
+              'Invalid phone number. Must be 10 digits atleast.'
+            );
+          }
+        }
       }
     });
   }
@@ -539,7 +525,7 @@ getTransactionType(transmode: string): string {
   private setCreditValidators() {
     this.customerdetailsForBillingForm
       .get('Mobile')
-      ?.setValidators([Validators.required]);
+      ?.setValidators([Validators.required,Validators.minLength(10),Validators.pattern('^[0-9]{10}$')],);
     this.customerdetailsForBillingForm.get('Mobile')?.updateValueAndValidity();
   }
 
@@ -787,6 +773,153 @@ getTransactionType(transmode: string): string {
       input?.nativeElement.focus();
     }
   }
+getStarbyId(id:string){
+  console.log(id,"star id")
+  if(this.lang=='en'){
+    const star= this.nakshatham.find(
+      (item) => item.SM_Id == id
+    );
+    return star ? star.SM_Name : ''; 
 
+  }else if(this.lang=='ml'){
+    const star= this.nakshatham.find(
+      (item) => item.SM_Id == id
+    );
+    return star ? star.SM_RName : ''; 
+  }
+ 
+  // console.log(star,"sssssssssssssssss")
   
+}
+  
+
+
+
+getStarData() {
+  const payLoad = { Type: 'ListStar', Code: '' };
+  this.service.getStarData(payLoad).subscribe((res) => {
+    this.nakshatham = res;
+console.log(this.nakshatham,"sdsfsddss")
+    this.nakshatham = res.map((item) => ({
+      SM_Id: item.id,
+      SM_Name: item.SM_NameEng,
+      SM_Code: item.SM_Code,
+      SM_RName: item.SM_Name,
+    }));
+    console.log(this.nakshatham,"stttttttttttttt")
+  });
+}
+
+
+printReceiptsinkJet(data:any){
+  const { BillNo, Billdate } = data;
+    
+    // Group data by VazhipadDate
+    const groupedData = this.groupDataByVazhipadDate(data.vazhipadinfo);
+
+    // Loop through the grouped data to generate multiple receipts
+    groupedData.forEach(group => {
+        const firstItem = group[0];
+        let totalAmount = 0;
+        let totalQty = 0;
+
+        // Calculate total amount and quantity for the current group
+        group.forEach(item => {
+            totalAmount += parseFloat(item.TotalAmt);
+            totalQty += parseInt(item.Qty);
+        });
+
+        // Generate rows for the receipt
+        let rows = '';
+        group.forEach((item, index) => {
+            const offset = 160 + index * 20;
+            rows += `
+                <div class="field name" style="top: ${offset}px; left: 50px;">${item.Name}</div>
+                <div class="field star" style="top: ${offset}px; left: 150px;">${item.Star}</div>
+                <div class="field quantity" style="top: ${offset}px; left: 250px;">${item.Qty}</div>
+                <div class="field rate" style="top: ${offset}px; left: 350px;">${item.Rate}</div>
+                <div class="field amount" style="top: ${offset}px; left: 450px;">${item.TotalAmt}</div>
+            `;
+        });
+
+        // Generate the content for the receipt
+        const printContent = `
+            <html>
+                <head>
+                    <title>Receipt</title>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            margin: 0;
+                            padding: 0;
+                            position: relative;
+                            width: 576px;
+                            height: 384px;
+                        }
+                        .field {
+                            position: absolute;
+                            font-size: 12px;
+                            white-space: nowrap;
+                        }
+                        @media print {
+                            @page { size: 6in 4in; margin: 0; }
+                            body { margin: 0; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <!-- Bill Header -->
+                    <div class="field bill-no" style="top: 20px; left: 50px;">${BillNo}</div>
+                    <div class="field bill-date" style="top: 20px; left: 400px;">${Billdate}</div>
+
+                    <!-- Dynamic Grouped Data for Each Receipt -->
+                    <div class="field vazhipad" style="top: 100px; left: 50px;">${firstItem.Vazhipad}</div>
+                    <div class="field prathista" style="top: 100px; left: 250px;">${firstItem.Prethista}</div>
+                    <div class="field total-quantity" style="top: 120px; left: 450px;">${totalQty}</div>
+                    <div class="field total-amount" style="top: 140px; left: 450px;">₹${totalAmount.toFixed(2)}</div>
+
+                    <!-- Table Headers -->
+                    <div class="field name-header" style="top: 160px; left: 50px;">Name</div>
+                    <div class="field star-header" style="top: 160px; left: 150px;">Star</div>
+                    <div class="field quantity-header" style="top: 160px; left: 250px;">Quantity</div>
+                    <div class="field rate-header" style="top: 160px; left: 350px;">Rate</div>
+                    <div class="field amount-header" style="top: 160px; left: 450px;">Amount</div>
+
+                    <!-- Dynamic Rows of Data -->
+                    ${rows}
+
+                    <!-- Vazhipad Date at the Bottom -->
+                    <div class="field vazhipad-date" style="top: ${160 + group.length * 20 + 20}px; left: 50px;">Vazhipad Date: ${firstItem.VazhipadDate}</div>
+                </body>
+            </html>
+        `;
+
+        // Print the current receipt
+        this.printContent(printContent);
+    });
+}
+
+// Function to group data by VazhipadDate
+groupDataByVazhipadDate(vazhipadinfo: any[]) {
+    const groupedData: { [key: string]: any[] } = {};
+
+    vazhipadinfo.forEach(item => {
+        const key = item.VazhipadDate; // Group by VazhipadDate
+        if (!groupedData[key]) {
+            groupedData[key] = [];
+        }
+        groupedData[key].push(item);
+    });
+
+    // Return as an array of groups (each group corresponds to a different VazhipadDate)
+    return Object.values(groupedData);
+}
+
+
+
+
+printReceiptsThermal(data:any){
+
+}
+
 }

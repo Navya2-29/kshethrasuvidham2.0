@@ -2,7 +2,7 @@
     <div class="row">
         <div class="col-md-4">
             <h2>
-                ക്രെഡിറ്റ് കളക്ഷൻ‍</h2>
+                {{"Credit Collection" | translate}}</h2>
                 <form [formGroup]="CreditForm">
             <table class="table">
              
@@ -95,9 +95,9 @@
             <form [formGroup]="searchForm">
             <div style="display:flex;">
                 
-                <input type="date" class="form-control formdate"  formControlName="searchBillDate" style="width:15%;">
-                <button class="btn btn-primary" style="margin-right:15px;" (click)="onSearchByBillDate()" >Search</button>
-                <input type="text" class="form-control sps" formControlName="searchBillNo" placeholder="search by Name" style="width:25%;">
+                <input  type="date" class="form-control formdate"  formControlName="searchBillDate" style="width:15%;display: none;">
+                <button class="btn btn-primary" style="margin-right:15px;display: none;" (click)="onSearchByBillDate()" >Search</button>
+                <input type="text" class="form-control sps" formControlName="searchBillNo" placeholder="search by bill Number" style="width:25%;">
                 <button class="btn btn-primary" (click)="onSearchByBillNumber()">Search</button>
            
             </div>
@@ -126,14 +126,14 @@
                         <td>{{data.Amount}}</td>
                         
                         <mat-icon title="Edit" title="edit credit" class="small" (click)="onEdit(data)">edit</mat-icon>
-                        <span
+                        <!-- <span
                         ><mat-icon
                           title="Cancel bill"
                           *ngIf="role === 'admin'"
                           class="small"
                          
                           >delete</mat-icon
-                        ></span>
+                        ></span> -->
                     </tr>
                    
                 </table>

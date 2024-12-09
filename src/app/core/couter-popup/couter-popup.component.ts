@@ -11,6 +11,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MasterService } from '../../services/master/master.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-couter-popup',
@@ -33,7 +34,8 @@ export class CouterPopupComponent {
   constructor(
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<CouterPopupComponent>,
-    private masterservice: MasterService
+    private masterservice: MasterService,
+    private router:Router
   ) {
     // Initialize the form group with validation
     this.counterForm = this.fb.group({
@@ -57,5 +59,22 @@ export class CouterPopupComponent {
         this.errorMessage = 'Counter ID is required';
       }
     }
+  }
+
+
+  Back(){
+   
+      localStorage.setItem('loggedIn', 'false');
+      localStorage.removeItem('name');
+      localStorage.removeItem('Role');
+      localStorage.removeItem('alertmsg');
+      localStorage.removeItem('LoginId');
+      localStorage.removeItem('username');
+      localStorage.removeItem('password');
+      // if(this.role==='admin'){
+        localStorage.removeItem('counterId');
+      // }
+      this.router.navigate(['/login']);
+    this.dialogRef.close()
   }
 }
