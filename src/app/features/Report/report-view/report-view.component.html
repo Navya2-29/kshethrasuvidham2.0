@@ -8,13 +8,17 @@
     <button mat-icon-button matTooltip="Make PDF" (click)="generatePDF()">
         <span class="material-icons">print</span>
     </button>
-    <button mat-icon-button matTooltip="Export to Spreadsheet" >
+    <!-- <button mat-icon-button matTooltip="Export to Spreadsheet" >
         <span class="material-icons">grid_view</span>
-    </button>
+    </button> -->
 </div>
 <div><h1 style="align-items: center;text-align: center; font-family: 'Times New Roman', Times, serif;font-weight:bold;">POORNAM REPORT</h1></div>
 
 <div class="report-table">
+  <mat-form-field>
+    <mat-label>Filter</mat-label>
+    <input matInput (keyup)="applyFilter($event)" placeholder="Search data" #input>
+  </mat-form-field>
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
       <ng-container matColumnDef="BillNo">
         <th mat-header-cell *matHeaderCellDef> Bill No </th>

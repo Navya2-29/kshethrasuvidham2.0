@@ -14,6 +14,7 @@ import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { HttpClient } from '@angular/common/http';
 
 
 @Component({
@@ -45,7 +46,7 @@ export class ReportCounterComponent {
   dataSource = new MatTableDataSource<ReportData>();
   length = 0;
   pageSize = 5;
-  pageSizeOptions: number[] = [5, 7, 10, 20, 50];
+  pageSizeOptions: number[] = [10,50,100,200,300,500,1000];
   pageIndex = 0;
   data: ReportData[] = [];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -55,7 +56,8 @@ export class ReportCounterComponent {
   constructor(
     private route: ActivatedRoute,
     private service: ReportService,
-    private router: Router
+    private router: Router,
+    private http:HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -134,7 +136,32 @@ export class ReportCounterComponent {
   
     let y = headerHeight; // Initial Y position after header
     let grandTotal = 0; // Initialize grand total
-  
+    this.http
+    .get('assets/fonts/malayalam/NotoSansMalayalam-Regular.ttf', {
+      responseType: 'arraybuffer',
+    })
+    .subscribe(
+      (fontData) => {
+        const doc = new jsPDF();
+
+        // Convert ArrayBuffer to Base64
+        const fontBase64 = btoa(
+          String.fromCharCode(...new Uint8Array(fontData))
+        );
+
+        // Add the font to jsPDF
+        doc.addFileToVFS(
+          'NotoSansMalayalam-Regular.ttf',
+          fontBase64
+        );
+        doc.addFont(
+          'NotoSansMalayalam-Regular.ttf',
+          'NotoSansMalayalam',
+          'normal'
+        );
+
+        // Set the custom font
+        doc.setFont('NotoSansMalayalam');
     // Data grouped by TransactionMode (example grouping key)
     const groupedData = this.data.reduce((acc, current) => {
       const key = current.CounterId; // Change this key if grouping by something else
@@ -148,14 +175,14 @@ export class ReportCounterComponent {
     // Draw Header
     const drawHeader = () => {
       doc.setFontSize(12);
-      doc.setFont("Helvetica", "bold");
+      doc.setFont("NotoSansMalayalam", "bold");
       doc.text(templeName, pageWidth / 2, 12, { align: "center" });
-      doc.setFont("Helvetica", "normal");
+      doc.setFont("NotoSansMalayalam", "normal");
       doc.setFontSize(10);
       doc.text(templeAddress, pageWidth / 2, 18, { align: "center" });
   
       doc.setFontSize(10);
-      doc.setFont("Helvetica", "bold");
+      doc.setFont("NotoSansMalayalam", "bold");
       doc.text("Temple collection Report", pageWidth / 2, 27, { align: "center" });
   
       doc.setLineWidth(0.5);
@@ -173,7 +200,7 @@ export class ReportCounterComponent {
     // Add Table Header
     const drawTableHeader = () => {
       doc.setFontSize(tableHeaderFontSize);
-      doc.setFont("Helvetica", "bold");
+      doc.setFont("NotoSansMalayalam", "bold");
       const headers = ["S.No", "VAZHIPAD", "RATE", "AMOUNT"];
       let x = 10;
       headers.forEach((header, index) => {
@@ -209,7 +236,7 @@ export class ReportCounterComponent {
   
       // Draw Group Header with extra spacing to avoid overlap with the table header line
       doc.setFontSize(12);
-      doc.setFont("Helvetica", "bold");
+      doc.setFont("NotoSansMalayalam", "bold");
   
       y += lineHeight; // Increase spacing between the group name and table header
       doc.text(`Counter: ${group}`, 10, y);
@@ -238,7 +265,7 @@ export class ReportCounterComponent {
         }
   
         doc.setFontSize(contentFontSize);
-        doc.setFont("Helvetica", "normal");
+        doc.setFont("NotoSansMalayalam", "normal");
   
         const row = [
           serialNo++, // Increment serial number
@@ -275,7 +302,7 @@ export class ReportCounterComponent {
   
       // Add group total at the end
       doc.setFontSize(12);
-      doc.setFont("Helvetica", "bold");
+      doc.setFont("NotoSansMalayalam", "bold");
       doc.text("Group Total:", 10, y + 5); // Label for the group total
       doc.text(groupTotal.toFixed(2), pageWidth - 33, y + 5, { align: "right" }); // Total amount aligned to the right
   
@@ -284,14 +311,27 @@ export class ReportCounterComponent {
   
     // Add Grand Total below the last Group Total
     doc.setFontSize(12);
-    doc.setFont("Helvetica", "bold");
+    doc.setFont("NotoSansMalayalam", "bold");
     doc.text("Grand Total:", 10, y + 5); // Label for the grand total
     doc.text(grandTotal.toFixed(2), pageWidth - 33, y + 5, { align: "right" }); // Grand total aligned to the right
   
     y += lineHeight + 10; // Space after the grand total
   
     // Save PDF
-    doc.save("CountersdailyStatement_Report.pdf");
+    // doc.save("CountersdailyStatement_Report.pdf");
+    const pdfBlob = doc.output('blob');
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    window.open(pdfUrl, '_blank');
+    // doc.save('vazhipad_report_with_header_footer.pdf');
+
+
+
+  },
+  (error:any) => {
+    console.error('Error loading font:', error);
+  }
+);
+
   }
   
   

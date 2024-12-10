@@ -10,6 +10,7 @@ import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { HttpClient } from '@angular/common/http';
 
 
 @Component({
@@ -24,13 +25,13 @@ export class ReportUpiComponent {
   dataSource = new MatTableDataSource<ReportData>();
   length = 0;
   pageSize = 5;
-  pageSizeOptions: number[] = [5, 7,10, 20, 50];
+  pageSizeOptions: number[] = [10,50,100,200,300,500,1000];
   pageIndex = 0;
   data:ReportData[]=[];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   groupedData: { [key: string]: ReportData[] } = {};
   filteredData:ReportData[]=[];
-  constructor(private route: ActivatedRoute, private service: ReportService,private router: Router) {}
+  constructor(private route: ActivatedRoute, private service: ReportService,private router: Router, private http:HttpClient) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
@@ -97,6 +98,36 @@ export class ReportUpiComponent {
     const templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
     const templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
     const doc = new jsPDF();
+
+    this.http
+    .get('assets/fonts/malayalam/NotoSansMalayalam-Regular.ttf', {
+      responseType: 'arraybuffer',
+    })
+    .subscribe(
+      (fontData) => {
+        const doc = new jsPDF();
+
+        // Convert ArrayBuffer to Base64
+        const fontBase64 = btoa(
+          String.fromCharCode(...new Uint8Array(fontData))
+        );
+
+        // Add the font to jsPDF
+        doc.addFileToVFS(
+          'NotoSansMalayalam-Regular.ttf',
+          fontBase64
+        );
+        doc.addFont(
+          'NotoSansMalayalam-Regular.ttf',
+          'NotoSansMalayalam',
+          'normal'
+        );
+
+        // Set the custom font
+        doc.setFont('NotoSansMalayalam');
+
+
+
     const pageWidth = doc.internal.pageSize.width;
     const pageHeight = doc.internal.pageSize.height;
     const headerHeight = 35;
@@ -116,19 +147,19 @@ export class ReportUpiComponent {
     // Draw Header
     const drawHeader = () => {
       doc.setFontSize(12);
-      doc.setFont("Helvetica", "bold");
+      // doc.setFont("Helvetica", "bold");
       doc.text(templeName, pageWidth / 2, 12, { align: "center" });
-      doc.setFont("Helvetica", "normal");
+      // doc.setFont("Helvetica", "normal");
       doc.setFontSize(10);
       doc.text(templeAddress, pageWidth / 2, 18, { align: "center" });
     
       doc.setFontSize(10);
-      doc.setFont("Helvetica", "bold");
+      // doc.setFont("Helvetica", "bold");
       doc.text("UPI Transaction Report", pageWidth / 2, 27, { align: "center" });
     
       // Add current date below the report title but above the table header
       doc.setFontSize(10);
-      doc.setFont("Helvetica", "normal");
+      // doc.setFont("Helvetica", "normal");
       doc.text(currentDate, pageWidth / 2, 32, { align: "center" });
     
       doc.setLineWidth(0.5);
@@ -145,7 +176,7 @@ export class ReportUpiComponent {
     // Add Table Header
     const drawTableHeader = () => {
       doc.setFontSize(tableHeaderFontSize);
-      doc.setFont("Helvetica", "bold");
+      // doc.setFont("Helvetica", "bold");
       let x = 10;
       headers.forEach((header, index) => {
         doc.text(header, x, y + 5);
@@ -201,7 +232,7 @@ export class ReportUpiComponent {
       let x = 10;
   
       // Draw each cell with normal font
-      doc.setFont("Helvetica", "normal");
+      // doc.setFont("Helvetica", "normal");
       doc.setFontSize(contentFontSize);
   
       tableRow.forEach((cell, index) => {
@@ -246,7 +277,7 @@ export class ReportUpiComponent {
     ];
   
     let x = 10;
-    doc.setFont("Helvetica", "bold");
+    // doc.setFont("Helvetica", "bold");
     doc.setFontSize(contentFontSize);
     grandTotalRow.forEach((cell, index) => {
       if (index === 5 || index === 6) {
@@ -267,8 +298,19 @@ export class ReportUpiComponent {
     y += lineHeight; // Move y position for the Grand Total row
   
     // Save PDF
-   
-    doc.save('UPI_Transaction_Report.pdf');
+    const pdfBlob = doc.output('blob');
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    window.open(pdfUrl, '_blank');
+    // doc.save('vazhipad_report_with_header_footer.pdf');
+
+
+
+  },
+  (error:any) => {
+    console.error('Error loading font:', error);
+  }
+);
+    // /doc.save('UPI_Transaction_Report.pdf');
   }
 
     

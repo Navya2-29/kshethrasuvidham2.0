@@ -8,11 +8,14 @@ import { jsPDF } from 'jspdf';
 import {ReportData} from '../../../models/poornam-report'
 import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { HttpClient } from '@angular/common/http';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-report-view',
   standalone: true,
-  imports: [CommonModule,MatTableModule,MatPaginatorModule,HeaderComponent,MatTooltipModule],
+  imports: [CommonModule,MatTableModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
   templateUrl: './report-view.component.html',
   styleUrl: './report-view.component.css',
 })
@@ -22,12 +25,12 @@ export class ReportViewComponent implements OnInit {
   dataSource = new MatTableDataSource<ReportData>();
   length = 0;
   pageSize = 5;
-  pageSizeOptions: number[] = [5, 7,10, 20, 50];
+  pageSizeOptions: number[] = [10,50,100,200,300,500,1000];
   pageIndex = 0;
   data:ReportData[]=[];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   groupedData: { [key: string]: ReportData[] } = {};
-  constructor(private route: ActivatedRoute, private service: ReportService,private router: Router) {}
+  constructor(private route: ActivatedRoute, private service: ReportService,private router: Router,private http: HttpClient ) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
@@ -83,10 +86,45 @@ export class ReportViewComponent implements OnInit {
     }, {} as { [key: string]: ReportData[] });
   }
 
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+
   generatePDF() {
-    const doc = new jsPDF();
+
+    
+     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.width;
     const pageHeight = doc.internal.pageSize.height;
+    this.http
+      .get('assets/fonts/malayalam/NotoSansMalayalam-Regular.ttf', {
+        responseType: 'arraybuffer',
+      })
+      .subscribe(
+        (fontData) => {
+          const doc = new jsPDF();
+
+          // Convert ArrayBuffer to Base64
+          const fontBase64 = btoa(
+            String.fromCharCode(...new Uint8Array(fontData))
+          );
+
+          // Add the font to jsPDF
+          doc.addFileToVFS(
+            'NotoSansMalayalam-Regular.ttf',
+            fontBase64
+          );
+          doc.addFont(
+            'NotoSansMalayalam-Regular.ttf',
+            'NotoSansMalayalam',
+            'normal'
+          );
+
+          // Set the custom font
+          doc.setFont('NotoSansMalayalam');
   
     const title = 'Vazhipad Report';
     const currentDate = new Date().toLocaleDateString('en-IN');
@@ -145,7 +183,7 @@ export class ReportViewComponent implements OnInit {
   
       // Draw group header (Group name font size reduced)
       doc.setFontSize(groupNameFontSize);
-      doc.setFont("Helvetica", "bold"); // Bold font for group name
+// doc.setFont("Helvetica", "bold"); // Bold font for group name
       doc.text(vazhipad, 14, y); // Group title
       y += 6; // Space after group title
   
@@ -183,7 +221,7 @@ export class ReportViewComponent implements OnInit {
         }
   
         // Table Content (without grid lines, only text)
-        doc.setFont("Helvetica", "normal");
+ // doc.setFont("Helvetica", "normal");
         doc.setFontSize(tableContentFontSize); // Use the content font size for table rows
   
         // Serial Number
@@ -210,8 +248,18 @@ export class ReportViewComponent implements OnInit {
   
     // Draw footer on the last page
     drawFooter(doc.internal.pages.length);
-  
-    doc.save('vazhipad_report_with_header_footer.pdf');
+    const pdfBlob = doc.output('blob');
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    window.open(pdfUrl, '_blank');
+    // doc.save('vazhipad_report_with_header_footer.pdf');
+
+
+
+  },
+  (error:any) => {
+    console.error('Error loading font:', error);
+  }
+);
   }
   
   
@@ -240,4 +288,61 @@ export class ReportViewComponent implements OnInit {
     this.router.navigate(['/getReport']);
   }
 
-}
+
+
+
+
+  generatePDFs() {
+    this.http
+      .get('assets/fonts/malayalam/NotoSansMalayalam-Regular.ttf', {
+        responseType: 'arraybuffer',
+      })
+      .subscribe(
+        (fontData) => {
+          const doc = new jsPDF();
+
+          // Convert ArrayBuffer to Base64
+          const fontBase64 = btoa(
+            String.fromCharCode(...new Uint8Array(fontData))
+          );
+
+          // Add the font to jsPDF
+          doc.addFileToVFS(
+            'NotoSansMalayalam-Regular.ttf',
+            fontBase64
+          );
+          doc.addFont(
+            'NotoSansMalayalam-Regular.ttf',
+            'NotoSansMalayalam',
+            'normal'
+          );
+
+          // Set the custom font
+          doc.setFont('NotoSansMalayalam');
+
+          // Example text in Malayalam
+          const malayalamText = 'മലയാളം Vazhipad';
+
+          // Add text to the PDF
+          doc.text(malayalamText, 10, 10);
+
+          // Open the PDF in a new tab
+          const pdfBlob = doc.output('blob');
+          const pdfUrl = URL.createObjectURL(pdfBlob);
+          window.open(pdfUrl, '_blank');
+        },
+        (error:any) => {
+          console.error('Error loading font:', error);
+        }
+      );
+  }
+  }
+
+
+
+
+
+
+
+
+

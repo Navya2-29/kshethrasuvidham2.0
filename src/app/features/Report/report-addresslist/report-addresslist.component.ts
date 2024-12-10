@@ -23,7 +23,7 @@ export class ReportAddresslistComponent {
   dataSource = new MatTableDataSource<ReportData>();
   length = 0;
   pageSize = 5;
-  pageSizeOptions: number[] = [5, 7,10, 20, 50];
+  pageSizeOptions: number[] = [10,50,100,200,300,500,1000];
   pageIndex = 0;
   data:ReportData[]=[];
   @ViewChild(MatPaginator) paginator!: MatPaginator;

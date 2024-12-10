@@ -14,6 +14,7 @@ import { ReportData } from '../../../models/poornam-report';
 import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import html2pdf from 'html2pdf.js';
+import { HttpClient } from '@angular/common/http';
 @Component({
   selector: 'app-report-counter-transaction',
   standalone: true,
@@ -43,7 +44,7 @@ export class ReportCounterTransactionComponent {
   dataSource = new MatTableDataSource<ReportData>();
   length = 0;
   pageSize = 5;
-  pageSizeOptions: number[] = [5, 7, 10, 20, 50];
+  pageSizeOptions: number[] = [10,50,100,200,300,500,1000];
   pageIndex = 0;
   objectKeys = Object.keys;
   data: ReportData[] = [];
@@ -58,7 +59,8 @@ export class ReportCounterTransactionComponent {
   constructor(
     private route: ActivatedRoute,
     private service: ReportService,
-    private router: Router
+    private router: Router,
+    private http:HttpClient,
   ) {}
 
   ngOnInit(): void {
@@ -183,6 +185,33 @@ export class ReportCounterTransactionComponent {
 
     // Header
    // Header (Center-aligned)
+   this.http
+    .get('assets/fonts/malayalam/NotoSansMalayalam-Regular.ttf', {
+      responseType: 'arraybuffer',
+    })
+    .subscribe(
+      (fontData) => {
+        const doc = new jsPDF();
+
+        // Convert ArrayBuffer to Base64
+        const fontBase64 = btoa(
+          String.fromCharCode(...new Uint8Array(fontData))
+        );
+
+        // Add the font to jsPDF
+        doc.addFileToVFS(
+          'NotoSansMalayalam-Regular.ttf',
+          fontBase64
+        );
+        doc.addFont(
+          'NotoSansMalayalam-Regular.ttf',
+          'NotoSansMalayalam',
+          'normal'
+        );
+
+        // Set the custom font
+        doc.setFont('NotoSansMalayalam');
+
   const header = 'Counter Transaction- Counter Transactions';
   const pageWidth = doc.internal.pageSize.width;
   const headerWidth = doc.getStringUnitWidth(header) * doc.internal.scaleFactor;
@@ -220,7 +249,21 @@ export class ReportCounterTransactionComponent {
     // doc.text(`Page ${pageCount}`, doc.internal.pageSize.width - 20, doc.internal.pageSize.height - 10, { align: 'right' });
 
     // Save the PDF
-    doc.save('report.pdf');
+    // doc.save('report.pdf');
+    const pdfBlob = doc.output('blob');
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    window.open(pdfUrl, '_blank');
+    // doc.save('vazhipad_report_with_header_footer.pdf');
+
+
+
+  },
+  (error:any) => {
+    console.error('Error loading font:', error);
+  }
+);
+
+
   }
 
   // Prepare the table rows from grouped data
