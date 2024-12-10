@@ -206,6 +206,9 @@ export class FixedbottomComponent implements OnInit {
       else if(this.printerLayOut=="thermal"){
         this.printReceiptsThermal(data);
       }
+      else if(this.printerLayOut=="dotMetrix"){
+        this.printReceiptsDotmetrix(data);
+      }
      
       this.getTodayCollection();
       console.log(data, 'printing details');
@@ -380,9 +383,6 @@ private printContent(content: string) {
     console.error('Failed to open the print window.');
   }
 }
-
-  
-
 
 getTransactionType(transmode: string): string {
   console.log(transmode);
@@ -652,8 +652,6 @@ getTransactionType(transmode: string): string {
     });
   }
 
-
-  
   // function to pdf
   generatePDFAndSendToWhatsApp() {
     const data = document.getElementById('bill-content');
@@ -812,92 +810,297 @@ console.log(this.nakshatham,"sdsfsddss")
 
 
 printReceiptsinkJet(data:any){
-  const { BillNo, Billdate } = data;
-    
-    // Group data by VazhipadDate
-    const groupedData = this.groupDataByVazhipadDate(data.vazhipadinfo);
+  const {
+    BillNo,
+    Billdate,
+    Trnsmode,
+    vazhipadinfo,
+  } = data;
 
-    // Loop through the grouped data to generate multiple receipts
-    groupedData.forEach(group => {
-        const firstItem = group[0];
-        let totalAmount = 0;
-        let totalQty = 0;
+  // Group by Prathista, Vazhipad, and VazhipadDate
+  const groupedByPrathistaVazhipadDate = vazhipadinfo.reduce((acc: { [key: string]: any[] }, item: any) => {
+    const key = `${item.Prethista}-${item.Vazhipad}-${item.VazhipadDate}`;
+    if (!acc[key]) {
+      acc[key] = [];
+    }
+    acc[key].push(item);
+    return acc;
+  }, {});
 
-        // Calculate total amount and quantity for the current group
-        group.forEach(item => {
-            totalAmount += parseFloat(item.TotalAmt);
-            totalQty += parseInt(item.Qty);
-        });
+  let allReceiptsContent = '';
+  const prathistaVazhipadDateKeys = Object.keys(groupedByPrathistaVazhipadDate);
 
-        // Generate rows for the receipt
-        let rows = '';
-        group.forEach((item, index) => {
-            const offset = 160 + index * 20;
-            rows += `
-                <div class="field name" style="top: ${offset}px; left: 50px;">${item.Name}</div>
-                <div class="field star" style="top: ${offset}px; left: 150px;">${item.Star}</div>
-                <div class="field quantity" style="top: ${offset}px; left: 250px;">${item.Qty}</div>
-                <div class="field rate" style="top: ${offset}px; left: 350px;">${item.Rate}</div>
-                <div class="field amount" style="top: ${offset}px; left: 450px;">${item.TotalAmt}</div>
-            `;
-        });
+  // Loop through grouped data
+  for (let i = 0; i < prathistaVazhipadDateKeys.length; i++) {
+    const key = prathistaVazhipadDateKeys[i];
+    const items = groupedByPrathistaVazhipadDate[key];
+    const [prathista, vazhipad, vazhipadDate] = key.split('-');
 
-        // Generate the content for the receipt
-        const printContent = `
-            <html>
-                <head>
-                    <title>Receipt</title>
-                    <style>
-                        body {
-                            font-family: Arial, sans-serif;
-                            margin: 0;
-                            padding: 0;
-                            position: relative;
-                            width: 576px;
-                            height: 384px;
-                        }
-                        .field {
-                            position: absolute;
-                            font-size: 12px;
-                            white-space: nowrap;
-                        }
-                        @media print {
-                            @page { size: 6in 4in; margin: 0; }
-                            body { margin: 0; }
-                        }
-                    </style>
-                </head>
-                <body>
-                    <!-- Bill Header -->
-                    <div class="field bill-no" style="top: 20px; left: 50px;">${BillNo}</div>
-                    <div class="field bill-date" style="top: 20px; left: 400px;">${Billdate}</div>
+    // Calculate the total amount for the group
+    const totalAmount = items.reduce(
+      (total: number, item: any) => total + parseFloat(item.Amount || '0'),
+      0
+    );
 
-                    <!-- Dynamic Grouped Data for Each Receipt -->
-                    <div class="field vazhipad" style="top: 100px; left: 50px;">${firstItem.Vazhipad}</div>
-                    <div class="field prathista" style="top: 100px; left: 250px;">${firstItem.Prethista}</div>
-                    <div class="field total-quantity" style="top: 120px; left: 450px;">${totalQty}</div>
-                    <div class="field total-amount" style="top: 140px; left: 450px;">₹${totalAmount.toFixed(2)}</div>
+    // Prepare the rows for each item in the group
+    const vazhipadRows = items
+      .map(
+        (item: any) => `
+        <tr>
+          <td>${item.Name || 'N/A'}<br /><span>${item.Name2 || ' '}</span></td>
+          <td>${this.getStarbyId(item.Star)}<br/><span>${this.getStarbyId(item.Star2)}</span></td>
+          <td>${item.Qty || '0'}</td>
+          <td>${item.Rate || '0'}</td>
+          <td>${item.Amount || '0'}</td>
+        </tr>`
+      )
+      .join('');
 
-                    <!-- Table Headers -->
-                    <div class="field name-header" style="top: 160px; left: 50px;">Name</div>
-                    <div class="field star-header" style="top: 160px; left: 150px;">Star</div>
-                    <div class="field quantity-header" style="top: 160px; left: 250px;">Quantity</div>
-                    <div class="field rate-header" style="top: 160px; left: 350px;">Rate</div>
-                    <div class="field amount-header" style="top: 160px; left: 450px;">Amount</div>
+    const receiptContent = `
+       <div class="receipt-page">
+    <div class="receipt-header">
+      <!-- Temple Logo on the left -->
+      <img src="${this.templeLogoUrl}" alt="Temple Logo" class="temple-logo" />
+      
+      <div class="header-text">
+        <h1>${this.templeName}</h1>
+        <p>${this.templeAddress}</p>
+        <h2 class="receipt-heading">വഴിപാട് രസീത്</h2>
+      </div>
+    </div>
+    <div>
+      <div style="display: flex; justify-content: space-between;">
+        <strong style="color: red;">പ്രതിഷ്ഠ: ${prathista}</strong>
+        <strong>തീയതി: ${Billdate || 'N/A'}</strong>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <strong style="color: green;">വഴിപാട്: ${vazhipad}</strong>
+        <strong>നമ്പർ: ${BillNo || 'N/A'}</strong>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>പേര് </th>
+            <th>നക്ഷത്രം </th>
+           
+            <th>എണ്ണം</th>
+            <th>നിരക്ക്</th>
+            <th>തുക</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${vazhipadRows}
+          <tr>
+            <td colspan="4" class="total-label"><strong>ആകെ തുക :</strong></td>
+            <td class="total-amount"><strong>${totalAmount.toFixed(2)}</strong></td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="margin-top: 20px;">
+        <strong>വഴിപാട് തീയതികൾ:  ${
+    Array.from(new Set(items.map((item:any) => item.VazhipadDate || 'N/A'))).join(', ')
+  }</strong>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+        <!-- Left side content (Counter ID) -->
+        <div style="display: flex; flex-direction: column;">
+            <strong style="margin-right: 15px;">Counter ID: ${this.counterId}</strong>
+        </div>
+        <!-- Right side content (Login ID and Transaction Mode) -->
+        <div style="display: flex; flex-direction: column;">
+            <strong style="margin-right: 15px;">Login: ${this.name}</strong>
+            <strong>Payment Mode: ${this.getTransactionType(Trnsmode)}</strong>
+        </div>
+      </div>
+    </div>
+        ${i < prathistaVazhipadDateKeys.length - 1 ? '<div class="page-break"></div>' : ''}
+      </div>`;
 
-                    <!-- Dynamic Rows of Data -->
-                    ${rows}
+    allReceiptsContent += receiptContent;
+  }
 
-                    <!-- Vazhipad Date at the Bottom -->
-                    <div class="field vazhipad-date" style="top: ${160 + group.length * 20 + 20}px; left: 50px;">Vazhipad Date: ${firstItem.VazhipadDate}</div>
-                </body>
-            </html>
-        `;
+  // Print the receipt content
+  const printContent = `
+    <html>
+      <head>
+        <title>Receipt</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 0; padding: 0; color: #333; }
+          .receipt-page { padding: 10px; page-break-inside: avoid; }
+          .receipt-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+          .temple-logo { max-width: 150px; }
+          .header-text { text-align: center; flex-grow: 1; }
+          .receipt-heading { color: #4CAF50; margin: 10px 0; font-size: 1.5em; }
+          .page-break { page-break-after: always; }
+          h1 { text-align: center; color: #4CAF50; margin: 5px 0; }
+          table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+          th, td { border: 1px solid #ddd; padding: 5px; text-align: left; }
+          th { background-color: #3f51b5; color: white; }
+          .total-label { text-align: right; }
+          .total-amount { background-color: #e0f7fa; }
+          td span { font-size: 0.85em; color: #666; }
+          @media print {
+            @page { margin: 0; size: A4; }
+            body { margin: 10mm; }
+            .no-print { display: none; }
+          }
+        </style>
+      </head>
+      <body>
+        ${allReceiptsContent}
+      </body>
+    </html>`;
 
-        // Print the current receipt
-        this.printContent(printContent);
-    });
+  this.printContent(printContent);
 }
+
+
+
+printReceiptsDotmetrix(data: any) {
+  const { BillNo, Billdate, vazhipadinfo } = data;
+
+  const groupedData = vazhipadinfo.reduce((acc: any, item: any) => {
+    const key = `${item.Prethista}/${item.Vazhipad}/${item.VazhipadDate}`;
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(item);
+    return acc;
+  }, {});
+
+  let allReceiptsContent = '';
+  const cmToPx = (cm: number) => cm * 37.8; // Convert cm to pixels
+  const maxRowsPerPage = 4; // Maximum rows per page
+
+  const groups = Object.keys(groupedData);
+
+  groups.forEach((key, groupIndex) => {
+    const [prathista, vazhipad, vazhipadDate] = key.split('/');
+    const items = groupedData[key];
+
+    // Split items into chunks of `maxRowsPerPage`
+    const chunks = [];
+    for (let i = 0; i < items.length; i += maxRowsPerPage) {
+      chunks.push(items.slice(i, i + maxRowsPerPage));
+    }
+
+    chunks.forEach((chunk, chunkIndex) => {
+      const chunkTotalAmount = chunk.reduce((sum: any, item: any) => sum + parseFloat(item.Amount || 0), 0); // Calculate total for the chunk
+
+      let receiptContent = `
+        <div class="receipt-page" style="page-break-after: ${
+          groupIndex < groups.length - 1 || chunkIndex < chunks.length - 1 ? 'always' : 'auto'
+        };">
+          <!-- Prathista -->
+          <div style="
+            position: absolute; 
+            left: ${cmToPx(5.2)}px; 
+            top: ${cmToPx(3.2)}px; 
+            max-width: ${cmToPx(5)}px; 
+            white-space: pre-wrap; 
+            word-wrap: break-word;">${prathista}</div>
+    
+          <!-- Date -->
+          <div style="
+            position: absolute; 
+            left: ${cmToPx(11.5)}px; 
+            top: ${cmToPx(3.2)}px;">${Billdate}</div>
+    
+          <!-- Vazhipad -->
+          <div style="
+            position: absolute; 
+            left: ${cmToPx(5.2)}px; 
+            top: ${cmToPx(3.8)}px; 
+            max-width: ${cmToPx(5)}px; 
+            white-space: pre-wrap; 
+            word-wrap: break-word;">${vazhipad}</div>
+    
+          <!-- Bill No -->
+          <div style="
+            position: absolute; 
+            left: ${cmToPx(11.5)}px; 
+            top: ${cmToPx(3.8)}px;">${BillNo}</div>
+    
+          <!-- Vazhipad Date -->
+          <div style="
+            position: absolute; 
+            left: ${cmToPx(5.5)}px; 
+            top: ${cmToPx(8.8)}px;">${vazhipadDate}</div>
+    
+          <!-- Total Amount -->
+          <div style="
+            position: absolute; 
+            left: ${cmToPx(11.5)}px; 
+            top: ${cmToPx(8)}px; 
+            font-weight: bold;">₹${chunkTotalAmount.toFixed(2)}</div>
+      `;
+
+      // Add table rows dynamically
+      chunk.forEach((item: any, index: number) => {
+        const rowTop = cmToPx(5) + index * cmToPx(0.7); // Rows spaced 0.7cm apart
+
+        receiptContent += `
+          <div style="
+            position: absolute; 
+            left: ${cmToPx(2.5)}px; 
+            top: ${rowTop}px; 
+            max-width: ${cmToPx(5.5)}px; 
+            white-space: pre-wrap; 
+            word-wrap: break-word;">${item.Name}</div>
+          
+          <div style="position: absolute; left: ${cmToPx(8.2)}px; top: ${rowTop}px;">${this.getStarbyId(item.Star)}</div>
+          
+          <div style="position: absolute; left: ${cmToPx(10.2)}px; top: ${rowTop}px;">${item.Qty}</div>
+          
+          <div style="position: absolute; left: ${cmToPx(11.3)}px; top: ${rowTop}px;">${item.Rate}</div>
+          
+          <div style="position: absolute; left: ${cmToPx(13)}px; top: ${rowTop}px;">${item.Amount}</div>
+        `;
+      });
+
+      receiptContent += `</div>`; // Close receipt-page div
+      allReceiptsContent += receiptContent;
+    });
+  });
+
+  const printContent = `
+    <html>
+      <head>
+        <title>Preprinted Receipt</title>
+        <style>
+          body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+          }
+          .receipt-page {
+            position: relative;
+            width: ${cmToPx(15.5)}px;
+            height: ${cmToPx(10.2)}px;
+            margin: 0;
+            padding: 0;
+          }
+          .page-break {
+            page-break-after: always;
+          }
+        </style>
+      </head>
+      <body>
+        ${allReceiptsContent}
+      </body>
+    </html>
+  `;
+
+  const printWindow = window.open('', '_blank', 'width=800,height=600');
+  if (printWindow) {
+    printWindow.document.open();
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
+  }
+}
+
+
 
 // Function to group data by VazhipadDate
 groupDataByVazhipadDate(vazhipadinfo: any[]) {

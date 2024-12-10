@@ -89,7 +89,7 @@ submitLogin(login:Login){
           localStorage.setItem('LoginId',response.LoginId);
           localStorage.setItem('loggedIn', 'true');
           localStorage.setItem('Language',this.Language)
-          localStorage.setItem('Printer',"Normal")
+          localStorage.setItem('Printer',"inkJet")
           // Optional: Redirect to the dashboard or another page
           
           this.router.navigate(['/front']);
