@@ -23,7 +23,7 @@ export class ReportDebitComponent {
   displayedColumns: string[] = ['BillNo','BillDate','Debit-ID','Vazhipad','NAME', 'STAR','QTY', 'RATE',  'Amount',   ];
   dataSource = new MatTableDataSource<ReportData>();
   length = 0;
-  pageSize = 5;
+  pageSize = 10;
   pageSizeOptions: number[] = [10,50,100,200,300,500,1000];
   pageIndex = 0;
   data:ReportData[]=[];

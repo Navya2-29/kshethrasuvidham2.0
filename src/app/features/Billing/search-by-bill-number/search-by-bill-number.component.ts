@@ -279,7 +279,7 @@ export class SearchByBillNumberComponent {
           <tr>
               <td>${item.Name || 'N/A'}<p>${item.Name2 || ' '}</p></td>
                        <td>${
-                         item.Star
+                        this.getStarbyId(item.Star) 
                        }<br/><span>${this.getStarbyId(item.Star2)}</span></td>
 
               <td>${this.formatDate(item.EvazDate) || 'N/A'}</td>
@@ -479,10 +479,10 @@ export class SearchByBillNumberComponent {
   getStarbyId(id: string) {
     console.log(id, 'star id');
     if (this.lang == 'en') {
-      const star = this.nakshatham.find((item) => item.SM_Id == id);
+      const star = this.nakshatham.find((item) => item.id == id);
       return star ? star.SM_NameEng : '';
     } else if (this.lang == 'ml') {
-      const star = this.nakshatham.find((item) => item.SM_Id == id);
+      const star = this.nakshatham.find((item) => item.id == id);
       return star ? star.SM_Name : '';
     }
 

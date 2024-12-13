@@ -44,7 +44,7 @@
   
       <ng-container matColumnDef="Star">
         <th mat-header-cell *matHeaderCellDef> STAR </th>
-        <td mat-cell *matCellDef="let element"> {{ element.Star }} </td>
+        <td mat-cell *matCellDef="let element"> {{getStarbyId( element.Star) }} </td>
       </ng-container>
   
       <ng-container matColumnDef="Qty">

@@ -24,7 +24,7 @@ export class ReportAdvancedbookingComponent {
   displayedColumns: string[] = ['BillNo','BillDate','Vazhipad', 'Name', 'Star', 'Qty', 'Rate', 'Amount',  'VazhiDate', ];
   dataSource = new MatTableDataSource<ReportData>();
   length = 0;
-  pageSize = 5;
+  pageSize = 10;
   pageSizeOptions: number[] = [10,50,100,200,300,500,1000];
   pageIndex = 0;
   data:ReportData[]=[];

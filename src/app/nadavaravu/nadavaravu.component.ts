@@ -164,7 +164,7 @@ console.log(starName,"")
       "NMId":this.nadavaravForm.value?.NMId,
       "Qty":this.nadavaravForm.value?.Qty,
       "weight": this.nadavaravForm.value?.weight,
-      "unit": this.nadavaravForm.value?.BillNo,
+      "unit": this.nadavaravForm.value?.unit,
       "ItemValue": this.nadavaravForm.value?.ItemValue,
       "ReceiptAmount": this.nadavaravForm.value?.ReceiptAmount,
       "Remarks": this.nadavaravForm.value?.Remarks,

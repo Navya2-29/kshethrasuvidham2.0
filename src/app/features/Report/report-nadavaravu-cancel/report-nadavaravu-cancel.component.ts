@@ -24,7 +24,7 @@ export class ReportNadavaravuCancelComponent {
   displayedColumns: string[] = ['BillNo','BillDate','CounterId', 'Name','Star','NM_Name', 'weight','unit', 'Qty','Receipt_Amt','ItemValue','Canceldt','CanceledBY','Reason'];
   dataSource = new MatTableDataSource<ReportData>();
   length = 0;
-  pageSize = 5;
+  pageSize = 10;
   pageSizeOptions: number[] = [10,50,100,200,300,500,1000];
   pageIndex = 0;
   data:ReportData[]=[];

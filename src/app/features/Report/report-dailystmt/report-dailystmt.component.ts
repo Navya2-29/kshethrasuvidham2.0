@@ -13,6 +13,7 @@ import autoTable from 'jspdf-autotable';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { HttpClient } from '@angular/common/http';
+import { MasterService } from '../../../services/master/master.service';
 
 @Component({
   selector: 'app-report-dailystmt',
@@ -26,13 +27,18 @@ export class ReportDailystmtComponent {
   displayedColumns: string[] = ['BillNo','BillDate','Vazhipad', 'Name', 'Star', 'Qty', 'Rate', 'Amount',  'VazhiDate', ];
   dataSource = new MatTableDataSource<ReportData>();
   length = 0;
-  pageSize = 5;
+  pageSize = 10;
   pageSizeOptions: number[] = [10,50,100,200,300,500,1000];
   pageIndex = 0;
   data:ReportData[]=[];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   groupedData: { [key: string]: ReportData[] } = {};
-  constructor(private route: ActivatedRoute, private service: ReportService,private router: Router, private http:HttpClient) {}
+  nakshatham: any[];
+  lang: string | null;
+  constructor(private route: ActivatedRoute,private masterService:MasterService, private service: ReportService,private router: Router, private http:HttpClient) {
+    this.loadStarData();
+    this.lang = localStorage.getItem('Language');
+  }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
@@ -201,7 +207,7 @@ export class ReportDailystmtComponent {
         row.BillNo,
         wrapText(doc, row.Vazhipad, maxColumnWidths[1]), // Wrap Vazhipad
         wrapText(doc, row.Name, maxColumnWidths[2]),     // Wrap Name
-        row.Star,
+        this.getStarbyId(row.Star),
         row.Qty,
         row.Rate.toFixed(2),
         row.Amount.toFixed(2),
@@ -314,8 +320,34 @@ export class ReportDailystmtComponent {
   
 
 
+getStarbyId(id: string) {
+  console.log(id, 'star id');
+  if (this.lang == 'en') {
+    const star = this.nakshatham.find((item) => item.id == id);
+    return star ? star.SM_NameEng : '';
+  } else if (this.lang == 'ml') {
+    const star = this.nakshatham.find((item) => item.id == id);
+    return star ? star.SM_Name : '';
+  }
 
+  // console.log(star,"sssssssssssssssss")
+}
 
+loadStarData(): void {
+  const payLoad = { Type: 'ListStar', Code: '' };
+  this.masterService.getStarData(payLoad).subscribe({
+    next: (data: any[]) => {
+      console.log(data);
+      this.nakshatham = data; // Specify that data is an array of Star
+      
+
+      // console.log('Star Data Loaded:', this.starData); // Debug log
+    },
+    error: (err) => {
+      console.error('Error loading star data:', err);
+    },
+  });
+}
 
 
 

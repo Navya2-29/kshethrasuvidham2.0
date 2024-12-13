@@ -145,6 +145,7 @@ export class CreditcollectionComponent {
   resetSearch(): void {
     this.searchForm.reset();
     this.filteredData = [...this.creditCollectionData];
+    
   }
 
 
@@ -255,6 +256,7 @@ export class CreditcollectionComponent {
       UserId: this.userId,
       CounterId: this.CounterId,
     });
+    this.totalAmount='';
   }
 
   onEdit(data: any) {

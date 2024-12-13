@@ -45,7 +45,7 @@ export class ReportCounterComponent {
   ];
   dataSource = new MatTableDataSource<ReportData>();
   length = 0;
-  pageSize = 5;
+  pageSize = 10;
   pageSizeOptions: number[] = [10,50,100,200,300,500,1000];
   pageIndex = 0;
   data: ReportData[] = [];
@@ -125,12 +125,12 @@ export class ReportCounterComponent {
     const pageWidth = doc.internal.pageSize.width;
     const pageHeight = doc.internal.pageSize.height;
   
-    const headerHeight = 30;
+    const headerHeight = 33;
     const footerHeight = 20;
     const lineHeight = 10;
     const tableHeaderFontSize = 10;
     const contentFontSize = 9;
-  
+    const currentDate = new Date().toLocaleDateString('en-GB');
     // Adjusted column widths for SNo, Vazhipad, Rate, and Amount
     const maxColumnWidths = [15, 100, 30, 30]; // SNo, Vazhipad, Rate, Amount
   
@@ -184,10 +184,13 @@ export class ReportCounterComponent {
       doc.setFontSize(10);
       doc.setFont("NotoSansMalayalam", "bold");
       doc.text("Temple collection Report", pageWidth / 2, 27, { align: "center" });
-  
+   // Add current date below the report title but above the table header
+   doc.setFontSize(10);
+   doc.setFont("NotoSansMalayalam", "normal");
+   doc.text(currentDate, pageWidth / 2, 32, { align: "center" });
       doc.setLineWidth(0.5);
       doc.line(10, y, pageWidth - 10, y); // Line below header
-      y += 3; // Space below the line
+      y += 2; // Space below the line
     };
   
     // Draw Footer
@@ -201,7 +204,7 @@ export class ReportCounterComponent {
     const drawTableHeader = () => {
       doc.setFontSize(tableHeaderFontSize);
       doc.setFont("NotoSansMalayalam", "bold");
-      const headers = ["S.No", "VAZHIPAD", "RATE", "AMOUNT"];
+      const headers = ["SLNo", "VAZHIPAD", "RATE", "AMOUNT"];
       let x = 10;
       headers.forEach((header, index) => {
         doc.text(header, x, y + 5);
@@ -303,7 +306,7 @@ export class ReportCounterComponent {
       // Add group total at the end
       doc.setFontSize(12);
       doc.setFont("NotoSansMalayalam", "bold");
-      doc.text("Group Total:", 10, y + 5); // Label for the group total
+      doc.text("Total:", 10, y + 5); // Label for the group total
       doc.text(groupTotal.toFixed(2), pageWidth - 33, y + 5, { align: "right" }); // Total amount aligned to the right
   
       y += lineHeight + 5; // Add space after the total for the next group or footer

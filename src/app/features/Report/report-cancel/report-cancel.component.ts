@@ -26,7 +26,7 @@ export class ReportCancelComponent {
   displayedColumns: string[] = ['BillNo','BillDate','CounterId', 'VazhiDate', 'Vazhipad',  'Name','Star','Qty','Rate','Amount','Canceldt','CanceledBY','Remarks'];
   dataSource = new MatTableDataSource<ReportData>();
   length = 0;
-  pageSize = 5;
+  pageSize = 10;
   pageSizeOptions: number[] = [10,50,100,200,300,500,1000];
   pageIndex = 0;
   data:ReportData[]=[];

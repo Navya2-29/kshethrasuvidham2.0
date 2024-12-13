@@ -32,7 +32,7 @@
 
      
       <ng-container matColumnDef="NM_Name">
-        <th mat-header-cell *matHeaderCellDef> NM_Name </th>
+        <th mat-header-cell *matHeaderCellDef> ITEM NAME </th>
         <td mat-cell *matCellDef="let element"> {{ element.NM_Name }} </td>
       </ng-container>
   
@@ -60,12 +60,12 @@
         <td mat-cell *matCellDef="let element"> {{ element.weight }} {{element.unit}} </td>
       </ng-container>
       <ng-container matColumnDef="Receipt_Amt">
-        <th mat-header-cell *matHeaderCellDef> Receipt_Amt </th>
+        <th mat-header-cell *matHeaderCellDef> RECIEPT AMOUNT </th>
         <td mat-cell *matCellDef="let element"> {{ element.Receipt_Amt }} </td>
       </ng-container>
   
       <ng-container matColumnDef="TrnMode">
-        <th mat-header-cell *matHeaderCellDef> TrnMode </th>
+        <th mat-header-cell *matHeaderCellDef> PAYMENT MODE </th>
         <td mat-cell *matCellDef="let element"> {{ element.TrnMode }} </td>
       </ng-container>
   

@@ -25,7 +25,7 @@ export class ReportCreditComponent {
   displayedColumns: string[] = ['BillNo','BillDate','Vazhipad', 'Name', 'Mobile','Qty','Rate',  'Amount', 'TransMode'  ];
   dataSource = new MatTableDataSource<ReportData>();
   length = 0;
-  pageSize = 5;
+  pageSize = 10;
   pageSizeOptions: number[] = [10,50,100,200,300,500,1000];
   pageIndex = 0;
   data:ReportData[]=[];

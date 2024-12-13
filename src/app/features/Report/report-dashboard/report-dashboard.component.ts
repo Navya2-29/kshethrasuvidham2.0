@@ -41,16 +41,17 @@ export class ReportDashboardComponent {
   isloading: boolean = false;
   isSearchPerformed: boolean = false;
   newTab: any;
-  
+  today:Date=new Date()
   constructor(
     private fb: FormBuilder,
     private service: ReportService,
     private router: Router
   ) {
+    console.log(this.today)
     this.searchForm = this.fb.group({
       vazhipadOption: ['Poornam'],
-      fromDate: [''],
-      toDate: [''],
+      fromDate: [this.formatDate(this.today)],
+      toDate: [this.formatDate(this.today)],
     });
   }
 
@@ -129,7 +130,7 @@ export class ReportDashboardComponent {
   }
   
   // format date as the dd/mm/yyyy
-  formatDate(dateString: string): string {
+  formatDate(dateString: any): string {
     const date = new Date(dateString);
     const day = ('0' + date.getDate()).slice(-2);
     const month = ('0' + (date.getMonth() + 1)).slice(-2);

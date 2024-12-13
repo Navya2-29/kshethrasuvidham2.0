@@ -33,7 +33,7 @@ export class ReportNadavaravComponent implements  OnInit {
   displayedColumns: string[] = ['BillNo','BillDate','NM_Name', 'Name', 'Star', 'Qty', 'ItemValue','weight', 'Receipt_Amt',  'TrnMode','Remarks' ];
   dataSource = new MatTableDataSource<NadavaravReport>();
   length = 0;
-  pageSize = 5;
+  pageSize = 10;
   pageSizeOptions: number[] = [10,50,100,200,300,500,1000];
   pageIndex = 0;
   data: NadavaravReport[] = [];
@@ -114,12 +114,13 @@ export class ReportNadavaravComponent implements  OnInit {
     const pageWidth = doc.internal.pageSize.width;
     const pageHeight = doc.internal.pageSize.height;
   
-    const headerHeight = 30;
+    const headerHeight = 33;
     const footerHeight = 20;
     const lineHeight = 10;
     const tableHeaderFontSize = 10;
     const contentFontSize = 9;
-  
+    const currentDate = new Date().toLocaleDateString();
+
     // Adjusted column widths for BillNo, Name, Vazhipad, Star, Ennam (Qty), Rate, and Amount
     const maxColumnWidths = [20, 40, 35, 25, 25, 25, 25]; // BillNo, Name, Vazhipad, Star, Ennam (Qty), Rate, Amount
     
@@ -177,7 +178,10 @@ export class ReportNadavaravComponent implements  OnInit {
       doc.setFontSize(10);
       doc.setFont("NotoSansMalayalam", "bold");
       doc.text("Nadavaravu Booking Report", pageWidth / 2, 27, { align: "center" });
-  
+  // Add current date below the report title but above the table header
+  doc.setFontSize(10);
+  doc.setFont("NotoSansMalayalam", "normal");
+  doc.text(currentDate, pageWidth / 2, 32, { align: "center" });
       doc.setLineWidth(0.5);
       doc.line(10, y, pageWidth - 10, y); // Line below header
       y += 3; // Space below the line
