@@ -116,17 +116,13 @@ export class ReportOfferingComponent {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
-
-
-
+  
   generatePDF() {
     const templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
     const templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.width;
     const pageHeight = doc.internal.pageSize.height;
-
-
     this.http
     .get('assets/fonts/malayalam/NotoSansMalayalam-Regular.ttf', {
       responseType: 'arraybuffer',

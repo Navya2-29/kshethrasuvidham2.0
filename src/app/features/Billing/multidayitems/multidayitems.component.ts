@@ -26,7 +26,7 @@ import {
 import { NumberDirective } from '../../../shared/directives/number/number.directive';
 
 import { TotalAmountService } from '../../../shared/service/total-amount.service';
-import { AsyncPipe, CommonModule, DatePipe, formatDate } from '@angular/common';
+import { AsyncPipe, CommonModule, DatePipe } from '@angular/common';
 import {
   MatAutocompleteModule,
   MatAutocompleteSelectedEvent,
@@ -53,7 +53,7 @@ import { TranslateService } from '@ngx-translate/core';
     FormsModule,
     MatInputModule,
     NumberDirective,
-    TranslateModule
+    TranslateModule,
   ],
   templateUrl: './multidayitems.component.html',
   styleUrl: './multidayitems.component.css',
@@ -71,11 +71,12 @@ export class MultidayitemsComponent implements OnInit {
   tomorrowDate: Date;
   minDate: any;
   amountPerDevotee: number = 0;
-  lang:string |null;
+  lang: string | null;
+  // seasonalDates:{fromDate:string,toDate:string}={fromDate:"",toDate:""}
   // dayList: { date: Date | string; kollavarshamData: any }[] = [];
   // kollavarsham: any[] = [];
   daysList: any[] = [];
-  selectedVazhipadItem:any;
+  selectedVazhipadItem: any;
   updatedDayList: any[] = [];
   devotees: FormArray;
   rateChange: string = 'N';
@@ -85,77 +86,15 @@ export class MultidayitemsComponent implements OnInit {
   filteredStars: Observable<string[]>[] = [];
   starList: string[] = [];
   MlayalamDays = [
-    '1',
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7',
-    '8',
-    '9',
-    '10',
-    '11',
-    '12',
-    '13',
-    '14',
-    '15',
-    '16',
-    '17',
-    '18',
-    '19',
-    '20',
-    '21',
-    '22',
-    '23',
-    '24',
-    '25',
-    '26',
-    '27',
-    '28',
-    '29',
-    '30',
-    '31',
-    '32',
+    '1','2','3', '4', '5','6','7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23','24','25','26','27','28','29','30','31','32',
   ];
   EnglishDays = [
-    '1',
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7',
-    '8',
-    '9',
-    '10',
-    '11',
-    '12',
-    '13',
-    '14',
-    '15',
-    '16',
-    ' 17',
-    '18',
-    '19',
-    '20',
-    '21',
-    '22',
-    '23',
-    ' 24',
-    '25',
-    '26',
-    '27',
-    ' 28',
-    ' 29',
-    '30',
-    '31',
+    '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', ' 17', '18', '19','20','21','22','23',' 24','25','26','27',' 28',' 29','30','31',
   ];
   malayalamMonthList: any[];
   multidayFilterForm: FormGroup;
   multiDayList: multiDayFilter[] = [];
   updatedmultiDayList: multiDayFilter[] = [];
-  
 
   private readonly masterservice = inject(MasterService);
   constructor(
@@ -165,7 +104,7 @@ export class MultidayitemsComponent implements OnInit {
     private datePipe: DatePipe,
     private ts: TranslateService
   ) {
-    this.lang=localStorage.getItem('Language')
+    this.lang = localStorage.getItem('Language');
     const userLang = navigator.language || 'en';
     const languageCode = userLang.split('-')[0];
     this.ts.setDefaultLang(languageCode);
@@ -200,6 +139,7 @@ export class MultidayitemsComponent implements OnInit {
       booking: [{ disabled: true, value: '' }],
       ratechange: [{ disabled: true, value: '' }],
       VM_Receipt: [{ disabled: true, value: '' }],
+      // VM_Seasonal: [{ disabled: true, value: '' }],
       // allowedDays: this.fb.array([]),
       // dateToSet: [''],
       // seasonalDates: this.fb.group({
@@ -224,7 +164,7 @@ export class MultidayitemsComponent implements OnInit {
   createDevotee(): FormGroup {
     return this.fb.group({
       Name: ['', [Validators.required]],
-      Star: ['',[Validators.required] ],
+      Star: ['', [Validators.required]],
       Name2: [''],
       Star2: [''],
     });
@@ -292,12 +232,9 @@ export class MultidayitemsComponent implements OnInit {
     }
   }
 
-
-
-
   // star data auto compleate
 
-  setUpstarAutocomplete(){
+  setUpstarAutocomplete() {
     const devoteesArray = this.form.get('devotees') as FormArray;
     devoteesArray.controls.forEach((control, index) => {
       this.filteredStars[index] = control.get('Star')!.valueChanges.pipe(
@@ -307,13 +244,12 @@ export class MultidayitemsComponent implements OnInit {
     });
   }
 
-
   private _filterStar(value: string): string[] {
     const filterValue = value.toLowerCase();
-    return this.nakshatham.filter((star) => star.SM_NameEng.toLowerCase().includes(filterValue));
+    return this.nakshatham.filter((star) =>
+      star.SM_NameEng.toLowerCase().includes(filterValue)
+    );
   }
-
-
 
   removeDevotee(index: number) {
     if (this.devotees.length === 1) {
@@ -402,7 +338,7 @@ export class MultidayitemsComponent implements OnInit {
     return this.VMList.filter(
       (option) =>
         option.VM_Name.toLowerCase().includes(filterValue) ||
-        option.VM_Code.toLowerCase().includes(filterValue)||
+        option.VM_Code.toLowerCase().includes(filterValue) ||
         option.VM_RName.toLowerCase().includes(filterValue)
     );
   }
@@ -457,21 +393,22 @@ export class MultidayitemsComponent implements OnInit {
     const selectedVazhipad = event.option.value;
     this.form.get('Vazhipad')?.setValue(selectedVazhipad);
 
-    if (this.lang=='en'){
+    if (this.lang == 'en') {
       this.selectedVazhipadItem = this.VMList.find(
         (item) => item.VM_Name === selectedVazhipad
       );
-    }else if(this.lang=='ml'){
+    } else if (this.lang == 'ml') {
       this.selectedVazhipadItem = this.VMList.find(
         (item) => item.VM_RName === selectedVazhipad
       );
     }
-   
+
     console.log(this.selectedVazhipadItem);
     if (this.selectedVazhipadItem) {
       // Fetch vazhipad details using VM_Code
       console.log(this.selectedVazhipadItem);
       this.form.get('Vazhid')?.setValue(this.selectedVazhipadItem.VM_Id);
+      // this.getSeasnalalVazhipadData(this.selectedVazhipadItem.VM_Id);
       const vazhipadCode = this.selectedVazhipadItem.VM_Code;
       console.log(vazhipadCode);
       this.fetchVazhipadDetails(vazhipadCode);
@@ -493,6 +430,7 @@ export class MultidayitemsComponent implements OnInit {
         }
         this.form.get('multiName')?.setValue(res[0].VM_MultiName);
         this.form.get('VTime')?.setValue(res[0].VM_Time);
+        // this.form.get('VM_Seasonal')?.setValue(res[0].VM_Time);
         this.rateChange = res[0].VM_Rate_Change;
         const booking = res[0].VM_Booking;
         const receipt = res[0].VM_Receipt;
@@ -506,21 +444,19 @@ export class MultidayitemsComponent implements OnInit {
             this.prathishtaOptions = data;
             console.log(this.prathishtaOptions);
             if (this.prathishtaOptions.length > 0) {
-              if(this.lang==='en'){
+              if (this.lang === 'en') {
                 const defaultPrathishta = this.prathishtaOptions[0].PM_Name;
                 const defaultPrathishtaId = this.prathishtaOptions[0].PM_ID;
                 console.log(this.prathishtaOptions[0].PM_Name);
                 this.form.get('Prethista')?.setValue(defaultPrathishta);
                 this.form.get('PMid')?.setValue(defaultPrathishtaId);
-              }
-              else if(this.lang=='ml'){
+              } else if (this.lang == 'ml') {
                 const defaultPrathishta = this.prathishtaOptions[0].PM_RegName;
                 const defaultPrathishtaId = this.prathishtaOptions[0].PM_ID;
                 console.log(this.prathishtaOptions[0].PM_RegName);
                 this.form.get('Prethista')?.setValue(defaultPrathishta);
                 this.form.get('PMid')?.setValue(defaultPrathishtaId);
               }
-              
             }
           });
       });
@@ -544,37 +480,92 @@ export class MultidayitemsComponent implements OnInit {
   }
 
   onSubmit() {
+    const vid = this.form.get('Vazhid')?.value;
+
+    // Fetch seasonal date validation data
+    this.masterservice.getSeasonalVazhipadDateCheck(vid).subscribe({
+      next: (data) => {
+        console.log(data, 'Seasonal Vazhipad Date Check Response');
+
+        if (data && data.length > 0) {
+          this.seasonalDates = {
+            fromDate: data[0].VS_FromDate,
+            toDate: data[0].VS_ToDate,
+          };
+          console.log(this.seasonalDates, 'Seasonal Dates');
+        } else {
+          this.seasonalDates = null// Clear previous data if no seasonal range is returned
+        }
+
+        this.validateAndSubmit(); // Proceed with validation after receiving data
+      },
+      error: (err) => {
+        console.error('Error fetching seasonal dates:', err);
+        this.notification.showError(
+          'Failed to validate seasonal dates. Please try again later.',
+          'Error'
+        );
+      },
+    });
+  }
+
+  validateAndSubmit() {
+    const enteredFromDate = this.form.get('VazhipadDate')?.value;
+    const enteredToDate = this.form.get('EndDate')?.value;
+    console.log(enteredFromDate, enteredToDate, 'entered dates');
+
+    // Seasonal date validation
+    if (this.seasonalDates) {
+      // const seasonalFromDate = new Date(this.seasonalDates.fromDate);
+      // const seasonalToDate = new Date(this.seasonalDates.toDate);
+const seasonaldateValidate=this.isDateWithinRange(
+  enteredFromDate,
+  enteredToDate,
+  this.seasonalDates.fromDate,
+  this.seasonalDates.toDate
+)
+      if (
+        seasonaldateValidate===false
+      ) {
+        console.log(seasonaldateValidate,"vaidation after")
+        this.notification.showError(
+          `The selected dates are not within the allowed range `,
+          'Invalid Dates'
+        );
+        return; // Stop submission
+      }
+    }
+console.log(this.form.valid ,"vaidate forms sssssssssssssssssssssss")
+    // Proceed with form submission if validation passes
     if (this.form.valid && this.devotees.valid) {
       const formValues = this.form.value;
-      console.log(formValues);
-      const devoteeArray = formValues.devotees.map((devotee: any) => {
-        return {
-          Slno: '',
-          PMid: formValues.PMid,
-          Vazhid: formValues.Vazhid,
-          Prethista: formValues.Prethista,
-          Vazhipad: formValues.Vazhipad,
-          Name: devotee.Name,
-          Star: devotee.Star,
-          Name2: devotee.Name2,
-          Star2: devotee.Star2,
-          Qty: formValues.Qty,
-          Rate: formValues.Rate,
-          Amount: (formValues.Qty * formValues.Rate).toString(),
-          TotalAmt: (
-            formValues.Qty *
-            formValues.Rate *
-            formValues.NoOfDays
-          ).toString(),
-          Postal: '0',
-          VazhipadDate: formValues.VazhipadDate,
-          Mday: '',
-          NalBy: '',
-          Mmonth: '',
-          VTime: '1',
-        };
-      });
-      console.log(devoteeArray);
+
+      const devoteeArray = formValues.devotees.map((devotee: any) => ({
+        Slno: '',
+        PMid: formValues.PMid,
+        Vazhid: formValues.Vazhid,
+        Prethista: formValues.Prethista,
+        Vazhipad: formValues.Vazhipad,
+        Name: devotee.Name,
+        Star: devotee.Star,
+        Name2: devotee.Name2,
+        Star2: devotee.Star2,
+        Qty: formValues.Qty,
+        Rate: formValues.Rate,
+        Amount: (formValues.Qty * formValues.Rate).toString(),
+        TotalAmt: (
+          formValues.Qty *
+          formValues.Rate *
+          formValues.NoOfDays
+        ).toString(),
+        Postal: '0',
+        VazhipadDate: formValues.VazhipadDate,
+        Mday: '',
+        NalBy: '',
+        Mmonth: '',
+        VTime: '1',
+      }));
+
       const finalArray: any[] = [];
       this.multiDayList.forEach((item: any) => {
         const disdate = item.disdate;
@@ -584,7 +575,7 @@ export class MultidayitemsComponent implements OnInit {
           +dateParts[1] - 1,
           +dateParts[0]
         );
-        
+
         devoteeArray.forEach((devotee: any) => {
           finalArray.push({ ...devotee, VazhipadDate: formattedDisdate });
         });
@@ -598,6 +589,57 @@ export class MultidayitemsComponent implements OnInit {
       this.validateDevoteeName();
     }
   }
+
+  formatToDDMMYYYY(dateString: string): string {
+    const date = new Date(dateString); // Parse the date string
+    const day = String(date.getDate()).padStart(2, '0'); // Get the day with leading zero
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Get the month (0-indexed)
+    const year = date.getFullYear(); // Get the year
+    return `${day}-${month}-${year}`; // Return in dd-MM-yyyy format
+  }
+  // parseDDMMYYYYToDate(dateString: string): Date {
+  //   const [day, month, year] = dateString.split('-').map(Number); // Split and parse
+  //   return new Date(year, month - 1, day); // Create a Date object (month is 0-indexed)
+  // }
+
+
+  formatToDDMMYYYYDate(date: Date): string {
+    const day = String(date.getDate()).padStart(2, '0'); // Add leading zero if needed
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const year = date.getFullYear();
+
+    return `${day}-${month}-${year}`;
+}
+
+  isDateWithinRange(
+    enteredFromDate: any,
+    enteredToDate: any,
+    seasonalFromDate: any,
+    seasonalToDate: any
+  ): boolean {
+    const seasonalFromDates = this.formatToDDMMYYYY(seasonalFromDate);
+    const seasonalToDates = this.formatToDDMMYYYY(seasonalToDate);
+    const enteredFromDates=this.formatToDDMMYYYY(enteredFromDate);
+
+    const [day, month, year] = enteredToDate.split('-').map(Number);
+const endDate = new Date(year, month - 1, day);
+    const enteredToDates=this.formatToDDMMYYYYDate(endDate)
+    console.log(seasonalFromDates, seasonalToDates ,enteredFromDates,enteredToDates,"after data formt " )
+    console.log(typeof(seasonalFromDates), typeof(seasonalToDates) ,typeof(enteredFromDates),typeof(enteredToDates),"after data formt types " )
+    console.log( enteredFromDates >=seasonalFromDates &&
+      enteredToDates <= seasonalToDates &&
+      enteredFromDates <= enteredToDates,"to know the output ");
+    
+    return (
+      enteredFromDates >=seasonalFromDates &&
+      enteredToDates <= seasonalToDates &&
+      enteredFromDates <= enteredToDates
+    );
+  }
+
+  // formatDate(date: Date): string {
+  //   return date.toLocaleDateString('en-GB'); // Format as dd/mm/yyyy
+  // }
 
   cancel() {
     this.dialogRef.close();
@@ -627,11 +669,11 @@ export class MultidayitemsComponent implements OnInit {
     const englishday = this.multidayFilterForm.get('EngishDay')?.value;
     const malday = this.multidayFilterForm.get('MalDay')?.value;
     const thithi = this.multidayFilterForm.get('Thithi')?.value;
-this.form.patchValue({
-  Mday:engMonth,
-  NalBy:star,
-  Mmonth: malMonth,
-})
+    this.form.patchValue({
+      Mday: engMonth,
+      NalBy: star,
+      Mmonth: malMonth,
+    });
     console.log(englishday);
     let type: string | null = null;
     if (star && englishday && !engMonth && !malMonth && !malday && !thithi) {
@@ -839,7 +881,6 @@ this.form.patchValue({
     this.getmultidayfilterData();
   }
 
-
   onCancelClick() {
     this.multidayFilterForm.patchValue({
       Star: '',
@@ -869,12 +910,12 @@ this.form.patchValue({
   vazhipadValidator(control: AbstractControl): ValidationErrors | null {
     const vazhipad = control.value;
     var vmExists;
-    if(this.lang==='en'){
-       vmExists = this.VMList.some((vm) => vm.VM_Name === vazhipad);
-    }else if(this.lang=='ml'){
+    if (this.lang === 'en') {
+      vmExists = this.VMList.some((vm) => vm.VM_Name === vazhipad);
+    } else if (this.lang == 'ml') {
       vmExists = this.VMList.some((vm) => vm.VM_RName === vazhipad);
     }
-   
+
     if (!vmExists) {
       return { invalidVazhipad: true };
     }
@@ -902,11 +943,5 @@ this.form.patchValue({
       });
       console.log('Last Date:', endDate);
     }
-
-   
   }
-
-
-
-
 }

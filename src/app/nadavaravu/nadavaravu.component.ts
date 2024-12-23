@@ -21,7 +21,13 @@ import { TranslateModule } from '@ngx-translate/core';
 @Component({
   selector: 'app-nadavaravu',
   standalone: true,
-  imports: [MatIconModule, TranslateModule,CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [
+    MatIconModule,
+    TranslateModule,
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
+  ],
   templateUrl: './nadavaravu.component.html',
   styleUrl: './nadavaravu.component.css',
 })
@@ -42,16 +48,18 @@ export class NadavaravuComponent implements OnInit {
   today: Date = new Date();
   cancellationReason: string;
   cancelBillNumber: string;
-  nadavaravuDataPrint:any;
-  templeName:string |null;
-  templeAddress:string |null;
-  logo:string |null;
-  name:string |null;
+  nadavaravuDataPrint: any;
+  templeName: string | null;
+  templeAddress: string | null;
+  logo: string | null;
+  name: string | null;
   templeLogoUrl: string = '';
-starName:string;
-  dupliacteBillData:any;
-  itemName:string;
-  lang:string |null;
+  starName: string;
+  dupliacteBillData: any;
+  itemName: string;
+  lang: string | null;
+  todayDate = new Date();
+  duplicateBillFlag: boolean = false;
   constructor(
     private fb: FormBuilder,
     private service: MasterService,
@@ -60,7 +68,7 @@ starName:string;
     private dialog: MatDialog,
     private ts: TranslateService
   ) {
-    this.lang=localStorage.getItem('Language')
+    this.lang = localStorage.getItem('Language');
     const userLang = navigator.language || 'en';
     const languageCode = userLang.split('-')[0];
     this.ts.setDefaultLang(languageCode);
@@ -68,15 +76,14 @@ starName:string;
     this.userId = localStorage.getItem('LoginId');
     this.role = localStorage.getItem('Role');
     this.CounterId = localStorage.getItem('counterId');
-    this.templeName=localStorage.getItem('TempleName');
-    this.templeAddress=localStorage.getItem('Address');
-    this.logo=localStorage.getItem('Logo');
-    this.name=localStorage.getItem('name');
-    
-    if(this.logo){
+    this.templeName = localStorage.getItem('TempleName');
+    this.templeAddress = localStorage.getItem('Address');
+    this.logo = localStorage.getItem('Logo');
+    this.name = localStorage.getItem('name');
 
-      this.templeLogoUrl=`assets/images/${this.logo}`;
-      console.log( this.templeLogoUrl);
+    if (this.logo) {
+      this.templeLogoUrl = `assets/images/${this.logo}`;
+      // console.log(this.templeLogoUrl);
     }
     this.nadavaravForm = this.fb.group({
       BillNo: ['', [Validators.required]],
@@ -110,8 +117,6 @@ starName:string;
     this.getNadavaravuData();
   }
 
-
-  
   setupConditionalValidationForItemValue() {
     this.nadavaravForm.get('ItemValue')?.valueChanges.subscribe((value) => {
       if (value) {
@@ -126,9 +131,8 @@ starName:string;
     });
   }
 
-
-
   onSubmit() {
+    this.duplicateBillFlag = false;
     if (this.nadavaravForm.invalid) {
       this.notification.error(
         'Please fill the form before saving.',
@@ -137,55 +141,54 @@ starName:string;
       this.markAllFieldsAsTouched();
       return;
     }
-    console.log(this.nadavaravForm.value);
+    // console.log(this.nadavaravForm.value, 'form value');
     // const payLoad = {};
-     // Get the Star ID from the form
-  const starId = this.nadavaravForm.get('Star')?.value;
-  console.log(starId,"iiiiiiiiiiii");
-  const starName = this.getStarNameById(starId);
-  this.starName=this.getStarNameById(starId); // Map the Star ID to Star Name
-console.log(starName,"")
+    // Get the Star ID from the form
+    const starId = this.nadavaravForm.get('Star')?.value;
+    // console.log(starId,"iiiiiiiiiiii");
+    const starName = this.getStarNameById(starId);
+    this.starName = this.getStarNameById(starId); // Map the Star ID to Star Name
+    // console.log(starName,"")
 
-  const itemName=this.getItemById(this.nadavaravForm.value?.NMId)
-  console.log(itemName,"aaaaaaaaaaaaaaaaaaaaaaa")
-  this.itemName=itemName
-  const formData = this.nadavaravForm.value;
-  formData.Star = starName; 
-  console.log(formData); 
+    const itemName = this.getItemById(this.nadavaravForm.value?.NMId);
+    // console.log(itemName, 'aaaaaaaaaaaaaaaaaaaaaaa');
+    this.itemName = itemName;
+    const formData = this.nadavaravForm.value;
+    formData.Star = starName;
+    // console.log(formData);
 
-  // Continue with your service call to submit the form data
-  this.nadavaravuDataPrint = formData;
-    const payLoad={
-      "BillNo": this.nadavaravForm.value?.BillNo,
-      "Name": this.nadavaravForm.value?.Name,
-      "Star": starId,
-      "Address": this.nadavaravForm.value?.Address,
-      "Description":this.nadavaravForm.value?.Description,
-      "NMId":this.nadavaravForm.value?.NMId,
-      "Qty":this.nadavaravForm.value?.Qty,
-      "weight": this.nadavaravForm.value?.weight,
-      "unit": this.nadavaravForm.value?.unit,
-      "ItemValue": this.nadavaravForm.value?.ItemValue,
-      "ReceiptAmount": this.nadavaravForm.value?.ReceiptAmount,
-      "Remarks": this.nadavaravForm.value?.Remarks,
-      "TrnsMode": this.nadavaravForm.value?.TrnsMode,
-      "UserId":this.nadavaravForm.value?.UserId,
-      "CounterId": this.nadavaravForm.value?.CounterId
-  }
+    // Continue with your service call to submit the form data
+    this.nadavaravuDataPrint = formData;
+    const payLoad = {
+      BillNo: this.nadavaravForm.value?.BillNo,
+      Name: this.nadavaravForm.value?.Name,
+      Star: starId,
+      Address: this.nadavaravForm.value?.Address,
+      Description: this.nadavaravForm.value?.Description,
+      NMId: this.nadavaravForm.value?.NMId,
+      Qty: this.nadavaravForm.value?.Qty,
+      weight: this.nadavaravForm.value?.weight,
+      unit: this.nadavaravForm.value?.unit,
+      ItemValue: this.nadavaravForm.value?.ItemValue,
+      ReceiptAmount: this.nadavaravForm.value?.ReceiptAmount,
+      Remarks: this.nadavaravForm.value?.Remarks,
+      TrnsMode: this.nadavaravForm.value?.TrnsMode,
+      UserId: this.nadavaravForm.value?.UserId,
+      CounterId: this.nadavaravForm.value?.CounterId,
+    };
     this.service.nadavaravBooking(payLoad).subscribe({
       next: (data) => {
-        console.log(data);
+        // console.log(data);
 
         if (data.RespStatus == 'I') {
-         
           this.notification.success(data.RespMsg);
           this.resetForm();
-          this.printNadavaravuData()
+          this.printNadavaravuData();
           const currentBillnumber = this.lastBillnumber + 1;
-          console.log(currentBillnumber, '_1');
+          // console.log(currentBillnumber, '_1');
           this.service.updateNadavaravuBillNumber(currentBillnumber).subscribe({
             next: (data) => {
-              console.log(data, 'update');
+              // console.log(data, 'update');
               this.getBillNumber();
               this.getNadavaravuData();
             },
@@ -225,17 +228,16 @@ console.log(starName,"")
       CounterId: this.CounterId,
     });
     this.getBillNumber();
+    this.duplicateBillFlag = false;
   }
-
 
   getStar() {
     const payLoad = { Type: 'ListStar', Code: '' };
     this.service.getStarData(payLoad).subscribe((res) => {
       this.nakshatham = res;
-      console.log(this.nakshatham);
+      // console.log(this.nakshatham);
     });
   }
-
 
   getNadavaravuItem() {
     const payLoad = {
@@ -245,12 +247,11 @@ console.log(starName,"")
 
     this.service.getItemMaster(payLoad).subscribe({
       next: (data) => {
-        console.log(data,"bbbbbbbbbbbbbbbbbb");
+        // console.log(data, 'bbbbbbbbbbbbbbbbbb');
         this.itemMaster = data;
       },
     });
   }
-
 
   getBillNumber() {
     const payLoad = {
@@ -259,16 +260,16 @@ console.log(starName,"")
     };
     this.service.getNadavaravBillNumber(payLoad).subscribe({
       next: (data) => {
-        console.log(data);
+        // console.log(data);
 
-        console.log(data[0].billno);
+        // console.log(data[0].billno);
         this.lastBillnumber = data[0].billno;
         this.theLastBillNo =
           'NV' + this.lastBillnumber.toString() + '/' + this.currentDate;
-        console.log(this.theLastBillNo);
+        // console.log(this.theLastBillNo);
         this.currentBillNumber =
           (this.lastBillnumber + 1).toString() + '/' + this.currentDate;
-        console.log(this.currentBillNumber);
+        // console.log(this.currentBillNumber);
         this.nadavaravForm.patchValue({
           BillNo: this.theLastBillNo,
         });
@@ -286,9 +287,10 @@ console.log(starName,"")
   getNadavaravuData() {
     const payLoad = { Type: 'NadavaravuBooking', Code: '' };
     this.service.getNadavaravBooking(payLoad).subscribe((data) => {
-      console.log(data);
+      // console.log(data);
       this.nadavaravData = data;
       this.filteredData = this.nadavaravData;
+      // console.log(this.filteredData, 'all nadavaravu data');
     });
   }
 
@@ -297,7 +299,7 @@ console.log(starName,"")
       .get('searchBillNO')
       ?.value?.trim()
       .toLowerCase(); // Case insensitive
-    console.log(searchBillNo);
+    // console.log(searchBillNo);
     if (!searchBillNo) {
       this.filteredData = this.nadavaravData; // Show all data if no input
       return;
@@ -308,11 +310,9 @@ console.log(starName,"")
     );
 
     if (this.filteredData.length === 0) {
-      console.log('No records found for the entered bill number.');
+      // console.log('No records found for the entered bill number.');
     }
   }
-
-  
 
   goBack() {
     this.router.navigate(['dashboard']);
@@ -327,10 +327,10 @@ console.log(starName,"")
     remarkDialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.cancellationReason = result; // Update the cancellationReason with the value from the dialog
-        console.log('Updated Cancellation Reason:', this.cancellationReason);
+        // console.log('Updated Cancellation Reason:', this.cancellationReason);
         this.OnCancelSubmit();
       } else {
-        console.log('Dialog was closed without submitting the reason.');
+        // console.log('Dialog was closed without submitting the reason.');
       }
     });
   }
@@ -342,7 +342,7 @@ console.log(starName,"")
 
   OnCancelSubmit() {
     this.cancellationReason;
-    console.log(this.cancellationReason, 'cancellarion reason');
+    // console.log(this.cancellationReason, 'cancellarion reason');
 
     const payLoad = {
       Type: 'Nadavaravu',
@@ -350,60 +350,100 @@ console.log(starName,"")
       CancelBy: this.userId,
       Remarks: this.cancellationReason,
     };
-    console.log(payLoad, 'payload');
+    // console.log(payLoad, 'payload');
     this.service.cancellBill(payLoad).subscribe({
       next: (data: any) => {
         if (data.RespStatus === 'U') {
-          console.log(data, 'cancel bill response');
+          // console.log(data, 'cancel bill response');
           if (this.dialog) {
-            // this.dialog.close(); // This will close only the remark popup
           }
           // this.searchBillNumber();
+          this.getNadavaravuData();
+          this.notification.success("Successfully cancelled the Bill")
+
         }
       },
       error: (err) => {
         console.log(err);
+        this.notification.error(err)
       },
     });
   }
 
+  duplicateBill(item: any) {
+    this.duplicateBillFlag = true;
 
-  duplicateBill(item:any){
-   console.log(item,"dattataaa") 
-   this.dupliacteBillData=item
-   console.log(this.dupliacteBillData,"dattataaa") 
+    this.dupliacteBillData = item;
+    const payLoad = {
+      BillNo: item.BillNo,
+      Userid: this.userId,
+      CounterId: this.CounterId,
+      Type: 'Nadavaravu',
+    };
+
+    this.service.duplicateCount(payLoad).subscribe((data) => {
+      this.printNadavaravuData();
+    });
   }
- 
 
-  
   printNadavaravuData() {
-    const printSection = document.getElementById('nadavaravuPrintSection');
-    if (printSection) {
-      // Open a new window for printing
-      const printWindow = window.open('', '_blank', 'width=600,height=400');
-      printWindow?.document.write('<html><head><title>Print Receipt</title></head><body>');
-      printWindow?.document.write(printSection.innerHTML); // Add the content to the print window
-      printWindow?.document.write('</body></html>');
-      printWindow?.document.close(); // Close the document for rendering
-      printWindow?.print(); // Trigger the print dialog
+    if (this.duplicateBillFlag) {
+      var printContents = document.getElementById('duplicateRecipt')?.innerHTML;
+    } else {
+      var printContents = document.getElementById('receipt')?.innerHTML;
     }
 
+    const printWindow = window.open('', '', 'height=500, width=800');
+    if (printWindow) {
+      printWindow.document.write(
+        '<html><head><title>Print Receipt</title></head><body>'
+      );
+      printWindow.document.write(printContents || '');
+      printWindow.document.write('</body></html>');
+      printWindow.document.close();
+      printWindow.print();
+    }
+  }
 
+  getTransactionType(transmode: string): string {
+    switch (transmode) {
+      case 'ON':
+        return 'ONLINE';
+      case 'CS':
+        return 'CASH';
+      case 'MO':
+        return 'MONEY ORDER';
+      case 'UP':
+        return 'UPI';
+      case 'CH':
+        return 'CHEQUE';
+      case 'CR':
+        return 'CREDIT';
+      case 'DE':
+        return 'DEBIT';
+
+      default:
+        return 'OTHERS';
+    }
   }
 
   getStarNameById(starId: number): string {
-    console.log(starId,"zxcz");
-    const star = this.nakshatham.find((s) => s.id == starId);
-    console.log(star);
-    return star ? star.SM_NameEng : ''; // Return the name if found, otherwise return an empty string
-  }
+    if (starId) {
+      const star = this.nakshatham.find((s) => s.id == starId);
 
+      return star ? star.SM_NameEng : '';
+    } else {
+      return '';
+    }
+  }
 
   getItemById(itemid: any): string {
-    console.log(itemid,"zxcz");
-    const star = this.itemMaster.find((s) => s.NM_Id == itemid);
-    console.log(star);
-    return star ? star.NM_Name : ''; // Return the name if found, otherwise return an empty string
-  }
+    if (itemid) {
+      const star = this.itemMaster.find((s) => s.NM_Id == itemid);
 
+      return star ? star.NM_Name : '';
+    } else {
+      return '';
+    }
+  }
 }

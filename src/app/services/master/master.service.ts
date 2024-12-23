@@ -888,6 +888,15 @@ updateNadavaravuBillNumber(currentbillnumber: any): Observable<any[]> {
     );
   }
 
+    getBlockedListCheck(){
+     const payLoad={Type:"BlockingAll",code:"" }
+      return this.http.post<any>(
+      Constant.BASE_URL + Constant.METHODS.GET_MASTER,
+      payLoad
+    );
+
+  }
+
   // error handling
   private errorHandler(error: HttpErrorResponse) {
     //

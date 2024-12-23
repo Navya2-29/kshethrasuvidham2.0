@@ -25,6 +25,7 @@
                     class="form-control sps"
                     formControlName="VM_code"
                     placeholder="Enter Code"
+                  
                   />
                 </td>
 
@@ -64,7 +65,7 @@
                 <td colspan="3">
                   <input
                     type="radio"
-                    value="Y"
+                    value="W"
                     name="VB_radio"
                     formControlName="VB_radio"
                     class="m-2"
@@ -74,7 +75,7 @@
                     type="radio"
                     name="VB_radio"
                     formControlName="VB_radio"
-                    value="M"
+                    value="D"
                   />
                   Date wise
                   <input
@@ -102,7 +103,7 @@
                   <small>Blocking category is required.</small>
                 </div>
               </div>
-              <tr *ngIf="VB_category != 'Yearly'">
+              <tr *ngIf="VB_category != 'Weakly'">
                 <td>
                   <label class="font-weight:bold"
                     ><b>{{ VB_category }} Blocking</b></label
@@ -110,9 +111,9 @@
                   Date Category<span class="text-danger">*</span>
                 </td>
               </tr>
-              <tr *ngIf="VB_category != 'Yearly'">
+              <tr *ngIf="VB_category != 'Weakly'">
                 <td colspan="3">
-                  <input
+                  <input 
                     type="radio"
                     name="VB_DateType"
                     class="ml-3"
@@ -145,7 +146,7 @@
                 </div>
               </div>
 
-              <tr *ngIf="VB_category === 'Yearly'">
+              <tr *ngIf="VB_category === 'Weakly'">
                 <td>
                   <mat-label>Days</mat-label>
 
@@ -154,7 +155,7 @@
                     multiple
                     style="background-color: white"
                     class="form-control sps placeholder"
-placeholder="Select Days"
+                    placeholder="Select Days"
                   >
                     @for (topping of toppingList; track topping) {
                     <mat-option [value]="topping">{{ topping }}</mat-option>
@@ -162,7 +163,7 @@ placeholder="Select Days"
                   </mat-select>
                 </td>
               </tr>
-              <tr *ngIf="VB_category != 'Yearly'">
+              <tr>
                 <td>
                   From date<span class="text-danger">*</span
                   ><input
@@ -509,12 +510,12 @@ placeholder="Select Days"
                     {{ data.VB_Reasion }}
                   </td>
                   <td style="text-align: left; padding-left: 3px">
-                    <mat-icon
+                    <!-- <mat-icon
                       title="Edit"
                       class="small pt-2"
                       (click)="onEdit(data)"
                       >edit</mat-icon
-                    >
+                    > -->
                     <mat-icon
                       title="Delete"
                       class="small pt-2"

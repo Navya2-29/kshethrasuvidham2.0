@@ -636,9 +636,9 @@ console.log(this.selectedVazhipadItem)
   }
 
   // fetch parthishta details
-  private formatDate(date: Date): string {
-    return date.toISOString().split('T')[0];
-  }
+  // private formatDate(date: Date): string {
+  //   return date.toISOString().split('T')[0];
+  // }
 
   // fetch prathista detasils
   selectedVazhipadPrathistaDetails(vazhipadcode: any, index: number) {

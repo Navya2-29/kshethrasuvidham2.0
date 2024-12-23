@@ -11,6 +11,11 @@
     
 }
 
+.left{
+  text-align: left;
+  align-items: left;
+}
+
 .main {
     display:block;
     width:100%;

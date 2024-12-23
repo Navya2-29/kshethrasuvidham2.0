@@ -968,7 +968,7 @@ printReceiptsDotmetrix(data: any) {
 
   let allReceiptsContent = '';
   const cmToPx = (cm: number) => cm * 37.8; // Convert cm to pixels
-  const maxRowsPerPage = 4; // Maximum rows per page
+  const maxRowsPerPage = 3; // Maximum rows per page
 
   const groups = Object.keys(groupedData);
 

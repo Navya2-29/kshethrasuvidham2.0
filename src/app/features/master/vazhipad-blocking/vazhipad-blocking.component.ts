@@ -31,7 +31,7 @@ export class VazhipadBlockingComponent {
   filteredBlockingMater: VazhipadBlocking[] = [];
   vazhipadBlockingForm: FormGroup;
   blockingCategory: boolean = false;
-  VB_category: string = 'Yearly';
+  VB_category: string = 'Weakly';
   nakshatham:any[];
   showNoRecordsMessage: boolean = false;
   filteredOptions: Observable<string[]>;
@@ -41,6 +41,7 @@ export class VazhipadBlockingComponent {
   updateFlag: boolean = false;
   Id: string;
   VM_Id: number;
+  loginId:string| null;
   dateType: string;
   VMList:VMList[] = [];
   private formBuilder = inject(FormBuilder);
@@ -51,25 +52,41 @@ export class VazhipadBlockingComponent {
   toppingList: string[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Saturday'];
   constructor(private datePipe: DatePipe , private router:Router) {
     // form model
-    this.templeName=localStorage.getItem('TempleName') 
+    this.templeName=localStorage.getItem('TempleName') ;
+    this.loginId=localStorage.getItem('LoginId') ;
     this.vazhipadBlockingForm = this.formBuilder.group({
+      vazhId:"",
+      VBID:"",
       VM_code: ['', [Validators.required]],
       VM_name: ['', ],
       VB_FromDate: [''],
       VB_ToDate: [''],
       VB_Reasion: ['', [Validators.required]],
       Nakshathra: ["0"],
-      VB_radio: ['Y', ],
+      VB_radio: ['W', ],
       VB_DateType: ['E',],
       VB_MalFDay: ['',[Validators.pattern('^[1-9][0-9]*$')]],
       VB_MalFMonth: ['',[Validators.pattern('^[1-9][0-9]*$')]],
       VB_MalFYear: ['',[Validators.pattern('^[1-9][0-9]*$')]],
       VB_MalTDay: ['',[Validators.pattern('^[1-9][0-9]*$')]],
       VB_MalTMonth: ['',[Validators.pattern('^[1-9][0-9]*$')]],
-      VB_MalTYear: ['',[Validators.pattern('^[1-9][0-9]*$')]]
+      VB_MalTYear: ['',[Validators.pattern('^[1-9][0-9]*$')]],
+      dayInfo: this.formBuilder.array([]),
+      toppings: this.toppings,
     })
   }
 
+
+
+  dayMapping: { [key: string]: number } = {
+    'Sunday': 1,
+    'Monday': 2,
+    'Tuesday': 3,
+    'Wednesday': 4,
+    'Thursday': 5,
+    'Friday': 6,
+    'Saturday': 7
+  };
     ngOnInit() {
 
     this.getNakshthram();
@@ -99,17 +116,41 @@ export class VazhipadBlockingComponent {
         console.log(response);
         console.log(this.VM_Id)
       }
-      else if (!response) {
-        this.notification.showSuccess("Vazhipad is not exist for code");
-      }
-      else {
+      else if ( this.vazhipadBlockingForm.get('VM_code')?.value ==="") {
         this.vazhipadBlockingForm.get('VM_name')?.setValue('');
       }
+      else {
+        this.notification.showSuccess("Vazhipad is not exist for code");
+        
+        this.vazhipadBlockingForm.get('VM_name')?.setValue('');
+      }
+    });
+
+    this.toppings.valueChanges.subscribe((selectedDays:any) => {
+      this.updateDayInfo(selectedDays);
     });
 
     this.getVazhipadBlockingMaster();
   }
 
+
+
+  updateDayInfo(selectedDays: string[]): void {
+    const dayInfoArray = this.vazhipadBlockingForm.get('dayInfo') as any;
+
+    // Clear the previous selection
+    dayInfoArray.clear();
+
+    // Add the new selection of day IDs
+    selectedDays.forEach(day => {
+      const dayId = this.dayMapping[day]; // Get the corresponding day ID
+      if (dayId) {
+        dayInfoArray.push(this.formBuilder.group({ vazhId: String(this.VM_Id), Day: String(dayId) }));
+      }
+    });
+
+    console.log(this.vazhipadBlockingForm.value.dayInfo);  // Log the updated dayInfo array
+  }
 
   // get nakshthram
   getNakshthram() {
@@ -119,19 +160,24 @@ export class VazhipadBlockingComponent {
     })
   }
 
+
+
+
+
+
   // get Categary
   getCategory(category: string) {
     console.log(category);
     const fromDateControl = this.vazhipadBlockingForm.get('VB_FromDate');
     const toDateControl = this.vazhipadBlockingForm.get('VB_ToDate');
-    if (category == 'Y') {
-      this.VB_category = "Yearly";
+    if (category == 'W') {
+      this.VB_category = "Weakly";
       this.blockingFlag = false;
       fromDateControl!.setValidators([Validators.required]);
       toDateControl!.setValidators([Validators.required]);
     }
-    else if (category == 'M') {
-      this.VB_category = "Monthly";
+    else if (category == 'D') {
+      this.VB_category = "Datewise";
       this.blockingFlag = false;
 
     }
@@ -192,11 +238,11 @@ export class VazhipadBlockingComponent {
   getVazhipadBlockingMaster() {
     this.loading = false;
     const payLoad = {
-      "Type": "BlockingALL", "Code": "12"
+      "Type": "ListBlocking", "Code": "12"
     }
     this.masterService.getBlockingMaster(payLoad).subscribe({
       next: (data) => {
-        console.log(data)
+        console.log(data,"blocking data")
         if (data && data.length > 0) {
           // console.log(data)
           this.BlockingMater = data;
@@ -211,9 +257,11 @@ export class VazhipadBlockingComponent {
     });
   }
 
+
+
   // submit data
   onSubmit() {
-    console.log(this.vazhipadBlockingForm.value);
+    console.log(this.vazhipadBlockingForm.value, "booking values");
     // console.log(data);
     const fromDateString = this.vazhipadBlockingForm.value.VB_FromDate;
     const toDateString = this.vazhipadBlockingForm.value.VB_ToDate;
@@ -227,7 +275,7 @@ export class VazhipadBlockingComponent {
     if (this.vazhipadBlockingForm.valid) {
       const payLoad = {
         "vazhId": `${this.VM_Id}`,
-        "VBID": "1",
+        "VBID": "",
         "VazhBlockType": this.vazhipadBlockingForm.value.VB_radio,
         "VazhDateType": this.vazhipadBlockingForm.value.VB_DateType,
         "Fromdate": this.vazhipadBlockingForm.value.VB_FromDate,
@@ -240,10 +288,11 @@ export class VazhipadBlockingComponent {
         "VazhMalTDay": this.vazhipadBlockingForm.value.VB_MalTDay,
         "VazhMalTMonth": this.vazhipadBlockingForm.value.VB_MalTMonth,
         "VazhMalTYear": this.vazhipadBlockingForm.value.VB_MalFYear,
-        "Cuser": "2",
-        "Type": "INSERT"
+        "Cuser":this.loginId,
+        "Type": "INSERT",
+        "dayinfo":this.vazhipadBlockingForm.value.dayInfo,
       }
-      console.log(payLoad)
+      console.log(payLoad ,"day")
       this.masterService.createBlockingMaster(payLoad).subscribe({
         next: (res) => {
           console.log(res);
@@ -263,20 +312,45 @@ export class VazhipadBlockingComponent {
     }
   }
 
+
+
   // resetting form controls
   onReset() {
     this.loading = true;
     this.updateFlag = false;
     this.vazhipadBlockingForm.reset({
-      VB_radio: "Y",
+      VB_radio: "W",
       VB_DateType: "E",
+
+      vazhId:"",
+      VBID:"",
+      VM_code: '', 
+      VM_name: '',
+      VB_FromDate: '',
+      VB_ToDate: '',
+      VB_Reasion: '',
+      Nakshathra: "0",
+     
+      VB_MalFDay: '',
+      VB_MalFMonth: '',
+      VB_MalFYear: '',
+      VB_MalTDay: '',
+      VB_MalTMonth: '',
+      VB_MalTYear: '',
+      dayInfo: [],
+
+
+
+
+
+
+
+
     }
-
     );
-
     this.ngOnInit();
     this.blockingFlag=false;
-    this.VB_category = 'Yearly';
+    this.VB_category = 'Weakly';
     this.loading = false;
   }
 
@@ -315,8 +389,7 @@ export class VazhipadBlockingComponent {
     const fromDateString = this.vazhipadBlockingForm.value.VB_FromDate;
     const toDateString = this.vazhipadBlockingForm.value.VB_ToDate;
     const payLoad={
-
-      "vazhId": `${this.VM_Id}`,
+        "vazhId": `${this.VM_Id}`,
         "VBID": `${this.Id}`,
         "VazhBlockType": this.vazhipadBlockingForm.value.VB_radio,
         "VazhDateType": this.vazhipadBlockingForm.value.VB_DateType,
@@ -367,17 +440,21 @@ export class VazhipadBlockingComponent {
       }
     });
   }
-gotoDashBoard(){
+
+ gotoDashBoard(){
   this.router.navigate(['/dashboard'])
-}
-updateFromDateAndToDateValidators() {
+ }
+
+
+
+ updateFromDateAndToDateValidators() {
   const fromDateControl = this.vazhipadBlockingForm.get('VB_FromDate');
   const toDateControl = this.vazhipadBlockingForm.get('VB_ToDate');
   const category = this.vazhipadBlockingForm.get('VB_radio')?.value;
   const dateType = this.vazhipadBlockingForm.get('VB_DateType')?.value;
 
-  if ((category === 'Y' && dateType === 'E') ||
-      (category === 'M' && dateType === 'E') ||
+  if ((category === 'W' ) ||
+      (category === 'D' ) ||
       (category === 'N')) {
     fromDateControl?.setValidators([Validators.required]);
     toDateControl?.setValidators([Validators.required]);

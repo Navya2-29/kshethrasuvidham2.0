@@ -94,9 +94,8 @@ export class ReportViewComponent implements OnInit {
 
 
   generatePDF() {
-
     
-     const doc = new jsPDF();
+    const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.width;
     const pageHeight = doc.internal.pageSize.height;
     this.http

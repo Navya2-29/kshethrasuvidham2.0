@@ -39,7 +39,7 @@ import { TranslateModule } from '@ngx-translate/core';
     FormsModule,
     ReactiveFormsModule,
     MatIconModule,
-    MorebuttonComponent,
+    
     FormsModule,
     ReactiveFormsModule,
     CommonModule,TranslateModule
@@ -112,14 +112,14 @@ export class CreditcollectionComponent {
 
   onSearchByBillDate(): void {
     const searchBillDate = this.searchForm.value.searchBillDate;
-    console.log('Search Bill Date:', searchBillDate);
+    // console.log('Search Bill Date:', searchBillDate);
   
     if (searchBillDate) {
       const formattedSearchDate = new Date(searchBillDate).toLocaleDateString('en-GB'); // Formats to dd/mm/yyyy
   
       this.filteredData = this.creditCollectionData.filter((item) => {
         const itemBillDate = new Date(item.BillDate).toLocaleDateString('en-GB'); // Formats the API date to dd/mm/yyyy
-        console.log('Comparing dates:', itemBillDate, formattedSearchDate);
+        // console.log('Comparing dates:', itemBillDate, formattedSearchDate);
   
         // Compare only the date part (ignores the time part)
         return itemBillDate === formattedSearchDate;
@@ -132,7 +132,7 @@ export class CreditcollectionComponent {
 
   onSearchByBillNumber(): void {
     const searchBillNumber = this.searchForm.value.searchBillNo;
-    console.log(searchBillNumber);
+    // console.log(searchBillNumber);
 
     this.filteredData = this.creditCollectionData.filter((item) => {
       return searchBillNumber
@@ -152,7 +152,7 @@ export class CreditcollectionComponent {
   instanoValidation(){
     this.CreditForm.get('TrnsMode')?.valueChanges.subscribe((mode) => {
       const instNoControl = this.CreditForm.get('Remarks');
-      console.log(mode)
+      // console.log(mode)
       if (mode === 'UP') {
         // Make InstNo mandatory
         instNoControl?.setValidators([Validators.required]);
@@ -172,7 +172,7 @@ export class CreditcollectionComponent {
     this.service.getNadavaravBillNumber(payLoad).subscribe((data) => {
       this.creditCollectionData = data;
       this.filteredData = [...this.creditCollectionData];
-      console.log(this.creditCollectionData);
+      // console.log(this.creditCollectionData);
     });
   }
 
@@ -189,16 +189,16 @@ export class CreditcollectionComponent {
     };
     this.service.getNadavaravBillNumber(payLoad).subscribe({
       next: (data) => {
-        console.log(data);
+        // console.log(data);
 
-        console.log(data[0].billno);
+        // console.log(data[0].billno);
         this.lastBillnumber = data[0].billno;
         this.theLastBillNo =
           'CR' + this.lastBillnumber.toString() + '/' + this.currentDate;
-        console.log(this.theLastBillNo);
+        // console.log(this.theLastBillNo);
         this.currentBillNumber =
           (this.lastBillnumber + 1).toString() + '/' + this.currentDate;
-        console.log(this.currentBillNumber);
+        // console.log(this.currentBillNumber);
         this.CreditForm.patchValue({
           BillNo: this.theLastBillNo,
         });
@@ -219,16 +219,16 @@ export class CreditcollectionComponent {
       };
   
       this.service.createCreditCollection(payLoad).subscribe((data) => {
-        console.log(data);
+        // console.log(data);
         if (data.RespStatus === 'I') {
           this.getCreditCollection();
           this.Reset();
           this.notification.success(data.RespMsg);
           const currentBillnumber = this.lastBillnumber + 1;
-          console.log(currentBillnumber, '_1');
+          // console.log(currentBillnumber, '_1');
           this.service.updatecreditBillNumber(currentBillnumber).subscribe({
             next: (data) => {
-              console.log(data, 'update');
+              // console.log(data, 'update');
               this.getBillNumber();
               this.getCreditCollection();
             },
@@ -260,7 +260,7 @@ export class CreditcollectionComponent {
   }
 
   onEdit(data: any) {
-    console.log(data, 'edit');
+    // console.log(data, 'edit');
     this.totalAmount = data.Amount;
     this.CreditForm.patchValue({
       Name: data.Name,
@@ -286,7 +286,7 @@ export class CreditcollectionComponent {
       Remarks: this.cancellationReason,
     };
     this.service.cancellBill(payLoad).subscribe((data) => {
-      console.log(data);
+      // console.log(data);
     });
   }
 
@@ -300,10 +300,10 @@ export class CreditcollectionComponent {
     remarkDialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.cancellationReason = result; // Update the cancellationReason with the value from the dialog
-        console.log('Updated Cancellation Reason:', this.cancellationReason);
+        // console.log('Updated Cancellation Reason:', this.cancellationReason);
         this.OnCancelSubmit();
       } else {
-        console.log('Dialog was closed without submitting the reason.');
+        // console.log('Dialog was closed without submitting the reason.');
       }
     });
   }

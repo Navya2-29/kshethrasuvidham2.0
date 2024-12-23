@@ -15,7 +15,9 @@
     margin-top: 16px;
     text-align: center;
   }
-
+.danger{
+  background-color: red;
+}
   .custom-button {
     background-color: #3f51b5; /* Primary color */
     color: white;

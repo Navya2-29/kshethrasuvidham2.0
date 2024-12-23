@@ -2,9 +2,9 @@ export interface ReportData {
     Vazhipad: string;
     Name: string;
     Star: string;
-    Qty: string;
-    Rate: string;
-    Amount: string;
+    Qty: number ;
+    Rate: number;
+    Amount:number;
     BillDate: string;
     VazhiDate: string;
     BillNo: string;
