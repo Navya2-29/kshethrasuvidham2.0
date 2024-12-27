@@ -80,6 +80,7 @@ export const Constant = {
   CREDITCOLLECT:"CreditCollect",
   UPDATEBILL:"UpdateBill",
   DUPLICATECOUNT:"DuplicateCount",
-  ADDCOUNTER:"ADDCounter"
+  ADDCOUNTER:"ADDCounter",
+  UPDATESETTING:"UpdateSetting"
   },
 };

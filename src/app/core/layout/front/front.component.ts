@@ -72,7 +72,7 @@ export class FrontComponent {
       if (result) {
         // Store the entered Counter ID in localStorage
         this.getcounterCount();
-        if (this.Role == 'admin') {
+        if (this.Role == 'admin' || this.Role == 'super' ) {
           localStorage.setItem('counterId', result);
         } else {
 

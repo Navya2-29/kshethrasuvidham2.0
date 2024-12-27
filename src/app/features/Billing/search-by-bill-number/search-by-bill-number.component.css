@@ -20,7 +20,9 @@ table {
     background: #046ef8;;
     color:white;
     letter-spacing:0pt;
-   
+    border: none;
+    box-shadow: none; 
+    letter-spacing:0pt;
   }
   .cancel{
     width: 100px;

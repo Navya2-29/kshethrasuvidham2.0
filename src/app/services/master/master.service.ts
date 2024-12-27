@@ -17,6 +17,7 @@ import { SeasonalMaster } from '../../models/season-master.model';
 import { DayMaster } from '../../models/day-master.model';
 import { multiDayFilter } from '../../models/multidayFilter.model';
 import { ItemMaster } from '../../models/item-master.model';
+import { Settings } from 'jspdf-autotable';
 @Injectable({
   providedIn: 'root',
 })
@@ -820,6 +821,12 @@ settingsData(){
     Constant.BASE_URL + Constant.METHODS.GET_MASTER,
     payLoad
   ); 
+}
+upDateSettings(payLoad:any){
+  return this.http.post<any>(
+    Constant.BASE_URL + Constant.METHODS.UPDATESETTING,
+    payLoad
+  );  
 }
 
 getMaster(payLoad:any){

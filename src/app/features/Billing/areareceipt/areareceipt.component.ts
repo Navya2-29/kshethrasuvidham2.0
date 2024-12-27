@@ -117,6 +117,9 @@ export class AreareceiptComponent implements OnInit {
   lang: string | null;
   role:string|null;
   selectedStarData:any;
+  lastEnterTime = 0;  // Variable to track the time of the last Enter press
+  doubleEnterThreshold = 500;  // Time threshold in milliseconds to consider as double press
+  
   private subscription: Subscription;
   private masterservice = inject(MasterService);
   private eventService = inject(TotalAmountService);
@@ -1204,7 +1207,7 @@ console.log(this.selectedVazhipadItem)
 
   handleTabKeyDown(event: KeyboardEvent, index: number): void {
     // Check if the Tab key is pressed
-    if (event.key === 'Tab') {
+    if (event.key === 'enter') {
       // Prevent the default behavior so it doesn't move focus immediately
       event.preventDefault();
 
@@ -1243,18 +1246,165 @@ console.log(this.selectedVazhipadItem)
   }
 
 
-  onKeydown(event: KeyboardEvent, index: number) {
-    const inputElements = this.inputRefs.toArray();  // Convert the QueryList to an array of ElementRef
+  // onKeydown(event: KeyboardEvent, index: number) {
+  //   const inputElements = this.inputRefs.toArray();  // Convert the QueryList to an array of ElementRef
 
-    if (event.key === 'ArrowLeft') {
-      // Find the current element's index in the inputRefs list
-      const currentIndex = inputElements.findIndex(input => input.nativeElement === event.target);
+  //   if (event.key === 'ArrowLeft') {
+  //     // Find the current element's index in the inputRefs list
+  //     const currentIndex = inputElements.findIndex(input => input.nativeElement === event.target);
       
-      // Move to the previous element if it's not the first one
-      if (currentIndex > 0) {
-        inputElements[currentIndex - 1].nativeElement.focus();
-        event.preventDefault(); // Prevent default behavior of the left arrow key
+  //     // Move to the previous element if it's not the first one
+  //     if (currentIndex > 0) {
+  //       inputElements[currentIndex - 1].nativeElement.focus();
+  //       event.preventDefault(); // Prevent default behavior of the left arrow key
+  //     }
+  //   }
+  // }
+
+       // Time threshold in milliseconds to consider as double press
+  
+       navigateToNext(event: Event, rowIndex: number, nextField: string): void {
+        const keyboardEvent = event as KeyboardEvent;
+        console.log(keyboardEvent.key,"keyyyy");
+        // Get the current time
+        const currentTime = new Date().getTime();
+        
+        if (keyboardEvent.key === 'Enter') {
+          keyboardEvent.preventDefault();
+      
+          // Check if the time between two Enter key presses is within the threshold for double press
+          if (currentTime - this.lastEnterTime < this.doubleEnterThreshold) {
+            // If double Enter is detected, add a new row
+            this.addRow(rowIndex);
+          }
+      
+          // Update the last Enter press time
+          this.lastEnterTime = currentTime;
+      
+          // Reset the lastEnterTime after the double press threshold (optional)
+          setTimeout(() => {
+            this.lastEnterTime = 0;  // Reset to allow another detection of double Enter later
+          }, this.doubleEnterThreshold);
+      
+          // Get all form elements within the row
+          const rowFormElements = Array.from(
+            document.querySelectorAll(`#row-${rowIndex} input, #row-${rowIndex} mat-select, #row-${rowIndex} select, #row-${rowIndex} textarea`)
+          ) as HTMLElement[];
+      
+          // Find the index of the currently active (focused) element
+          let currentIndex = rowFormElements.findIndex(
+            (el) => el === document.activeElement
+          );
+      
+          if (currentIndex === -1) {
+            console.error('Current active element not found in form elements.');
+            return;
+          }
+      
+          // If nextField is specified (for example, 'VazhipadDate'), find the corresponding element
+          const nextElement = rowFormElements.find((el) => el.getAttribute('formControlName') === nextField);
+      
+          if (nextElement) {
+            // Focus the next element
+            nextElement.focus();
+      
+            // For mat-select, open the dropdown if it's a mat-select
+            if (nextElement.tagName.toLowerCase() === 'mat-select') {
+              const matSelect = nextElement as any;
+              if (matSelect && matSelect.open) {
+                matSelect.open(); // Open mat-select dropdown
+              }
+            } else if (nextElement.tagName.toLowerCase() === 'select') {
+              // Open <select> dropdown (trigger click)
+              const selectElement = nextElement as HTMLSelectElement;
+              const clickEvent = new MouseEvent('click', { bubbles: true });
+              selectElement.dispatchEvent(clickEvent); // Trigger click to open dropdown
+            }
+          } else {
+            // If no specific next field, just navigate to the next available element
+            let nextElement = rowFormElements[currentIndex + 1];
+      
+            // Skip over any hidden elements or elements that are not focusable (if needed)
+            while (nextElement && (nextElement.hasAttribute('hidden') || nextElement.getAttribute('disabled') !== null)) {
+              nextElement = rowFormElements[++currentIndex + 1];
+            }
+      
+            // If there's a next element, focus it
+            if (nextElement) {
+              nextElement.focus();
+      
+              // For mat-select, open the dropdown if it's a mat-select
+              if (nextElement.tagName.toLowerCase() === 'mat-select') {
+                const matSelect = nextElement as any;
+                if (matSelect && matSelect.open) {
+                  matSelect.open(); // Open mat-select dropdown
+                }
+              } else if (nextElement.tagName.toLowerCase() === 'select') {
+                // Open <select> dropdown (trigger click)
+                const selectElement = nextElement as HTMLSelectElement;
+                const clickEvent = new MouseEvent('click', { bubbles: true });
+                selectElement.dispatchEvent(clickEvent); // Trigger click to open dropdown
+              }
+            } else {
+              console.warn('Next element not found. End of row reached.');
+            }
+          }
+        }
+      
+        // Handle ArrowLeft (Left Arrow Key)
+        if (keyboardEvent.key === 'ArrowLeft') {
+          console.log("left arrow pressed")
+          keyboardEvent.preventDefault();  // Prevent default behavior (such as moving cursor within text field)
+      
+          // Get all form elements within the row
+          const rowFormElements = Array.from(
+            document.querySelectorAll(`#row-${rowIndex} input, #row-${rowIndex} mat-select, #row-${rowIndex} select, #row-${rowIndex} textarea`)
+          ) as HTMLElement[];
+      
+          // Find the index of the currently active (focused) element
+          let currentIndex = rowFormElements.findIndex(
+            (el) => el === document.activeElement
+          );
+      
+          if (currentIndex === -1) {
+            console.error('Current active element not found in form elements.');
+            return;
+          }
+      
+          // Focus the previous element (move right to left)
+          let prevElement = rowFormElements[currentIndex - 1];
+      
+          // Skip over any hidden or disabled elements (if needed)
+          while (prevElement && (prevElement.hasAttribute('hidden') || prevElement.getAttribute('disabled') !== null)) {
+            prevElement = rowFormElements[--currentIndex - 1];
+          }
+      
+          // If there's a previous element, focus it
+          if (prevElement) {
+            prevElement.focus();
+      
+            // For mat-select, open the dropdown if it's a mat-select
+            if (prevElement.tagName.toLowerCase() === 'mat-select') {
+              const matSelect = prevElement as any;
+              if (matSelect && matSelect.open) {
+                matSelect.open();  // Open mat-select dropdown
+              }
+            } else if (prevElement.tagName.toLowerCase() === 'select') {
+              const selectElement = prevElement as HTMLSelectElement;
+              const clickEvent = new MouseEvent('click', { bubbles: true });
+              selectElement.dispatchEvent(clickEvent);  // Trigger click to open dropdown
+            }
+          } else {
+            console.warn('Previous element not found. Beginning of row reached.');
+          }
+        }
       }
-    }
-  }
+      
+  
+  
+  
+
+
+
+
 }

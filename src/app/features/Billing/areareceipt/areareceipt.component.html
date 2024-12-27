@@ -38,7 +38,7 @@
               </tr>
             </thead>
             <tbody formArrayName="vazhipadinfo">
-              <tr
+              <tr [id]="'row-' + i"
                 *ngFor="let row of vazhipadinfo.controls; let i = index"
                 [formGroupName]="i"
                 
@@ -51,7 +51,7 @@
                   <input
                     type="text"
                     [placeholder]="'PLACEHOLDER.VAZHIPAD' | translate"
-                    
+                    id="Vazhipad-{{i}}"
                     matInput
                     #nameInput
                     #firstInput
@@ -60,7 +60,7 @@
                     [matAutocomplete]="auto"
                     [readonly]="multidayBooking[i]"
                     #inputRef
-                    (keydown)="onKeydown($event, i)"
+                    (keydown)="navigateToNext($event, i, 'name')"
                   />
                   <mat-autocomplete
                   
@@ -106,8 +106,8 @@
                     [placeholder]="'PLACEHOLDER.NAME' | translate"
                     formControlName="Name"
                     [readonly]="multidayBooking[i]"
-                    #inputRefs
-                    (keydown)="onKeydown($event, i)"
+                    (keydown)="navigateToNext($event, i, 'star')"
+                    id="Name-{{i}}"
                   />
                 </td>
                 <td>
@@ -127,13 +127,12 @@
                   type="text"
                   [placeholder]="'PLACEHOLDER.STAR' | translate"
                   matInput
-                  
+                  id="starName-{{i}}"
                   class="form-control sps"
                   formControlName="starName"
                   [matAutocomplete]="str"
                   [readonly]="multidayBooking[i]"
-                  #inputRefs
-                    (keydown)="onKeydown($event, i)"
+                  (keydown)="navigateToNext($event, i, 'Prethista')"
                 />
                 <mat-autocomplete
                   autoActiveFirstOption
@@ -168,7 +167,9 @@
                     class="form-control"
                     formControlName="Prethista"
                     class="form-control" #input3Ref
-                    style="width: 100%; height: 30.6px"    
+                    style="width: 100%; height: 30.6px"  
+                    (keydown)="navigateToNext($event, i, 'Qty')" 
+                    id="Prethista-{{i}}" 
                   >
                   <ng-container *ngIf="lang=='en'"> <option *ngFor="let prathishta of prathishtaOptions[i]" [value]="prathishta.name" >{{prathishta.name}}</option>
                   </ng-container>
@@ -186,6 +187,8 @@
                     [placeholder]="'PLACEHOLDER.QUANTITY' | translate"
                     formControlName="Qty"
                     [readonly]="multidayBooking[i]"
+                    id="Prethista-{{i}}" 
+                    (keydown)="navigateToNext($event, i, 'Rate')" 
                   />
                   
                 </td>
@@ -199,6 +202,7 @@
                     [readOnly]="row.get('ratechange')?.value ==='N'"
                     [min]="1"
                     [readonly]="multidayBooking[i]"
+                    (keydown)="navigateToNext($event, i, 'VazhipadDate')" 
                   />                 
                 </td>
                 <td style="vertical-align: middle; text-align: center">
@@ -209,6 +213,7 @@
                     formControlName="Amount"
                     readonly
                     style="display: none;"
+                    
                   />
                   <input
                   type="date"
@@ -216,7 +221,7 @@
                   formControlName="VazhipadDate"
                  [readOnly]="row.get('VM_Receipt')?.value==='Y'"
                   [attr.min]="row.get('dateToSet')?.value"
-                  
+                  (keydown)="navigateToNext($event, i, 'VTime')" 
                 /><span style="vertical-align: middle; text-align: center"  *ngIf="multidayBooking[i]">
                   <input
                     type="date"
@@ -231,6 +236,7 @@
                     class="form-control"
                     formControlName="VTime"
                     style="width: 80%; height: 30.6px"
+                    (keydown)="navigateToNext($event, i, 'Name2')" 
                   >
                     <option *ngFor="let time of vazhipadtime" [value]="time.id" >   {{ 'OPTIONS.' + time.key | translate }}</option>
                     
@@ -249,6 +255,7 @@
                     style="width: 60px"
                     formControlName="Name2"
                     placeholder="Name 2"
+                    (keydown)="navigateToNext($event, i, 'Star2')" 
                   />
                 <!-- </td> -->
                 <!-- <td -->
@@ -285,7 +292,7 @@
                   />
                   
                 <span style="margin-left: 5px">M</span></span>
-                  <a (click)="addRow(i)" tabindex="0" (keydown)="handleTabKeyDown($event, i)">
+                  <a (click)="addRow(i)" tabindex="0" >
                     <mat-icon><span class="icons">add_comment</span></mat-icon>
                   </a>
                 </td>

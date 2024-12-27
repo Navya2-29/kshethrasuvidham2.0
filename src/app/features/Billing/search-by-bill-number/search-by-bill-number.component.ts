@@ -7,6 +7,8 @@ import {
   MatDialogModule,
   MatDialogRef,
 } from '@angular/material/dialog';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -181,6 +183,7 @@ export class SearchByBillNumberComponent {
         console.log(data, 'hhhhhhhhhhhhhhhhhhhhhhhhh');
         if (data.length > 0) {
           this.billdata = data;
+          console.log(this.billdata,"billdatataa")
           this.TrnStatus = data[0].TrnStatus;
           this.dataSource = new MatTableDataSource(this.billdata);
         } else {
@@ -456,7 +459,7 @@ export class SearchByBillNumberComponent {
         console.log('Row updated successfully:', response);
       },
       error: (error) => {
-        console.error('Error updating row:', error);
+        console.error('Error updatinag row:', error);
       },
     });
   }
@@ -488,4 +491,127 @@ export class SearchByBillNumberComponent {
 
     // console.log(star,"sssssssssssssssss")
   }
+  async generatePDF() {
+    // Ensure the data is fetched first
+    await this.searchBillNumber();
+    
+    // Check if billdata is valid
+    if (!this.billdata || this.billdata.length === 0) {
+      console.error('Bill data is missing or empty');
+      return;
+    }
+  
+    // Create a new jsPDF instance
+    const doc = new jsPDF();
+  
+    // Header: Temple Name and Address centered at the top
+    const templeName = this.templeName || "Temple Name";
+    const templeAddress = this.templeAddress || "Temple Address";
+  
+    // Center Temple Name
+    doc.setFontSize(16);
+    const templeNameWidth = doc.getStringUnitWidth(templeName) * doc.getFontSize() / doc.internal.scaleFactor;
+    const templeNameX = (doc.internal.pageSize.width - templeNameWidth) / 2;
+    doc.text(templeName, templeNameX, 20);
+  
+    // Center Temple Address
+    doc.setFontSize(12);
+    const templeAddressWidth = doc.getStringUnitWidth(templeAddress) * doc.getFontSize() / doc.internal.scaleFactor;
+    const templeAddressX = (doc.internal.pageSize.width - templeAddressWidth) / 2;
+    doc.text(templeAddress, templeAddressX, 30);
+  
+    // Bill Number and Date
+    const bill = this.billdata[0];
+    doc.setFontSize(12);
+    doc.text(`Bill Number: ${bill.BillNo}`, 20, 40);
+    doc.text(`Bill Date: ${new Date(bill.BillDate).toLocaleDateString()}`, 20, 50);
+  
+    // Table Styling
+    const startY = 60;
+    doc.setFontSize(12);
+    
+    // Table Header Styling (Light Gray Background with Bold Text)
+    doc.setFillColor(240, 240, 240); // Light Gray background
+    doc.setTextColor(0); // Black text for header
+    doc.setFont('helvetica', 'bold'); // Bold for header
+    
+    // Add table headers with better alignment
+    const tableHeaders = ['Vazhipad', 'Prathista', 'Name', 'Star', 'Qty', 'Rate', 'Total'];
+    doc.rect(20, startY - 5, 40, 10, 'F');
+    doc.rect(60, startY - 5, 40, 10, 'F');
+    doc.rect(100, startY - 5, 40, 10, 'F');
+    doc.rect(140, startY - 5, 20, 10, 'F');
+    doc.rect(160, startY - 5, 20, 10, 'F');
+    doc.rect(180, startY - 5, 20, 10, 'F');
+    doc.rect(200, startY - 5, 20, 10, 'F');
+    
+    // Writing Headers
+    tableHeaders.forEach((header, index) => {
+      doc.text(header, 20 + (index * 40), startY + 6);  // Slightly adjusted for better alignment
+    });
+  
+    let yOffset = startY + 10;
+    let rowColor = [255, 255, 255]; // White for rows by default
+  
+    // Table Data Styling
+    this.billdata.forEach((item: any, index: number) => {
+      // Alternate row colors for readability
+      rowColor = (index % 2 === 0) ? [255, 255, 255] : [240, 240, 240]; // Light Gray on odd rows
+      
+      // Apply background color for the row
+      doc.setFillColor(240, 240, 240);
+      doc.rect(20, yOffset - 5, 40, 10, 'F');
+      doc.rect(60, yOffset - 5, 40, 10, 'F');
+      doc.rect(100, yOffset - 5, 40, 10, 'F');
+      doc.rect(140, yOffset - 5, 20, 10, 'F');
+      doc.rect(160, yOffset - 5, 20, 10, 'F');
+      doc.rect(180, yOffset - 5, 20, 10, 'F');
+      doc.rect(200, yOffset - 5, 20, 10, 'F');
+      
+      // Text content for each row with text wrapping
+      doc.setTextColor(0); // Reset text color to black
+  
+      // Wrapping and aligning text
+      yOffset = this.addWrappedText(doc, item.Vazhipad, 20, yOffset, 40);
+      yOffset = this.addWrappedText(doc, item.Prathista, 60, yOffset, 40);
+      yOffset = this.addWrappedText(doc, item.Name, 100, yOffset, 40);
+  
+      // Right-align numeric values
+      doc.text(item.Star.toString(), 140, yOffset, { align: 'right' });
+      doc.text(item.Qty.toString(), 160, yOffset, { align: 'right' });
+      doc.text(item.Rate.toString(), 180, yOffset, { align: 'right' });
+      doc.text(item.TotalAmt.toString(), 200, yOffset, { align: 'right' });
+  
+      yOffset += 10;
+    });
+  
+    // Total Sum Row: With background color and bold text
+    const totalSum = this.billdata.reduce((sum: any, item: any) => sum + item.TotalAmt, 0);
+    doc.setFontSize(12);
+    doc.setFillColor(0, 123, 255); // Blue background for the total row
+    doc.setTextColor(255); // White text color for the total row
+    doc.rect(140, yOffset - 5, 60, 10, 'F'); // Background for the total row
+    
+    doc.setFont('helvetica', 'bold'); // Bold for total row
+    doc.text('Total:', 140, yOffset);
+    doc.text(totalSum.toString(), 200, yOffset, { align: 'right' });
+  
+    // Save the PDF file
+    doc.save('bill.pdf');
+  }
+  
+  
+  // Helper function to add wrapped text
+  addWrappedText(doc: jsPDF, text: string, x: number, y: number, maxWidth: number) {
+    const lines = doc.splitTextToSize(text, maxWidth);
+    lines.forEach((line:any, index:any) => {
+      doc.text(line, x, y + (index * 6)); // 6 is the line height
+    });
+    return y + (lines.length * 6); // Return the new Y offset after wrapping
+  }
+  openWhatsAppWeb() {
+    const whatsappUrl = 'https://web.whatsapp.com/'; // URL for WhatsApp Web
+    window.open(whatsappUrl, '_blank'); // Open in a new tab
+  }
+
 }

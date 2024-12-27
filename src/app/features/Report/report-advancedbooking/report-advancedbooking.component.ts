@@ -101,7 +101,7 @@ export class ReportAdvancedbookingComponent {
     const currentDate = new Date().toLocaleDateString();
   
     const maxColumnWidths = [20, 50, 40, 30, 15, 15, 15]; // Column widths for each column
-    const headers = ["Bill No.", "VAZHIPAD", "NAME", "STAR", "ENNAM", "RATE", "TOTAL"];
+    const headers = ["Bill No.", "VAZHIPAD", "NAME", "STAR", "ENNAM", "RATE", "Date"];
   
     let y = headerHeight;
     let grandTotalRate = 0;

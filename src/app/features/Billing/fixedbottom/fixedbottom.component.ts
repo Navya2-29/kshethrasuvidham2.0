@@ -198,7 +198,7 @@ export class FixedbottomComponent implements OnInit {
 
   printReceipt() {
     this.receiptPrinrservice.receiptData$.subscribe((data: any) => {
-      if(this.printerLayOut=="Normal"){
+      if(this.printerLayOut=="laser"){
         this.printReceipts(data);
       }else if(this.printerLayOut=="inkJet"){
         this.printReceiptsinkJet(data);
@@ -967,9 +967,7 @@ printReceiptsDotmetrix(data: any) {
   }, {});
 
   let allReceiptsContent = '';
-  const cmToPx = (cm: number) => cm * 37.8; // Convert cm to pixels
-  const maxRowsPerPage = 3; // Maximum rows per page
-
+  const maxRowsPerPage = 4; // Maximum rows per page
   const groups = Object.keys(groupedData);
 
   groups.forEach((key, groupIndex) => {
@@ -983,76 +981,36 @@ printReceiptsDotmetrix(data: any) {
     }
 
     chunks.forEach((chunk, chunkIndex) => {
-      const chunkTotalAmount = chunk.reduce((sum: any, item: any) => sum + parseFloat(item.Amount || 0), 0); // Calculate total for the chunk
+      const chunkTotalAmount = chunk.reduce((sum: any, item: any) => sum + parseFloat(item.Amount || 0), 0); // Total for chunk
 
       let receiptContent = `
         <div class="receipt-page" style="page-break-after: ${
           groupIndex < groups.length - 1 || chunkIndex < chunks.length - 1 ? 'always' : 'auto'
         };">
           <!-- Prathista -->
-          <div style="
-            position: absolute; 
-            left: ${cmToPx(5.2)}px; 
-            top: ${cmToPx(3.2)}px; 
-            max-width: ${cmToPx(5)}px; 
-            white-space: pre-wrap; 
-            word-wrap: break-word;">${prathista}</div>
-    
+          <div style="position: absolute; left: 2.5cm; top: 3.2cm; max-width: 5cm; white-space: pre-wrap;">${prathista}</div>
           <!-- Date -->
-          <div style="
-            position: absolute; 
-            left: ${cmToPx(11.5)}px; 
-            top: ${cmToPx(3.2)}px;">${Billdate}</div>
-    
+          <div style="position: absolute; left: 10.5cm; top: 3.2cm;">${Billdate}</div>
           <!-- Vazhipad -->
-          <div style="
-            position: absolute; 
-            left: ${cmToPx(5.2)}px; 
-            top: ${cmToPx(3.8)}px; 
-            max-width: ${cmToPx(5)}px; 
-            white-space: pre-wrap; 
-            word-wrap: break-word;">${vazhipad}</div>
-    
+          <div style="position: absolute; left: 2.5cm; top: 3.8cm; max-width: 5cm; white-space: pre-wrap;">${vazhipad}</div>
           <!-- Bill No -->
-          <div style="
-            position: absolute; 
-            left: ${cmToPx(11.5)}px; 
-            top: ${cmToPx(3.8)}px;">${BillNo}</div>
-    
+          <div style="position: absolute; left: 10.5cm; top: 3.8cm;">${BillNo}</div>
           <!-- Vazhipad Date -->
-          <div style="
-            position: absolute; 
-            left: ${cmToPx(5.5)}px; 
-            top: ${cmToPx(8.8)}px;">${vazhipadDate}</div>
-    
+          <div style="position: absolute; left: 5.5cm; top: 8.8cm;">${vazhipadDate}</div>
           <!-- Total Amount -->
-          <div style="
-            position: absolute; 
-            left: ${cmToPx(11.5)}px; 
-            top: ${cmToPx(8)}px; 
-            font-weight: bold;">₹${chunkTotalAmount.toFixed(2)}</div>
+          <div style="position: absolute; left: 10.5cm; top: 8cm; font-weight: bold;">₹${chunkTotalAmount.toFixed(2)}</div>
       `;
 
       // Add table rows dynamically
       chunk.forEach((item: any, index: number) => {
-        const rowTop = cmToPx(5) + index * cmToPx(0.7); // Rows spaced 0.7cm apart
+        const rowTop = 5 + index * 0.7; // Rows spaced 0.7cm apart
 
         receiptContent += `
-          <div style="
-            position: absolute; 
-            left: ${cmToPx(2.5)}px; 
-            top: ${rowTop}px; 
-            max-width: ${cmToPx(5.5)}px; 
-            white-space: pre-wrap; 
-            word-wrap: break-word;">${item.Name}</div>
-          
-          <div style="position: absolute; left: ${cmToPx(8.2)}px; top: ${rowTop}px;">${this.getStarbyId(item.Star)}</div>
-          
-          <div style="position: absolute; left: ${cmToPx(10.2)}px; top: ${rowTop}px;">${item.Qty}</div>
-          
-          <div style="position: absolute; left: ${cmToPx(11.3)}px; top: ${rowTop}px;">${item.Rate}</div>
-          
-          <div style="position: absolute; left: ${cmToPx(13)}px; top: ${rowTop}px;">${item.Amount}</div>
+          <div style="position: absolute; left: 1cm; top: ${rowTop}cm; max-width: 5.5cm; white-space: pre-wrap;">${item.Name}</div>
+          <div style="position: absolute; left: 6.8cm; top: ${rowTop}cm;">${this.getStarbyId(item.Star)}</div>
+          <div style="position: absolute; left: 9.2cm; top: ${rowTop}cm;">${item.Qty}</div>
+          <div style="position: absolute; left: 10.3cm; top: ${rowTop}cm;">${item.Rate}</div>
+          <div style="position: absolute; left: 12cm; top: ${rowTop}cm;">${item.Amount}</div>
         `;
       });
 
@@ -1070,16 +1028,16 @@ printReceiptsDotmetrix(data: any) {
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
+          font-size: 12px; /* Adjust font size here */
           }
           .receipt-page {
             position: relative;
-            width: ${cmToPx(15.5)}px;
-            height: ${cmToPx(10.2)}px;
-            margin: 0;
+            width: 6in;
+            height: 4in;
+            margin: 0 auto;
             padding: 0;
-          }
-          .page-break {
-            page-break-after: always;
+            overflow: hidden; /* Prevent content overflow */
+            page-break-after: auto; /* Avoid extra blank pages */
           }
         </style>
       </head>
@@ -1099,6 +1057,7 @@ printReceiptsDotmetrix(data: any) {
     printWindow.close();
   }
 }
+
 
 
 

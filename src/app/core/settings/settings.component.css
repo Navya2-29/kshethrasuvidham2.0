@@ -344,6 +344,7 @@ background-color: #f4f5f7 !important;
     text-align: left;
     font-weight: bold;
     margin-left: 2px;
+    width: 100%;
 }
 
 .sps:focus {

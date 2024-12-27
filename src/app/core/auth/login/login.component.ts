@@ -88,8 +88,7 @@ submitLogin(login:Login){
           localStorage.setItem('Role', response.Role);
           localStorage.setItem('LoginId',response.LoginId);
           localStorage.setItem('loggedIn', 'true');
-          localStorage.setItem('Language',this.Language)
-          localStorage.setItem('Printer',"dotMetrix")
+          
           // Optional: Redirect to the dashboard or another page
           
           this.router.navigate(['/front']);
@@ -134,6 +133,8 @@ getTempleData(){
     localStorage.setItem('Address',data[0].Address);
     localStorage.setItem('Logo',this.logo);
     localStorage.setItem('Counter',data[0].Counter);
+    localStorage.setItem('Language',data[0].Language);
+    localStorage.setItem('Printer',data[0].Printer);
   })
 
 

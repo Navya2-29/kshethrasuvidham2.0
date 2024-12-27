@@ -48,6 +48,34 @@
                     </td>
                   </tr>
                   <tr>
+                    <td>
+                      Email<span class="text-danger">*</span
+                      ><input
+                        type="email"
+                       
+                        formControlName="email"
+                        class="form-control sps"
+                        placeholder="Enter email address"
+                        
+                      />
+
+                    </td>
+                    </tr>
+                    <tr>
+                      <td>
+                       Phone
+                        <input
+                          type="text"
+                          formControlName="phone"
+                          class="form-control sps"
+                          placeholder="Enter phone number"
+                          
+                        />
+  
+                      </td>
+                      </tr>
+                     
+                  <tr>
                     <td >Language
                       <span class="text-danger"
                         >*</span
@@ -78,7 +106,7 @@
                         class="form-control sps"
                         placeholder="Select printer"
                       ><option value="">Select</option>
-                      <option value="dotmetrix">Dot Matrix</option>
+                      <option value="dotMetrix">Dot Matrix</option>
                       <option value="inkjet">Inkjet Printer</option>
                       <option value="laser">Laser Printer</option>
                       <option value="thermal">Thermal Printer</option>
@@ -94,12 +122,13 @@
                       <span class="text-danger"
                         >*</span>
                         <input type="number" class="form-control sps"
-                        formControlName="printer"
+                        formControlName="Counter"
                         placeholder="Enter counter"
                         min="1"
                         >
 
                     </td>
+                    
                   </tr>
                   <tr>
                     <td>
@@ -109,24 +138,16 @@
                         <input type="file" class="form-control"
                         formControlName="logo"
                         placeholder="Select Logo"
-                       
+      
                         >
 
                     </td>
                   </tr>
                   <tr>
-                    <td> <button class="btn btn-primary">Submit</button>
+                    <td> <button class="btn btn-primary" (click)="updateSettings()">Submit</button>
                     
                     <button class="btn btn-danger">Cancel</button></td>
                   </tr>
-                
-                  
-                  
-                
-                  
-                  
-                
-                  
                 </table>
              
              
@@ -134,65 +155,34 @@
           </form>
         </div>
         <div class="col-md-7">
-          <!-- <div style="display: flex" class="search-container mt-3">
-           <div
-            <input
-              type="text"
-              class="form-control sps search-input"
-             
-              placeholder="search by "
-              style="width: 60%"
-            
-            />
-           
-            <mat-icon class="search-icon" 
-              >search</mat-icon
-            > <button class="btn btn-info"><a >Vazhipad List</a></button>
-          </div> -->
+         
           <div>
-            <h2>Temple Details</h2>
+            <h2>Lock settings</h2>
           </div>
           <div class="fixitems prathishta">
             <table class="table">
-             
-
               <tbody
-                
               >
 <tr >
-    <td class="settings" >Name</td> <td>sdsds</td>
+    <td class="settings" >Select Type of the Bill</td> 
 </tr>
 <tr>
-    <td class="settings">Adress</td> <td></td>
+    <td class="settings">
+      <select class="form-control" style="width: 100%;" [(ngModel)]="billType">
+        <option value="">Plese select bill Type </option>
+<option value="UnLockBooking">vazhipad booking</option>
+<option value="UnLockNadavaravu">Nadavaravu</option>
+
+<option value="UnLockCredit">Credit Collection</option>
+    </select>
+  </td> 
 </tr>
 <tr>
-    <td class="settings">Logo</td> <td></td>
+    <td class="settings"><Button class="btn btn-primary" (click)="unLockBillNumber()">Unlock</Button></td>
 </tr>
-<tr>
-    <td class="settings">Conter</td> <td></td>
-</tr>
-<tr>
-    <td class="settings">Prniter</td> <td></td>
-</tr>
-<tr>
-    <td class="settings">Logo</td> <td></td>
-</tr>
-             
-             
-             
-               
+
               </tbody>
-              <tfoot>
-                <tr
-                 
-                >
-                  <td colspan="3">
-                    <div style="width: 100%" class="mt-3">
-                      <h4 class="text-center">No Records found</h4>
-                    </div>
-                  </td>
-                </tr>
-              </tfoot>
+             
             </table>
           </div>
         </div>

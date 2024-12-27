@@ -182,7 +182,7 @@ export class ReportViewComponent implements OnInit {
   
       // Draw group header (Group name font size reduced)
       doc.setFontSize(groupNameFontSize);
-// doc.setFont("Helvetica", "bold"); // Bold font for group name
+doc.setFont("NotoSansMalayalam", "bold"); // Bold font for group name
       doc.text(vazhipad, 14, y); // Group title
       y += 6; // Space after group title
   
@@ -220,7 +220,7 @@ export class ReportViewComponent implements OnInit {
         }
   
         // Table Content (without grid lines, only text)
- // doc.setFont("Helvetica", "normal");
+ doc.setFont("NotoSansMalayalam", "normal");
         doc.setFontSize(tableContentFontSize); // Use the content font size for table rows
   
         // Serial Number
