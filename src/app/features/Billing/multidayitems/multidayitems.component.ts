@@ -135,6 +135,8 @@ export class MultidayitemsComponent implements OnInit {
       Mday: [''],
       NalBy: [''],
       Mmonth: [''],
+      FromDate:[''],
+      SearchBy:[''],
       multiname: [{ disabled: true, value: '' }],
       booking: [{ disabled: true, value: '' }],
       ratechange: [{ disabled: true, value: '' }],
@@ -149,7 +151,7 @@ export class MultidayitemsComponent implements OnInit {
       devotees: this.fb.array([this.createDevotee()]),
     });
     this.devotees = this.form.get('devotees') as FormArray;
-    this.setDefaultVazhipadDate();
+    // this.setDefaultVazhipadDate();
     this.multidayFilterForm = this.fb.group({
       Star: [''],
       EngMonth: [''],
@@ -509,6 +511,12 @@ export class MultidayitemsComponent implements OnInit {
     });
   }
 
+  convertWithDatePipe(dateString: string): string {
+    const [day, month, year] = dateString.split('-').map(Number);
+    const date = new Date(year, month - 1, day); // Create a valid Date object
+    return this.datePipe.transform(date, 'yyyy-MM-dd') || '';
+  }
+
   validateAndSubmit() {
     const enteredFromDate = this.form.get('VazhipadDate')?.value;
     const enteredToDate = this.form.get('EndDate')?.value;
@@ -539,7 +547,7 @@ console.log(this.form.valid ,"vaidate forms sssssssssssssssssssssss")
     // Proceed with form submission if validation passes
     if (this.form.valid && this.devotees.valid) {
       const formValues = this.form.value;
-
+console.log(formValues,"forms valuessssssssssssssssssssssssssssssssssssssssssssssssssssssss")
       const devoteeArray = formValues.devotees.map((devotee: any) => ({
         Slno: '',
         PMid: formValues.PMid,
@@ -560,10 +568,12 @@ console.log(this.form.valid ,"vaidate forms sssssssssssssssssssssss")
         ).toString(),
         Postal: '0',
         VazhipadDate: formValues.VazhipadDate,
-        Mday: '',
-        NalBy: '',
-        Mmonth: '',
+        Mday: formValues.Mday,
+        NalBy: formValues.NalBy,
+        Mmonth: formValues.Mmonth,
         VTime: '1',
+        FromDate:this.convertWithDatePipe(formValues.FromDate),
+        ToDate:this.convertWithDatePipe(formValues.EndDate),
       }));
 
       const finalArray: any[] = [];
@@ -581,7 +591,7 @@ console.log(this.form.valid ,"vaidate forms sssssssssssssssssssssss")
         });
       });
 
-      console.log(finalArray);
+      console.log(finalArray,"data with additions added newly");
       this.dialogRef.close(finalArray);
     } else {
       this.showValidationErrors();
@@ -673,6 +683,7 @@ const endDate = new Date(year, month - 1, day);
       Mday: engMonth,
       NalBy: star,
       Mmonth: malMonth,
+      SearchBy:thithi
     });
     console.log(englishday);
     let type: string | null = null;
@@ -866,12 +877,15 @@ const endDate = new Date(year, month - 1, day);
         //finding end date
         if (this.multiDayList.length > 0) {
           let lastItem = this.multiDayList[this.multiDayList.length - 1];
-          let lastDate = lastItem ? lastItem.date : null;
+          let firstitem=this.multiDayList[0];
+          // let lastDate = lastItem ? lastItem.date : null;
           const endDate = lastItem.edate1;
           this.form.patchValue({
             EndDate: this.datePipe.transform(endDate, 'dd-MM-YYYY'),
+             FromDate:this.datePipe.transform(firstitem.edate1, 'dd-MM-YYYY'),
           });
           console.log('Last Date:', endDate);
+          console.log(this.form.get('VazhipadDate'))
         }
       },
     });
@@ -937,9 +951,11 @@ const endDate = new Date(year, month - 1, day);
     if (this.multiDayList.length > 0) {
       let lastItem = this.multiDayList[this.multiDayList.length - 1];
       let lastDate = lastItem ? lastItem.date : null;
+      let firstItem=this.multiDayList[0];
       const endDate = lastItem.edate1;
       this.form.patchValue({
         EndDate: this.datePipe.transform(endDate, 'dd-MM-YYYY'),
+        VazhipadDate:firstItem.edate1
       });
       console.log('Last Date:', endDate);
     }

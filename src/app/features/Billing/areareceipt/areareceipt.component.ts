@@ -17,6 +17,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { DatePipe, formatDate } from '@angular/common';
+import { UpperCaseDirective } from '../../../shared/directives/upper-case.directive';
 
 import {
   AbstractControl,
@@ -67,7 +68,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
     MatIconModule,
     MatRadioModule,
-
+    UpperCaseDirective,
     TranslateModule,
     NumberDirective,
   ],
@@ -202,6 +203,9 @@ export class AreareceiptComponent implements OnInit {
       NalBy: [''],
       Mmonth: [''],
       starName: [''],
+      FromDate:[''],
+      ToDate:[''],
+      SearchBy:[''],
       toDate: [{ disabled: true, value: '' }],
       multiname: [{ disabled: true, value: '' }],
       booking: [{ disabled: true, value: '' }],
@@ -209,6 +213,7 @@ export class AreareceiptComponent implements OnInit {
       allowedDays: this.fb.array([]),
       VM_Receipt: [{ disabled: true, value: '' }],
       dateToSet: [''],
+    
       seasonalDates: this.fb.group({
         fromDate: [''],
         toDate: [''],
@@ -353,13 +358,13 @@ export class AreareceiptComponent implements OnInit {
 
   // formatting date in dd-mm-yyyy
   dateFormat(date: Date): any {
+    console.log(date,"aaaaaaaaaaaaaaaaa")
     return this.datePipe.transform(date, 'dd-MM-yyyy') || '';
   }
 
   setupAutocomplete(index: number): void {
     const row = this.vazhipadinfo.at(index) as FormGroup;
     const control = row.get('Vazhipad');
-
     control?.valueChanges
       .pipe(
         startWith(''),
@@ -764,7 +769,7 @@ console.log(this.selectedVazhipadItem)
     let lastIndex = result.length - 1;
     const data = result[0];
 
-    // Assuming data.VazhipadDate is a Date object
+    //  data.VazhipadDate is a Date object
     const startDate = new Date(data.VazhipadDate); // This should be the start date
     const endDate = new Date(result[lastIndex].VazhipadDate); // This should be the end date
     const formattedDates = result.map((item: any) => {
@@ -774,7 +779,7 @@ console.log(this.selectedVazhipadItem)
         VazhipadDate: this.formatDateToDDMMYYYY(new Date(item.VazhipadDate)), // Format date here
       };
     });
-
+    console.log(formattedDates,"formatted dates to set fromdate and todate")
     this.multidayBooking[rowIndex] = formattedDates;
     row.patchValue({
       Vazhipad: data.Vazhipad,
@@ -834,6 +839,8 @@ console.log(this.selectedVazhipadItem)
   }
 
   private cleanVazhipadInfo(item: any) {
+  //  const date1= this.formatDate(item.VazhipadDate)
+   
     return {
       Amount: item.Amount, // Including Amount
       Mday: item.Mday, // Including Mday
@@ -854,9 +861,18 @@ console.log(this.selectedVazhipadItem)
       Vazhipad: item.Vazhipad, // Including Vazhipad
       VazhipadDate: item.VazhipadDate, // Including VazhipadDate
       VTime: item.VTime,
+      FromDate:item.VazhipadDate,
+      ToDate:item.VazhipadDate,
+      SearchBy:item.SearchBy
     };
   }
 
+
+
+  formatDate(dateString: any): string {
+    const date = new Date(dateString);
+    return `${date.getDate().toString().padStart(2, '0')}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getFullYear()}`;
+  }
   // api data send
   sendDataToApi(data: any) {
     let isFormValid = true; // Initialize form validity
@@ -902,6 +918,7 @@ console.log(this.selectedVazhipadItem)
     }
 
     const flattenedData = this.flattenMultiDayBooking();
+    console.log(flattenedData,"to know wat it is")
     const vazhipadinfo = data.vazhipadinfo || []; // Ensure vazhipadinfo is an array
     // code for remove multiday showing row.
     for (let i = multidayRowIndices.length - 1; i >= 0; i--) {
@@ -909,6 +926,7 @@ console.log(this.selectedVazhipadItem)
       vazhipadinfo.splice(indexToRemove, 1);
     }
     const cleanedVazhipadinfo = vazhipadinfo.map(this.cleanVazhipadInfo);
+    console.log(cleanedVazhipadinfo,"cleaned vazhipad info")
     const combinedVazhipadinfo = [...cleanedVazhipadinfo, ...flattenedData];
 
     this.printData = vazhipadinfo;
@@ -1077,6 +1095,9 @@ console.log(this.selectedVazhipadItem)
             Mday: String(item.Mday),
             NalBy: String(item.NalBy),
             Mmonth: String(item.Mmonth),
+            FromDate:item.FromDate,
+            ToDate:item.ToDate,
+            SearchBy:String(item.SearchBy)
           };
         }
       );

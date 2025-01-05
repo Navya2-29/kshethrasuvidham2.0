@@ -51,7 +51,7 @@ export class ReportOfferingComponent {
  // Call your API service to get the report data
   fetchReportData(type: string, fromDate: string, toDate: string): void {
     const payLoad = {
-      Type: "DailyStmt",
+      Type: "Offering",
       FromDate: fromDate,
       ToDate: toDate,
     };
@@ -157,7 +157,7 @@ export class ReportOfferingComponent {
     const currentDate = new Date().toLocaleDateString();
   
     const maxColumnWidths = [30, 100, 30]; // Column widths for each column (adjusted)
-    const headers = ["SINO", "VAZHIPAD", "TOTAL QTY"];
+    const headers = ["SINO", "VAZHIPAD", "QUANTITY"];
   
     let y = headerHeight;
     let grandTotalQty = 0;
@@ -248,7 +248,7 @@ export class ReportOfferingComponent {
       tableRow.forEach((cell, index) => {
         if (index === 2) {
           // Align "TOTAL QTY" column to the right
-          doc.text(String(cell), x + maxColumnWidths[index] - 2, y + 5, { align: "right" });
+          doc.text(String(cell), x + maxColumnWidths[index] - 2, y + 5, { align: "center" });
         } else {
           // Left-align other columns
           doc.text(String(cell), x, y + 5);
@@ -283,7 +283,7 @@ export class ReportOfferingComponent {
     grandTotalRow.forEach((cell, index) => {
       if (index === 2) {
         // Align "TOTAL QTY" column to the right
-        doc.text(String(cell), x + maxColumnWidths[index] - 2, y + 5, { align: "right" });
+        doc.text(String(cell), x + maxColumnWidths[index] - 2, y + 5, { align: "center" });
       } else {
         // Left-align other columns
         doc.text(String(cell), x, y + 5);

@@ -45,7 +45,7 @@ export class NumberDirective {
     // Check if pasted value starts with 0
     if (clipboardData.startsWith('0')) {
       event.preventDefault();
-      this.notification.showError("0 cannot be the first digit");
+      this.notification.showError("0 is not valid");
       return;
     }
 
@@ -54,6 +54,24 @@ export class NumberDirective {
     if (isInvalid || clipboardData.length > 5) {
       event.preventDefault();
       this.notification.showError("Pasting invalid input is not allowed");
+    }
+  }
+
+
+  @HostListener('input', ['$event'])
+  onInput(event: Event) {
+    const inputValue = this.el.nativeElement.value;
+
+    // Check if value starts with 0
+    if (inputValue.startsWith('0')) {
+      this.el.nativeElement.value = ''; // Clear the input
+      this.notification.showError('0 is not valid');
+    }
+
+    // Check if length exceeds maximum
+    if (inputValue.length > 5) {
+      this.el.nativeElement.value = inputValue.slice(0, 5); // Trim to max length
+      this.notification.showError('Maximum length reached');
     }
   }
 }

@@ -15,8 +15,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { HttpClient } from '@angular/common/http';
-
-
 @Component({
   selector: 'app-report-counter',
   standalone: true,
@@ -31,7 +29,6 @@ import { HttpClient } from '@angular/common/http';
 export class ReportCounterComponent {
   displayedColumns: string[] = [
     'BillNo',
-    
     'BillDate',
     "Counter",
     'Vazhipad',
@@ -49,30 +46,37 @@ export class ReportCounterComponent {
   pageSizeOptions: number[] = [10,50,100,200,300,500,1000];
   pageIndex = 0;
   data: ReportData[] = [];
+  fromDate:string;
+  toDate:string;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   groupedData: { [key: string]: ReportData[] } = {};
   currentDate: string = '';
   currentPage: number = 1;
+  counterId:string | null;
+
+
   constructor(
     private route: ActivatedRoute,
     private service: ReportService,
     private router: Router,
     private http:HttpClient
-  ) {}
+  ) {
+    this.counterId=localStorage.getItem('Counter')
+  }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       const type = params['type'];
-      const fromDate = params['fromDate'];
-      const toDate = params['toDate'];
-      this.fetchReportData(type, fromDate, toDate);
+       this.fromDate = params['fromDate'];
+       this.toDate = params['toDate'];
+      this.fetchReportData(type, this.fromDate, this.toDate);
     });
   }
 
   // Call your API service to get the report data
   fetchReportData(type: string, fromDate: string, toDate: string): void {
     const payLoad = {
-      Type: "DailyStmt",
+      Type: "Counter",
       FromDate: fromDate,
       ToDate: toDate,
     };
@@ -118,224 +122,205 @@ export class ReportCounterComponent {
     this.router.navigate(['/getReport']);
   }
 
+
+  formatDateToDDMMYYYY(date: string): string {
+    const [year, month, day] = date.split('-');
+    return `${day}-${month}-${year}`;
+  }
+
   generatePDF() {
     const templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
     const templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.width;
     const pageHeight = doc.internal.pageSize.height;
-  
-    const headerHeight = 33;
+    const headerHeight = 35;
     const footerHeight = 20;
-    const lineHeight = 10;
+    const lineHeight = 5;
     const tableHeaderFontSize = 10;
     const contentFontSize = 9;
-    const currentDate = new Date().toLocaleDateString('en-GB');
-    // Adjusted column widths for SNo, Vazhipad, Rate, and Amount
-    const maxColumnWidths = [15, 100, 30, 30]; // SNo, Vazhipad, Rate, Amount
-  
-    let y = headerHeight; // Initial Y position after header
-    let grandTotal = 0; // Initialize grand total
-    this.http
-    .get('assets/fonts/malayalam/NotoSansMalayalam-Regular.ttf', {
-      responseType: 'arraybuffer',
-    })
-    .subscribe(
+    const maxColumnWidths = [20, 60, 25, 25, 25]; // BillNo, Name, Vazhipad, Star, Ennam (Qty), Rate, Amount
+    let y = headerHeight;
+    let grandTotal = 0;
+    this.http.get('assets/fonts/malayalam/NotoSansMalayalam-Regular.ttf', { responseType: 'arraybuffer' }).subscribe(
       (fontData) => {
         const doc = new jsPDF();
-
-        // Convert ArrayBuffer to Base64
-        const fontBase64 = btoa(
-          String.fromCharCode(...new Uint8Array(fontData))
-        );
-
-        // Add the font to jsPDF
-        doc.addFileToVFS(
-          'NotoSansMalayalam-Regular.ttf',
-          fontBase64
-        );
-        doc.addFont(
-          'NotoSansMalayalam-Regular.ttf',
-          'NotoSansMalayalam',
-          'normal'
-        );
-
-        // Set the custom font
+        const fontBase64 = btoa(String.fromCharCode(...new Uint8Array(fontData)));
+        doc.addFileToVFS('NotoSansMalayalam-Regular.ttf', fontBase64);
+        doc.addFont('NotoSansMalayalam-Regular.ttf', 'NotoSansMalayalam', 'normal');
         doc.setFont('NotoSansMalayalam');
-    // Data grouped by TransactionMode (example grouping key)
-    const groupedData = this.data.reduce((acc, current) => {
-      const key = current.CounterId; // Change this key if grouping by something else
-      if (!acc[key]) {
-        acc[key] = [];
-      }
-      acc[key].push(current);
-      return acc;
-    }, {} as { [key: string]: ReportData[] });
-  
-    // Draw Header
-    const drawHeader = () => {
-      doc.setFontSize(12);
-      doc.setFont("NotoSansMalayalam", "bold");
-      doc.text(templeName, pageWidth / 2, 12, { align: "center" });
-      doc.setFont("NotoSansMalayalam", "normal");
-      doc.setFontSize(10);
-      doc.text(templeAddress, pageWidth / 2, 18, { align: "center" });
-  
-      doc.setFontSize(10);
-      doc.setFont("NotoSansMalayalam", "bold");
-      doc.text("Temple collection Report", pageWidth / 2, 27, { align: "center" });
-   // Add current date below the report title but above the table header
-   doc.setFontSize(10);
-   doc.setFont("NotoSansMalayalam", "normal");
-   doc.text(currentDate, pageWidth / 2, 32, { align: "center" });
-      doc.setLineWidth(0.5);
-      doc.line(10, y, pageWidth - 10, y); // Line below header
-      y += 2; // Space below the line
-    };
-  
-    // Draw Footer
-    const drawFooter = (pageNum: number) => {
-      doc.setFontSize(10);
-      const footerText = `Page ${pageNum}`;
-      doc.text(footerText, pageWidth / 2, pageHeight - footerHeight / 2, { align: "center" });
-    };
-  
-    // Add Table Header
-    const drawTableHeader = () => {
-      doc.setFontSize(tableHeaderFontSize);
-      doc.setFont("NotoSansMalayalam", "bold");
-      const headers = ["SLNo", "VAZHIPAD", "RATE", "AMOUNT"];
-      let x = 10;
-      headers.forEach((header, index) => {
-        doc.text(header, x, y + 5);
-        x += maxColumnWidths[index];
-      });
-  
-      y += lineHeight;
-      doc.setLineWidth(0.5);
-      doc.line(10, y, pageWidth - 10, y); // Line below the header
-      y += 2; // Space below the line
-    };
-  
-    // Initialize PDF
-    drawHeader();
-    drawFooter(1);
-    drawTableHeader();
-  
-    let pageNum = 1;
-  
-    // Render Grouped Data
-    let serialNo = 1; // Start serial number from 1
-    for (const [group, entries] of Object.entries(groupedData)) {
-      // Check if enough space for group header, add page if not
-      if (y + lineHeight > pageHeight - footerHeight - 20) {
-        doc.addPage();
-        pageNum++;
-        y = headerHeight + 5; // Reset y position after new page
-        drawHeader();
-        drawFooter(pageNum);
-        drawTableHeader();
-      }
-  
-      // Draw Group Header with extra spacing to avoid overlap with the table header line
-      doc.setFontSize(12);
-      doc.setFont("NotoSansMalayalam", "bold");
-  
-      y += lineHeight; // Increase spacing between the group name and table header
-      doc.text(`Counter: ${group}`, 10, y);
-      y += lineHeight; // Additional space below group header
-  
-      let groupTotal = 0; // Initialize group total
-  
-      // Draw Entries in Table Format
-      for (const entry of entries) {
-        // Ensure Rate and Amount are numbers
-        const rate = Number(entry.Rate);  // Convert Rate to number
-        const amount = Number(entry.Amount);  // Convert Amount to number
-  
-        // Apply .toFixed() only after conversion to number
-        const rateFormatted = isNaN(rate) ? '0.00' : rate.toFixed(2);  // Check if Rate is a valid number
-        const amountFormatted = isNaN(amount) ? '0.00' : amount.toFixed(2);  // Check if Amount is a valid number
-  
-        // Check if enough space for the row, add page if not
-        if (y + lineHeight > pageHeight - footerHeight - 10) {
-          doc.addPage();
-          pageNum++;
-          y = headerHeight + 5; // Reset y position after new page
-          drawHeader();
-          drawFooter(pageNum);
-          drawTableHeader();
-        }
-  
-        doc.setFontSize(contentFontSize);
-        doc.setFont("NotoSansMalayalam", "normal");
-  
-        const row = [
-          serialNo++, // Increment serial number
-          this.wrapText(doc, entry.Vazhipad, maxColumnWidths[1] - 5), // Wrap Vazhipad text
-          rateFormatted,  // Use formatted Rate
-          amountFormatted,  // Use formatted Amount
-        ];
-        let x = 10;
-  
-        row.forEach((cell, index) => {
-          if (index === 2 || index === 3) {
-            // Right-align for Rate and Amount
-            doc.text(String(cell), x + maxColumnWidths[index] - 10, y + 5, { align: "right" });
-          } else {
-            doc.text(String(cell), x, y + 5);  // Left-align the others
+
+        // Group data by TransactionMode and then by Vazhipad
+        const groupedData = this.data.reduce((acc, current) => {
+          const key = current.CounterId;
+          if (!acc[key]) {
+            acc[key] = {};
           }
-          x += maxColumnWidths[index];
-        });
-  
-        groupTotal += amount; // Add to group total
-        grandTotal += amount; // Add to grand total
-        y += lineHeight;
-      }
-  
-      // Draw Group Total
-      if (y + lineHeight > pageHeight - footerHeight - 10) {
-        doc.addPage();
-        pageNum++;
-        y = headerHeight + 5; // Reset y position after new page
+          if (!acc[key][current.Vazhipad]) {
+            acc[key][current.Vazhipad] = { Qty: 0, Rate: current.Rate, Total: 0 };
+          }
+          // Sum the Qty and calculate the Total for each Vazhipad
+          acc[key][current.Vazhipad].Qty += current.Qty;
+          acc[key][current.Vazhipad].Total += current.Qty * current.Rate;
+          return acc;
+        }, {} as { [key: string]: { [key: string]: { Qty: number; Rate: number; Total: number } } });
+
+        // Draw Header
+        const drawHeader = () => {
+          doc.setFontSize(12);
+          doc.setFont("NotoSansMalayalam", "bold");
+          doc.text(templeName, pageWidth / 2, 12, { align: "center" });
+          doc.setFont("NotoSansMalayalam", "normal");
+          doc.setFontSize(10);
+          doc.text(templeAddress, pageWidth / 2, 18, { align: "center" });
+
+          doc.setFontSize(10);
+          doc.setFont("NotoSansMalayalam", "bold");
+          doc.text("Daily Statement Collection - Temple(counter)", pageWidth / 2, 27, { align: "center" });
+          doc.text(`${this.formatDateToDDMMYYYY(this.fromDate)} to ${this.formatDateToDDMMYYYY(this.toDate)}`, pageWidth / 2, 32, { align: "center" });
+          doc.setLineWidth(0.5);
+          doc.line(10, y, pageWidth - 10, y); // Line below header
+          y += 3;
+        };
+
+        // Draw Footer
+        const drawFooter = (pageNum: number) => {
+          doc.setFontSize(10);
+          const footerText = `Page ${pageNum}`;
+          doc.text(footerText, pageWidth / 2, pageHeight - footerHeight / 2, { align: "center" });
+        };
+
+        // Add Table Header
+        const drawTableHeader = () => {
+          doc.setFontSize(tableHeaderFontSize);
+          doc.setFont("NotoSansMalayalam", "bold");
+          const headers = ["SINO.", "VAZHIPAD", "QTY", "RATE", "AMOUNT"];
+          let x = 10;
+          headers.forEach((header, index) => {
+            doc.text(header, x, y + 5);
+            x += maxColumnWidths[index];
+          });
+
+          y += lineHeight+5;
+          doc.setLineWidth(0.5);
+          doc.line(10, y, pageWidth - 10, y); // Line below the header
+          y += 2;
+        };
+
+        // Initialize PDF
         drawHeader();
-        drawFooter(pageNum);
+        drawFooter(1);
         drawTableHeader();
+
+        let pageNum = 1;
+
+        // Render Grouped Data
+        for (const [group, entries] of Object.entries(groupedData)) {
+          // Check if enough space for group header, add page if not
+          if (y + lineHeight > pageHeight - footerHeight - 20) {
+            doc.addPage();
+            pageNum++;
+            y = headerHeight + 5; // Reset y position after new page
+            drawHeader();
+            drawFooter(pageNum);
+            drawTableHeader();
+          }
+
+          // Draw Group Header with extra spacing to avoid overlap with the table header line
+          doc.setFontSize(12);
+          doc.setFont("NotoSansMalayalam", "bold");
+
+          y += lineHeight; // Increase spacing between the group name and table header
+          doc.text(`Counter : ${group}`, 10, y);
+          y += lineHeight; // Additional space below group header
+
+          let groupTotal = 0; // Initialize group total
+
+          // Draw Entries in Table Format
+          let serialNumber = 1; // Initialize serial number for the group
+          for (const [vazhipad, values] of Object.entries(entries)) {
+            // Ensure Rate and Total are numbers
+            const rate = Number(values.Rate);
+            const total = Number(values.Total);
+
+            // Check if enough space for the row, add page if not
+            if (y + lineHeight > pageHeight - footerHeight - 10) {
+              doc.addPage();
+              pageNum++;
+              y = headerHeight + 5; // Reset y position after new page
+              drawHeader();
+              drawFooter(pageNum);
+              drawTableHeader();
+            }
+
+            doc.setFontSize(contentFontSize);
+            doc.setFont("NotoSansMalayalam", "normal");
+
+            const row = [
+              serialNumber.toString(),
+              vazhipad, // Vazhipad text
+              values.Qty.toString(), // Sum of Qty for each Vazhipad
+              rate.toFixed(2), // Rate for each Vazhipad
+              total.toFixed(2), // Total = Rate * Qty
+            ];
+            let x = 10;
+
+            row.forEach((cell, index) => {
+              if (index === 2 || index === 3 || index === 4) {
+                // Right-align for Qty, Rate, and Amount
+                doc.text(String(cell), x + maxColumnWidths[index] - 10, y + 5, { align: "right" });
+              } else {
+                doc.text(String(cell), x, y + 5);  // Left-align the others
+              }
+              x += maxColumnWidths[index];
+            });
+
+            groupTotal += total; // Add to group total
+            grandTotal += total; // Add to grand total
+            y += lineHeight;
+            serialNumber++; // Increment serial number
+          }
+
+          // Draw Group Total
+          if (y + lineHeight > pageHeight - footerHeight - 10) {
+            doc.addPage();
+            pageNum++;
+            y = headerHeight + 5; // Reset y position after new page
+            drawHeader();
+            drawFooter(pageNum);
+            drawTableHeader();
+          }
+
+          // Add group total at the end
+          const groupTotalX = 10 + maxColumnWidths[0] + maxColumnWidths[1] + maxColumnWidths[2] + maxColumnWidths[3]+maxColumnWidths[3];
+          doc.setFontSize(12);
+          doc.setFont("NotoSansMalayalam", "bold");
+          doc.text(`Total (Conter :${group}):`, 10, y + 5); // Label for the group total
+          doc.text(`${groupTotal.toFixed(2)}`,groupTotalX - 10, y + 5, { align: "right" }); // Total with transaction mode
+
+          y += lineHeight + 5; // Add space after the total for the next group or footer
+        }
+        const groupTotalX = 10 + maxColumnWidths[0] + maxColumnWidths[1] + maxColumnWidths[2] + maxColumnWidths[3]+maxColumnWidths[3];
+
+        // Add Grand Total below the last Group Total
+        doc.setFontSize(12);
+        doc.setFont("NotoSansMalayalam", "bold");
+        doc.text("Grand Total:", 10, y + 5); // Label for the grand total
+        doc.text(`${grandTotal.toFixed(2)}`, groupTotalX - 10, y + 5, { align: "right" }); // Grand total with text
+
+        y += lineHeight + 10; // Space after the grand total
+
+        // Save PDF
+        const pdfBlob = doc.output('blob');
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+        window.open(pdfUrl, '_blank');
+      },
+      (error: any) => {
+        console.error('Error loading font:', error);
       }
-  
-      // Add group total at the end
-      doc.setFontSize(12);
-      doc.setFont("NotoSansMalayalam", "bold");
-      doc.text("Total:", 10, y + 5); // Label for the group total
-      doc.text(groupTotal.toFixed(2), pageWidth - 33, y + 5, { align: "right" }); // Total amount aligned to the right
-  
-      y += lineHeight + 5; // Add space after the total for the next group or footer
-    }
-  
-    // Add Grand Total below the last Group Total
-    doc.setFontSize(12);
-    doc.setFont("NotoSansMalayalam", "bold");
-    doc.text("Grand Total:", 10, y + 5); // Label for the grand total
-    doc.text(grandTotal.toFixed(2), pageWidth - 33, y + 5, { align: "right" }); // Grand total aligned to the right
-  
-    y += lineHeight + 10; // Space after the grand total
-  
-    // Save PDF
-    // doc.save("CountersdailyStatement_Report.pdf");
-    const pdfBlob = doc.output('blob');
-    const pdfUrl = URL.createObjectURL(pdfBlob);
-    window.open(pdfUrl, '_blank');
-    // doc.save('vazhipad_report_with_header_footer.pdf');
-
-
-
-  },
-  (error:any) => {
-    console.error('Error loading font:', error);
+    );
   }
-);
 
-  }
   
   
   // Helper function to wrap text for a given column width
@@ -360,7 +345,6 @@ export class ReportCounterComponent {
   
   
   // Helper function to wrap text for a given column width
- 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
@@ -388,4 +372,7 @@ export class ReportCounterComponent {
         return 'OTHERS';
     }
   }
+
+
+
 }

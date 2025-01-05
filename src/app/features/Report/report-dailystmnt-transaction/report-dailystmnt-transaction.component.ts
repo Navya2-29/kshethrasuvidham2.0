@@ -16,7 +16,7 @@ import html2pdf from 'html2pdf.js';
 import { HttpClient } from '@angular/common/http';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-
+import { ReportDailyStmt } from '../../../models/dailytrasaction.model';
 @Component({
   selector: 'app-report-dailystmnt-transaction',
   standalone: true,
@@ -33,27 +33,26 @@ import { MatInputModule } from '@angular/material/input';
 })
 export class ReportDailystmntTransactionComponent {
   displayedColumns: string[] = [
-    'BillNo',
+    
     'BillDate',
     'Vazhipad',
-    'Name',
-    'Star',
+    
     'Qty',
     'Rate',
     'Amount',
-    'VazhiDate',
+    
     'TrnsMode',
   ];
-  dataSource = new MatTableDataSource<ReportData>();
+  dataSource = new MatTableDataSource<ReportDailyStmt>();
   length = 0;
   pageSize = 10;
   pageSizeOptions: number[] = [10,50,100,200,300,500,1000];
   pageIndex = 0;
-  data: ReportData[] = [];
+  data: ReportDailyStmt[] = [];
   fromDate:string;
   toDate:string;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  groupedData: { [key: string]: ReportData[] } = {};
+  groupedData: { [key: string]: ReportDailyStmt[] } = {};
   currentDate: string = '';
   currentPage: number = 1;
   constructor(
@@ -84,13 +83,13 @@ export class ReportDailystmntTransactionComponent {
         console.log('Fetched report data:', data);
         this.data = data;
         this.groupDataByTransactionMode(this.data); // Group the data
-        this.data = data.sort((a: any, b: any) => {
-          const [numA, denomA] = a.BillNo.split('/').map(Number);
-          const [numB, denomB] = b.BillNo.split('/').map(Number);
+        // this.data = data.sort((a: any, b: any) => {
+        //   const [numA, denomA] = a.BillNo.split('/').map(Number);
+        //   const [numB, denomB] = b.BillNo.split('/').map(Number);
 
           // Compare the two parts: first compare the numerator, then the denominator
-          return numA - numB || denomA - denomB;
-        });
+          // return numA - numB || denomA - denomB;
+        // });
         this.dataSource.data = this.data;
         this.length = data.length;
         this.dataSource.paginator = this.paginator;
@@ -104,11 +103,11 @@ export class ReportDailystmntTransactionComponent {
   }
 
   // Grouping function
-  groupDataByTransactionMode(data: ReportData[]): void {
+  groupDataByTransactionMode(data: ReportDailyStmt[]): void {
     this.groupedData = data.reduce((acc, item) => {
       (acc[item.TrnsMode] = acc[item.TrnsMode] || []).push(item);
       return acc;
-    }, {} as { [key: string]: ReportData[] });
+    }, {} as { [key: string]: ReportDailyStmt[] });
   }
 
   onPageChange(event: PageEvent) {
@@ -128,18 +127,14 @@ export class ReportDailystmntTransactionComponent {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.width;
     const pageHeight = doc.internal.pageSize.height;
-
     const headerHeight = 35;
     const footerHeight = 20;
     const lineHeight = 5;
     const tableHeaderFontSize = 10;
     const contentFontSize = 9;
-
     const maxColumnWidths = [20, 60, 25, 25, 25]; // BillNo, Name, Vazhipad, Star, Ennam (Qty), Rate, Amount
-
     let y = headerHeight;
     let grandTotal = 0;
-
     this.http.get('assets/fonts/malayalam/NotoSansMalayalam-Regular.ttf', { responseType: 'arraybuffer' }).subscribe(
       (fontData) => {
         const doc = new jsPDF();
@@ -154,12 +149,12 @@ export class ReportDailystmntTransactionComponent {
           if (!acc[key]) {
             acc[key] = {};
           }
-          if (!acc[key][current.Vazhipad]) {
-            acc[key][current.Vazhipad] = { Qty: 0, Rate: current.Rate, Total: 0 };
+          if (!acc[key][current.vazhipad]) {
+            acc[key][current.vazhipad] = { Qty: 0, Rate: current.Rate, Total: 0 };
           }
           // Sum the Qty and calculate the Total for each Vazhipad
-          acc[key][current.Vazhipad].Qty += current.Qty;
-          acc[key][current.Vazhipad].Total += current.Qty * current.Rate;
+          acc[key][current.vazhipad].Qty += current.Qty;
+          acc[key][current.vazhipad].Total += current.Qty * current.Rate;
           return acc;
         }, {} as { [key: string]: { [key: string]: { Qty: number; Rate: number; Total: number } } });
 

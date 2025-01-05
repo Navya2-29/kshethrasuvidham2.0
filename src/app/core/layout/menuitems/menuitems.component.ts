@@ -47,7 +47,7 @@ export class MenuitemsComponent {
   ];
 
   onLinkClick(event: Event): void {
-    if (this.role !== 'admin') {
+    if (this.role === 'staff') {
       event.preventDefault(); // Prevent navigation if not admin
     }
   }

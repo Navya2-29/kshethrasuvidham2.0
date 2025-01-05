@@ -13,24 +13,24 @@
                 <!-- <select (change)="onLanguageChange($event)"><option *ngFor="let lan of language" [value]="lan">{{lan}}</option></select> -->
                 
                 <!-- <th style="width: 20%">Vazhipad</th> -->
-                <th style="width: 20%">{{ "VAZHIPAD" | translate}}</th>
+                <th style="width: 22%">{{ "VAZHIPAD" | translate}}</th>
                 <!-- <th style="width: 25%">Name</th> -->
-                <th style="width: 25%">{{"NAME" |translate}}</th>
+                <th style="width: 23%">{{"NAME" |translate}}</th>
                 <!-- <th style="width: 8%">Star</th> -->
-                <th style="width: 8%">{{"STAR" |translate }}</th>
+                <th style="width: 13%">{{"STAR" |translate }}</th>
                 <!-- <th style="width: 8%">Diety</th> -->
-                <th style="width: 8%">{{"PRATHISTA" |translate }}</th>
+                <th style="width: 18%">{{"PRATHISTA" |translate }}</th>
                 <!-- <th style="width: 1%; text-align: center">Qty</th> -->
                 <!-- <th style="width: 1%; text-align: center">Qty</th> -->
-                <th style="width: 1%; text-align: center">{{"QUANTITY" |translate  }}</th>
+                <th style="width: 2%; text-align: center">{{"QUANTITY" |translate  }}</th>
                 <!-- <th style="width: 2%; text-align: center">Rate</th> -->
                 <th style="width: 2%; text-align: center">{{"RATE" |translate  }}  </th>
                 <!-- <th style="width: 4%; text-align: center">Amount</th> -->
                 <!-- <th style="width: 8%; text-align: center">Date</th> -->
-                <th style="width: 8%; text-align: center">{{"DATE" |translate  }}</th>
+                <th style="width: 5%; text-align: center">{{"DATE" |translate  }}</th>
                 <!-- <td style="width: 7%; text-align: center">Single/Multi</td> -->
                 <!-- <th style="width: 8%; text-align: center">Time</th> -->
-                <th style="width: 8%; text-align: center">{{"TIME" |translate  }}</th>
+                <th style="width: 6%; text-align: center">{{"TIME" |translate  }}</th>
                 <!-- <th> Name 2</th>
                 <th>Star 2</th> -->
                 <th></th>
@@ -41,7 +41,6 @@
               <tr [id]="'row-' + i"
                 *ngFor="let row of vazhipadinfo.controls; let i = index"
                 [formGroupName]="i"
-                
               >
                 
                 <td style="display: none">
@@ -61,6 +60,7 @@
                     [readonly]="multidayBooking[i]"
                     #inputRef
                     (keydown)="navigateToNext($event, i, 'name')"
+                     style="font-size: 12px;color: black;"
                   />
                   <mat-autocomplete
                   
@@ -102,6 +102,8 @@
                 <td>
                   <input
                     type="text"
+                    appUpperCase
+                     style="font-size: 12px;color: black;"
                     class="form-control"
                     [placeholder]="'PLACEHOLDER.NAME' | translate"
                     formControlName="Name"
@@ -127,6 +129,7 @@
                   type="text"
                   [placeholder]="'PLACEHOLDER.STAR' | translate"
                   matInput
+                  style="font-size: 12px;color: black;"
                   id="starName-{{i}}"
                   class="form-control sps"
                   formControlName="starName"
@@ -170,6 +173,7 @@
                     style="width: 100%; height: 30.6px"  
                     (keydown)="navigateToNext($event, i, 'Qty')" 
                     id="Prethista-{{i}}" 
+                      style="width: 100%; height: 30.6px; font-size: 12px;"
                   >
                   <ng-container *ngIf="lang=='en'"> <option *ngFor="let prathishta of prathishtaOptions[i]" [value]="prathishta.name" >{{prathishta.name}}</option>
                   </ng-container>
@@ -179,7 +183,7 @@
                   <span *ngIf="multidayBooking[i]"><input type="text" class="form-control" readOnly formControlName="Prethista"></span>
                  
                 </td>
-                <td style="vertical-align: middle; text-align: center">
+                <td style="vertical-align: middle; text-align: center;">
                   <input
                   [min]="1"
                     type="number"
@@ -276,8 +280,6 @@
               <ng-container *ngIf="lang=='ml'">
                 <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra. SM_Id"> {{nakshtra.SM_RName}}</option>
               </ng-container>
-              
-             
               </select>
                 </td>
                 <td>

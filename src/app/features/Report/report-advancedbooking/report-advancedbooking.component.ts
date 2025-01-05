@@ -28,15 +28,17 @@ export class ReportAdvancedbookingComponent {
   pageSizeOptions: number[] = [10,50,100,200,300,500,1000];
   pageIndex = 0;
   data:ReportData[]=[];
+  fromDate:string;
+  toDate:string;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   groupedData: { [key: string]: ReportData[] } = {};
   constructor(private route: ActivatedRoute, private service: ReportService,private router: Router, private http:HttpClient) {}
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       const type = params['type'];
-      const fromDate = params['fromDate'];
-      const toDate = params['toDate'];
-      this.fetchReportData(type, fromDate, toDate);
+      this.fromDate = params['fromDate'];
+    this.toDate = params['toDate'];
+      this.fetchReportData(type, this.fromDate, this.toDate);
     });
   }
 
@@ -53,13 +55,13 @@ export class ReportAdvancedbookingComponent {
       next: (data) => {
         console.log('Fetched report data:', data);
         this.data=data;
-        this.data = data.sort((a:any, b:any) => {
-          const [numA, denomA] = a.BillNo.split('/').map(Number);
-          const [numB, denomB] = b.BillNo.split('/').map(Number);
+      //   this.data = data.sort((a:any, b:any) => {
+      //     const [numA, denomA] = a.BillNo.split('/').map(Number);
+      //     const [numB, denomB] = b.BillNo.split('/').map(Number);
           
-          // Compare the two parts: first compare the numerator, then the denominator
-          return numA - numB || denomA - denomB;
-      });
+      //     // Compare the two parts: first compare the numerator, then the denominator
+      //     return numA - numB || denomA - denomB;
+      // });
         this.dataSource.data = this.data
         this.length = data.length; 
         this.dataSource.paginator = this.paginator;
@@ -85,6 +87,11 @@ export class ReportAdvancedbookingComponent {
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  formatDateToDDMMYYYY(date: string): string {
+    const [year, month, day] = date.split('-');
+    return `${day}-${month}-${year}`;
   }
 
   generatePDF() {
@@ -148,7 +155,7 @@ export class ReportAdvancedbookingComponent {
       // Add current date below the report title but above the table header
       doc.setFontSize(10);
       doc.setFont("NotoSansMalayalam", "normal");
-      doc.text(currentDate, pageWidth / 2, 32, { align: "center" });
+      doc.text(`${this.formatDateToDDMMYYYY(this.fromDate)} to ${this.formatDateToDDMMYYYY(this.toDate)} `, pageWidth / 2, 32, { align: "center" });
     
       doc.setLineWidth(0.5);
       doc.line(10, y, pageWidth - 10, y); // Line below header

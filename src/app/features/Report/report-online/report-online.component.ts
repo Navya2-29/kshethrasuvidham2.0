@@ -44,7 +44,7 @@ export class ReportOnlineComponent {
  // Call your API service to get the report data
   fetchReportData(type: string, fromDate: string, toDate: string): void {
     const payLoad = {
-      Type: 'DailyStmt',
+      Type: 'Online',
       FromDate: fromDate,
       ToDate: toDate,
     };

@@ -386,24 +386,74 @@ export class NadavaravuComponent implements OnInit {
     });
   }
 
-  printNadavaravuData() {
-    if (this.duplicateBillFlag) {
-      var printContents = document.getElementById('duplicateRecipt')?.innerHTML;
-    } else {
-      var printContents = document.getElementById('receipt')?.innerHTML;
-    }
+  // printNadavaravuData() {
+  //   if (this.duplicateBillFlag) {
+  //     var printContents = document.getElementById('duplicateRecipt')?.innerHTML;
+  //   } else {
+  //     var printContents = document.getElementById('receipt')?.innerHTML;
+  //   }
 
-    const printWindow = window.open('', '', 'height=500, width=800');
+  //   const printWindow = window.open('', '', 'height=500, width=800');
+  //   if (printWindow) {
+  //     printWindow.document.write(
+  //       '<html><head><title>Print Receipt</title></head><body>'
+  //     );
+  //     printWindow.document.write(printContents || '');
+  //     printWindow.document.write('</body></html>');
+  //     printWindow.document.close();
+  //     printWindow.print();
+  //   }
+  // }
+
+  printNadavaravuData() {
+    const printContents = this.duplicateBillFlag
+      ? document.getElementById('duplicateRecipt')?.innerHTML
+      : document.getElementById('receipt')?.innerHTML;
+  
+    if (!printContents) {
+      console.error('No content found to print!');
+      return;
+    }
+  
+    const printWindow = window.open('', '_blank', 'height=500, width=800');
     if (printWindow) {
-      printWindow.document.write(
-        '<html><head><title>Print Receipt</title></head><body>'
-      );
-      printWindow.document.write(printContents || '');
-      printWindow.document.write('</body></html>');
+      printWindow.document.open();
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Print Receipt</title>
+            <style>
+              body {
+                margin: 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
+                font-size: 12px;
+              }
+              #receipt, #duplicateRecipt {
+                width: 6in; /* Width in inches */
+                height: 4in; /* Height in inches */
+                position: relative;
+              }
+              div {
+                position: absolute;
+              }
+            </style>
+          </head>
+          <body>
+            ${printContents}
+          </body>
+        </html>
+      `);
       printWindow.document.close();
+      printWindow.focus();
       printWindow.print();
+      printWindow.close();
+    } else {
+      console.error('Failed to open print window!');
     }
   }
+  
+
 
   getTransactionType(transmode: string): string {
     switch (transmode) {

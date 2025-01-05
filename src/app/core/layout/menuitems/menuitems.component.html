@@ -13,11 +13,11 @@
                        <ul class="list-group list-group-flush">
                         <a 
                 *ngFor="let link of masterLinks"
-                [routerLink]="role === 'admin' ? link.path : null"
-                [class.disabled]="role !== 'admin'"
-                [mat-dialog-close]="role === 'admin' ? true : null"
+                [routerLink]="role !== 'staff' ? link.path : null"
+                [class.disabled]="role === 'staff'"
+                [mat-dialog-close]="role !== 'staff' ? true : null"
                 (click)="onLinkClick($event)"
-                [attr.aria-disabled]="role !== 'admin'">
+                [attr.aria-disabled]="role=== 'staff'">
                 <li class="list-group-item">{{ link.label }}</li>
               </a>
                       </ul>

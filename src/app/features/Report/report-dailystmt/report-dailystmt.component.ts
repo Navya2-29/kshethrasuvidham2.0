@@ -65,13 +65,7 @@ export class ReportDailystmtComponent {
       next: (data) => {
         console.log('Fetched report data:', data);
         this.data=data;
-        this.data = data.sort((a:any, b:any) => {
-          const [numA, denomA] = a.BillNo.split('/').map(Number);
-          const [numB, denomB] = b.BillNo.split('/').map(Number);
-          
-          // Compare the two parts: first compare the numerator, then the denominator
-          return numA - numB || denomA - denomB;
-      });
+       
         this.dataSource.data = this.data
         this.length = data.length; 
         this.dataSource.paginator = this.paginator;

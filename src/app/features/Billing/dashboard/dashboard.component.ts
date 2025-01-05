@@ -9,7 +9,7 @@ import { LoginComponent } from '../../../core/auth/login/login.component';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [LoginComponent, HeaderComponent, MenuComponent, AreaComponent, FixedbottomComponent],
+  imports: [HeaderComponent, AreaComponent, FixedbottomComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })

@@ -32,14 +32,16 @@ export class ReportChecquestmntComponent implements OnInit{
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   groupedData: { [key: string]: ReportData[] } = {};
   filteredData:ReportData[]=[];
+  fromDate:string;
+  toDate:string;
   constructor(private route: ActivatedRoute, private service: ReportService,private router: Router,private http:HttpClient) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       const type = params['type'];
-      const fromDate = params['fromDate'];
-      const toDate = params['toDate'];
-      this.fetchReportData(type, fromDate, toDate);
+     this. fromDate = params['fromDate'];
+      this. toDate = params['toDate'];
+      this.fetchReportData(type, this.fromDate, this.toDate);
     });
   }
 
@@ -48,7 +50,7 @@ export class ReportChecquestmntComponent implements OnInit{
  // Call your API service to get the report data
   fetchReportData(type: string, fromDate: string, toDate: string): void {
     const payLoad = {
-      Type: 'DailyStmt',
+      Type: 'Cheque',
       FromDate: fromDate,
       ToDate: toDate,
     };
@@ -57,13 +59,13 @@ export class ReportChecquestmntComponent implements OnInit{
         console.log('Fetched report data:', data);
         this.data=data;
          this.filteredData = this.data.filter(item => item.TrnsMode === 'CH');   
-         this.filteredData = this.filteredData.sort((a:any, b:any) => {
-          const [numA, denomA] = a.BillNo.split('/').map(Number);
-          const [numB, denomB] = b.BillNo.split('/').map(Number);
+      //    this.filteredData = this.filteredData.sort((a:any, b:any) => {
+      //     const [numA, denomA] = a.BillNo.split('/').map(Number);
+      //     const [numB, denomB] = b.BillNo.split('/').map(Number);
           
-          // Compare the two parts: first compare the numerator, then the denominator
-          return numA - numB || denomA - denomB;
-      });
+      //     // Compare the two parts: first compare the numerator, then the denominator
+      //     return numA - numB || denomA - denomB;
+      // });
       console.log(this.filteredData,"aaaaaaaaaaaaaaaaaaa")  
 
         this.dataSource.data = this.filteredData
@@ -166,12 +168,12 @@ generatePDF(): void {
 
     doc.setFontSize(10);
     doc.setFont("NotoSansMalayalam", "normal");
-    doc.text(currentDate, pageWidth / 2, 32, { align: "center" });
+    // doc.text(`${this.formatDate(this.fromDate)} to ${this.formatDate(this.toDate)}`, pageWidth / 2, 32, { align: "center" });
  // Add current date below the report title but above the table header
  doc.setFontSize(10);
  doc.setFont("NotoSansMalayalam", "normal");
- doc.text(currentDate, pageWidth / 2, 32, { align: "center" });
-    doc.setLineWidth(0.5);
+ doc.text(`${this.formatDate(this.fromDate)} to ${this.formatDate(this.toDate)}`, pageWidth / 2, 32, { align: "center" });
+ doc.setLineWidth(0.5);
     doc.line(10, y, pageWidth - 10, y); // Line below header
     y += 3; // Space below the line
   };
@@ -241,7 +243,6 @@ generatePDF(): void {
     }
 
     let x = 10;
-
     // Draw each cell
     doc.setFont("NotoSansMalayalam", "normal");
     doc.setFontSize(contentFontSize);
@@ -298,29 +299,12 @@ generatePDF(): void {
   const pdfUrl = URL.createObjectURL(pdfBlob);
   window.open(pdfUrl, '_blank');
   // doc.save('vazhipad_report_with_header_footer.pdf');
-
-
-
 },
 (error:any) => {
   console.error('Error loading font:', error);
 }
 );
-
-
-
 }
-
-
-
-
-
-
-
-  
-  
-  
-  
 
 
 }

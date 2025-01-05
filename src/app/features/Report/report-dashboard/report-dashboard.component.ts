@@ -42,6 +42,7 @@ export class ReportDashboardComponent {
   isSearchPerformed: boolean = false;
   newTab: any;
   today:Date=new Date()
+  isChecked:boolean;
   constructor(
     private fb: FormBuilder,
     private service: ReportService,
@@ -52,7 +53,9 @@ export class ReportDashboardComponent {
       vazhipadOption: ['Poornam'],
       fromDate: [this.formatDate(this.today)],
       toDate: [this.formatDate(this.today)],
+      countercheckbox:[false]
     });
+    console.log( this.searchForm.value.countercheckbox," ")
   }
 
   // searchcall
@@ -62,12 +65,13 @@ export class ReportDashboardComponent {
     const reportType = searchParams.vazhipadOption;
     const fromDateFormatted = this.formatDate(searchParams.fromDate);
     const toDateFormatted = this.formatDate(searchParams.toDate);
+    this.isChecked=searchParams.countercheckbox; 
     const payLoad = {
       Type: searchParams.vazhipadOption,
       FromDate: fromDateFormatted,
       ToDate: toDateFormatted,
     };
-    console.log(payLoad);
+    console.log( this.isChecked,"haiiiiiiiiiiiii");
     const queryString = `?type=${encodeURIComponent(
       payLoad.Type
     )}&fromDate=${encodeURIComponent(
@@ -101,9 +105,14 @@ export class ReportDashboardComponent {
     else if (reportType === 'credit') {
       this.newTab = window.open(`#/report-credit${queryString}`, '_blank');
     }
+   
+    else if (reportType === 'counter' && this.isChecked===true) {
+      this.newTab = window.open(`#/report-counter-self${queryString}`, '_blank');
+    }
     else if (reportType === 'counter') {
       this.newTab = window.open(`#/report-counter${queryString}`, '_blank');
     }
+
     else if (reportType === 'cancel') {
       this.newTab = window.open(`#/report-cancel${queryString}`, '_blank');
     }

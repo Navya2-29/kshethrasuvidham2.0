@@ -44,6 +44,7 @@ import { ReportMoneyOrderComponent } from './features/Report/report-money-order/
 import { ReportOnlineComponent } from './features/Report/report-online/report-online.component';
 import { ReportCreditCollectionComponent } from './features/Report/report-credit-collection/report-credit-collection.component';
 import { SettingsComponent } from './core/settings/settings.component';
+import { ReportCounterSelfComponent } from './features/Report/report-counter-self/report-counter-self.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -155,6 +156,7 @@ export const routes: Routes = [
   { path: 'report-online', component: ReportOnlineComponent },
   { path: 'report-counter-trnsaction', component: ReportCounterTransactionComponent },
   { path: 'report-credit-Collection', component: ReportCreditCollectionComponent },
+  { path: 'report-counter-self', component: ReportCounterSelfComponent },
   { path: 'settings', component: SettingsComponent },
   {
     path: '**',
