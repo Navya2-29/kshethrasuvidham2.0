@@ -85,7 +85,7 @@ export class ReportCounterSelfComponent {
       next: (data) => {
         console.log('Fetched report data:', data);
         this.data = data;
-console.log(this.counterId,"counter id")
+        console.log(this.counterId,"counter id")
         this.filteredData = this.data.filter(item => item.CounterId == this.counterId);   
          this.filteredData = this.filteredData.sort((a:any, b:any) => {
           const [numA, denomA] = a.BillNo.split('/').map(Number);
