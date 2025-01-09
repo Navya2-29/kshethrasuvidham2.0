@@ -117,13 +117,13 @@ generatePDF(): void {
   const pageHeight = doc.internal.pageSize.height;
   const headerHeight = 35;
   const footerHeight = 8;
-  const lineHeight = 10;
+  const lineHeight = 8;
   const tableHeaderFontSize = 11;
-  const contentFontSize = 10;
+  const contentFontSize = 8;
   const currentDate = new Date().toLocaleDateString('en-GB'); // Format as dd-mm-yyyy
 
-  const maxColumnWidths = [20, 40, 40, 25, 25, 25]; // Column widths for each column
-  const headers = ["Bill No.", "Bank Name", "Vazhipad", "Cheq Date", "Chque No", "Amount"];
+  const maxColumnWidths = [20, 40, 45, 25, 25, 20]; // Column widths for each column
+  const headers = ["Bill No.", "Bank Name", "Vazhipad", "Cheque Date", "Cheque No", "Amount"];
 
   let y = headerHeight;
   let grandTotalAmount = 0;
@@ -278,7 +278,7 @@ generatePDF(): void {
   const grandTotalRow = ["", "Grand Total", "", "", "", grandTotalAmount.toFixed(2)];
   let x = 10;
   doc.setFont("NotoSansMalayalam", "bold");
-  doc.setFontSize(contentFontSize);
+  doc.setFontSize(contentFontSize +2);
   grandTotalRow.forEach((cell, index) => {
     if (index === 5) {
       doc.text(String(cell), x + maxColumnWidths[index] - 2, y + 5, { align: "right" });

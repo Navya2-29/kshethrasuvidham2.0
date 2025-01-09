@@ -30,14 +30,16 @@ export class ReportDebitComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   groupedData: { [key: string]: ReportData[] } = {};
   filteredData:ReportData[]=[];
+  fromDate:string;
+  toDate:string;
   constructor(private route: ActivatedRoute, private service: ReportService,private router: Router,private http:HttpClient) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       const type = params['type'];
-      const fromDate = params['fromDate'];
-      const toDate = params['toDate'];
-      this.fetchReportData(type, fromDate, toDate);
+      this. fromDate = params['fromDate'];
+      this. toDate = params['toDate'];
+      this.fetchReportData(type, this.fromDate, this.toDate);
     });
   }
 
@@ -53,13 +55,13 @@ export class ReportDebitComponent {
         console.log('Fetched report data:', data);
         this.data=data;
          this.filteredData = this.data.filter(item => item.TrnsMode === 'DE');   
-         this.filteredData = this.filteredData.sort((a:any, b:any) => {
-          const [numA, denomA] = a.BillNo.split('/').map(Number);
-          const [numB, denomB] = b.BillNo.split('/').map(Number);
+        //  this.filteredData = this.filteredData.sort((a:any, b:any) => {
+        //   const [numA, denomA] = a.BillNo.split('/').map(Number);
+        //   const [numB, denomB] = b.BillNo.split('/').map(Number);
           
-          // Compare the two parts: first compare the numerator, then the denominator
-          return numA - numB || denomA - denomB;
-      });
+        //   // Compare the two parts: first compare the numerator, then the denominator
+        //   return numA - numB || denomA - denomB;
+      // });
       console.log(this.filteredData,"aaaaaaaaaaaaaaaaaaa")  
 
         this.dataSource.data = this.filteredData
@@ -88,7 +90,10 @@ export class ReportDebitComponent {
     console.log('Going back...'); // Log to verify method execution
     this.router.navigate(['/getReport']);
   }
-
+  formatDateToDDMMYYYY(date: string): string {
+    const [year, month, day] = date.split('-');
+    return `${day}-${month}-${year}`;
+  }
   generatePDF(): void {
     // Filter data for entries with transmode 'ch'
     const filteredData = this.data.filter(item => item.TrnsMode === 'DE');
@@ -100,13 +105,13 @@ export class ReportDebitComponent {
     const pageHeight = doc.internal.pageSize.height;
     const headerHeight = 35;
     const footerHeight = 8;
-    const lineHeight = 10;
+    const lineHeight = 8;
     const tableHeaderFontSize = 11;
-    const contentFontSize = 10;
+    const contentFontSize = 8;
     const currentDate = new Date().toLocaleDateString();
   
     const maxColumnWidths = [20, 55, 40, 30, 15, 15, 15]; // Column widths for each column
-    const headers = ["Bill No.", "VAZHIPAD", "NAME", "InstNo", "ENNAM", "RATE", "TOTAL"];
+    const headers = ["Bill No.", "Vazhipad", "Name", "Debit-Id", "Ennam", "Rate", "Total"];
   
     let y = headerHeight;
     let grandTotalRate = 0;
@@ -153,7 +158,7 @@ export class ReportDebitComponent {
       // Add current date below the report title but above the table header
       doc.setFontSize(10);
       doc.setFont("NotoSansMalayalam", "normal");
-      doc.text(currentDate, pageWidth / 2, 32, { align: "center" });
+      doc.text(`${this.formatDateToDDMMYYYY(this.fromDate)} to ${this.formatDateToDDMMYYYY(this.toDate)}`, pageWidth / 2, 32, { align: "center" });
     
       doc.setLineWidth(0.5);
       doc.line(10, y, pageWidth - 10, y); // Line below header
@@ -271,7 +276,7 @@ export class ReportDebitComponent {
   
     let x = 10;
     doc.setFont("NotoSansMalayalam", "bold");
-    doc.setFontSize(contentFontSize);
+    doc.setFontSize(contentFontSize +2);
     grandTotalRow.forEach((cell, index) => {
       if (index === 5 || index === 6) {
         // Align Rate and Total columns to the right

@@ -75,3 +75,15 @@ mat-paginator .mat-mdc-button-base {
 h1{
 margin-left: 50%;
 }
+
+
+
+
+/* Center align Amount column */
+.mat-column-Receipt_Amt {
+  text-align: right; /* Align text horizontally */
+}
+
+.mat-column-ItemValue {
+  text-align: right; /* Align text horizontally */
+}

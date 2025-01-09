@@ -21,7 +21,7 @@ import { HttpClient } from '@angular/common/http';
   styleUrl: './report-advancedbooking.component.css'
 })
 export class ReportAdvancedbookingComponent {
-  displayedColumns: string[] = ['BillNo','BillDate','Vazhipad', 'Name', 'Star', 'Qty', 'Rate', 'Amount',  'VazhiDate', ];
+  displayedColumns: string[] = ['BillNo','BillDate','Vazhipad', 'Name', 'Star', 'Qty', 'Rate', 'Amount',  'VazhipadDate' ];
   dataSource = new MatTableDataSource<ReportData>();
   length = 0;
   pageSize = 10;
@@ -102,13 +102,13 @@ export class ReportAdvancedbookingComponent {
     const pageHeight = doc.internal.pageSize.height;
     const headerHeight = 35;
     const footerHeight = 8;
-    const lineHeight = 10;
+    const lineHeight = 8;
     const tableHeaderFontSize = 11;
-    const contentFontSize = 10;
+    const contentFontSize = 8;
     const currentDate = new Date().toLocaleDateString();
   
-    const maxColumnWidths = [20, 50, 40, 30, 15, 15, 15]; // Column widths for each column
-    const headers = ["Bill No.", "VAZHIPAD", "NAME", "STAR", "ENNAM", "RATE", "Date"];
+    const maxColumnWidths = [20, 50, 40, 30, 17, 15, 15]; // Column widths for each column
+    const headers = ["Bill No.", "VAZHIPAD", "NAME", "STAR", "ENNAM", "RATE", "Amount"];
   
     let y = headerHeight;
     let grandTotalRate = 0;
@@ -237,7 +237,7 @@ export class ReportAdvancedbookingComponent {
             doc.text(line, x, y + 5 + (lineIndex * contentFontSize));
           });
         } else {
-          if (index === 5 || index === 6) {
+          if (index === 4 ||  index === 5 || index === 6 ) {
             // Align Rate and Total columns to the right
             doc.text(String(cell), x + maxColumnWidths[index] - 2, y + 5, { align: "right" });
           } else {

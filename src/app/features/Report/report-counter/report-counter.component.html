@@ -13,7 +13,9 @@
         <span class="material-icons">grid_view</span>
     </button> -->
 </div>
-<div><h1 style="align-items: center;text-align: center; font-family: 'Times New Roman', Times, serif;font-weight:bold;">Daily Temple Collection</h1></div>
+<div><h1 style="align-items: center;text-align: center; font-family: 'Times New Roman', Times, serif;font-weight:bold;">DAILY TEMPLE COLLECTION(COUNTER)
+  
+</h1></div>
 
 <div class="report-table">
   <mat-form-field>
@@ -56,12 +58,12 @@
   
       <ng-container matColumnDef="Rate">
         <th mat-header-cell *matHeaderCellDef> RATE </th>
-        <td mat-cell *matCellDef="let element"> {{ element.Rate }} </td>
+        <td mat-cell *matCellDef="let element"> {{ element.Rate | number: '1.2-2' }} </td>
       </ng-container>
   
       <ng-container matColumnDef="Amount">
         <th mat-header-cell *matHeaderCellDef> AMOUNT </th>
-        <td mat-cell *matCellDef="let element"> {{ element.Amount }} </td>
+        <td mat-cell *matCellDef="let element"> {{ element.Amount | number: '1.2-2'}} </td>
       </ng-container>
   
       <ng-container matColumnDef="VazhiDate">

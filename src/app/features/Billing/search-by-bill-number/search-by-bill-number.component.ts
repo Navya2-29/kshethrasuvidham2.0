@@ -516,7 +516,7 @@ export class SearchByBillNumberComponent {
 
   generatePDF(){
     const doc = new jsPDF();
-    const columns = ['Vazhipad', 'Prathista', 'Name', 'Star', 'Qty', 'Rate', 'Amount'];
+    const columns = ['Vazhipad', 'Prathishta', 'Name', 'Star', 'Qty', 'Rate', 'Amount'];
     const rows = this.data.map((item:any) => [
       item.Vazhipad,
       item.Prathista,

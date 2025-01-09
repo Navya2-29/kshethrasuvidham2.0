@@ -21,7 +21,7 @@
             formControlName="vazhipadOption"
             value="debit"
           />
-          Debit
+          Debit/Credit Card
         </label>
         <label>
           <input
@@ -29,7 +29,7 @@
             formControlName="vazhipadOption"
             value="DailyStmt"
           />
-          Daily Statement (Transaction)
+          Daily Statement(Transaction)
         </label>
         <label>
           <input
@@ -37,7 +37,7 @@
             formControlName="vazhipadOption"
             value="moneyorder"
           />
-          Money order
+          Money Order
         </label>
         <label>
           <input
@@ -53,7 +53,7 @@
             formControlName="vazhipadOption"
             value="cheque"
           />
-          Cheque Stmnt
+          Cheque Statement
         </label>
        
        
@@ -74,7 +74,7 @@
             value="credit"
           />
          
-          Due details
+          Due/Credit 
         </label>
         <label>
           <input
@@ -84,7 +84,7 @@
           />
           Daily Statement (Counter) 
           <br/>
-          <input type="checkbox"  formControlName="countercheckbox" /> Counter
+          <input type="checkbox"  formControlName="countercheckbox" />All Counter
         </label>
         <label>
           <input
@@ -95,14 +95,14 @@
           UPI
         </label>
         
-        <label>
+        <!-- <label>
           <input
             type="radio"
             formControlName="vazhipadOption"
             value="report-counter-trnsaction"
           />
           Counter-Transaction 
-        </label>
+        </label> -->
         <label>
           <input
             type="radio"
@@ -125,7 +125,7 @@
             formControlName="vazhipadOption"
             value="cancel"
           />
-          Cancel
+          Vazhipad Cancel
         </label>
         <label>
           <input
@@ -133,7 +133,7 @@
             formControlName="vazhipadOption"
             value="nadavaravu"
           />
-          nadavaravu Booking
+          Nadavaravu Booking
         </label>
         <label>
           <input
@@ -141,12 +141,26 @@
             formControlName="vazhipadOption"
             value="nadavaravu-cancel"
           />
-          nadavaravu-cancel
+          Nadavaravu Cancel
         </label>
       </div>
     </form>
   </div>
-
+  
+  <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; ">
+    <form [formGroup]="searchForm">
+    <label for="prathishta" >Diety</label>
+    <select  class="form-control" style="width: 200px;" formControlName="prathista" id="prathishta">
+      <option value="">Select Diety</option>
+      <option *ngFor="let item of pmaster" [value]="item.PM_ID" >{{item.PM_Name}}</option>
+      </select>
+    <label for="Vazhipad">Vazhipad</label>
+    <select class="form-control" style="width: 200px;" formControlName="vazhipad" id="prathishta">
+      <option value="">Select Vazhipad</option>
+      <option *ngFor="let item of Vmaster" [value]="item.VC_ID" >{{item.VM_Name}}</option>
+    </select>
+  </form>
+  </div>
   <!-- Middle section for date inputs with enhanced design -->
   <div class="date-section">
     <div class="date-card">
@@ -163,19 +177,21 @@
     </div>
   </div>
 
-  <!-- Right side buttons -->
-  <div class="right-buttons">
-    <button class="action-button" style="background-color: green;" (click)="onSearch()">Search</button>
-    
-  </div>
-  <div class="right-buttons">
-    <button class="action-button" (click)="onBack()">Back</button>
-    
-  </div>
-
-</div>
+ 
 </div>
 
 
+</div>
 
+
+<div class="right-buttons" >
+  <button class="action-button" style="background-color: green;" (click)="onSearch()">Search</button><br/>
+  <button class="action-button" (click)="onBack()">Back</button>
+
+<!-- </div>
+<div class="right-buttons">
+  
+</div> -->
+
+</div>
 

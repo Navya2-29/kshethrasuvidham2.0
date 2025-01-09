@@ -170,7 +170,7 @@ export class ReportDailystmntTransactionComponent {
           doc.setFontSize(10);
           doc.setFont("NotoSansMalayalam", "bold");
           doc.text("Daily Statement Collection - Temple", pageWidth / 2, 27, { align: "center" });
-          doc.text(`${this.fromDate} -${this.toDate}`, pageWidth / 2, 32, { align: "center" });
+          doc.text(`${this.formatDateToDDMMYYYY(this.fromDate)} -${this.formatDateToDDMMYYYY(this.toDate)}`, pageWidth / 2, 32, { align: "center" });
           doc.setLineWidth(0.5);
           doc.line(10, y, pageWidth - 10, y); // Line below header
           y += 3;
@@ -349,7 +349,10 @@ export class ReportDailystmntTransactionComponent {
   
   
   
-  
+  formatDateToDDMMYYYY(date: string): string {
+    const [year, month, day] = date.split('-');
+    return `${day}-${month}-${year}`;
+  }
   
 
   getTransactionType(transmode: string): string {

@@ -30,14 +30,16 @@ export class ReportViewComponent implements OnInit {
   data:ReportData[]=[];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   groupedData: { [key: string]: ReportData[] } = {};
+  fromDate:string;
+  toDate:string;
   constructor(private route: ActivatedRoute, private service: ReportService,private router: Router,private http: HttpClient ) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       const type = params['type'];
-      const fromDate = params['fromDate'];
-      const toDate = params['toDate'];
-      this.fetchReportData(type, fromDate, toDate);
+      this. fromDate = params['fromDate'];
+      this. toDate = params['toDate'];
+      this.fetchReportData(type,this. fromDate, this.toDate);
     });
   }
 
@@ -54,13 +56,13 @@ export class ReportViewComponent implements OnInit {
       next: (data) => {
         console.log('Fetched report data:', data);
         this.data=data;
-        this.data = data.sort((a:any, b:any) => {
-          const [numA, denomA] = a.BillNo.split('/').map(Number);
-          const [numB, denomB] = b.BillNo.split('/').map(Number);
+      //   this.data = data.sort((a:any, b:any) => {
+      //     const [numA, denomA] = a.BillNo.split('/').map(Number);
+      //     const [numB, denomB] = b.BillNo.split('/').map(Number);
           
-          // Compare the two parts: first compare the numerator, then the denominator
-          return numA - numB || denomA - denomB;
-      });
+      //     // Compare the two parts: first compare the numerator, then the denominator
+      //     return numA - numB || denomA - denomB;
+      // });
         this.dataSource.data = this.data
         this.length = data.length; 
         this.dataSource.paginator = this.paginator;
@@ -94,172 +96,157 @@ export class ReportViewComponent implements OnInit {
 
 
   generatePDF() {
-    
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.width;
     const pageHeight = doc.internal.pageSize.height;
+  
     this.http
       .get('assets/fonts/malayalam/NotoSansMalayalam-Regular.ttf', {
         responseType: 'arraybuffer',
       })
       .subscribe(
         (fontData) => {
-          const doc = new jsPDF();
-
           // Convert ArrayBuffer to Base64
           const fontBase64 = btoa(
             String.fromCharCode(...new Uint8Array(fontData))
           );
-
+  
           // Add the font to jsPDF
-          doc.addFileToVFS(
-            'NotoSansMalayalam-Regular.ttf',
-            fontBase64
-          );
+          doc.addFileToVFS('NotoSansMalayalam-Regular.ttf', fontBase64);
           doc.addFont(
             'NotoSansMalayalam-Regular.ttf',
             'NotoSansMalayalam',
             'normal'
           );
-
+          doc.addFont(
+            'NotoSansMalayalam-Regular.ttf',
+            'NotoSansMalayalam',
+            'bold'
+          );
+  
           // Set the custom font
           doc.setFont('NotoSansMalayalam');
   
-    const title = 'Vazhipad Report';
-    const currentDate = new Date().toLocaleDateString('en-IN');
-    const lineHeight = 8; // Row height for the table
-    const smallSpacing = 4; // Space between groups
-    const headerSpacing = 6; // Space between header and content
-    const groupNameFontSize = 12; // Font size for group name
-    const tableContentFontSize = 10; // Font size for table content
-    const headerHeight = 20; // Height of header
-    const footerHeight = 20; // Height of footer
+          const title = 'Vazhipad Report';
+          const currentDate = new Date().toLocaleDateString('en-IN');
+          const lineHeight = 8; // Row height for the table
+          const smallSpacing = 4; // Space between groups
+          const headerSpacing = 6; // Space between header and content
+          const groupNameFontSize = 12; // Font size for group name
+          const tableContentFontSize = 10; // Font size for table content
+          const headerHeight = 20; // Height of header
+          const footerHeight = 20; // Height of footer
   
-    // Function to Draw Header
-    const drawHeader = () => {
-      doc.setFontSize(18); // Title font size
-      const titleWidth = doc.getTextWidth(title);
-      doc.text(title, (pageWidth - titleWidth) / 2, headerHeight - 12); // Title above header line
+          // Function to Draw Header
+          const drawHeader = () => {
+            doc.setFontSize(18);
+            doc.setFont("NotoSansMalayalam", "bold");
+            const titleWidth = doc.getTextWidth(title);
+            doc.text(title, (pageWidth - titleWidth) / 2, headerHeight - 12);
   
-      doc.setFontSize(12); // Date font size
-      const dateWidth = doc.getTextWidth(currentDate);
-      doc.text(currentDate, (pageWidth - dateWidth) / 2, headerHeight - 4); // Date above header line
+            doc.setFontSize(12);
+            const dateWidth = doc.getTextWidth(currentDate);
+            doc.text(currentDate, (pageWidth - dateWidth) / 2, headerHeight - 4);
   
-      // Draw a line under the header content
-      doc.setLineWidth(0.5);
-      doc.line(10, headerHeight, pageWidth - 10, headerHeight); // Line under header
-    };
+            doc.setLineWidth(0.5);
+            doc.line(10, headerHeight, pageWidth - 10, headerHeight);
+          };
   
-    // Function to Draw Footer
-    const drawFooter = (pageNum: number) => {
-      doc.setFontSize(10);
-      const footerText = `Page ${pageNum}`;
-      const footerWidth = doc.getTextWidth(footerText);
-      doc.text(footerText, (pageWidth - footerWidth) / 2, pageHeight - footerHeight + 12); // Footer content below footer line
+          // Function to Draw Footer
+          const drawFooter = (pageNum: number) => {
+            doc.setFontSize(10);
+            const footerText = `Page ${pageNum}`;
+            const footerWidth = doc.getTextWidth(footerText);
+            doc.text(
+              footerText,
+              (pageWidth - footerWidth) / 2,
+              pageHeight - footerHeight + 12
+            );
+            doc.setLineWidth(0.5);
+            doc.line(10, pageHeight - footerHeight, pageWidth - 10, pageHeight - footerHeight);
+          };
   
-      // Draw a line above the footer content
-      doc.setLineWidth(0.5);
-      doc.line(10, pageHeight - footerHeight, pageWidth - 10, pageHeight - footerHeight); // Line above footer
-    };
+          // Draw header for the first page
+          drawHeader();
+          let y = headerHeight + 5;
+          let serialNumber = 1;
+          drawFooter(1);
   
-    // Draw header for the first page
-    drawHeader();
-    
-    let y = headerHeight + 5; // Starting Y position for content (after header)
-    let serialNumber = 1;
+          for (const [vazhipad, entries] of Object.entries(this.groupedData)) {
+            // Ensure font is correctly set for the group name
+            doc.setFont("NotoSansMalayalam", "bold");
+            doc.setFontSize(groupNameFontSize);
   
-    // Add footer to the first page (explicitly before adding any content)
-    drawFooter(1); // Ensure footer is on the first page
+            if (y + 20 > pageHeight - footerHeight) {
+              doc.addPage();
+              drawHeader();
+              drawFooter(doc.internal.pages.length);
+              y = headerHeight + 5;
+            }
   
-    // Loop through grouped data
-    for (const [vazhipad, entries] of Object.entries(this.groupedData)) {
-      if (y + 20 > pageHeight - footerHeight) {
-        doc.addPage();
-        drawHeader(); // Draw header again on the new page
-        drawFooter(doc.internal.pages.length); // Draw footer on new page with correct page number
-        y = headerHeight + 5; // Reset Y position for new page (after header)
-      }
+            // Log group name to ensure it's rendering
+            console.log('Rendering group name:', vazhipad);
   
-      // Draw group header (Group name font size reduced)
-      doc.setFontSize(groupNameFontSize);
-doc.setFont("NotoSansMalayalam", "bold"); // Bold font for group name
-      doc.text(vazhipad, 14, y); // Group title
-      y += 6; // Space after group title
+            // Render group name
+            doc.text(vazhipad, 14, y);
+            y += 6;
   
-      // Add thin line under group name
-      doc.setLineWidth(0.2); // Set a thin line
-      doc.line(14, y, pageWidth - 14, y); // Draw line under group name
+            doc.setLineWidth(0.2);
+            doc.line(14, y, pageWidth - 14, y);
+            y += 3;
   
-      y += 3; // Space after thin line before table header
+            // Draw table header
+            doc.setFontSize(tableContentFontSize);
+            doc.text('Sl No', 14, y + 5);
+            doc.text('Name', 40, y + 5);
+            doc.text('Star', 100, y + 5);
+            doc.text('Qty', 140, y + 5);
+            doc.text('BillNo', 180, y + 5);
   
-      // Draw table header for the group (Table header font size reduced)
-      doc.setFontSize(tableContentFontSize); // Font size for table content
-      doc.setTextColor(0, 0, 0); // Set text color
-      doc.text('Sl No', 14, y + 5);
-      doc.text('Name', 40, y + 5);
-      doc.text('Star', 100, y + 5); // Adjusted the X-position to leave space for Name column
-      doc.text('Qty', 140, y + 5);
-      doc.text('BillNo', 180, y + 5);
+            doc.line(10, y + lineHeight, pageWidth - 10, y + lineHeight);
+            y += lineHeight + headerSpacing;
   
-      // Line below header
-      doc.line(10, y + lineHeight, pageWidth - 10, y + lineHeight);
+            const nameColumnWidth = 60;
   
-      y += lineHeight + headerSpacing; // Move down after header
+            for (const entry of entries) {
+              if (y + lineHeight > pageHeight - footerHeight) {
+                doc.addPage();
+                drawHeader();
+                drawFooter(doc.internal.pages.length);
+                y = headerHeight + 5;
+              }
   
-      // Set maximum width for Name column
-      const nameColumnWidth = 60; // Max width for Name column
+              doc.setFont("NotoSansMalayalam", "normal");
+              doc.setFontSize(tableContentFontSize);
   
-      // Loop through the entries in the group
-      for (const entry of entries) {
-        // Check for page break
-        if (y + lineHeight > pageHeight - footerHeight) {
-          doc.addPage();
-          drawHeader(); // Draw header again on the new page
-          drawFooter(doc.internal.pages.length); // Add footer with page number
-          y = headerHeight + 5; // Reset Y position for new page (after header)
+              doc.text(String(serialNumber), 14, y);
+  
+              const nameLines = doc.splitTextToSize(entry.Name, nameColumnWidth);
+              const nameHeight = nameLines.length * lineHeight;
+  
+              doc.text(nameLines, 40, y);
+              doc.text(entry.Star, 100, y);
+              doc.text(String(entry.Qty), 140, y);
+              doc.text(String(entry.BillNo), 180, y);
+  
+              y += nameHeight;
+              serialNumber++;
+            }
+  
+            y += smallSpacing;
+          }
+  
+          drawFooter(doc.internal.pages.length);
+          const pdfBlob = doc.output('blob');
+          const pdfUrl = URL.createObjectURL(pdfBlob);
+          window.open(pdfUrl, '_blank');
+        },
+        (error: any) => {
+          console.error('Error loading font:', error);
         }
-  
-        // Table Content (without grid lines, only text)
- doc.setFont("NotoSansMalayalam", "normal");
-        doc.setFontSize(tableContentFontSize); // Use the content font size for table rows
-  
-        // Serial Number
-        doc.text(String(serialNumber), 14, y);
-  
-        // Name (Wrap text if needed)
-        const nameLines = doc.splitTextToSize(entry.Name, nameColumnWidth);
-        const nameHeight = nameLines.length * lineHeight; // Calculate height for name lines
-  
-        doc.text(nameLines, 40, y); // Draw wrapped name text
-  
-        // Other Columns (no wrapping needed)
-        doc.text(entry.Star, 100, y);
-        doc.text(String(entry.Qty), 140, y);
-        doc.text(String(entry.BillNo), 180, y);
-  
-        // Adjust Y position based on the number of lines in Name column
-        y += nameHeight; // Adjust Y position based on the wrapped name lines
-        serialNumber++;
-      }
-  
-      y += smallSpacing; // Space between groups
-    }
-  
-    // Draw footer on the last page
-    drawFooter(doc.internal.pages.length);
-    const pdfBlob = doc.output('blob');
-    const pdfUrl = URL.createObjectURL(pdfBlob);
-    window.open(pdfUrl, '_blank');
-    // doc.save('vazhipad_report_with_header_footer.pdf');
-
-
-
-  },
-  (error:any) => {
-    console.error('Error loading font:', error);
+      );
   }
-);
-  }
+  
   
   
   
@@ -291,50 +278,50 @@ doc.setFont("NotoSansMalayalam", "bold"); // Bold font for group name
 
 
 
-  generatePDFs() {
-    this.http
-      .get('assets/fonts/malayalam/NotoSansMalayalam-Regular.ttf', {
-        responseType: 'arraybuffer',
-      })
-      .subscribe(
-        (fontData) => {
-          const doc = new jsPDF();
+  // generatePDFs() {
+  //   this.http
+  //     .get('assets/fonts/malayalam/NotoSansMalayalam-Regular.ttf', {
+  //       responseType: 'arraybuffer',
+  //     })
+  //     .subscribe(
+  //       (fontData) => {
+  //         const doc = new jsPDF();
 
-          // Convert ArrayBuffer to Base64
-          const fontBase64 = btoa(
-            String.fromCharCode(...new Uint8Array(fontData))
-          );
+  //         // Convert ArrayBuffer to Base64
+  //         const fontBase64 = btoa(
+  //           String.fromCharCode(...new Uint8Array(fontData))
+  //         );
 
-          // Add the font to jsPDF
-          doc.addFileToVFS(
-            'NotoSansMalayalam-Regular.ttf',
-            fontBase64
-          );
-          doc.addFont(
-            'NotoSansMalayalam-Regular.ttf',
-            'NotoSansMalayalam',
-            'normal'
-          );
+  //         // Add the font to jsPDF
+  //         doc.addFileToVFS(
+  //           'NotoSansMalayalam-Regular.ttf',
+  //           fontBase64
+  //         );
+  //         doc.addFont(
+  //           'NotoSansMalayalam-Regular.ttf',
+  //           'NotoSansMalayalam',
+  //           'normal'
+  //         );
 
-          // Set the custom font
-          doc.setFont('NotoSansMalayalam');
+  //         // Set the custom font
+  //         doc.setFont('NotoSansMalayalam');
 
-          // Example text in Malayalam
-          const malayalamText = 'മലയാളം Vazhipad';
+  //         // Example text in Malayalam
+  //         const malayalamText = 'മലയാളം Vazhipad';
 
-          // Add text to the PDF
-          doc.text(malayalamText, 10, 10);
+  //         // Add text to the PDF
+  //         doc.text(malayalamText, 10, 10);
 
-          // Open the PDF in a new tab
-          const pdfBlob = doc.output('blob');
-          const pdfUrl = URL.createObjectURL(pdfBlob);
-          window.open(pdfUrl, '_blank');
-        },
-        (error:any) => {
-          console.error('Error loading font:', error);
-        }
-      );
-  }
+  //         // Open the PDF in a new tab
+  //         const pdfBlob = doc.output('blob');
+  //         const pdfUrl = URL.createObjectURL(pdfBlob);
+  //         window.open(pdfUrl, '_blank');
+  //       },
+  //       (error:any) => {
+  //         console.error('Error loading font:', error);
+  //       }
+  //     );
+  // }
   }
 
 

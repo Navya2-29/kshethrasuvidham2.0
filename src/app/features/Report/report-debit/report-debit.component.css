@@ -72,3 +72,18 @@ mat-paginator {
     padding: 4px 8px;
   }
 }
+
+
+
+
+.mat-column-RATE {
+  text-align: right; /* Align text horizontally */
+}
+.mat-column-QTY {
+  text-align: center; /* Align text horizontally */
+}
+
+/* Center align Amount column */
+.mat-column-Amount {
+  text-align: right; /* Align text horizontally */
+}

@@ -75,3 +75,6 @@ mat-paginator {
 h1{
   margin-left: 50%;
 }
+.mat-column-Amount {
+  text-align: right; /* Align text horizontally */
+}

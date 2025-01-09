@@ -142,3 +142,6 @@ input[type="email"]:focus {
     border: 2px solid red !important; /* !important ensures it overrides other styles */
     border-radius: 4px;
   }
+
+
+  

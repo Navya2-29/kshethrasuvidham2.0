@@ -21,7 +21,7 @@ import { HttpClient } from '@angular/common/http';
 })
 
 export class ReportNadavaravuCancelComponent {
-  displayedColumns: string[] = ['BillNo','BillDate','CounterId', 'Name','Star','NM_Name', 'weight','unit', 'Qty','Receipt_Amt','ItemValue','Canceldt','CanceledBY','Reason'];
+  displayedColumns: string[] = ['BillNo','BillDate','CounterId', 'Name','Star','NM_Name', 'weight', 'Qty','Receipt_Amt','ItemValue','Canceldt','Reason'];
   dataSource = new MatTableDataSource<ReportData>();
   length = 0;
   pageSize = 10;
@@ -31,14 +31,16 @@ export class ReportNadavaravuCancelComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   groupedData: { [key: string]: ReportData[] } = {};
   filteredData:ReportData[]=[];
+  fromDate:string;
+  toDate:string;
   constructor(private route: ActivatedRoute, private service: ReportService,private router: Router ,private http:HttpClient) {}
 
 ngOnInit() {
   this.route.queryParams.subscribe((params) => {
     const type = params['type'];
-    const fromDate = params['fromDate'];
-    const toDate = params['toDate'];
-    this.fetchReportData(type, fromDate, toDate);
+    this. fromDate = params['fromDate'];
+    this. toDate = params['toDate'];
+    this.fetchReportData(type, this.fromDate, this.toDate);
   });
 }
 
@@ -54,13 +56,13 @@ ngOnInit() {
         console.log('Fetched report data:', data);
         this.data=data;
             
-         this.data = this.data.sort((a:any, b:any) => {
-          const [numA, denomA] = a.BillNo.split('/').map(Number);
-          const [numB, denomB] = b.BillNo.split('/').map(Number);
+      //    this.data = this.data.sort((a:any, b:any) => {
+      //     const [numA, denomA] = a.BillNo.split('/').map(Number);
+      //     const [numB, denomB] = b.BillNo.split('/').map(Number);
           
-          // Compare the two parts: first compare the numerator, then the denominator
-          return numA - numB || denomA - denomB;
-      });
+      //     // Compare the two parts: first compare the numerator, then the denominator
+      //     return numA - numB || denomA - denomB;
+      // });
       console.log(this.filteredData,"aaaaaaaaaaaaaaaaaaa")  
 
         this.dataSource.data = this.data
@@ -102,6 +104,10 @@ formatDate(dateString: string | undefined): string {
     return `${day}-${month}-${year}`;
 }
   
+formatDateToDDMMYYYY(date: string): string {
+  const [year, month, day] = date.split('-');
+  return `${day}-${month}-${year}`;
+}
 
 generatePDF() {
   const templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
@@ -146,8 +152,8 @@ generatePDF() {
   const contentFontSize = 8;
   const currentDate = new Date().toLocaleDateString();
 
-  const maxColumnWidths = [20, 20, 40,15, 15, 25, 20, 30]; // Column widths for each column
-  const headers = ["Bill No.", "BillDate", "Item", "Qty", "I-Value",  "Rct.Amount",'Canceldt','Remarks'];
+  const maxColumnWidths = [20, 20, 40,15, 15, 20, 20, 30]; // Column widths for each column
+  const headers = ["BillNo.", "BillDate", "Item", "Qty", "Price",  "Amount",'Date','Remarks'];
 
   let y = headerHeight;
   let grandTotalRate = 0;
@@ -156,20 +162,20 @@ generatePDF() {
   // Draw Header
   const drawHeader = () => {
     doc.setFontSize(12);
-    // doc.setFont("Helvetica", "bold");
+    doc.setFont("NotoSansMalayalam", "bold");
     doc.text(templeName, pageWidth / 2, 12, { align: "center" });
-    // doc.setFont("Helvetica", "normal");
+    doc.setFont("NotoSansMalayalam", "normal");
     doc.setFontSize(10);
     doc.text(templeAddress, pageWidth / 2, 18, { align: "center" });
   
     doc.setFontSize(10);
-    // doc.setFont("Helvetica", "bold");
+    doc.setFont("NotoSansMalayalam", "bold");
     doc.text("Canceled Nadavaravu Booking Report", pageWidth / 2, 27, { align: "center" });
   
     // Add current date below the report title but above the table header
     doc.setFontSize(10);
-    // doc.setFont("Helvetica", "normal");
-    doc.text(currentDate, pageWidth / 2, 32, { align: "center" });
+    doc.setFont("NotoSansMalayalam", "normal");
+    doc.text(`${this.formatDateToDDMMYYYY(this.fromDate)} to ${this.formatDateToDDMMYYYY(this.toDate)}`, pageWidth / 2, 32, { align: "center" });
   
     doc.setLineWidth(0.5);
     doc.line(10, y, pageWidth - 10, y); // Line below header
@@ -185,7 +191,7 @@ generatePDF() {
   // Add Table Header
   const drawTableHeader = () => {
     doc.setFontSize(tableHeaderFontSize);
-    // doc.setFont("Helvetica", "bold");
+    doc.setFont("NotoSansMalayalam", "bold");
     let x = 10;
     headers.forEach((header, index) => {
       doc.text(header, x, y + 5);
@@ -246,7 +252,7 @@ generatePDF() {
     let x = 10;
 
     // Draw each cell with normal font
-    // doc.setFont("Helvetica", "normal");
+    doc.setFont("NotoSansMalayalam", "normal");
     doc.setFontSize(contentFontSize);
     tableRow.forEach((cell, index) => {
       if (Array.isArray(cell)) {
@@ -295,8 +301,8 @@ generatePDF() {
   ];
 
   let x = 10;
-  // doc.setFont("Helvetica", "bold");
-  // doc.setFontSize(contentFontSize);
+  doc.setFont("NotoSansMalayalam", "bold");
+  doc.setFontSize(contentFontSize +2);
   grandTotalRow.forEach((cell, index) => {
     if (index === 5 || index === 6) {
       // Align Rate and Total columns to the right

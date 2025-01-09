@@ -23,7 +23,7 @@ import { HttpClient } from '@angular/common/http';
   styleUrl: './report-cancel.component.css'
 })
 export class ReportCancelComponent {
-  displayedColumns: string[] = ['BillNo','BillDate','CounterId', 'VazhiDate', 'Vazhipad',  'Name','Star','Qty','Rate','Amount','Canceldt','CanceledBY','Remarks'];
+  displayedColumns: string[] = ['BillNo','BillDate','CounterId', 'VazhiDate', 'Vazhipad',  'Name','Star','Qty','Rate','Amount','Canceldt','Remarks'];
   dataSource = new MatTableDataSource<ReportData>();
   length = 0;
   pageSize = 10;
@@ -123,13 +123,13 @@ generatePDF() {
   const pageHeight = doc.internal.pageSize.height;
   const headerHeight = 35;
   const footerHeight = 8;
-  const lineHeight = 10;
-  const tableHeaderFontSize = 11;
+  const lineHeight = 8;
+  const tableHeaderFontSize = 10;
   const contentFontSize = 8;
   const currentDate = new Date().toLocaleDateString();
 
-  const maxColumnWidths = [20, 20, 40,15,15, 15, 15, 20, 25]; // Column widths for each column
-  const headers = ["Bill No.", "BillDate", "Vazhipad","Date", "Qty", "Rate",  "Amount",'Canceldt','Remarks'];
+  const maxColumnWidths = [20, 20, 40,20,10, 15, 20, 25]; // Column widths for each column
+  const headers = ["Bill No.", "BillDate", "Vazhipad","Date", "Qty", "Amount",'Cancel-Date','Remarks'];
 
   let y = headerHeight;
   let grandTotalRate = 0;
@@ -229,7 +229,7 @@ generatePDF() {
           row. VazhiDate,
       row.Qty,
      
-      row.Rate.toFixed(2),
+     
       row.Amount.toFixed(2),
       row.Canceldt,
       wrapText(doc, row.Remarks, maxColumnWidths[7]),
@@ -254,7 +254,7 @@ generatePDF() {
 
     // Draw each cell with normal font
     doc.setFont("NotoSansMalayalam", "normal");
-    doc.setFontSize(contentFontSize);
+    doc.setFontSize(contentFontSize );
 
     tableRow.forEach((cell, index) => {
       if (Array.isArray(cell)) {
@@ -263,7 +263,7 @@ generatePDF() {
           doc.text(line, x, y + 5 + (lineIndex * contentFontSize));
         });
       } else {
-        if (index===4 || index === 5 || index === 6) {
+        if (index===4 || index === 5 ) {
           // Align Rate and Total columns to the right
           doc.text(String(cell), x + maxColumnWidths[index] - 2, y + 5, { align: "right" });
         } else {
@@ -285,7 +285,7 @@ generatePDF() {
 
     y += rowHeight; // Move y position for the next row
   });
-
+  
   // Add Grand Total row
   const grandTotalRow = [
     
@@ -294,7 +294,7 @@ generatePDF() {
     "", 
     "", 
     "", 
-    "",
+   
     grandTotalAmount.toFixed(2),
     "",
     ""
@@ -303,7 +303,7 @@ generatePDF() {
 
   let x = 10;
   doc.setFont("NotoSansMalayalam", "bold");
-  doc.setFontSize(contentFontSize);
+  doc.setFontSize(contentFontSize +2);
   grandTotalRow.forEach((cell, index) => {
     if (index === 5 || index === 6) {
       // Align Rate and Total columns to the right

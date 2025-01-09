@@ -41,6 +41,8 @@ export class ReportNadavaravComponent implements  OnInit {
   groupedData: { [key: string]: NadavaravReport[] } = {};
   currentDate: string = '';
   currentPage: number = 1;
+  fromDate:string;
+  toDate:string;
   constructor(
     private route: ActivatedRoute,
     private service: ReportService,
@@ -51,9 +53,9 @@ export class ReportNadavaravComponent implements  OnInit {
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       const type = params['type'];
-      const fromDate = params['fromDate'];
-      const toDate = params['toDate'];
-      this.fetchReportData(type, fromDate, toDate);
+      this. fromDate = params['fromDate'];
+      this. toDate = params['toDate'];
+      this.fetchReportData(type, this.fromDate, this.toDate);
     });
   }
 
@@ -69,13 +71,13 @@ export class ReportNadavaravComponent implements  OnInit {
         console.log('Fetched report data:', data);
         this.data = data;
         this.groupDataByTransactionMode(this.data); // Group the data
-        this.data = data.sort((a: any, b: any) => {
-          const [numA, denomA] = a.BillNo.split('/').map(Number);
-          const [numB, denomB] = b.BillNo.split('/').map(Number);
+        // this.data = data.sort((a: any, b: any) => {
+        //   const [numA, denomA] = a.BillNo.split('/').map(Number);
+        //   const [numB, denomB] = b.BillNo.split('/').map(Number);
 
-          // Compare the two parts: first compare the numerator, then the denominator
-          return numA - numB || denomA - denomB;
-        });
+        //   // Compare the two parts: first compare the numerator, then the denominator
+        //   return numA - numB || denomA - denomB;
+        // });
         this.dataSource.data = this.data;
         this.length = data.length;
         this.dataSource.paginator = this.paginator;
@@ -105,7 +107,10 @@ export class ReportNadavaravComponent implements  OnInit {
     console.log('Going back...'); // Log to verify method execution
     this.router.navigate(['/getReport']);
   }
-
+  formatDateToDDMMYYYY(date: string): string {
+    const [year, month, day] = date.split('-');
+    return `${day}-${month}-${year}`;
+  }
   
   generatePDF() {
     const templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
@@ -116,9 +121,9 @@ export class ReportNadavaravComponent implements  OnInit {
   
     const headerHeight = 33;
     const footerHeight = 20;
-    const lineHeight = 10;
+    const lineHeight = 8;
     const tableHeaderFontSize = 10;
-    const contentFontSize = 9;
+    const contentFontSize = 8;
     const currentDate = new Date().toLocaleDateString();
 
     // Adjusted column widths for BillNo, Name, Vazhipad, Star, Ennam (Qty), Rate, and Amount
@@ -181,8 +186,8 @@ export class ReportNadavaravComponent implements  OnInit {
   // Add current date below the report title but above the table header
   doc.setFontSize(10);
   doc.setFont("NotoSansMalayalam", "normal");
-  doc.text(currentDate, pageWidth / 2, 32, { align: "center" });
-      doc.setLineWidth(0.5);
+  doc.text(`${this.formatDateToDDMMYYYY(this.fromDate)} to ${this.formatDateToDDMMYYYY(this.toDate)}`, pageWidth / 2, 32, { align: "center" });
+  doc.setLineWidth(0.5);
       doc.line(10, y, pageWidth - 10, y); // Line below header
       y += 3; // Space below the line
     };
@@ -198,7 +203,7 @@ export class ReportNadavaravComponent implements  OnInit {
     const drawTableHeader = () => {
       doc.setFontSize(tableHeaderFontSize);
       doc.setFont("NotoSansMalayalam", "bold");
-      const headers = ["BillNo.", "VAZHIPAD", "NAME", "STAR", "QTY", "I-Value", "RCPT.AMT"];
+      const headers = ["BillNo.", "Vazhpad", "Name", "Star", "Qty", "Price", "Amount"];
       let x = 10;
       headers.forEach((header, index) => {
         doc.text(header, x, y + 5);
@@ -302,7 +307,7 @@ export class ReportNadavaravComponent implements  OnInit {
       // Add group total at the end
       doc.setFontSize(12);
       doc.setFont("NotoSansMalayalam", "bold");
-      doc.text("Group Total:", 10, y + 5); // Label for the group total
+      doc.text(` Total: ${group}`, 10, y + 5); // Label for the group total
       doc.text(groupTotal.toFixed(2), pageWidth - 20, y + 5, { align: "right" }); // Total amount aligned to the right
   
       y += lineHeight + 5; // Add space after the total for the next group or footer
@@ -373,6 +378,7 @@ export class ReportNadavaravComponent implements  OnInit {
       case 'CS':
         return 'CASH';
       case 'MO':
+        
         return 'MONEY ORDER';
       case 'UP':
         return 'UPI';

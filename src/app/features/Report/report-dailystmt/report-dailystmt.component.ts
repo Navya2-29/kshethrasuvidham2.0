@@ -35,6 +35,8 @@ export class ReportDailystmtComponent {
   groupedData: { [key: string]: ReportData[] } = {};
   nakshatham: any[];
   lang: string | null;
+  fromDate:string;
+  toDate:string;
   constructor(private route: ActivatedRoute,private masterService:MasterService, private service: ReportService,private router: Router, private http:HttpClient) {
     this.loadStarData();
     this.lang = localStorage.getItem('Language');
@@ -43,9 +45,9 @@ export class ReportDailystmtComponent {
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       const type = params['type'];
-      const fromDate = params['fromDate'];
-      const toDate = params['toDate'];
-      this.fetchReportData(type, fromDate, toDate);
+      this. fromDate = params['fromDate'];
+      this. toDate = params['toDate'];
+      this.fetchReportData(type,this. fromDate, this.toDate);
     });
   }
 
@@ -89,6 +91,10 @@ export class ReportDailystmtComponent {
   }
 
 
+  formatDateToDDMMYYYY(date: string): string {
+    const [year, month, day] = date.split('-');
+    return `${day}-${month}-${year}`;
+  }
   generatePDF() {
     const templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
     const templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
@@ -97,13 +103,13 @@ export class ReportDailystmtComponent {
     const pageHeight = doc.internal.pageSize.height;
     const headerHeight = 35;
     const footerHeight = 8;
-    const lineHeight = 10;
+    const lineHeight = 8;
     const tableHeaderFontSize = 11;
-    const contentFontSize = 10;
+    const contentFontSize = 8;
     const currentDate = new Date().toLocaleDateString();
   
-    const maxColumnWidths = [20, 50, 40, 30, 15, 15, 15]; // Column widths for each column
-    const headers = ["Bill No.", "VAZHIPAD", "NAME", "STAR", "ENNAM", "RATE", "TOTAL"];
+    const maxColumnWidths = [20, 50, 40, 25, 20, 15, 15]; // Column widths for each column
+    const headers = ["BillNo.", "Vazhipad", "Name", "Star", "Ennam", "Rate", "Total"];
   
     let y = headerHeight;
     let grandTotalRate = 0;
@@ -153,7 +159,7 @@ export class ReportDailystmtComponent {
       // Add current date below the report title but above the table header
       doc.setFontSize(10);
       doc.setFont("NotoSansMalayalam", "normal");
-      doc.text(currentDate, pageWidth / 2, 32, { align: "center" });
+      doc.text(`${this.formatDateToDDMMYYYY(this.fromDate)} to ${this.formatDateToDDMMYYYY(this.toDate)}`, pageWidth / 2, 32, { align: "center" });
     
       doc.setLineWidth(0.5);
       doc.line(10, y, pageWidth - 10, y); // Line below header
@@ -271,7 +277,7 @@ export class ReportDailystmtComponent {
   
     let x = 10;
     doc.setFont("NotoSansMalayalam", "bold");
-    doc.setFontSize(contentFontSize);
+    doc.setFontSize(contentFontSize +2);
     grandTotalRow.forEach((cell, index) => {
       if (index === 5 || index === 6) {
         // Align Rate and Total columns to the right
@@ -309,11 +315,6 @@ export class ReportDailystmtComponent {
 }
 
   
-  
-  
-  
-
-
 getStarbyId(id: string) {
   console.log(id, 'star id');
   if (this.lang == 'en') {
@@ -323,7 +324,6 @@ getStarbyId(id: string) {
     const star = this.nakshatham.find((item) => item.id == id);
     return star ? star.SM_Name : '';
   }
-
   // console.log(star,"sssssssssssssssss")
 }
 
@@ -342,9 +342,5 @@ loadStarData(): void {
     },
   });
 }
-
-
-
-
 
 }

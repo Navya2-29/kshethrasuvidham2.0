@@ -33,16 +33,17 @@ export class ReportOfferingComponent {
   data:ReportData[]=[];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   groupedData: { [key: string]: ReportData[] } = {};
-
+fromDate:string;
+toDate:string;
   consolidatedData: ConsolidatedData[] = [];
   constructor(private route: ActivatedRoute, private service: ReportService,private router: Router,  private http:HttpClient) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       const type = params['type'];
-      const fromDate = params['fromDate'];
-      const toDate = params['toDate'];
-      this.fetchReportData(type, fromDate, toDate);
+      this. fromDate = params['fromDate'];
+      this. toDate = params['toDate'];
+      this.fetchReportData(type, this.fromDate, this.toDate);
     });
   }
 
@@ -116,6 +117,12 @@ export class ReportOfferingComponent {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
+   
+formatDateToDDMMYYYY(date: string): string {
+  const [year, month, day] = date.split('-');
+  return `${day}-${month}-${year}`;
+}
+
   
   generatePDF() {
     const templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
@@ -165,20 +172,20 @@ export class ReportOfferingComponent {
     // Draw Header
     const drawHeader = () => {
       doc.setFontSize(12);
-      // doc.setFont("Helvetica", "bold");
+      doc.setFont("NotoSansMalayalam", "bold");
       doc.text(templeName, pageWidth / 2, 12, { align: "center" });
-      // doc.setFont("Helvetica", "normal");
+      doc.setFont("NotoSansMalayalam", "normal");
       doc.setFontSize(10);
       doc.text(templeAddress, pageWidth / 2, 18, { align: "center" });
   
       doc.setFontSize(10);
-      // doc.setFont("Helvetica", "bold");
+      doc.setFont("NotoSansMalayalam", "bold");
       doc.text("Vazhipad Report", pageWidth / 2, 27, { align: "center" });
   
       // Add current date below the report title but above the table header
       doc.setFontSize(10);
-      // doc.setFont("Helvetica", "normal");
-      doc.text(currentDate, pageWidth / 2, 32, { align: "center" });
+      doc.setFont("NotoSansMalayalam", "normal");
+      doc.text(`${this.formatDateToDDMMYYYY(this.fromDate)} to ${this.formatDateToDDMMYYYY(this.toDate)}`, pageWidth / 2, 32, { align: "center" });
   
       doc.setLineWidth(0.5);
       doc.line(10, y, pageWidth - 10, y); // Line below header
@@ -195,7 +202,7 @@ export class ReportOfferingComponent {
     // Add Table Header
     const drawTableHeader = () => {
       doc.setFontSize(tableHeaderFontSize);
-      // doc.setFont("Helvetica", "bold");
+      doc.setFont("NotoSansMalayalam", "bold");
       let x = 10;
       headers.forEach((header, index) => {
         doc.text(header, x, y + 5);
@@ -242,7 +249,7 @@ export class ReportOfferingComponent {
       let x = 10;
   
       // Draw each cell with normal font
-      // doc.setFont("Helvetica", "normal");
+      doc.setFont("NotoSansMalayalam", "normal");
       doc.setFontSize(contentFontSize);
   
       tableRow.forEach((cell, index) => {
@@ -278,7 +285,7 @@ export class ReportOfferingComponent {
     ];
   
     let x = 10;
-    // doc.setFont("Helvetica", "bold");
+    doc.setFont("NotoSansMalayalam", "bold");
     doc.setFontSize(contentFontSize);
     grandTotalRow.forEach((cell, index) => {
       if (index === 2) {
@@ -304,8 +311,6 @@ export class ReportOfferingComponent {
     const pdfUrl = URL.createObjectURL(pdfBlob);
     window.open(pdfUrl, '_blank');
     // doc.save('vazhipad_report_with_header_footer.pdf');
-
-
 
   },
   (error:any) => {

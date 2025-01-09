@@ -212,3 +212,15 @@ page-break-inside: avoid; /* Keep group header with its rows */
 page-break-inside: avoid;
 position: fixed;
 }
+
+.mat-column-Rate {
+  text-align: right; /* Align text horizontally */
+}
+.mat-column-Qty {
+  text-align: center; /* Align text horizontally */
+}
+
+/* Center align Amount column */
+.mat-column-Amount {
+  text-align: right; /* Align text horizontally */
+}

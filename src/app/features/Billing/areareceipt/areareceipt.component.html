@@ -1,11 +1,11 @@
-<div class="row nowrap">
+<div class="row nowrap" style="background-image:url(assets/images/bgadmin.jpg);background-size:cover;background-position:center;">
   <div class="col-md-12">
     <div class="card-body fixitems" id="details">
        <!-- Back Button -->
        <!-- <button class="rounded-back-button" (click)="onBack()">
         <mat-icon>arrow_back</mat-icon>
       </button> -->
-      <div style="display: flex; flex-wrap: wrap">
+      <div>
         <form [formGroup]="form"  >
           <table class="table">
             <thead>
@@ -13,21 +13,21 @@
                 <!-- <select (change)="onLanguageChange($event)"><option *ngFor="let lan of language" [value]="lan">{{lan}}</option></select> -->
                 
                 <!-- <th style="width: 20%">Vazhipad</th> -->
-                <th style="width: 22%">{{ "VAZHIPAD" | translate}}</th>
+                <th style="width: 22%;padding-left:15px;font-size:14pt;font-weight:630;">{{ "VAZHIPAD" | translate}}</th>
                 <!-- <th style="width: 25%">Name</th> -->
-                <th style="width: 23%">{{"NAME" |translate}}</th>
+                <th style="width: 23%;font-size:14pt;font-weight:630;">{{"NAME" |translate}}</th>
                 <!-- <th style="width: 8%">Star</th> -->
-                <th style="width: 13%">{{"STAR" |translate }}</th>
+                <th style="width: 13%;font-size:14pt;font-weight:630;">{{"STAR" |translate }}</th>
                 <!-- <th style="width: 8%">Diety</th> -->
-                <th style="width: 18%">{{"PRATHISTA" |translate }}</th>
+                <th style="width: 18%;font-size:14pt;font-weight:630;">{{"PRATHISTA" |translate }}</th>
                 <!-- <th style="width: 1%; text-align: center">Qty</th> -->
                 <!-- <th style="width: 1%; text-align: center">Qty</th> -->
-                <th style="width: 2%; text-align: center">{{"QUANTITY" |translate  }}</th>
+                <th style="width: 2%; text-align: center;font-size:14pt;font-weight:630;">{{"QUANTITY" |translate  }}</th>
                 <!-- <th style="width: 2%; text-align: center">Rate</th> -->
                 <th style="width: 2%; text-align: center">{{"RATE" |translate  }}  </th>
                 <!-- <th style="width: 4%; text-align: center">Amount</th> -->
                 <!-- <th style="width: 8%; text-align: center">Date</th> -->
-                <th style="width: 5%; text-align: center">{{"DATE" |translate  }}</th>
+                <th style="width: 3%; text-align: center">{{"DATE" |translate  }}</th>
                 <!-- <td style="width: 7%; text-align: center">Single/Multi</td> -->
                 <!-- <th style="width: 8%; text-align: center">Time</th> -->
                 <th style="width: 6%; text-align: center">{{"TIME" |translate  }}</th>
@@ -46,7 +46,7 @@
                 <td style="display: none">
                   <input type="text" formControlName="Slno" [value]="i" />
                 </td>
-                <td>
+                <td  style="padding-left:15px;">
                   <input
                     type="text"
                     [placeholder]="'PLACEHOLDER.VAZHIPAD' | translate"
@@ -60,7 +60,7 @@
                     [readonly]="multidayBooking[i]"
                     #inputRef
                     (keydown)="navigateToNext($event, i, 'name')"
-                     style="font-size: 12px;color: black;"
+                    style="font-size: 12px;color: black;font-weight:800;"
                   />
                   <mat-autocomplete
                   
@@ -74,7 +74,7 @@
                     *ngFor="let option of filteredOptions[i]"
                     [value]="option.VM_Name"
                   >
-                    <p style="margin-bottom: 0; padding-bottom: 0; font-size: 12px; line-height: normal;">
+                    <p style="margin-bottom: 0; padding-bottom: 0; font-size: 12px; line-height: normal;font-weight:800;">
                       {{ option.VM_Code }}-{{ option.VM_Name }}
                     </p>
                     <!-- <p style="font-size: 12px; margin-top: 0; padding-top: 0;">
@@ -103,7 +103,7 @@
                   <input
                     type="text"
                     appUpperCase
-                     style="font-size: 12px;color: black;"
+                    style="font-size: 12px;color: black;font-weight:800;"
                     class="form-control"
                     [placeholder]="'PLACEHOLDER.NAME' | translate"
                     formControlName="Name"
@@ -129,7 +129,7 @@
                   type="text"
                   [placeholder]="'PLACEHOLDER.STAR' | translate"
                   matInput
-                  style="font-size: 12px;color: black;"
+                  style="font-size: 12px;color: black;font-weight:800;"
                   id="starName-{{i}}"
                   class="form-control sps"
                   formControlName="starName"
@@ -149,7 +149,7 @@
                   *ngFor="let option of starFilteredOption[i]"
                   [value]="option.SM_Name"
                 >
-                <p style="margin-bottom: 0px;padding-bottom: 0px;font-size: 10px;line-height: normal;">{{option.SM_Id}}-{{ option.SM_Name }}</p>
+                <p style="margin-bottom: 0px;padding-bottom: 0px;font-size: 10px;line-height: normal;font-weight:800;">{{option.SM_Id}}-{{ option.SM_Name }}</p>
                 </mat-option>
                 </ng-container>
                 <ng-container *ngIf="lang=='ml'">
@@ -158,7 +158,7 @@
                   *ngFor="let option of starFilteredOption[i]"
                   [value]="option.SM_RName"
                 >
-                <p style="margin-bottom: 0px;padding-bottom: 0px;font-size: 10px;line-height: normal;">{{option.SM_Id}}-{{ option.SM_RName }}</p>
+                <p style="margin-bottom: 0px;padding-bottom: 0px;font-size: 10px;line-height: normal;font-weight:800;">{{option.SM_Id}}-{{ option.SM_RName }}</p>
                 </mat-option>
                 </ng-container>
                  
@@ -173,8 +173,8 @@
                     style="width: 100%; height: 30.6px"  
                     (keydown)="navigateToNext($event, i, 'Qty')" 
                     id="Prethista-{{i}}" 
-                      style="width: 100%; height: 30.6px; font-size: 12px;"
-                  >
+                    style="width: 100%; height: 30.6px; font-size: 12px;font-weight:800;"
+                    >
                   <ng-container *ngIf="lang=='en'"> <option *ngFor="let prathishta of prathishtaOptions[i]" [value]="prathishta.name" >{{prathishta.name}}</option>
                   </ng-container>
                   <ng-container *ngIf="lang=='ml'"> <option *ngFor="let prathishta of prathishtaOptions[i]" [value]="prathishta.rname" >{{prathishta.rname}}</option>
@@ -193,6 +193,7 @@
                     [readonly]="multidayBooking[i]"
                     id="Prethista-{{i}}" 
                     (keydown)="navigateToNext($event, i, 'Rate')" 
+                    style="font-weight:800;"
                   />
                   
                 </td>
@@ -207,6 +208,7 @@
                     [min]="1"
                     [readonly]="multidayBooking[i]"
                     (keydown)="navigateToNext($event, i, 'VazhipadDate')" 
+                    style="font-weight:800;"
                   />                 
                 </td>
                 <td style="vertical-align: middle; text-align: center">
@@ -282,8 +284,8 @@
               </ng-container>
               </select>
                 </td>
-                <td>
-                  <span style="padding-bottom:90px;padding-right: 10px;"><input
+                <td style="background: orange;text-align:center;vertical-align: middle;">
+                  <span style="padding-bottom:90px;padding-right: px;"><input
                  
                     type="radio"
                     name="singleMulti_{{ i }}"
@@ -293,7 +295,7 @@
                     style="padding: 5px; font-size: 9pt"
                   />
                   
-                <span style="margin-left: 5px">M</span></span>
+                <span style="margin-left: 5px;color:white;">M</span></span>
                   <a (click)="addRow(i)" tabindex="0" >
                     <mat-icon><span class="icons">add_comment</span></mat-icon>
                   </a>
@@ -309,7 +311,7 @@
                 </td>
                 <td style="padding: 0px">
                   <a (click)="removeRow(i)">
-                    <mat-icon>delete</mat-icon>
+                    <mat-icon style="color:yellow;">delete</mat-icon>
                   </a>
                 </td>
               </tr>
@@ -322,7 +324,7 @@
               <option [selected]="lang==='hn'" value="hn">Hindi</option>
               <option [selected]="lang==='tm'" value="tm">Tamil</option>
             </select> -->
-            <a class="text-danger d-flex align-items-center justify-content-center" style="cursor: pointer;" (click)="clearAll()">
+            <a class="text-danger d-flex align-items-center justify-content-center" style="cursor: pointer;margin-right:36px;margin-bottom:270px;"  (click)="clearAll()">
               <i class="fas fa-trash me-2 "></i><span class="ml-1"> Clear All</span>
             </a>
           </div>

@@ -75,3 +75,18 @@ mat-paginator .mat-mdc-button-base {
 h1{
 margin-left: 50%;
 }
+
+.mat-column-Rate {
+  text-align: right; /* Align text horizontally */
+}
+.mat-column-Qty {
+  text-align: center; /* Align text horizontally */
+}
+.mat-column-CounterId {
+  text-align: center; /* Align text horizontally */
+}
+
+/* Center align Amount column */
+.mat-column-Amount {
+  text-align: right; /* Align text horizontally */
+}

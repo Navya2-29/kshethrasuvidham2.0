@@ -22,7 +22,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class ReportCreditComponent {
 
-  displayedColumns: string[] = ['BillNo','BillDate','Vazhipad', 'Name', 'Mobile','Qty','Rate',  'Amount', 'TransMode'  ];
+  displayedColumns: string[] = ['BillNo','BillDate','Vazhipad', 'Name', 'Mobile','Qty','Rate','Amount', 'TransMode'  ];
   dataSource = new MatTableDataSource<ReportData>();
   length = 0;
   pageSize = 10;
@@ -32,14 +32,16 @@ export class ReportCreditComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   groupedData: { [key: string]: ReportData[] } = {};
   filteredData:ReportData[]=[];
+  fromDate:string;
+  toDate:string;
   constructor(private route: ActivatedRoute, private service: ReportService,private router: Router, private http:HttpClient) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       const type = params['type'];
-      const fromDate = params['fromDate'];
-      const toDate = params['toDate'];
-      this.fetchReportData(type, fromDate, toDate);
+      this. fromDate = params['fromDate'];
+      this. toDate = params['toDate'];
+      this.fetchReportData(type, this.fromDate, this.toDate);
     });
   }
 
@@ -93,6 +95,12 @@ export class ReportCreditComponent {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
+
+  formatDateToDDMMYYYY(date: string): string {
+    const [year, month, day] = date.split('-');
+    return `${day}-${month}-${year}`;
+  }
+
   generatePDF(): void {
     // Filter data for entries with transmode 'ch'
     const filteredData = this.data
@@ -104,13 +112,13 @@ export class ReportCreditComponent {
     const pageHeight = doc.internal.pageSize.height;
     const headerHeight = 35;
     const footerHeight = 8;
-    const lineHeight = 10;
+    const lineHeight = 8;
     const tableHeaderFontSize = 11;
-    const contentFontSize = 10;
+    const contentFontSize = 8;
     const currentDate = new Date().toLocaleDateString();
   
     const maxColumnWidths = [20, 55, 40, 30, 15, 15, 15]; // Column widths for each column
-    const headers = ["Bill No.", "VAZHIPAD", "NAME", "MOBILE", "ENNAM", "RATE", "TOTAL"];
+    const headers = ["Bill No.", "Vazhipad", "Name", "Mobile", "Ennam", "Rate", "Total"];
   
     let y = headerHeight;
     let grandTotalRate = 0;
@@ -161,7 +169,7 @@ export class ReportCreditComponent {
       // Add current date below the report title but above the table header
       doc.setFontSize(10);
       doc.setFont("NotoSansMalayalam", "normal");
-      doc.text(currentDate, pageWidth / 2, 32, { align: "center" });
+      doc.text(`${this.formatDateToDDMMYYYY(this.fromDate)} to ${this.formatDateToDDMMYYYY(this.toDate)}`, pageWidth / 2, 32, { align: "center" });
     
       doc.setLineWidth(0.5);
       doc.line(10, y, pageWidth - 10, y); // Line below header
@@ -234,7 +242,7 @@ export class ReportCreditComponent {
   
       // Draw each cell with normal font
       doc.setFont("NotoSansMalayalam", "normal");
-      doc.setFontSize(contentFontSize);
+      doc.setFontSize(contentFontSize );
   
       tableRow.forEach((cell, index) => {
         if (Array.isArray(cell)) {
@@ -243,7 +251,7 @@ export class ReportCreditComponent {
             doc.text(line, x, y + 5 + (lineIndex * contentFontSize));
           });
         } else {
-          if (index === 5 || index === 6) {
+          if (index === 5 || index === 6 || index === 4) {
             // Align Rate and Total columns to the right
             doc.text(String(cell), x + maxColumnWidths[index] - 2, y + 5, { align: "right" });
           } else {
@@ -279,7 +287,7 @@ export class ReportCreditComponent {
   
     let x = 10;
     doc.setFont("NotoSansMalayalam", "bold");
-    doc.setFontSize(contentFontSize);
+    doc.setFontSize(contentFontSize +2);
     grandTotalRow.forEach((cell, index) => {
       if (index === 5 || index === 6) {
         // Align Rate and Total columns to the right
@@ -316,6 +324,30 @@ export class ReportCreditComponent {
 );
 
 
+  }
+
+
+
+  getTransactionType(transmode: string): string {
+    switch (transmode) {
+      case 'ON':
+        return 'Bank';
+      case 'CS':
+        return 'CASH';
+      case 'MO':
+        return 'MONEY ORDER';
+      case 'UP':
+        return 'UPI';
+      case 'CH':
+        return 'CHEQUE';
+      case 'CR':
+        return 'CREDIT';
+      case 'DE':
+        return 'DEBIT';
+
+      default:
+        return 'OTHERS';
+    }
   }
 
  

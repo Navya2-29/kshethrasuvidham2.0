@@ -57,6 +57,8 @@
   display: flex;
   flex-direction: column;
   gap: 10px; /* Space between buttons */
+  width: 300px;
+  margin-left: 45%;
 }
 
 /* Action button styling */

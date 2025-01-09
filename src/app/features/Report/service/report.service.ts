@@ -13,6 +13,9 @@ export class ReportService {
     return this.http.post<any>(Constant.BASE_URL+Constant.METHODS.GET_REPORT,payLoad)
   }
 
+getVazhipadWiseReport(payLoad:any){
+  return this.http.post<any>(Constant.BASE_URL+Constant.METHODS.VAZHIPADWISEREPRT,payLoad)
 
+}
   
 }

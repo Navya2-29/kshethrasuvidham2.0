@@ -5,6 +5,7 @@ import { SpinnerComponent } from '../../../shared/component/spinner/spinner.comp
 import { CommonModule, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { MasterService } from '../../../services/master/master.service';
 
 interface Transaction {
   Vazhipad: string;
@@ -43,17 +44,22 @@ export class ReportDashboardComponent {
   newTab: any;
   today:Date=new Date()
   isChecked:boolean;
+  pmaster:any[]=[];
+  Vmaster:any[]=[];
   constructor(
     private fb: FormBuilder,
     private service: ReportService,
-    private router: Router
+    private router: Router,
+    private masterService:MasterService
   ) {
     console.log(this.today)
     this.searchForm = this.fb.group({
       vazhipadOption: ['Poornam'],
       fromDate: [this.formatDate(this.today)],
       toDate: [this.formatDate(this.today)],
-      countercheckbox:[false]
+      countercheckbox:[false],
+      prathista:[''],
+      vazhipad:['']
     });
     console.log( this.searchForm.value.countercheckbox," ")
   }
@@ -63,6 +69,8 @@ export class ReportDashboardComponent {
     this.isloading = true;
     const searchParams = this.searchForm.value;
     const reportType = searchParams.vazhipadOption;
+    const vazhipad =searchParams.vazhipad;
+    const prathista=searchParams.prathista
     const fromDateFormatted = this.formatDate(searchParams.fromDate);
     const toDateFormatted = this.formatDate(searchParams.toDate);
     this.isChecked=searchParams.countercheckbox; 
@@ -71,12 +79,29 @@ export class ReportDashboardComponent {
       FromDate: fromDateFormatted,
       ToDate: toDateFormatted,
     };
-    console.log( this.isChecked,"haiiiiiiiiiiiii");
-    const queryString = `?type=${encodeURIComponent(
-      payLoad.Type
-    )}&fromDate=${encodeURIComponent(
-      payLoad.FromDate
-    )}&toDate=${encodeURIComponent(payLoad.ToDate)}`;
+    
+    // const queryString = `?type=${encodeURIComponent(
+    //   payLoad.Type
+    // )}&fromDate=${encodeURIComponent(
+    //   payLoad.FromDate
+    // )}&toDate=${encodeURIComponent(payLoad.ToDate)}`;
+if(prathista || vazhipad){
+  const queryString = `?Prathishta=${encodeURIComponent(
+    prathista
+  )}&Vazhipad=${encodeURIComponent(
+    vazhipad
+  )}
+  &fromDate=${encodeURIComponent(
+    payLoad.FromDate
+  )}&toDate=${encodeURIComponent(payLoad.ToDate)}`;
+   this.getVazhipadwisereprt(queryString)
+}else{
+  const queryString = `?type=${encodeURIComponent(
+    payLoad.Type
+  )}&fromDate=${encodeURIComponent(
+    payLoad.FromDate
+  )}&toDate=${encodeURIComponent(payLoad.ToDate)}`;
+
 
     if (reportType === 'Poornam') {
       this.newTab = window.open(`#/report-viewer${queryString}`, '_blank');
@@ -131,6 +156,7 @@ export class ReportDashboardComponent {
     else if (reportType === 'online') {
       this.newTab = window.open(`#/report-online${queryString}`, '_blank');
     }
+  }
 
     if (this.newTab) {
       this.newTab.focus();
@@ -138,6 +164,11 @@ export class ReportDashboardComponent {
     }
   }
   
+  getVazhipadwisereprt(queryString:any){
+     if(queryString){
+      this.newTab = window.open(`#/vazhipadwise${queryString}`, '_blank');
+    }
+  }
   // format date as the dd/mm/yyyy
   formatDate(dateString: any): string {
     const date = new Date(dateString);
@@ -149,5 +180,42 @@ export class ReportDashboardComponent {
   onBack(){
     this.router.navigate(['/dashboard'])
   }
+ngOnInit(){
+this.getPrathistaList();
+this.getVazhipadList()
+
+}
+getPrathistaList(){
+  this.masterService.getPmaster().subscribe({
+    next: (data) => {
+      if (data && data.length > 0) {
+        this.pmaster = data;
+        
+       
+        console.log(this.pmaster);
+      }
+    },
+    error: (error) => {
+      console.log(error);
+      // this.loading = true;
+    },
+  });
+}
+
+getVazhipadList(){
+  this.masterService.getVmaster().subscribe({
+    next: (data) => {
+      if (data && data.length > 0) {
+        console.log(data);
+        this.Vmaster = data;
+        console.log(this.Vmaster,"data");
+       
+      }
+    },
+    error: (error) => {
+      // this.notification.showSuccess('Try after some Time');
+    },
+  });
+}
 
 }
