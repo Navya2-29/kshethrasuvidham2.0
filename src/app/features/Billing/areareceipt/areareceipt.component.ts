@@ -65,7 +65,6 @@ import { TranslateModule } from '@ngx-translate/core';
     MatAutocompleteModule,
     FormsModule,
     ReactiveFormsModule,
-
     MatIconModule,
     MatRadioModule,
     UpperCaseDirective,
@@ -218,6 +217,10 @@ export class AreareceiptComponent implements OnInit {
         fromDate: [''],
         toDate: [''],
       }),
+      blockingDates: this.fb.group({
+        fromDate: [''],
+        toDate: [''],
+      }),
     });
     row.get('Qty')?.valueChanges.subscribe(() => this.updateAmount(row));
     row.get('Rate')?.valueChanges.subscribe(() => this.updateAmount(row));
@@ -236,6 +239,8 @@ export class AreareceiptComponent implements OnInit {
     const vazhipadDateStr = row.get('VazhipadDate')?.value;
     const fromDateStr = row.get('seasonalDates.fromDate')?.value;
     const toDateStr = row.get('seasonalDates.toDate')?.value;
+    const fromBlckDate=row.get('blockingDates.fromDate')?.value;
+    const toBlckDate=row.get('blockingDates.toDate')?.value;
     if (fromDateStr && toDateStr) {
       // Convert string dates to Date objects
       const vazhipadDate = vazhipadDateStr ? new Date(vazhipadDateStr) : null;
@@ -248,6 +253,27 @@ export class AreareceiptComponent implements OnInit {
           row.get('VazhipadDate')?.setErrors({ invalidDateRange: true });
           this.notification.error(
             `Vazhipad date must be within ${
+              fromDate.toISOString().split('T')[0]
+            } - ${toDate.toISOString().split('T')[0]}`
+          );
+        } else {
+          row.get('VazhipadDate')?.setErrors(null);
+        }
+      } else {
+        row.get('VazhipadDate')?.setErrors({ invalidDateRange: true });
+      }
+    }else if(fromBlckDate && toBlckDate ){
+      const vazhipadDate = vazhipadDateStr ? new Date(vazhipadDateStr) : null;
+      const fromDate = fromBlckDate ? new Date(fromBlckDate) : null;
+      const toDate = toBlckDate ? new Date(toBlckDate) : null;
+
+      // Validate date ranges
+      if (vazhipadDate && fromDate && toDate) {
+        if (vazhipadDate >= fromDate && vazhipadDate <= toDate) {
+
+          row.get('VazhipadDate')?.setErrors({ invalidDateRange: true });
+          this.notification.error(
+            `Vazhipad date not allowed this dates ${
               fromDate.toISOString().split('T')[0]
             } - ${toDate.toISOString().split('T')[0]}`
           );
@@ -317,6 +343,7 @@ export class AreareceiptComponent implements OnInit {
     newRow.patchValue({
       Name: currentName,
       Star: currentStar,
+      starName:this.getStarbyId(currentStar)
     });
 
     this.vazhipadinfo.insert(index + 1, newRow);
@@ -544,6 +571,7 @@ console.log(this.selectedVazhipadItem)
 
       // Fetch vazhipad details using VM_Code
       this.getSeasnalalVazhipadData(this.selectedVazhipadItem.VM_Id, index);
+      this.getBlockingvazipadDate(this.selectedVazhipadItem.VM_Id, index)
       this.getDatamasterdateCheck(this.selectedVazhipadItem.VM_Id, index);
       const vazhipadCode = this.selectedVazhipadItem.VM_Code;
 
@@ -799,6 +827,7 @@ console.log(this.selectedVazhipadItem)
       Name2: data.Name2,
       Star2: data.Star2,
       VTime: data.VTime,
+      starName:this.getStarbyId(data.Star)
     });
   }
 
@@ -1249,6 +1278,25 @@ console.log(this.selectedVazhipadItem)
     // Focus on the first input field when the page loads
     this.firstInputElement.nativeElement.focus();
   }
+  getStarbyId(id:string){
+    console.log(id,"star id")
+    if(this.lang=='en'){
+      const star= this.nakshatham.find(
+        (item) => item.SM_Id == id
+      );
+      return star ? star.SM_Name : ''; 
+  
+    }else if(this.lang=='ml'){
+      const star= this.nakshatham.find(
+        (item) => item.SM_Id == id
+      );
+      return star ? star.SM_RName : ''; 
+    }
+   
+    // console.log(star,"sssssssssssssssss")
+    
+  }
+
 
   changeLanguage(lang: any) {
     const selectedlang = lang.target.value;
@@ -1431,8 +1479,53 @@ console.log(this.selectedVazhipadItem)
       
   
   
-  
 
+  getBlockingvazipadDate(vmId:any,index:any){
+    const payLoad={Type:"BlockingALL",Code:vmId }
+    this.masterservice.getMaster(payLoad).subscribe({next:(data)=>{
+    console.log(data,"datablocing");
+
+
+    if (data && data.length > 0) {
+      const blockingDates = {
+        fromDate: data[0].VB_FromDate,
+        toDate: data[0].VB_ToDate,
+      };
+
+      const row = this.vazhipadinfo.at(index) as FormGroup;
+      const formattedFromDate = this.datePipe.transform(
+        blockingDates.fromDate,
+        'yyyy-MM-dd'
+      );
+      const formattedToDate = this.datePipe.transform(
+        blockingDates.toDate,
+        'yyyy-MM-dd'
+      );
+      // Update the form with the fetched seasonal dates
+      row.get('blockingDates')?.patchValue({
+        fromDate: formattedFromDate,
+        toDate: formattedToDate,
+      });
+      this.setVazhipadDate(index);
+    } else {
+      const row = this.vazhipadinfo.at(index) as FormGroup;
+      row.get('blockingDates')?.patchValue({ fromDate: '', toDate: '' });
+      row.get('vazhipadDate')?.patchValue('');
+      // Optionally, show a notification or alert to inform the user
+    }
+  },
+  error: (err) => {
+    // Handle error case by resetting seasonal dates
+    const row = this.vazhipadinfo.at(index) as FormGroup;
+    row.get('blockingDates')?.patchValue({ fromDate: '', toDate: '' });
+    row.get('vazhipadDate')?.patchValue('');
+    // Optionally, show a notification or alert to inform the user
+    this.notification.error(
+      'Error fetching blocking data. Please try again later.'
+    );
+  },
+});
+}
 
 
 

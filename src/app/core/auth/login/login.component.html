@@ -21,7 +21,7 @@
 
         <img src="assets/images/logo.jpg">
         <h2>Counter Login</h2>
-        <form [formGroup]="loginForm">
+        <form [formGroup]="loginForm" (keydown.enter)="submitLogin(loginForm.value)">
         <div>
           <small *ngIf="errorMessage" class="text-danger">{{errorMessage}}</small>
             <mat-form-field appearance="outline">

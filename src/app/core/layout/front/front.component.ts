@@ -1,10 +1,10 @@
 import { ToastrService } from 'ngx-toastr';
-import { Component } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Renderer2, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { MasterService } from '../../../services/master/master.service';
 import { HttpClient } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
@@ -25,7 +25,7 @@ import { CouterPopupComponent } from '../../couter-popup/couter-popup.component'
   templateUrl: './front.component.html',
   styleUrl: './front.component.css',
 })
-export class FrontComponent {
+export class FrontComponent implements AfterViewInit {
   hide: boolean = true;
   loading: boolean = false;
   errorMessage = '';
@@ -35,11 +35,18 @@ export class FrontComponent {
   Role: string | null;
   countercount: number;
   allowedContercount: number | null;
+  @ViewChild('billingButton') billingButton: ElementRef | undefined;
+  @ViewChild('reportButton') reportButton: ElementRef | undefined;
+  @ViewChild('nadavaruButton') nadavaruButton: ElementRef | undefined;
+  buttons: ElementRef[] = [];
+  currentIndex: number = 0;
   constructor(
     private http: HttpClient,
     private dialog: MatDialog,
     private service: MasterService,
-    private notification: ToastrService
+    private notification: ToastrService,
+    private renderer: Renderer2,
+    private router: Router
   ) {
     this.templeName = localStorage.getItem('TempleName');
     this.logo = localStorage.getItem('Logo');
@@ -60,6 +67,50 @@ export class FrontComponent {
 
   getLogoUrl(): string {
     return `assets/images/${this.logo}`; // Assuming logo images are stored in the 'assets/images' folder
+  }
+  ngAfterViewInit(): void {
+    this.buttons = [
+      this.billingButton!,
+      this.reportButton!,
+      this.nadavaruButton!,
+    ];
+    this.focusButton(this.currentIndex);
+    
+    // Listen for keydown events to navigate with arrow keys
+    window.addEventListener('keydown', this.onKeyDown.bind(this));
+  }
+
+  onKeyDown(event: KeyboardEvent): void {
+    // Arrow Up (38) and Arrow Down (40)
+    if (event.key === 'ArrowDown') {
+      this.currentIndex = (this.currentIndex + 1) % this.buttons.length;
+      this.focusButton(this.currentIndex);
+    } else if (event.key === 'ArrowUp') {
+      this.currentIndex = (this.currentIndex - 1 + this.buttons.length) % this.buttons.length;
+      this.focusButton(this.currentIndex);
+    }
+    // Enter Key (13)
+    if (event.key === 'Enter') {
+      this.navigate();
+    }
+  }
+
+  focusButton(index: number): void {
+    // Remove previous focus
+    this.buttons.forEach((button) => {
+      this.renderer.removeClass(button.nativeElement, 'focused');
+    });
+
+    // Add focus to the current button
+    this.renderer.addClass(this.buttons[index].nativeElement, 'focused');
+    this.buttons[index].nativeElement.focus();
+  }
+
+  navigate(): void {
+    const currentButton = this.buttons[this.currentIndex].nativeElement;
+    if (currentButton.routerLink) {
+      this.router.navigate([currentButton.routerLink]);
+    }
   }
 
   openCounterIdDialog(): void {

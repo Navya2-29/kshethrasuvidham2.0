@@ -36,11 +36,9 @@ export class ReportDailystmntTransactionComponent {
     
     'BillDate',
     'Vazhipad',
-    
     'Qty',
     'Rate',
     'Amount',
-    
     'TrnsMode',
   ];
   dataSource = new MatTableDataSource<ReportDailyStmt>();
@@ -160,8 +158,9 @@ export class ReportDailystmntTransactionComponent {
 
         // Draw Header
         const drawHeader = () => {
+          
+          doc.setFont("NotoSansMalayalam", "normal");
           doc.setFontSize(12);
-          doc.setFont("NotoSansMalayalam", "bold");
           doc.text(templeName, pageWidth / 2, 12, { align: "center" });
           doc.setFont("NotoSansMalayalam", "normal");
           doc.setFontSize(10);

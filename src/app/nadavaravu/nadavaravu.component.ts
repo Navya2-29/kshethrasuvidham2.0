@@ -115,6 +115,7 @@ export class NadavaravuComponent implements OnInit {
     this.getNadavaravuItem();
     this.setupConditionalValidationForItemValue();
     this.getNadavaravuData();
+    console.log(this.lang)
   }
 
   setupConditionalValidationForItemValue() {
@@ -247,7 +248,7 @@ export class NadavaravuComponent implements OnInit {
 
     this.service.getItemMaster(payLoad).subscribe({
       next: (data) => {
-        // console.log(data, 'bbbbbbbbbbbbbbbbbb');
+        console.log(data, 'bbbbbbbbbbbbbbbbbb');
         this.itemMaster = data;
       },
     });
@@ -478,6 +479,7 @@ export class NadavaravuComponent implements OnInit {
   }
 
   getStarNameById(starId: number): string {
+    if(this.lang=='en'){
     if (starId) {
       const star = this.nakshatham.find((s) => s.id == starId);
 
@@ -485,9 +487,22 @@ export class NadavaravuComponent implements OnInit {
     } else {
       return '';
     }
+  }else if(this.lang=='ml'){
+    if (starId) {
+      const star = this.nakshatham.find((s) => s.id == starId);
+
+      return star ? star.SM_Name : '';
+    } else {
+      return '';
+    }
+  }else
+  
+    return '';
+  
   }
 
   getItemById(itemid: any): string {
+    if(this.lang=='en'){
     if (itemid) {
       const star = this.itemMaster.find((s) => s.NM_Id == itemid);
 
@@ -495,5 +510,18 @@ export class NadavaravuComponent implements OnInit {
     } else {
       return '';
     }
+  
+}else if(this.lang=='ml'){
+
+  if (itemid) {
+    const star = this.itemMaster.find((s) => s.NM_Id == itemid);
+
+    return star ? star.NM_RName : '';
+  } else {
+    return '';
+  }
+}else{
+  return ''
+}
   }
 }

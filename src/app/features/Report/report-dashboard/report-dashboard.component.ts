@@ -132,10 +132,10 @@ if(prathista || vazhipad){
     }
    
     else if (reportType === 'counter' && this.isChecked===true) {
-      this.newTab = window.open(`#/report-counter-self${queryString}`, '_blank');
+      this.newTab = window.open(`#/report-counter${queryString}`, '_blank');
     }
     else if (reportType === 'counter') {
-      this.newTab = window.open(`#/report-counter${queryString}`, '_blank');
+      this.newTab = window.open(`#/report-counter-self${queryString}`, '_blank');
     }
 
     else if (reportType === 'cancel') {

@@ -30,6 +30,8 @@
 "Thithi":"തിഥി",
 "Filter Options":"ഫിൽട്ടർ ഓപ്ഷനുകൾ",
 "Day List":"ദിവസ പട്ടിക",
+"Select Item":"സെലക്ട് ഐറ്റം",
+
   "PLACEHOLDER": {
     "VAZHIPAD": "വഴിപാട് ",
     "NAME": "പേര് ",
@@ -50,9 +52,9 @@
     "EMAIL": "ഇമെയിൽ ",
     "CHEQUENO": "",
     "BANKNAME": "BANKNAME",
+    "Remark":"റിമാർക്",
     "Description":"വിവരണം"
   },
-
   "OPTIONS": {
     "TIME1": "ഏതെങ്കിലും സമയം",
     "TIME2": "രാവിലെ",

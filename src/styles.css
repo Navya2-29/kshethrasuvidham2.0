@@ -1,6 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 @import 'ngx-toastr/toastr';
 @import url('https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap'); 
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam:wght@100..900&display=swap');
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
@@ -27,10 +28,30 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   }
   
   /* Optional: Include bold font if available */
-  /* @font-face {
+  @font-face {
     font-family: 'Noto Sans Malayalam Bold';
     src: url('assets/fonts/malayalam/NotoSansMalayalam-Bold.ttf') format('truetype');
     font-weight: bold;
     font-style: normal;
-  } */
+  }
+  @font-face {
+    font-family: 'Manjari';
+    src: url('assets/fonts/malayalam/manjari/Manjari-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: 'Manjari';
+    src: url('assets/fonts/malayalam/manjari/Manjari-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: 'Manjari';
+    src: url('assets/fonts/malayalam/manjari/Manjari-Thin.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+  }
   

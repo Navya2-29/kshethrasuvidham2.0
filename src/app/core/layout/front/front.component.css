@@ -201,3 +201,8 @@
       margin-block: 1.5rem;
     }
   }
+
+  .focused-button {
+    background-color: #4caf50 !important; /* Green background or any color you prefer */
+    color: white; /* Optional: adjust text color */
+  }
