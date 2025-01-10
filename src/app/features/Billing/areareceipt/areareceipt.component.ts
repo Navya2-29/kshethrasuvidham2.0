@@ -944,7 +944,7 @@ console.log(this.selectedVazhipadItem)
         if (result) {
           this.prnitConfirmDialog(formattedData);
         } else {
-          this.resetForm();
+          // this.resetForm();
           // User did not confirm, save the data to the database
         }
       });
@@ -1029,6 +1029,14 @@ console.log(this.selectedVazhipadItem)
     this.masterservice.vazhipadBooking(formattedData).subscribe((res: any) => {
       if (res) {
         if (res.RespStatus === 'I') {
+          this.masterservice
+          .updateLastBillNumber(this.lockTableLastbillNumber+1)
+          .subscribe({
+            next: (data) => {
+              this.eventService.notifytheupdateLastbillnumber();
+            },
+            error: (err) => {},
+          });
           this.receiptPrintService.setReceiptData(formattedData); 
           this.notification.success(res.RespMsg);
           this.resetForm();
@@ -1037,14 +1045,14 @@ console.log(this.selectedVazhipadItem)
               // const lastBillNumber = lastbillno[0].billno;
               // const currentBillnumber = lastBillNumber + 1;
               // console.log(currentBillnumber)
-              this.masterservice
-                .updateLastBillNumber(this.lockTableLastbillNumber+1)
-                .subscribe({
-                  next: (data) => {
-                    this.eventService.notifytheupdateLastbillnumber();
-                  },
-                  error: (err) => {},
-                });
+              // this.masterservice
+              //   .updateLastBillNumber(this.lockTableLastbillNumber+1)
+              //   .subscribe({
+              //     next: (data) => {
+              //       this.eventService.notifytheupdateLastbillnumber();
+              //     },
+              //     error: (err) => {},
+              //   });
 
 
            

@@ -41,7 +41,7 @@ export class MenuitemsComponent {
     // { label: 'ദിവസം മാസ്റ്റർ ', path: '/day-master' },
     // { label: 'Special day master', path: '/special-day-master' },
     // { label: 'Combo-master ', path: '/combo-master' },
-    { label: 'Item/Nadavarav Master', path: '/item-master' },
+    { label: 'Item/Nadavaravu Master', path: '/item-master' },
     // { label: 'ഇനം/നടവരവ്  മാസ്റ്റർ', path: '/item-master' },
     
   ];

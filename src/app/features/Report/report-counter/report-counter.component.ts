@@ -295,7 +295,7 @@ export class ReportCounterComponent {
           const groupTotalX = 10 + maxColumnWidths[0] + maxColumnWidths[1] + maxColumnWidths[2] + maxColumnWidths[3]+maxColumnWidths[3];
           doc.setFontSize(12);
           doc.setFont("NotoSansMalayalam", "bold");
-          doc.text(`Total (Conter :${group}):`, 10, y + 5); // Label for the group total
+          doc.text(`Total (Counter :${group}):`, 10, y + 5); // Label for the group total
           doc.text(`${groupTotal.toFixed(2)}`,groupTotalX - 10, y + 5, { align: "right" }); // Total with transaction mode
 
           y += lineHeight + 5; // Add space after the total for the next group or footer

@@ -49,13 +49,12 @@
     flex-wrap: wrap;
     flex-direction: column;
     gap:9px;
-    border:1px solid #d4afff;
-    box-shadow:5px 5px 8px silver inset;
+    /* border:1px solid #d4afff;
+    box-shadow:5px 5px 8px silver inset; */
     border-radius:15px 15px 0px 0px;
 }
 
 .amttoday {
-    border:1px solid white;
     background:#ffffff;
     color:#223d61;
     height:100px;
@@ -64,9 +63,10 @@
     justify-content:center;
     flex-wrap: wrap;
     flex-direction: column;
-    border:1px solid #135796;
-    box-shadow:5px 5px 8px silver inset;
-    border-radius:15px 15px 0px 0px;
+    border-right:1px solid maroon;
+    border-left:1px solid maroon;
+    /* box-shadow:5px 5px 8px silver inset;
+    border-radius:15px 15px 0px 0px; */
 }
 
 .method {
