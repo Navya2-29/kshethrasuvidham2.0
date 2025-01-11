@@ -31,6 +31,7 @@
     "jspdf": "^2.5.2",
     "jspdf-autotable": "^3.8.4",
     "jsprintmanager": "^7.0.1",
+    "ng2-pdf-viewer": "^10.4.0",
     "ngx-print": "^1.5.1",
     "ngx-toastr": "^18.0.0",
     "pdfmake": "^0.2.18",

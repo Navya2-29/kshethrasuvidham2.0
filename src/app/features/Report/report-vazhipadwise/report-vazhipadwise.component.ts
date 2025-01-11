@@ -11,9 +11,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { HttpClient } from '@angular/common/http';
-
-import * as pdfMake from 'pdfmake/build/pdfmake';  // Import pdfMake
-import * as pdfFonts from 'pdfmake/build/vfs_fonts'; 
 interface ConsolidatedData {
   Vazhipad: string;
   TotalQty: number; // Renamed for clarity
@@ -145,24 +142,201 @@ formatDateToDDMMYYYY(date: string): string {
   return `${day}/${month}/${year}`;
 }
 
-multiLangData = {
-  en: 'Hello, welcome to our temple!',
-  hi: 'नमस्ते, हमारे मंदिर में स्वागत है!',
-  ta: 'வணக்கம், எங்கள் கோயிலுக்கு வரவேற்கின்றேன்!'
-};
 
 generatePDF() {
- 
-  const documentDefinition = {
-    content: [
-      { text: 'Hello, world!', fontSize: 15 },
-      { text: 'This is a Malayalam example: ', fontSize: 15 },
-      { text: 'ഹലോ ലോകം', fontSize: 15, font: 'malayalamFont' }, // Malayalam text
-    ]
+  const templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
+  const templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
+  const doc = new jsPDF();
+  const pageWidth = doc.internal.pageSize.width;
+  const pageHeight = doc.internal.pageSize.height;
+  this.http
+  .get('assets/fonts/malayalam/NotoSansMalayalam-Regular.ttf', {
+    responseType: 'arraybuffer',
+  })
+  .subscribe(
+    (fontData) => {
+      const doc = new jsPDF();
+
+      // Convert ArrayBuffer to Base64
+      const fontBase64 = btoa(
+        String.fromCharCode(...new Uint8Array(fontData))
+      );
+
+      // Add the font to jsPDF
+      doc.addFileToVFS(
+        'NotoSansMalayalam-Regular.ttf',
+        fontBase64
+      );
+      doc.addFont(
+        'NotoSansMalayalam-Regular.ttf',
+        'NotoSansMalayalam',
+        'normal'
+      );
+
+      // Set the custom font
+      doc.setFont('NotoSansMalayalam');
+  const headerHeight = 35; // Increased header height
+  const footerHeight = 8;
+  const lineHeight = 10;
+  const tableHeaderFontSize = 11;
+  const contentFontSize = 10;
+  const currentDate = new Date().toLocaleDateString();
+
+  const maxColumnWidths = [30, 100, 30]; // Column widths for each column (adjusted)
+  const headers = ["SINO", "VAZHIPAD", "QUANTITY"];
+
+  let y = headerHeight;
+  let grandTotalQty = 0;
+
+  // Draw Header
+  const drawHeader = () => {
+    doc.setFontSize(12);
+    doc.setFont("NotoSansMalayalam", "normal");
+    doc.text(templeName, pageWidth / 2, 12, { align: "center" });
+    doc.setFont("NotoSansMalayalam", "normal");
+    doc.setFontSize(10);
+    doc.text(templeAddress, pageWidth / 2, 18, { align: "center" });
+
+    doc.setFontSize(10);
+    doc.setFont("NotoSansMalayalam", "bold");
+    doc.text("Vazhipad Report", pageWidth / 2, 27, { align: "center" });
+
+    // Add current date below the report title but above the table header
+    doc.setFontSize(10);
+    doc.setFont("NotoSansMalayalam", "normal");
+    doc.text(`${this.formatDateToDDMMYYYY(this.fromDate)} to ${this.formatDateToDDMMYYYY(this.toDate)}`, pageWidth / 2, 32, { align: "center" });
+
+    doc.setLineWidth(0.5);
+    doc.line(10, y, pageWidth - 10, y); // Line below header
+    y += 3; // Space below the line
   };
 
-  pdfMake.createPdf(documentDefinition).download('malayalam-example.pdf');
-  
+  // Draw Footer (Centered page number)
+  const drawFooter = (pageNum: number) => {
+    doc.setFontSize(10);
+    doc.text(`Page ${pageNum}`, pageWidth / 2, pageHeight - footerHeight / 2, { align: "center" });
+  };
+
+
+  // Add Table Header
+  const drawTableHeader = () => {
+    doc.setFontSize(tableHeaderFontSize);
+    doc.setFont("NotoSansMalayalam", "bold");
+    let x = 10;
+    headers.forEach((header, index) => {
+      doc.text(header, x, y + 5);
+      x += maxColumnWidths[index];
+    });
+    y += lineHeight;
+    doc.setLineWidth(0.3);
+    doc.setDrawColor(200, 200, 200); // Light gray color for grid lines
+    doc.line(10, y, pageWidth - 10, y); // Line below the table header
+    y += 2;
+  };
+
+  // Initialize PDF
+  drawHeader();
+  drawFooter(1);
+  drawTableHeader();
+
+  let pageNum = 1;
+  let siNo = 1; // Initialize serial number
+
+  // Iterate over API data and draw rows
+  this.consolidatedData.forEach((row: any) => {
+    const tableRow = [
+      siNo.toString(), // Serial number as the first column
+      row.Vazhipad, // Vazhipad
+      row.TotalQty.toString(), // Total Quantity
+    ];
+
+    // Calculate the max height required for wrapped text in the row
+    const rowHeight = Math.max(...tableRow.map((cell, index) => {
+      return Array.isArray(cell) ? cell.length * contentFontSize : lineHeight;
+    }));
+
+    // Check if a new page is needed
+    if (y + rowHeight > pageHeight - footerHeight - 10) {
+      doc.addPage();
+      pageNum++;
+      y = headerHeight + 5;
+      drawHeader();
+      drawFooter(pageNum);
+      drawTableHeader();
+    }
+
+    let x = 10;
+
+    // Draw each cell with normal font
+    doc.setFont("NotoSansMalayalam", "normal");
+    doc.setFontSize(contentFontSize);
+
+    tableRow.forEach((cell, index) => {
+      if (index === 2) {
+        // Align "TOTAL QTY" column to the right
+        doc.text(String(cell), x + maxColumnWidths[index] - 2, y + 5, { align: "center" });
+      } else {
+        // Left-align other columns
+        doc.text(String(cell), x, y + 5);
+      }
+      x += maxColumnWidths[index];
+    });
+
+    // Draw row grid lines
+    doc.setLineWidth(0.3); // Light line width for grid
+    doc.setDrawColor(200, 200, 200); // Light gray color
+    doc.line(10, y, pageWidth - 10, y); // Line at the bottom of the row
+
+    // Increment the serial number for the next row
+    siNo++;
+
+    // Accumulate total quantity
+    grandTotalQty += row.TotalQty;
+
+    y += rowHeight; // Move y position for the next row
+  });
+
+  // Add Grand Total row
+  const grandTotalRow = [
+    "",
+    "Grand Total", 
+    grandTotalQty.toString()
+  ];
+
+  let x = 10;
+  doc.setFont("NotoSansMalayalam", "bold");
+  doc.setFontSize(contentFontSize);
+  grandTotalRow.forEach((cell, index) => {
+    if (index === 2) {
+      // Align "TOTAL QTY" column to the right
+      doc.text(String(cell), x + maxColumnWidths[index] - 2, y + 5, { align: "center" });
+    } else {
+      // Left-align other columns
+      doc.text(String(cell), x, y + 5);
+    }
+    x += maxColumnWidths[index];
+  });
+
+  // Draw grid line after Grand Total
+  doc.setLineWidth(0.3);
+  doc.setDrawColor(200, 200, 200);
+  doc.line(10, y, pageWidth - 10, y);
+
+  y += lineHeight; // Move y position for the Grand Total row
+
+  // Save PDF
+  // doc.save("VazhipadReport.pdf");
+  const pdfBlob = doc.output('blob');
+  const pdfUrl = URL.createObjectURL(pdfBlob);
+  window.open(pdfUrl, '_blank');
+  // doc.save('vazhipad_report_with_header_footer.pdf');
+
+},
+(error:any) => {
+  console.error('Error loading font:', error);
+}
+);
+
 }
 
   
