@@ -15,18 +15,7 @@ interface ConsolidatedData {
   Vazhipad: string;
   TotalQty: number; // Renamed for clarity
 }
-// export function setFonts() {
-//   pdfMake.vfs = pdfFonts.pdfMake.vfs;
-// // Define custom fonts
-// pdfMake.fonts = {
-//   malayalamFont: {
-//     normal: 'assets/fonts/malayalam/NotoSansMalayalam-Regular.ttf', // Path to the font file
-//     bold: 'assets/fonts/malayalam/NotoSansMalayalam-Bold.ttf ',  // Use the same font for bold
-//     italics: 'assets/fonts/malayalam/NotoSansMalayalam-Thin.ttf ',  // Use the same font for italics
-//     bolditalics: 'assets/fonts/malayalam/NotoSansMalayalam-SemiBold.ttf '  // Use the same font for bold-italics
-//   }
-// };
-// }
+
 
 @Component({
   selector: 'app-report-vazhipadwise',

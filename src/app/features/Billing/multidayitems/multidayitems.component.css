@@ -412,3 +412,27 @@ th {
   border-top: 2px solid red;
   border-bottom: 2px solid red;
 }
+
+
+.mat-mdc-option:focus.mdc-list-item, .mat-mdc-option.mat-mdc-option-active.mdc-list-item {
+  background-color: #223d61;
+  color: yellow;
+}
+.mat-mdc-option:hover:not(.mdc-list-item--disabled) {
+  background-color: #223d61;
+  color: yellow;
+}
+::ng-deep .mat-mdc-option.custom-option {
+  margin-bottom: 0px; /* Reduce space between options */
+  padding-top: 0px; /* Adjust padding between options */
+  padding-bottom: 0px; /* Adjust padding between options */
+}
+::ng-deep .mat-autocomplete-panel .mat-mdc-option {
+  padding-top: 0px;  /* Reduce the top padding */
+  padding-bottom: 0px;  /* Reduce the bottom padding */
+  line-height: 10px;  /* Reduce the line-height */
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: 8px;
+  
+}

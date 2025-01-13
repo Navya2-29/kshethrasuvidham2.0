@@ -14,7 +14,6 @@ import { provideToastr } from 'ngx-toastr';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common'; // Import HashLocationStrategy
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { PdfViewerModule } from 'ng2-pdf-viewer'; // Correct module import
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -35,7 +34,7 @@ export const appConfig: ApplicationConfig = {
       deps:[HttpClient],
     }
    })),
-   importProvidersFrom(PdfViewerModule),
+  
   ],
  
 };

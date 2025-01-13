@@ -12,10 +12,16 @@
         <span class="material-icons">grid_view</span>
     </button> -->
 </div>
+<div id="print-section" >
+<div>
+  <h3 style="align-items: center;text-align:center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;" >{{templeName}}</h3>
+  <h4 style="align-items: center;text-align:center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;" >{{templeAddress}}</h4>
 
-<div><h1 style="align-items: center;text-align: center; font-family: 'Times New Roman', Times, serif;font-weight:bold;">DAILY STATEMENT(DETAILED) REPORT</h1></div>
+  <h5 style="align-items: center;text-align:center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;" >DAILY STATEMENT (DETAILED) REPORT</h5>
+  <p style="align-items: center;text-align: center;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;">{{formatDateToDDMMYYYY(fromDate)}} -{{formatDateToDDMMYYYY(toDate)}}</p>
 
 
+<!-- 
 <div class="report-table">
   <mat-form-field>
     <mat-label>Filter</mat-label>
@@ -76,4 +82,41 @@
       (page)="onPageChange($event)">
     </mat-paginator>
   </div>
+   -->
+
+
+
+   <div style="margin: 20px auto; max-width: 90%; font-family: Arial, sans-serif;">
+    <table style="width: 100%; border-collapse: collapse; text-align: left; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+      <thead>
+        <tr style="background-color: #ddd;
+; color: black; font-weight: bold;">
+          <th style="padding: 10px; border: 1px solid #ddd;">Bill No</th>
+          <th style="padding: 10px; border: 1px solid #ddd;">Vazhipad</th>
+          <th style="padding: 10px; border: 1px solid #ddd;">Name</th>
+          <th style="padding: 10px; border: 1px solid #ddd;">Star</th>
+          <th style="padding: 10px; border: 1px solid #ddd;">Qty</th>
+          <th style="padding: 10px; border: 1px solid #ddd; text-align: right;">Rate</th>
+          <th style="padding: 10px; border: 1px solid #ddd; text-align: right;">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of data" style="border-bottom: 1px solid #ddd; background-color: #f9f9f9;">
+          <td style="padding: 10px; border: 1px solid #ddd;">{{ item.BillNo }}</td>
+          <td style="padding: 10px; border: 1px solid #ddd;">{{ item.Vazhipad }}</td>
+          <td style="padding: 10px; border: 1px solid #ddd;">{{ item.Name }}</td>
+          <td style="padding: 10px; border: 1px solid #ddd;">{{ getStarbyId(item.Star) }}</td>
+          <td style="padding: 10px; border: 1px solid #ddd;">{{ item.Qty }}</td>
+          <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">{{ item.Rate | number: '1.2-2' }}</td>
+          <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">{{ item.Qty * item.Rate | number: '1.2-2' }}</td>
+        </tr>
+        <tr style="background-color: #f1f1f1; font-weight: bold;">
+          <td colspan="6" style="text-align: right; padding: 10px; border: 1px solid #ddd;">Grand Total</td>
+          <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">{{ getGrandTotal() | number: '1.2-2' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
   
+  
+  </div>

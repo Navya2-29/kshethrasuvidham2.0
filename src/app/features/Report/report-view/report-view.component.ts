@@ -32,7 +32,15 @@ export class ReportViewComponent implements OnInit {
   groupedData: { [key: string]: ReportData[] } = {};
   fromDate:string;
   toDate:string;
-  constructor(private route: ActivatedRoute, private service: ReportService,private router: Router,private http: HttpClient ) {}
+  lang:string|null;
+templeName:string|null;
+templeAddress:string|null;
+  constructor(private route: ActivatedRoute, private service: ReportService,private router: Router,private http: HttpClient ) {
+
+    this.lang=localStorage.getItem('Language');
+this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
+this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
+  }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
@@ -278,28 +286,51 @@ export class ReportViewComponent implements OnInit {
   }
 
   genearatePDF(){
-    const printContent = document.getElementById('pdf-content'); // Get the content to print
+    const printContent = document.getElementById('print-section');
+  if (!printContent) {
+    console.error('No content found to print');
+    return;
+  }
+
+  const WindowPrt = window.open('', '', 'width=800,height=600');
   
-    if (!printContent) {
-      console.error('The element with id "pdf-content" was not found!');
-      return; // Exit if the element is not found
-    }
-    
-    const printWindow = window.open('', '', 'height=600,width=800'); // Open a new window for printing
-    
-    if (!printWindow) {
-      console.error('The print window could not be opened!');
-      return; // Exit if the window could not be opened
-    }
-    
-    // Add content to the print window
-    printWindow.document.write('<html><head><title>Print</title></head><body>');
-    printWindow.document.write(printContent.innerHTML); // Add the inner HTML of the content you want to print
-    printWindow.document.write('</body></html>');
-    
-    // Trigger the print dialog
-    printWindow.document.close(); // Close the document to finalize it
-    printWindow.print(); // Print the content
+  // Check if the print window was successfully opened
+  if (!WindowPrt) {
+    console.error('Unable to open print window. Please check pop-up blockers.');
+    return;
+  }
+
+  WindowPrt.document.write(`
+    <html>
+      <head>
+        <title>Print</title>
+        <style>
+          /* Add custom styles for printing if needed */
+          table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+          table, th, td {
+            border: 1px solid black;
+          }
+          th, td {
+            padding: 5px;
+            text-align: left;
+          }
+        </style>
+      </head>
+      <body>${printContent.innerHTML}</body>
+    </html>
+  `);
+
+  WindowPrt.document.close();
+  WindowPrt.focus();
+
+  // Make sure that the window is still valid before calling print and close
+  if (WindowPrt) {
+    WindowPrt.print();
+    WindowPrt.close();
+  } 
   }
 
   // generatePDF() {

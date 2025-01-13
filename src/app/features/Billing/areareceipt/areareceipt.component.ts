@@ -107,7 +107,7 @@ export class AreareceiptComponent implements OnInit {
   generatedCurrentBillnumber: string;
   selectedVazhipadItem:any;
   CounterId: string | null;
-  
+  cancelFlag:boolean=false
   input1 = '';
   input2 = '';
   input3 = '';
@@ -999,8 +999,11 @@ console.log(this.selectedVazhipadItem)
       if (result) {
         // this.receiptPrintService.setReceiptData(formattedData);   this is originallllllll print calll
         this.sendBillingDataApiCall(formattedData);
+        this.cancelFlag=false;
       } else {
         this.sendBillingDataApiCall(formattedData);
+
+        this.cancelFlag=true;
         // User did not confirm, save the data to the database
       }
     });
@@ -1067,7 +1070,9 @@ console.log(this.selectedVazhipadItem)
             },
             error: (err) => {},
           });
+          if(!this.cancelFlag){
           this.receiptPrintService.setReceiptData(formattedData); 
+          }
           this.notification.success(res.RespMsg);
           this.resetForm();
           // this.masterservice.getLastBillNumber().subscribe({
@@ -1102,6 +1107,7 @@ console.log(this.selectedVazhipadItem)
     this.updateTotalAmount();
     this.updateSlno();
     this.multidayBooking = [];
+    this.cancelFlag=false;
   }
 
   // format the data based apiformat

@@ -6,17 +6,22 @@
   <button mat-icon-button matTooltip="Back to previous page" (click)="goBack()">
     <span class="material-icons">arrow_back</span>
 </button>
-    <button mat-icon-button matTooltip="Make PDF" (click)="generatePDF()">
+    <button mat-icon-button matTooltip="Make PDF" >
         <span class="material-icons">print</span>
-    </button>
+    </button> 
     <!-- <button mat-icon-button matTooltip="Export to Spreadsheet" >
         <span class="material-icons">grid_view</span>
     </button> -->
-</div>
-<div><h1 style="align-items: center;text-align: center; font-family: 'Times New Roman', Times, serif;font-weight:bold;">DAILY TEMPLE COLLECTION(COUNTER)
-  
-</h1></div>
+ </div>
+<div>
+  <h3 style="align-items: center;text-align:center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;" >{{templeName}}</h3>
+  <h4 style="align-items: center;text-align:center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;" >{{templeAddress}}</h4>
 
+  <h5 style="align-items: center;text-align: center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;">DAILY TEMPLE COLLECTION(COUNTER)
+  
+</h5>
+<p style="align-items: center;text-align: center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;">{{formatDateToDDMMYYYY(fromDate)}} -{{formatDateToDDMMYYYY(toDate)}}</p></div>
+<!--
 <div class="report-table">
   <mat-form-field>
     <mat-label>Filter</mat-label>
@@ -30,9 +35,9 @@
       <ng-container matColumnDef="Counter">
         <th mat-header-cell *matHeaderCellDef> COUNTER </th>
         <td mat-cell *matCellDef="let element"> {{ element.CounterId }} </td>
-      </ng-container>
+      </ng-container> --> 
 
-      <ng-container matColumnDef="BillDate">
+      <!-- <ng-container matColumnDef="BillDate">
         <th mat-header-cell *matHeaderCellDef> BILL DATE </th>
         <td mat-cell *matCellDef="let element"> {{ element.BillDate }} </td>
       </ng-container>
@@ -85,26 +90,26 @@
       (page)="onPageChange($event)">
     </mat-paginator>
   </div>
-  
+   -->
 
  <!-- Table with Header, Grouped Data, and Footer -->
-<table border="1" id="pdf-content" style="display: none;" >
-  <!-- Table Header (for the whole table) -->
+<!-- <table border="1" id="pdf-content" style="display: none;" >
+  Table Header (for the whole table) -->
 
 
   <!-- Table Body with Grouped Data -->
-  <tbody>
-    <ng-container *ngFor="let group of groupedData | keyvalue">
+  <!-- <tbody>
+    <ng-container *ngFor="let group of groupedData | keyvalue"> -->
       <!-- Group name (Transaction Mode) displayed as a row header -->
-      <tr>
-        <td colspan="7" style="font-weight: bold; background-color: #f2f2f2;">
+      <!-- <tr> -->
+        <!-- <td colspan="7" style="font-weight: bold; background-color: #f2f2f2;"> -->
           <!-- Display the human-readable transaction type -->
-        TRANSACTION  :   {{ getTransactionType(group.key) }} <!-- Dynamic transaction type -->
-        </td>
-      </tr>
+        <!-- TRANSACTION  :   {{ getTransactionType(group.key) }}  Dynamic transaction type -->
+        <!-- </td> -->
+      <!-- </tr> --> 
 
       <!-- Table header for each group -->
-      <tr>
+      <!-- <tr>
         <th>Bill No</th>
         <th>Vazhipad</th>
         <th>Name</th>
@@ -114,10 +119,10 @@
         <th>Quantity</th>
         <th>Rate</th>
         <th>Vazhipad Date</th>
-      </tr>
+      </tr> -->
 
       <!-- Loop through items in the group -->
-      <tr *ngFor="let item of group.value">
+      <!-- <tr *ngFor="let item of group.value">
         <td>{{ item.BillNo }}</td>
         <td>{{ item.Vazhipad }}</td>
         <td>{{ item.Name }}</td>
@@ -127,14 +132,45 @@
         <td>{{ item.VazhiDate }}</td>
       </tr>
     </ng-container>
-  </tbody>
+  </tbody> -->
 
   <!-- Table Footer with Page Number -->
-  <tfoot>
+  <!-- <tfoot>
     <tr>
       <td colspan="7" style="text-align: center;">
         Page {{ currentPage }}
       </td>
     </tr>
   </tfoot>
-</table>
+</table> --> 
+
+
+
+<div *ngFor="let mode of groupedData | keyvalue" style="margin-left: 100px; margin-right: 100px;margin-top: 50px;">
+  <h3 style="font-weight: bold;">Counter:{{ mode.key }}</h3> <!-- Transaction Mode as Table Heading -->
+
+  <table border="1">
+    <thead>
+      <tr>
+        <th>Vazhipad</th>
+        <th>Qty</th>
+        <th>Rate</th>
+        <th>Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of mode.value">
+        <td>{{ item.vazhipad }}</td>
+        <td>{{ item.Qty }}</td>
+        <td style="text-align: right;">{{ item.Rate | number: '1.2-2' }}</td>
+        <td style="text-align: right;">{{ item.Qty * item.Rate | number: '1.2-2' }}</td>
+      </tr>
+      <tr *ngIf="mode.value.length > 0">
+        <td colspan="3" style="text-align: right;">Grand Total</td>
+        <td style="text-align: right;font-weight: bold;">{{ getGrandTotalForTrnsMode(mode.key) | number: '1.2-2'}}</td>
+      </tr>
+    </tbody>
+  </table>
+  <br/>
+</div>
+

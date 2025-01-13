@@ -12,7 +12,12 @@
         <span class="material-icons">grid_view</span>
     </button> -->
 </div>
-<div><h1 style="align-items: center;text-align: center; font-family: 'Times New Roman', Times, serif;font-weight:bold;">POORNAM REPORT</h1></div>
+<div id="print-section">
+<div>
+  <h3 style="align-items: center;text-align:center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;" >{{templeName}}</h3>
+  <h4 style="align-items: center;text-align:center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;" >{{templeAddress}}</h4>
+  <h5 style="align-items: center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0;text-align: center; font-family: 'Times New Roman', Times, serif;font-weight:bold;">POORNAM REPORT</h5></div>
+  <p style="align-items: center;text-align: center;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;">{{formatDateToDDMMYYYY(fromDate)}} -{{formatDateToDDMMYYYY(toDate)}}</p>
 
 <!-- <div class="report-table">
   <mat-form-field>
@@ -89,18 +94,22 @@
   <!-- PDF Container -->
   <div id="pdf-content" style="margin-left: 100px; margin-right: 100px;">
     <div style="text-align: center; margin-bottom: 20px;">
-      <h1>Vazhipad Report</h1>
-      <p>{{ formatDateToDDMMYYYY(fromDate) }} to {{ formatDateToDDMMYYYY(toDate) }}</p>
+      <!-- <h1>Vazhipad Report</h1>
+      <p>{{ formatDateToDDMMYYYY(fromDate) }} to {{ formatDateToDDMMYYYY(toDate) }}</p> -->
     </div>
     <div *ngFor="let group of groupedData | keyvalue">
-      <h3>{{ group.key }}</h3>
+      <h3 style="font-weight: bold;">{{ group.key }}</h3>
       <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-        <thead>
+        <thead style="background-color: gray;">
           <tr>
-            <th style="border: 1px solid black; padding: 5px;">Sl No</th>
-            <th style="border: 1px solid black; padding: 5px;">Name</th>
-            <th style="border: 1px solid black; padding: 5px;">Star</th>
-            <th style="border: 1px solid black; padding: 5px;">Qty</th>
+            <th style="border: 1px solid black;background-color: #ddd;
+; padding: 5px;">Sl No</th>
+            <th style="border: 1px solid black; background-color: #ddd;
+;padding: 5px;">Name</th>
+            <th style="border: 1px solid black; background-color: #ddd;
+;padding: 5px;">Star</th>
+            <th style="border: 1px solid black;background-color: #ddd;
+; padding: 5px;">Qty</th>
           </tr>
         </thead>
         <tbody>
@@ -114,4 +123,4 @@
       </table>
     </div>
   </div>
-  
+  </div>

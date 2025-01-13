@@ -279,7 +279,7 @@
                 >delete</mat-icon
               ></span
             >
-            <span  title="Duplicate Print" class="material-icons small" (click)="duplicateBill(item)">print</span>
+            <span *ngIf="item.TrnStatus !== 'C'" title="Duplicate Print" class="material-icons small" (click)="duplicateBill(item)">print</span>
           </td>
           </tr>
         </table>
