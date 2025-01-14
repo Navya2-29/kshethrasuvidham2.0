@@ -12,8 +12,18 @@
         <span class="material-icons">grid_view</span>
     </button> -->
 </div>
-<div><h1 style="align-items: center;text-align: center; font-family: 'Times New Roman', Times, serif;font-weight:bold;">UPI TRANSACTION REPORT</h1></div>
 
+<div id="print-section" >
+  <div>
+    <h3 style="align-items: center;text-align:center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;" >{{templeName}}</h3>
+    <h4 style="align-items: center;text-align:center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;" >{{templeAddress}}</h4>
+  
+    <h5 style="align-items: center;text-align:center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;"> UPI REPORT</h5>
+    <p style="align-items: center;text-align: center;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;">{{formatDateToDDMMYYYY(fromDate)}} to {{formatDateToDDMMYYYY(toDate)}}</p>
+  
+  
+  </div>
+<!--   
 <div class="report-table">
   <mat-form-field>
     <mat-label>Filter</mat-label>
@@ -69,4 +79,51 @@
       (page)="onPageChange($event)">
     </mat-paginator>
   </div>
-  
+   -->
+
+   
+   
+   <div   class="a4-sheet" >
+    <hr style="padding-top: 0;"/>
+     <table>
+       <thead>
+         <tr>
+           <th>Bill No</th>
+           <th>Bill Date</th>
+           <th>Vazhipad</th>
+           
+           <th>Qty</th>
+           <th>Rate</th>
+           <th>Amount</th>
+          
+         </tr>
+       </thead>
+       <tbody>
+         <tr *ngFor="let item of data">
+           <td>{{ item.BillNo }}</td>
+           <td>{{ item.BillDate }}</td>
+           <td>{{item.Vazhipad}}</td>
+           
+           <td>{{ item.Qty  }}</td>
+           <td style="text-align: right;">{{ item.Rate | number: '1.2-2' }}</td>
+           <td style="text-align: right;" >{{ item.Amount | number: '1.2-2'}}</td>
+           
+      
+       
+          
+           
+           <!-- <td>{{ item.Remarks }}</td> -->
+         </tr>
+         <tr *ngIf="data.length<=0">No data found</tr>
+       </tbody>
+       <tfoot>
+         <tr>
+           <td colspan="5" style="text-align: right;"><strong>Grand Total:</strong></td>
+           <td style="font-weight: bold;text-align: right;">{{ getTotalAmount() | number: '1.2-2' }}</td>
+           <!-- <td colspan="2"></td> -->
+         </tr>
+        
+       </tfoot>
+     </table>
+   </div>
+ </div>

@@ -3,6 +3,6 @@
   <p class="dialog-message">{{data.message}}</p>
 </mat-dialog-content>
 <mat-dialog-actions class="dialog-actions">
-  <button mat-button color="primary" (click)="onConfirm()">Ok</button>
-  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-button color="primary" (click)="onConfirm()"   #okButton (keydown)="handleKeydown($event, 'ok')" >Ok</button>
+  <button mat-button (click)="onCancel()" #cancelButton (keydown)="handleKeydown($event, 'cancel')">Cancel</button>
 </mat-dialog-actions>

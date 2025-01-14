@@ -75,9 +75,9 @@ export class FixedbottomComponent implements OnInit {
   templeLogoUrl: string = '';
   name:string | null;
   nakshatham:any[];
+  @ViewChild('phone') phoneInput!: ElementRef<HTMLInputElement>;
   @ViewChild('address1Input', { static: true }) address1Input!: ElementRef;
-  @ViewChildren('address1, address2, address3, pincode, phone, email')
-  inputs!: QueryList<ElementRef>;
+  @ViewChildren('address1, address2, address3, pincode, phone, email')inputs!: QueryList<ElementRef>;
   sameDateArray:any [];
   differentDateArray:any[];
   // inputs!: QueryList<ElementRef>;
@@ -1129,7 +1129,13 @@ convertDateFormat(dateString:string) {
   return `${day}-${month}-${year}`;
 }
 
-
+@HostListener('document:keydown', ['$event'])
+handleGlobalKeyDown(event: KeyboardEvent): void {
+  if (event.key === 'F5') {
+    event.preventDefault(); // Prevent the default page refresh action
+    this.phoneInput.nativeElement.focus(); // Focus the phone input field
+  }
+}
 
 
 // Function to group data by VazhipadDate

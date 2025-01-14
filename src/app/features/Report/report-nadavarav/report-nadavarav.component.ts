@@ -162,6 +162,7 @@ this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address
     });
   }
 
+
   // Grouping function
   groupDataByTransactionMode(data: any[]): void {
  // Initialize groupedData as an empty object

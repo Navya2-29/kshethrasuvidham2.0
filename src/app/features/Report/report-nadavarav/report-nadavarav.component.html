@@ -105,9 +105,9 @@
         <tr>
           <th style="background-color: #ddd;">Bill No</th>
           <th style="background-color: #ddd;" >Bill Date</th>
+          <th style="background-color: #ddd;">Item</th>
           <th style="background-color: #ddd;">Name</th>
-          <th style="background-color: #ddd;">Star</th>
-        <th style="background-color: #ddd;">Item</th>
+        <th style="background-color: #ddd;">Star</th>
           <th style="background-color: #ddd;">Qty</th>
           
           <th style="background-color: #ddd;">Receipt Amount</th>
@@ -130,7 +130,13 @@
           <td style="text-align: right;" >{{ item.Receipt_Amt | number: '1.2-2' }}</td>
           
         </tr>
+        
       </tbody>
+      <tfoot>
+        <tr>
+          <!-- <td colspan="4"> {{getTotalAmount }} </td> -->
+        </tr>
+      </tfoot>
     </table>
     <br />
   </div>
