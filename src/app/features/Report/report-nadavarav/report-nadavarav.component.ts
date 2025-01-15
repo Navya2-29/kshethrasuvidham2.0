@@ -525,4 +525,5 @@ this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address
         return 'OTHERS';
     }
   }
+  
 }

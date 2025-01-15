@@ -1,3 +1,4 @@
+// import { SearchByBillNumberComponent } from './../search-by-bill-number/search-by-bill-number.component';
 import { MasterService } from './../../../services/master/master.service';
 import {
   Component,
@@ -76,6 +77,7 @@ export class FixedbottomComponent implements OnInit {
   name:string | null;
   nakshatham:any[];
   @ViewChild('phone') phoneInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('paymentDropdown', { static: true }) paymentDropdown!: ElementRef<HTMLSelectElement>;
   @ViewChild('address1Input', { static: true }) address1Input!: ElementRef;
   @ViewChildren('address1, address2, address3, pincode, phone, email')inputs!: QueryList<ElementRef>;
   sameDateArray:any [];
@@ -1135,6 +1137,11 @@ handleGlobalKeyDown(event: KeyboardEvent): void {
     event.preventDefault(); // Prevent the default page refresh action
     this.phoneInput.nativeElement.focus(); // Focus the phone input field
   }
+  else if (event.key === 'F2') { // Replace 'F2' with the desired key
+    event.preventDefault(); // Prevent default behavior for the key
+    this.focusPaymentDropdown();
+  }
+  
 }
 
 
@@ -1157,5 +1164,21 @@ groupDataByVazhipadDate(vazhipadinfo: any[]) {
 printReceiptsThermal(data:any){
 
 }
+
+
+// @HostListener('document:keydown', ['$event'])
+// handleGlobalKeyDown(event: KeyboardEvent): void {
+//   if (event.key === 'F2') { // Replace 'F2' with the desired key
+//     event.preventDefault(); // Prevent default behavior for the key
+//     this.focusPaymentDropdown();
+//   }
+// }
+
+focusPaymentDropdown(): void {
+  if (this.paymentDropdown?.nativeElement) {
+    this.paymentDropdown.nativeElement.focus();
+  }
+}
+
 
 }

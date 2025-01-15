@@ -16,6 +16,12 @@ constructor(private dialogRef: MatDialogRef<ConfirmationDialogComponent>, @Injec
 }
 
 
+
+ngAfterViewInit(): void {
+  // Set the initial focus on the "OK" button after the view has been initialized
+  this.okButton.nativeElement.focus();
+}
+
   onConfirm(): void {
     this.dialogRef.close(true); // Return true if confirmed
   }
@@ -28,6 +34,10 @@ constructor(private dialogRef: MatDialogRef<ConfirmationDialogComponent>, @Injec
     const okButton = this.okButton.nativeElement;
     const cancelButton = this.cancelButton.nativeElement;
 
+    // Prevent the default browser behavior and stop event propagation
+    event.preventDefault();
+    event.stopPropagation();
+
     switch (event.key) {
       case 'ArrowRight': // Move to the next button
         if (button === 'ok') {
@@ -39,13 +49,12 @@ constructor(private dialogRef: MatDialogRef<ConfirmationDialogComponent>, @Injec
           okButton.focus();
         }
         break;
-      case 'Enter': // Activate the focused button
+      case 'Enter': // Activate the focused button and close the dialog
         if (button === 'ok') {
-          this.onConfirm();
+          this.onConfirm();  // Close the dialog with true
         } else if (button === 'cancel') {
-          this.onCancel();
+          this.onCancel();   // Close the dialog with false
         }
-        
         break;
       default:
         break;

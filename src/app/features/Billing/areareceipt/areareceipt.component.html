@@ -6,7 +6,7 @@
         <mat-icon>arrow_back</mat-icon>
       </button> -->
       <div>
-        <form [formGroup]="form"  >
+        <form [formGroup]="form">
           <table class="table">
             <thead>
               <tr style="background: #203b5e; color: white" >
@@ -106,7 +106,7 @@
                     type="text"
                     appUpperCase
                     style="font-size: 12px;color: black;font-weight:800;"
-                    class="form-control"
+                    class="form-control custom"
                     [placeholder]="'PLACEHOLDER.NAME' | translate"
                     formControlName="Name"
                     [readonly]="multidayBooking[i]"
@@ -169,9 +169,9 @@
                 <td>
                   <select
                   *ngIf="!multidayBooking[i]"
-                    class="form-control"
+                    class="form-control custom"
                     formControlName="Prethista"
-                    class="form-control" #input3Ref
+                    class="form-control custom" #input3Ref
                     style="width: 100%; height: 30.6px"  
                     (keydown)="navigateToNext($event, i, 'Qty')" 
                     id="Prethista-{{i}}" 
@@ -189,7 +189,7 @@
                   <input
                   [min]="1"
                     type="number"
-                    class="form-control"
+                    class="form-control custom"
                     [placeholder]="'PLACEHOLDER.QUANTITY' | translate"
                     formControlName="Qty"
                     [readonly]="multidayBooking[i]"
@@ -204,7 +204,7 @@
                     type="text"
                     appNumber
                     [placeholder]="'PLACEHOLDER.RATE' | translate"
-                    class="form-control"
+                    class="form-control custom"
                     formControlName="Rate"
                     [readOnly]="row.get('ratechange')?.value ==='N'"
                     [min]="1"
@@ -217,7 +217,7 @@
                   <input
                     type="text"
                     placeholder="Amount"
-                    class="form-control"
+                    class="form-control custom"
                     formControlName="Amount"
                     readonly
                     style="display: none;"
@@ -241,10 +241,11 @@
                 </td>
                 <td style="vertical-align: middle; text-align: center">
                   <select 
-                    class="form-control"
+                    class="form-control custom"
                     formControlName="VTime"
                     style="width: 80%; height: 30.6px"
-                    (keydown)="navigateToNext($event, i, 'Name2')" 
+                    (keydown)="navigateToNext($event, i, 'Name2')"
+                    #vTimeSelect
                   >
                     <option *ngFor="let time of vazhipadtime" [value]="time.id" >   {{ 'OPTIONS.' + time.key | translate }}</option>
                     

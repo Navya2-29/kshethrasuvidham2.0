@@ -17,4 +17,8 @@ export interface ReportData {
     Canceldt?:string;
     Remarks?:string;
     MobileNo?:string;
+    NM_Name?:string;
+    NM_RName?:string;
+    Receipt_Amt?:string;
+    Reason?:string;
   }

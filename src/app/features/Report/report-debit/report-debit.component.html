@@ -108,10 +108,6 @@
            <td style="text-align: right;">{{ item.Rate | number: '1.2-2' }}</td>
            <td style="text-align: right;" >{{ item.Amount | number: '1.2-2'}}</td>
            
-      
-       
-          
-           
            <!-- <td>{{ item.Remarks }}</td> -->
          </tr>
          <tr *ngIf="data.length<=0">No data found</tr>
@@ -122,7 +118,6 @@
            <td style="font-weight: bold;text-align: right;">{{ getTotalAmount() | number: '1.2-2' }}</td>
            <!-- <td colspan="2"></td> -->
          </tr>
-        
        </tfoot>
      </table>
    </div>

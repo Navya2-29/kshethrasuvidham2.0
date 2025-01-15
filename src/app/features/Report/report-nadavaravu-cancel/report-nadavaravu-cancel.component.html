@@ -12,9 +12,15 @@
         <span class="material-icons">grid_view</span>
     </button> -->
 </div>
-<div><h1 style="align-items: center;text-align: center; margin-left: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;">NADAVARAVU CANCEL REPORT</h1></div>
 
-<div class="report-table">
+<div id="print-section">
+  <div  style="padding-top: 0;padding-bottom: 0;">
+    <h3 style="align-items: center;text-align:center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;" >{{templeName}}</h3>
+    <h4 style="align-items: center;text-align:center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;" >{{templeAddress}}</h4>
+    <h5 style="align-items: center;text-align:center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;" >NADAVARAVU BOOKING REPORT</h5>
+    <p style="align-items: center;text-align: center;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;">{{formatDateToDDMMYYYY(fromDate)}} -{{formatDateToDDMMYYYY(toDate)}}</p>
+  </div>
+<!-- <div class="report-table">
   <mat-form-field>
     <mat-label>Filter</mat-label>
     <input matInput (keyup)="applyFilter($event)" placeholder="Search data" #input>
@@ -60,12 +66,12 @@
         <th mat-header-cell *matHeaderCellDef> WEIGHT </th>
         <td mat-cell *matCellDef="let element"> {{ element.weight }} {{ element.unit }} </td>
       </ng-container>
-      <!-- <ng-container matColumnDef="unit">
+     <ng-container matColumnDef="unit">
         <th mat-header-cell *matHeaderCellDef> UNIT </th>
         <td mat-cell *matCellDef="let element"> {{ element.unit }} </td>
       </ng-container> -->
   
-
+<!-- 
       <ng-container matColumnDef="ItemValue">
         <th mat-header-cell *matHeaderCellDef> PRICE </th>
         <td mat-cell *matCellDef="let element"> {{ element.ItemValue | number: '1.2-2'}} </td>
@@ -77,13 +83,13 @@
       <ng-container matColumnDef="Canceldt">
         <th mat-header-cell *matHeaderCellDef> CANCELED DATE </th>
         <td mat-cell *matCellDef="let element"> {{ element.Canceldt }} </td>
-      </ng-container>
+      </ng-container> -->
 
       <!-- <ng-container matColumnDef="CanceledBY">
         <th mat-header-cell *matHeaderCellDef> CanceledBY </th>
         <td mat-cell *matCellDef="let element"> {{ element.CanceledBY }} </td>
       </ng-container> -->
-
+<!-- 
       <ng-container matColumnDef="Reason">
         <th mat-header-cell *matHeaderCellDef> REASON </th>
         <td mat-cell *matCellDef="let element"> {{ element.Reason }} </td>
@@ -99,5 +105,54 @@
       [pageSizeOptions]="pageSizeOptions"
       (page)="onPageChange($event)">
     </mat-paginator>
-  </div>
+  </div> --> 
+
+
+  <div   class="a4-sheet" >
+    <hr style="padding-top: 0;"/>
+     <table>
+       <thead>
+         <tr>
+           <th>Bill No</th>
+           <th>Bill Date</th>
+           <th>Vazhipad</th>
+           
+           <th>Qty</th>
+           <th>Rate</th>
+           <th>Amount</th>
+          
+         </tr>
+       </thead>
+       <tbody>
+         <tr *ngFor="let item of data">
+           <td>{{ item.BillNo }}</td>
+           <td>{{ item.BillDate }}</td>
+           <td><span *ngIf="lang=='en'">{{item.NM_Name}}</span><span *ngIf="lang!='en'">{{item.NM_RName}}</span></td>
+           
+           <td>{{ item.Qty  }}</td>
+           <td style="text-align: right;">{{ item.Receipt_Amt | number: '1.2-2' }}</td>
+           <td >{{ item.Reason }}</td>
+           
+      
+       
+          
+           
+           <!-- <td>{{ item.Remarks }}</td> -->
+         </tr>
+         <tr *ngIf="data.length<=0">No data found</tr>
+       </tbody>
+       <tfoot>
+         <tr>
+           <td colspan="4" style="text-align: right;"><strong>Grand Total:</strong></td>
+           <td style="font-weight: bold;text-align: right;">{{ getTotalAmount() | number: '1.2-2' }}</td>
+           <!-- <td colspan="2"></td> -->
+         </tr>
+        
+       </tfoot>
+     </table>
+   </div>
+ </div>
+
+
+
   

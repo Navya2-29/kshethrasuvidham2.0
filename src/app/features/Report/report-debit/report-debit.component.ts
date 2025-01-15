@@ -39,7 +39,6 @@ export class ReportDebitComponent {
     this.lang=localStorage.getItem('Language');
     this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
     this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address'; 
-
   }
 
   ngOnInit(): void {
@@ -95,6 +94,7 @@ export class ReportDebitComponent {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
+
   onPageChange(event: PageEvent) {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
@@ -104,10 +104,12 @@ export class ReportDebitComponent {
     console.log('Going back...'); // Log to verify method execution
     this.router.navigate(['/getReport']);
   }
+
   formatDateToDDMMYYYY(date: string): string {
     const [year, month, day] = date.split('-');
     return `${day}-${month}-${year}`;
   }
+
 //   generatePDF(): void {
 //     // Filter data for entries with transmode 'ch'
 //     const filteredData = this.data.filter(item => item.TrnsMode === 'DE');
@@ -328,7 +330,6 @@ export class ReportDebitComponent {
 
 
 generatePDF(){
-
   const printContent = document.getElementById('print-section');
   if (!printContent) {
     console.error('No content found to print');
@@ -361,11 +362,11 @@ generatePDF(){
     WindowPrt.print();
     WindowPrt.close();
   } 
-
-
-
-
 }
-    
+   
+
+
+
+
 }
 

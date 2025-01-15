@@ -119,7 +119,8 @@ export class AreareceiptComponent implements OnInit {
   selectedStarData:any;
   lastEnterTime = 0;  // Variable to track the time of the last Enter press
   doubleEnterThreshold = 500;  // Time threshold in milliseconds to consider as double press
-  
+  @ViewChild('vTimeSelect', { static: false }) vTimeSelect!: ElementRef;
+
   private subscription: Subscription;
   private masterservice = inject(MasterService);
   private eventService = inject(TotalAmountService);
@@ -523,7 +524,7 @@ export class AreareceiptComponent implements OnInit {
        vmExists = this.VMList.some((vm) => vm.VM_Name === vazhipad);
        console.log(vmExists,"uyuyuyuyy")
     }
-   else if(this.lang==='ml'){
+    else if(this.lang!='en'){
        vmExists = this.VMList.some((vm) => vm.VM_RName === vazhipad);
     }
     // const vmExists = this.VMList.some((vm) => vm.VM_RName === vazhipad);
@@ -559,7 +560,7 @@ if(this.lang==='en'){
     (item) => item.VM_Name === selectedVazhipad
   );
 
-}else if(this.lang==='ml'){
+}else if(this.lang!='en'){
   this.selectedVazhipadItem = this.VMList.find(
     (item) => item.VM_RName === selectedVazhipad
   );
@@ -591,7 +592,7 @@ console.log(this.selectedVazhipadItem)
         (item) => item.SM_Name == selectedStar
       );
     }
-    else if(this.lang=='ml'){
+    else if(this.lang!='en'){
        this.selectedStarData = this.nakshatham.find(
         (item) => item.SM_RName === selectedStar
       );
@@ -676,6 +677,14 @@ console.log(this.selectedVazhipadItem)
   //   return date.toISOString().split('T')[0];
   // }
 
+  focusSelect(): void {
+    if (this.vTimeSelect) {
+      this.vTimeSelect.nativeElement.focus();
+    }
+  }
+
+
+
   // fetch prathista detasils
   selectedVazhipadPrathistaDetails(vazhipadcode: any, index: number) {
     const selectedRow = this.vazhipadinfo.at(index) as FormGroup;
@@ -719,7 +728,7 @@ console.log(this.selectedVazhipadItem)
 
 
 
-        }else if(this.lang==='ml'){
+        }else if(this.lang!='en'){
           if (this.prathishtaOptions[index].length > 0) {
             const defaultPrathishta = this.prathishtaOptions[index][0].rname;
             const defaultPrathishtaId = this.prathishtaOptions[index][0].id;
@@ -756,8 +765,11 @@ console.log(this.selectedVazhipadItem)
   // opne multiday open dialog box
   openMultiDayDialog(rowIndex: number): void {
     const dialogRef = this.dialog.open(MultidayitemsComponent, {
-      width: '80%',
-      maxWidth: '90vw',
+      height: '80vh', // Adjust height as needed
+      width: '100vw', // Fullscreen width
+      maxWidth: '100vw', // Prevent dialog from being constrained
+      panelClass: 'full-screen-dialog',
+      disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe((result) => {
@@ -849,6 +861,13 @@ console.log(this.selectedVazhipadItem)
     const amount = qty * rate;
     row.get('Amount')?.setValue(amount);
     this.updateTotalAmount();
+  }
+
+  focusInput(i: number): void {
+    const inputElement = document.getElementById(`Name-${i}`) as HTMLInputElement;
+    if (inputElement) {
+      inputElement.focus();
+    }
   }
 
   // total amount calculation
@@ -1281,10 +1300,15 @@ console.log(this.selectedVazhipadItem)
     }
   }
 
+
+
   ngAfterViewInit(): void {
     // Focus on the first input field when the page loads
     this.firstInputElement.nativeElement.focus();
   }
+
+
+
   getStarbyId(id:string){
     console.log(id,"star id")
     if(this.lang=='en'){
@@ -1293,7 +1317,7 @@ console.log(this.selectedVazhipadItem)
       );
       return star ? star.SM_Name : ''; 
   
-    }else if(this.lang=='ml'){
+    }else if(this.lang!='en'){
       const star= this.nakshatham.find(
         (item) => item.SM_Id == id
       );
@@ -1307,10 +1331,11 @@ console.log(this.selectedVazhipadItem)
 
   changeLanguage(lang: any) {
     const selectedlang = lang.target.value;
-
     localStorage.setItem('Language', selectedlang);
     this.ts.use(selectedlang);
   }
+
+
 
   handleKeyDowns(event: KeyboardEvent, index: number): void {
     if (event.key === 'ArrowLeft') {
@@ -1350,6 +1375,14 @@ console.log(this.selectedVazhipadItem)
        navigateToNext(event: Event, rowIndex: number, nextField: string): void {
         const keyboardEvent = event as KeyboardEvent;
         console.log(keyboardEvent.key,"keyyyy");
+
+
+
+
+
+
+
+        
         // Get the current time
         const currentTime = new Date().getTime();
         
@@ -1375,6 +1408,8 @@ console.log(this.selectedVazhipadItem)
             document.querySelectorAll(`#row-${rowIndex} input, #row-${rowIndex} mat-select, #row-${rowIndex} select, #row-${rowIndex} textarea`)
           ) as HTMLElement[];
       
+    // Remove the highlighted class from all elements first
+    rowFormElements.forEach(el => el.classList.remove('highlighted'));
           // Find the index of the currently active (focused) element
           let currentIndex = rowFormElements.findIndex(
             (el) => el === document.activeElement
@@ -1385,13 +1420,27 @@ console.log(this.selectedVazhipadItem)
             return;
           }
       
+// Get the current element
+const currentElement = rowFormElements[currentIndex];
+// Check if the current element has a value (if it's empty, show red border)
+if (currentElement instanceof HTMLInputElement || currentElement instanceof HTMLTextAreaElement || currentElement instanceof HTMLSelectElement) {
+  if (!currentElement.value.trim()) {
+    // Add red border if field is empty
+    currentElement.classList.add('invalid');
+    return; // Don't proceed with navigation until the field has data
+  } else {
+    // Remove red border if field has data
+    currentElement.classList.remove('invalid');
+  }
+}
+
           // If nextField is specified (for example, 'VazhipadDate'), find the corresponding element
           const nextElement = rowFormElements.find((el) => el.getAttribute('formControlName') === nextField);
       
           if (nextElement) {
             // Focus the next element
             nextElement.focus();
-      
+            nextElement.classList.add('highlighted'); 
             // For mat-select, open the dropdown if it's a mat-select
             if (nextElement.tagName.toLowerCase() === 'mat-select') {
               const matSelect = nextElement as any;
@@ -1482,6 +1531,44 @@ console.log(this.selectedVazhipadItem)
             console.warn('Previous element not found. Beginning of row reached.');
           }
         }
+
+
+
+  // Handle ArrowDown (Down Arrow Key)
+  if (keyboardEvent.key === 'ArrowDown') {
+    console.log("down arrow pressed")
+    keyboardEvent.preventDefault();  // Prevent default behavior
+
+    // Move to the next row
+    const nextRow = document.querySelector(`#row-${rowIndex + 1}`);
+    if (nextRow) {
+      // Focus the first element in the next row
+      const firstElementInNextRow = nextRow.querySelector('input, mat-select, select, textarea');
+      if (firstElementInNextRow) {
+        (firstElementInNextRow as HTMLElement).focus();
+      }
+    }
+  }
+
+  // Handle ArrowUp (Up Arrow Key)
+  if (keyboardEvent.key === 'ArrowUp') {
+    console.log("up arrow pressed")
+    keyboardEvent.preventDefault();  // Prevent default behavior
+
+    // Move to the previous row
+    const prevRow = document.querySelector(`#row-${rowIndex - 1}`);
+    if (prevRow) {
+      // Focus the first element in the previous row
+      const firstElementInPrevRow = prevRow.querySelector('input, mat-select, select, textarea');
+      if (firstElementInPrevRow) {
+        (firstElementInPrevRow as HTMLElement).focus();
+      }
+    }
+  }
+
+
+
+        
       }
       
   
