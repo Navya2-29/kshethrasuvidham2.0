@@ -13,6 +13,11 @@ export class ReceiptPrintService {
     this.receiptDataSubject.next(data);
   }
 
+  private booleanSubject = new BehaviorSubject<boolean>(false);
+  booleanValue$ = this.booleanSubject.asObservable();
 
+  setBooleanValue(value: boolean): void {
+    this.booleanSubject.next(value);
+  }
   
  }

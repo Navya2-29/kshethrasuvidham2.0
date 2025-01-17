@@ -150,7 +150,7 @@
                       style="width: 80%; height: 30.6px"
                       style="width: 100px;height: 30px;"
                     >
-                      <option *ngFor="let time of vazhipadtime" [value]="time.id">{{time.name}}</option>
+                    <option *ngFor="let time of vazhipadtime" [value]="time.id" >   {{ 'OPTIONS.' + time.key | translate }}</option>
                       
                     </select>
                       </td>

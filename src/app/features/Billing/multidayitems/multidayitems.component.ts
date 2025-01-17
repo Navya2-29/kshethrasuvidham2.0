@@ -655,11 +655,12 @@ const endDate = new Date(year, month - 1, day);
     this.dialogRef.close();
   }
 
+ 
   vazhipadtime = [
-    { id: '0', name: 'Any Time' },
-    { id: '1', name: 'Morning' },
-    { id: '2', name: 'Evening' },
-    { id: '3', name: 'AfterNoon' },
+    { id: '0', key: 'TIME1' },
+    { id: '1', key: 'TIME2' },
+    { id: '2', key: 'TIME3' },
+    { id: '3', key: 'TIME4' },
   ];
 
   getMalayalamMonthList() {

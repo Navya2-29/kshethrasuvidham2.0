@@ -59,10 +59,13 @@
             Rs. {{ (todayCollection ? todayCollection : 0) | number : "1.2-2" }}
           </p>
           <p style="border: 1px solid silver; padding: 5px">
-            {{"LastBillNo" |translate}}.
+            {{"LastBillNo" | translate}}.
             <span style="color: #3f51b5; font-weight: 800"
-              >{{ theLastBillNo }}
+             *ngIf="!isLockedShow " >{{theLastBillNo}}
             </span>
+            <span style="color:red; font-weight: 800; font-size: 16px;"  class="blink"
+            *ngIf="isLockedShow" >LOCK
+           </span>
           </p>
         </div>
       </div>
@@ -219,7 +222,7 @@
               (click)="onSubmit()"
               style="
                 font-size: 12pt;
-                background-color: #046ef8;
+                background-color: rgb(8, 8, 139);
                 color: white;
                 font-weight: 500;
                 width: auto;

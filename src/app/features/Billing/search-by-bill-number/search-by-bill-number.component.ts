@@ -80,6 +80,7 @@ export class SearchByBillNumberComponent {
   templeName: string | null;
   nakshatham: any[];
   logo: string | null;
+  name:string | null;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   cancellationReason: string = '';
@@ -87,6 +88,9 @@ export class SearchByBillNumberComponent {
   lang: string | null;
   @ViewChild('dialogTemplate') dialogTemplate!: TemplateRef<any>;
   remarkDialogRef: MatDialogRef<any>;
+  differentDateArray:any[]
+  printerType:string |null;
+  billDate:any;
   constructor(
     public dialogRef: MatDialogRef<SearchByBillNumberComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -95,10 +99,11 @@ export class SearchByBillNumberComponent {
     private dialog: MatDialog
   ) {
     this.lastBillNo = data[0].BillNo;
+    this.billDate=this.convertDateFormat(data[0].BillDate);
     this.TrnStatus = data[0].TrnStatus;
     this.displayTrnsmode = data[0].TrnsMode;
     this.duplicatebilldata = data;
-
+console.log(this.duplicatebilldata,"dupicate bill data first");
     this.dataSource = new MatTableDataSource(this.duplicatebilldata);
     this.role = localStorage.getItem('Role');
     this.loginId = localStorage.getItem('LoginId');
@@ -107,6 +112,8 @@ export class SearchByBillNumberComponent {
     this.logo = localStorage.getItem('Logo');
     this.templeAddress = localStorage.getItem('Address');
     this.lang = localStorage.getItem('Language');
+    this.printerType=localStorage.getItem('Printer');
+    this.name=localStorage.getItem('name');
   }
 
   ngOnInit() {
@@ -117,6 +124,9 @@ export class SearchByBillNumberComponent {
   getNakshthram(id: string): string {
     return this.starData[id] || 'Unknown'; // Return 'Unknown' if ID not found
   }
+
+ 
+
 
   loadStarData(): void {
     const payLoad = { Type: 'ListStar', Code: '' };
@@ -246,13 +256,22 @@ export class SearchByBillNumberComponent {
       console.log(payLoad);
       this.masterService.duplicateCount(payLoad).subscribe((data) => {
         console.log(data, 'dupi');
-        this.printReceipts(this.duplicatebilldata);
+        // this.printReceipts(this.duplicatebilldata);
+        this.printDuplicateBill()
       });
     } else {
       this.notification.showError(
         'This bill is cancell so you couldnot get duplicate bill'
       );
     }
+  }
+
+
+  printDuplicateBill(){
+    if(this.printerType=='dotMetrix'){
+      this.printReceiptsDotmetrix()
+    }
+
   }
 
   // print data
@@ -541,8 +560,198 @@ export class SearchByBillNumberComponent {
     doc.save('Vazhipad-Details.pdf');
   }
 
-
+  // const generateDateRange = (startDate: string, endDate: string): string[] => {
+  //   const dates = [];
+  //   let current = new Date(startDate);
+  //   const end = new Date(endDate);
   
+  //   while (current <= end) {
+  //     dates.push(current.toISOString().split('T')[0]);
+  //     current.setDate(current.getDate() + 1);
+  //   }
+  
+  //   return dates;
+  // };
+
+  printReceiptsDotmetrix() {
+    // const { BillNo, Billdate, vazhipadinfo } = data;
+  
+    this.differentDateArray = [];
+    
+    
+    // Iterate through the vazhipadinfo array and split based on the condition
+    this.duplicatebilldata.forEach((item:any) => {
+      
+            this.differentDateArray.push(item); // Add to differentDateArray if FromDate != ToDate
+      
+    });
+    
+    // Output the arrays
+    // console.log("Same Date Array:", this.sameDateArray);
+    console.log("Different Date Array:", this.differentDateArray);
+  
+  
+  if (this.differentDateArray.length > 0) {
+    // Group data by Prathista, Vazhipad, and From Date
+    const groupedData = this.differentDateArray.reduce((acc: any, item: any) => {
+      const key = `${item.Prathista}/${item.Vazhipad}/${item.Fdate}/${item.Tdate}`;
+      if (!acc[key]) {
+        acc[key] = { items: [], totalQty: 0, uniqueNames: new Set(), nalBy: '', mday: '', thithi: '',mmonth:'' };
+      }
+      acc[key].items.push(item);
+      acc[key].totalQty += parseInt(item.Qty, 10);
+      acc[key].uniqueNames.add(item.Name);
+  
+  
+    // Check if NalBy, Mday, or Thithi has data and store it
+    if (item.NalBy) acc[key].nalBy = item.NalBy;
+    if (item.MDay) acc[key].mday = item.MDay;
+    if (item.SearchBy) acc[key].thithi = item.SearchBy;
+    if (item.MMonth) acc[key].mmonth = item.MMonth;
+  
+      return acc;
+    }, {});
+  
+    const maxRowsPerPage = 4; // Maximum rows per page
+    let allReceiptsContent = '';
+    // Variable to store the total amount of all pages
+  
+    Object.keys(groupedData).forEach((key) => {
+      const group = groupedData[key];
+      const [prathista, vazhipad, fromDate,toDate] = key.split('/');
+      const items = group.items;
+      let grandTotalAmount = 0;
+      // Group items by Name to sum Qty and avoid repetition
+      const nameGroupedItems = items.reduce((nameAcc: any, item: any) => {
+        if (!nameAcc[item.Name]) {
+          nameAcc[item.Name] = {
+            ...item,
+            Qty: 0, // Initialize Qty sum
+          };
+        }
+        nameAcc[item.Name].Qty += parseInt(item.Qty, 10); // Sum Qty for the same Name
+        return nameAcc;
+      }, {});
+  
+      // Convert grouped by Name items into an array
+      const uniqueNamesItems = Object.values(nameGroupedItems);
+  
+      // Split items into pages
+      const pages = [];
+      for (let i = 0; i < uniqueNamesItems.length; i += maxRowsPerPage) {
+        pages.push(uniqueNamesItems.slice(i, i + maxRowsPerPage));
+      }
+  
+      // Render each page
+      pages.forEach((page, pageIndex) => {
+        let receiptContent = `
+         <div class="receipt-page" style="page-break-after: ${
+        pageIndex < pages.length - 1 ? 'always' : 'avoid'
+      };">
+            <!-- Prathista -->
+            <div style="position: absolute; left: 2.2cm; top: 3.4cm; max-width: 8cm;  white-space: pre-wrap; word-wrap: break-word; line-height: 1em;">${prathista}</div>
+            <!-- Vazhipad -->
+            <div style="position: absolute; left: 2.1cm; top: 3.9cm; max-width: 5cm; white-space: pre-wrap;">${vazhipad}</div>
+            <!-- From Date -->
+            <div style="position: absolute; left: 10.5cm; top: 3.4cm;">${this.billDate}</div>
+            <!-- Total Quantity -->
+            <div style="position: absolute; left: 10.5cm; top: 3.9cm;"> ${this.lastBillNo}</div>
+             <!-- Vazhipad Date -->
+           <div style="position: absolute; left: 5cm; top: 9.15cm;">
+    ${fromDate != toDate ? `${this.convertDateFormat(fromDate)} to ${this.convertDateFormat(toDate)}` : `${this.convertDateFormat(fromDate)}`}
+  </div>
+  ${group.nalBy ? `<div style="position: absolute; left: 10cm; top: 9.15cm;">- ${group.nalBy},</div>` : ''}
+  ${group.mday ? `<div style="position: absolute; left: 10cm; top: 9.15cm;">- ${group.mday},</div>` : ''}
+  ${group.mmonth ? `<div style="position: absolute; left: 10cm; top:9.15cmcm;">- ${group.mmonth}</div>` : ''}
+   <div style="position: absolute; left: 3.5cm; top: 8.4cm;">User id:${this.name}  ${this.displayTrnsmode=='CR'?"Not Paid":""}</div>
+
+            `
+  
+        // Render rows in the current page
+        page.forEach((item: any, rowIndex: number) => {
+          let rowTop = 5 + rowIndex * 0.7; // Adjust row spacing
+          const amount = item.Qty * item.Rate;
+          grandTotalAmount += amount; // Add the amount to the grand total
+          receiptContent += `
+            <div style="position: absolute; left: 0.5cm; top: ${rowTop}cm; max-width: 5.5cm; white-space: pre-wrap; word-wrap: break-word; line-height: 1.2em;">${item.Name}${item.Name2 ? `<div style="margin-top: 0.1mm;">${item.Name2}</div>` : ''}</div>
+            <div style="position: absolute; left: 6.9cm; top: ${rowTop}cm;">${this.getStarbyId(item.Star)}${item.Star2 ? `<div style="margin-top: 0.1mm;">${this.getStarbyId(item.Star2)}</div>` : ''}</div>
+            <div style="position: absolute; left: 9.2cm; top: ${rowTop}cm;">${item.Qty}</div>
+            <div style="position: absolute; left: 10.3cm; top: ${rowTop}cm;">${item.Rate}</div>
+            <div style="position: absolute; left: 11.5cm; top: ${rowTop}cm;">${amount.toFixed(2)}</div>
+          `;
+        });
+        // receiptContent += `</div>`; // Close receipt page
+        // allReceiptsContent += receiptContent;
+  
+        // Add grand total at the end of the page
+      // const grandTotalTop = 5 + page.length * 0.7 + 1; // Position it below the last row
+      receiptContent += `
+        <div style="position: absolute; left: 10.5cm; top: 8.4cm; font-weight: bold; font-size: 15pt;">
+           ${grandTotalAmount.toFixed(2)}
+        </div>
+      </div>`; // Close receipt page
+      allReceiptsContent += receiptContent;
+    });
+  });
+  
+  
+  
+    //   });
+    // });
+  
+   
+    const printContent = `
+    <html>
+      <head>
+      
+        <style>
+          body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            font-size: 10pt;
+            font-weight: bold;
+          }
+          .receipt-page {
+            position: relative;
+            width: 6in;
+            height: 4in;
+            margin: 0 auto;
+            padding: 0;
+            overflow: hidden;
+            page-break-after: auto;
+          }
+        </style>
+      </head>
+      <body>
+        ${allReceiptsContent}
+      </body>
+    </html>
+  `;
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    if (printWindow) {
+      printWindow.document.open();
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+      printWindow.close();
+      // this.resetForm()
+    }
+  }
+  }
+  
+
+
+  convertDateFormat(dateString: string): string {
+    const date = new Date(dateString); // Convert the string to a Date object
+    const day = String(date.getDate()).padStart(2, '0'); // Get the day and pad with 0
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Get the month and pad with 0
+    const year = date.getFullYear(); // Get the year
+    return `${day}-${month}-${year}`; // Format as dd-mm-yyyy
+  }
+
+
   }
 
 

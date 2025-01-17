@@ -144,4 +144,15 @@ input[type="email"]:focus {
   }
 
 
+  .blink {
+    animation: blink-animation 1s steps(5, start) infinite;
+    color: red;
+    font-weight: 800;
+  }
   
+  /* Define the blinking animation */
+  @keyframes blink-animation {
+    to {
+      visibility: hidden;
+    }
+  }

@@ -445,6 +445,7 @@ filteredData:ReportData[] = [];
       WindowPrt.print();
       WindowPrt.close();
     }
+
     }
     
 

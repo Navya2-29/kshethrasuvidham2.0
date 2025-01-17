@@ -76,12 +76,14 @@ export class FixedbottomComponent implements OnInit {
   templeLogoUrl: string = '';
   name:string | null;
   nakshatham:any[];
+  receivedBooleanValue: boolean;
   @ViewChild('phone') phoneInput!: ElementRef<HTMLInputElement>;
   @ViewChild('paymentDropdown', { static: true }) paymentDropdown!: ElementRef<HTMLSelectElement>;
   @ViewChild('address1Input', { static: true }) address1Input!: ElementRef;
   @ViewChildren('address1, address2, address3, pincode, phone, email')inputs!: QueryList<ElementRef>;
   sameDateArray:any [];
   differentDateArray:any[];
+  isLockedShow: boolean = false;
   // inputs!: QueryList<ElementRef>;
    // 2D navigation grid
    navigationGrid = [
@@ -156,8 +158,22 @@ export class FixedbottomComponent implements OnInit {
     this.subscribeToTrnsmodeChanges();
     this.printReceipt();
     // this.resetForm();
+    this.cancelPrintRecipt()
    
   }
+
+  cancelPrintRecipt(){
+    
+      this.receiptPrinrservice.booleanValue$.subscribe((value) => {
+        this.receivedBooleanValue = value;
+        if(this.receivedBooleanValue){
+          this.resetForm()
+        }
+      });
+  
+
+  }
+
 
   private getCurrentDateMMYY(): string {
     const now = new Date();
@@ -170,7 +186,9 @@ export class FixedbottomComponent implements OnInit {
     this.masterService.getLastBillNumber().subscribe({
       next: (data) => {
         console.log(data[0].billno,"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        // this.lastBillnumber = data[0].billno-1
         this.lastBillnumber = data[0].billno-1
+        this.isLockedShow = this.lastBillnumber < 0;
         this.theLastBillNo =
           this.lastBillnumber.toString() + '/' + this.currentDate;
         console.log(this.theLastBillNo,"last bilnumberrrrrrrrrrrrrrrrrrrrrr");
@@ -218,7 +236,7 @@ export class FixedbottomComponent implements OnInit {
 }
 
 printReceiptsDotmetrix(data: any) {
-  const { BillNo, Billdate, vazhipadinfo } = data;
+  const { BillNo, Billdate, vazhipadinfo ,Trnsmode} = data;
 
   this.differentDateArray = [];
   
@@ -293,21 +311,21 @@ if (this.differentDateArray.length > 0) {
       pageIndex < pages.length - 1 ? 'always' : 'avoid'
     };">
           <!-- Prathista -->
-          <div style="position: absolute; left: 2.1cm; top: 3.2cm; max-width: 8cm;  white-space: pre-wrap; word-wrap: break-word; line-height: 1em;">${prathista}</div>
+          <div style="position: absolute; left: 2.2cm; top: 3.4cm; max-width: 8cm;  white-space: pre-wrap; word-wrap: break-word; line-height: 1em;">${prathista}</div>
           <!-- Vazhipad -->
-          <div style="position: absolute; left: 2.1cm; top: 3.8cm; max-width: 5cm; white-space: pre-wrap;">${vazhipad}</div>
+          <div style="position: absolute; left: 2.1cm; top: 3.9cm; max-width: 5cm; white-space: pre-wrap;">${vazhipad}</div>
           <!-- From Date -->
-          <div style="position: absolute; left: 10.5cm; top: 3.2cm;">${Billdate}</div>
+          <div style="position: absolute; left: 10.5cm; top: 3.4cm;">${Billdate}</div>
           <!-- Total Quantity -->
-          <div style="position: absolute; left: 10.5cm; top: 3.8cm;"> ${BillNo}</div>
+          <div style="position: absolute; left: 10.5cm; top: 3.9cm;"> ${BillNo}</div>
            <!-- Vazhipad Date -->
-         <div style="position: absolute; left: 5cm; top: 8.8cm;">
+         <div style="position: absolute; left: 5cm; top: 9.15cm;">
   ${fromDate != toDate ? `${this.convertDateFormat(fromDate)} to ${this.convertDateFormat(toDate)}` : `${this.convertDateFormat(fromDate)}`}
 </div>
-${group.nalBy ? `<div style="position: absolute; left: 10cm; top: 8.8cm;">- ${group.nalBy},</div>` : ''}
-${group.mday ? `<div style="position: absolute; left: 10cm; top: 8.8cm;">- ${group.mday},</div>` : ''}
-${group.mmonth ? `<div style="position: absolute; left: 10cm; top: 8.8cm;">- ${group.mmonth}</div>` : ''}
-
+${group.nalBy ? `<div style="position: absolute; left: 10cm; top: 9.15cm;">- ${group.nalBy},</div>` : ''}
+${group.mday ? `<div style="position: absolute; left: 10cm; top: 9.15cm;">- ${group.mday},</div>` : ''}
+${group.mmonth ? `<div style="position: absolute; left: 10cm; top:9.15cmcm;">- ${group.mmonth}</div>` : ''}
+ <div style="position: absolute; left: 3.5cm; top: 8.4cm;">User id:${this.name}  ${Trnsmode=='CR'?"Not Paid":""}</div>
           `
 
       // Render rows in the current page
@@ -329,7 +347,7 @@ ${group.mmonth ? `<div style="position: absolute; left: 10cm; top: 8.8cm;">- ${g
       // Add grand total at the end of the page
     // const grandTotalTop = 5 + page.length * 0.7 + 1; // Position it below the last row
     receiptContent += `
-      <div style="position: absolute; left: 10.5cm; top: 8cm; font-weight: bold; font-size: 15pt;">
+      <div style="position: absolute; left: 10.5cm; top: 8.4cm; font-weight: bold; font-size: 15pt;">
          ${grandTotalAmount.toFixed(2)}
       </div>
     </div>`; // Close receipt page
@@ -383,6 +401,7 @@ ${group.mmonth ? `<div style="position: absolute; left: 10cm; top: 8.8cm;">- ${g
   }
 }
 }
+
 private printReceipts(data: any) {
   const {
     BillNo,

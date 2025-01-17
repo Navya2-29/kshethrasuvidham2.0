@@ -75,9 +75,9 @@
                   </select>  </p>
                   </ng-container>
                   <ng-template #viewStar><p>{{
-                    getNakshthram(row.Star)
+                    getStarbyId(row.Star)
                   }}</p><p *ngIf="row.Star2 && row.Star2 !='0'">{{
-                    getNakshthram(row.Star2)
+                    getStarbyId(row.Star2)
                   }}</p></ng-template>
                 </td>
               </ng-container>
@@ -152,7 +152,7 @@
 
 <mat-dialog-actions class="menuend">
   <button mat-button [mat-dialog-close]="true" class="close">Close</button>
-  <button
+  <!-- <button
   mat-button
   class="proceed"
   [disabled]="TrnStatus == 'C'"
@@ -162,7 +162,7 @@
 </button>
 <button (click)="openWhatsAppWeb()"  mat-button
 class="proceed"
-[disabled]="TrnStatus == 'C'">Open WhatsApp Web</button>
+[disabled]="TrnStatus == 'C'">Open WhatsApp Web</button> -->
 
   <button
     mat-button

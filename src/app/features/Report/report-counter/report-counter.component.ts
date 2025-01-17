@@ -28,6 +28,8 @@ import { ReportDailyStmt } from '../../../models/dailytrasaction.model';
   styleUrl: './report-counter.component.css'
 })
 export class ReportCounterComponent {
+
+  
   displayedColumns: string[] = [
     'BillNo',
     'BillDate',

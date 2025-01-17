@@ -983,6 +983,16 @@ console.log(this.selectedVazhipadItem)
       ...data,
       vazhipadinfo: combinedVazhipadinfo,
     };
+
+    // const updatedData = {
+    //   ...data,
+    //   vazhipadinfo: data.vazhipadinfo.map((item:any) => ({
+    //     ...item,
+    //     TotalAmt: this.t, // Calculate the new TotalAmt
+    //   })),
+    // };
+
+    console.log(updatedData,"checking all data add total amount")
     const formattedData = this.formatDateFields(updatedData);
     console.log(formattedData, 'Bill Data aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
     if (formattedData.Trnsmode !== 'CS') {
@@ -1030,7 +1040,17 @@ console.log(this.selectedVazhipadItem)
 
   // api call send billinf data to db
   sendBillingDataApiCall(formattedData: any) {
-    console.log(formattedData, 'sendBillingDataApiCall at last');
+
+    const updatedData = {
+      ...formattedData,
+      vazhipadinfo: formattedData.vazhipadinfo.map((item:any) => ({
+        ...item,
+        TotalAmt: this.totalAmount.toString(), // Calculate TotalAmt dynamically
+      })),
+    };
+
+
+    console.log(updatedData, 'sendBillingDataApiCall at last callllllllllllllllllllllllll');
 
     this.masterservice.getLastBillNumber().subscribe((data) => {
       console.log(data, 'ffrfrere');
@@ -1044,8 +1064,8 @@ console.log(this.selectedVazhipadItem)
           '/' +
           this.billNumberFormatDate;
         console.log(this.generatedCurrentBillnumber);
-        formattedData.BillNo = this.generatedCurrentBillnumber;
-        console.log(formattedData, 'after add bill number');
+        updatedData.BillNo = this.generatedCurrentBillnumber;
+        console.log(updatedData, 'after add bill number');
 
         const payLoad = {
           Type: 'BookingBillLock',
@@ -1054,16 +1074,16 @@ console.log(this.selectedVazhipadItem)
         console.log(payLoad);
         this.masterservice.getMaster(payLoad).subscribe((data) => {
           console.log(data, 'locked billapi reposnse');
-          this.onSubmitBookingDetailsApiCall(formattedData);
+          this.onSubmitBookingDetailsApiCall(updatedData);
         });
        
       } else {
-        this.retryFetchBillNumber(formattedData);
+        this.retryFetchBillNumber(updatedData);
       }
     });
   }
 
-  retryFetchBillNumber(formattedData: any, retryCount = 0) {
+  retryFetchBillNumber(updatedData: any, retryCount = 0) {
     if (retryCount >= 3) {
       this.notification.error(
         'Unable to fetch a unique bill number. Please contact support.'
@@ -1072,7 +1092,7 @@ console.log(this.selectedVazhipadItem)
     }
 
     setTimeout(() => {
-      this.sendBillingDataApiCall(formattedData);
+      this.sendBillingDataApiCall(updatedData);
     }, 2000); // Retry after 2 seconds
   }
 
@@ -1092,6 +1112,7 @@ console.log(this.selectedVazhipadItem)
           if(!this.cancelFlag){
           this.receiptPrintService.setReceiptData(formattedData); 
           }
+          this.receiptPrintService.setBooleanValue(true);
           this.notification.success(res.RespMsg);
           this.resetForm();
           // this.masterservice.getLastBillNumber().subscribe({
@@ -1375,14 +1396,6 @@ console.log(this.selectedVazhipadItem)
        navigateToNext(event: Event, rowIndex: number, nextField: string): void {
         const keyboardEvent = event as KeyboardEvent;
         console.log(keyboardEvent.key,"keyyyy");
-
-
-
-
-
-
-
-        
         // Get the current time
         const currentTime = new Date().getTime();
         

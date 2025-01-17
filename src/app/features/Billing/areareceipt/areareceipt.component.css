@@ -448,13 +448,14 @@ color: #dc3545; /* Ensure it stays red */
 
 input:focus {
   background-color: yellow;
+  
   outline: none; /* Optional: Removes the default focus outline */
 }
 input.sps:focus {
   background-color: yellow; /* Yellow background on focus */
   outline: none; /* Remove the default focus outline */
 }input.custom:focus {
-  background-color: yellow; /* Yellow background on focus */
+  background-color: yellow;/* Yellow background on focus */
   outline: none; /* Remove the default focus outline */
 }
 .highlighted {
