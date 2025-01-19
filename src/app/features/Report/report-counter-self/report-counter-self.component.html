@@ -101,9 +101,9 @@
       <!-- <tr> -->
         <!-- <td colspan="7" style="font-weight: bold; background-color: #f2f2f2;"> -->
           <!-- Display the human-readable transaction type -->
-        <!-- TRANSACTION  :   {{ getTransactionType(group.key) }} <!-- Dynamic transaction type -->
+        <!-- TRANSACTION  :   {{ getTransactionType(group.key) }}  Dynamic transaction type -->
         <!-- </td> -->
-      <!-- </tr> --> -->
+      <!-- </tr> -->
 
       <!-- Table header for each group -->
       <!-- <tr>
@@ -157,10 +157,10 @@
     </thead>
     <tbody>
       <tr *ngFor="let item of mode.value">
-        <td>{{ item.Vazhipad }}</td>
+        <td>{{ item.vazhipad }}</td>
         <td>{{ item.Qty }}</td>
         <td style="text-align: right;">{{ item.Rate | number: '1.2-2' }}</td>
-        <td style="text-align: right;">{{ item.Qty * item.Rate | number: '1.2-2' }}</td>
+        <td style="text-align: right;">{{ item.Amount | number: '1.2-2' }}</td>
       </tr>
       <tr *ngIf="mode.value.length > 0">
         <td colspan="3" style="text-align: right;">Grand Total</td>

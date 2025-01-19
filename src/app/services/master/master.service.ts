@@ -904,6 +904,11 @@ updateNadavaravuBillNumber(currentbillnumber: any): Observable<any[]> {
 
   }
 
+  getVazhipadWiseReport(payLoad:any){
+    return this.http.post<any>(Constant.BASE_URL+Constant.METHODS.VAZHIPADWISEREPRT,payLoad)
+  
+  }
+
   // error handling
   private errorHandler(error: HttpErrorResponse) {
     //

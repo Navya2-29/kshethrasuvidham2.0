@@ -471,7 +471,11 @@ this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address
 
 //   }
   
-  
+
+
+getTotalAmount(): number {
+  return this.data.reduce((sum, item) => sum + item.Receipt_Amt, 0);
+}
   
   // Helper function to wrap text for a given column width
   wrapText(doc: jsPDF, text: string, maxWidth: number): string {
@@ -525,5 +529,24 @@ this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address
         return 'OTHERS';
     }
   }
+
+
+  
+ // Calculate the grand total for each transaction mode
+ getGrandTotalForTrnsMode(item: string): any {
+  const items = this.groupedData[item]; // Get items for the transaction mode
+  if (!items || items.length === 0) {
+    return 0; // No items found, return 0
+  }
+// Calculate the total
+const total = items.reduce((sum, item) => {
+ // Default to 0 if Rate is missing
+  return sum +item. Receipt_Amt;
+}, 0);
+
+return total;
+
+
+}
   
 }

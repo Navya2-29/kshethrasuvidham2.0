@@ -6,7 +6,8 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MasterService } from '../../../services/master/master.service';
-
+import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 interface Transaction {
   Vazhipad: string;
   Qty: string;
@@ -32,6 +33,7 @@ interface DataItem {
     CommonModule,
     SpinnerComponent,
     ReactiveFormsModule,
+    TranslateModule
   ],
   templateUrl: './report-dashboard.component.html',
   styleUrl: './report-dashboard.component.css',
@@ -46,11 +48,13 @@ export class ReportDashboardComponent {
   isChecked:boolean;
   pmaster:any[]=[];
   Vmaster:any[]=[];
+  lang: string | null;
   constructor(
     private fb: FormBuilder,
     private service: ReportService,
     private router: Router,
-    private masterService:MasterService
+    private masterService:MasterService,
+    private ts: TranslateService
   ) {
     console.log(this.today)
     this.searchForm = this.fb.group({
@@ -61,7 +65,13 @@ export class ReportDashboardComponent {
       prathista:[''],
       vazhipad:['']
     });
-    console.log( this.searchForm.value.countercheckbox," ")
+    console.log( this.searchForm.value.countercheckbox," ");
+    this.lang = localStorage.getItem('Language');
+    const userLang = navigator.language || 'en';
+    const languageCode = userLang.split('-')[0];
+    this.ts.setDefaultLang(languageCode);
+    this.ts.use(this.lang || 'en');
+
   }
 
   // searchcall

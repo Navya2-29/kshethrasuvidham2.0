@@ -18,7 +18,7 @@
   <h4 style="align-items: center;text-align:center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;" >{{templeAddress}}</h4>
 
   <h5 style="align-items: center;text-align:center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;" >NADAVARAVU BOOKING REPORT</h5>
-  <p style="align-items: center;text-align: center;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;">{{formatDateToDDMMYYYY(fromDate)}} -{{formatDateToDDMMYYYY(toDate)}}</p>
+  <p style="align-items: center;text-align: center;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;">{{formatDateToDDMMYYYY(fromDate)}}  to {{formatDateToDDMMYYYY(toDate)}}</p>
 
 </div>
 
@@ -134,10 +134,17 @@
       </tbody>
       <tfoot>
         <tr>
-          <!-- <td colspan="4"> {{getTotalAmount }} </td> -->
+          <td colspan="6"> Total </td>
+          <td style="text-align: right;">
+            {{getGrandTotalForTrnsMode(category.key) | number: '1.2-2' }}
+          </td>
         </tr>
       </tfoot>
     </table>
     <br/>
+  </div>
+
+  <div style="margin-left: 100px;margin-right: 100px;text-align: right; font-weight: bold;">
+    Grand Total : {{getTotalAmount()  | number: '1.2-2'}}
   </div>
 </div>

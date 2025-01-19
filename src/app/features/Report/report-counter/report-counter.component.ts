@@ -82,7 +82,9 @@ this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address
       this.fetchReportData(type, this.fromDate, this.toDate);
     });
   }
-
+  getTotalAmount(): number {
+    return this.data.reduce((sum, item) => sum + item.Amount, 0);
+  }
   // Call your API service to get the report data
   fetchReportData(type: string, fromDate: string, toDate: string): void {
     const payLoad = {
@@ -364,9 +366,8 @@ this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address
 
   // Calculate the total
   const total = items.reduce((sum, item) => {
-    const qty = item.Qty || 0; // Default to 0 if Qty is missing
-    const rate = item.Rate || 0; // Default to 0 if Rate is missing
-    return sum + qty * rate;
+    
+    return sum + item.Amount
   }, 0);
 
   return total;

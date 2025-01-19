@@ -144,7 +144,7 @@ templeAddress:string|null;
   const total = items.reduce((sum, item) => {
     const qty = item.Qty || 0; // Default to 0 if Qty is missing
     const rate = item.Rate || 0; // Default to 0 if Rate is missing
-    return sum + qty * rate;
+    return sum +item. Amount;
   }, 0);
 
   return total;
@@ -477,6 +477,8 @@ generatePDF(){
 
 
 
-
+  getTotalAmount(): number {
+    return this.data.reduce((sum, item) => sum + item.Amount, 0);
+  }
 
 }

@@ -660,11 +660,13 @@ console.log(this.duplicatebilldata,"dupicate bill data first");
            <div style="position: absolute; left: 5cm; top: 9.15cm;">
     ${fromDate != toDate ? `${this.convertDateFormat(fromDate)} to ${this.convertDateFormat(toDate)}` : `${this.convertDateFormat(fromDate)}`}
   </div>
-  ${group.nalBy ? `<div style="position: absolute; left: 10cm; top: 9.15cm;">- ${group.nalBy},</div>` : ''}
+  ${group.nalBy ? `<div style="position: absolute; left: 10cm; top: 9cm;">- ${group.nalBy},</div>` : ''}
   ${group.mday ? `<div style="position: absolute; left: 10cm; top: 9.15cm;">- ${group.mday},</div>` : ''}
-  ${group.mmonth ? `<div style="position: absolute; left: 10cm; top:9.15cmcm;">- ${group.mmonth}</div>` : ''}
+  ${group.mmonth ? `<div style="position: absolute; left: 10cm; top:9.3cm;">- ${group.mmonth}</div>` : ''}
    <div style="position: absolute; left: 3.5cm; top: 8.4cm;">User id:${this.name}  ${this.displayTrnsmode=='CR'?"Not Paid":""}</div>
-
+<div style="position: absolute; left: 10.5cm; top: 9cm; ; font-size: 10pt;">
+          Duplicate Bill
+        </div>
             `
   
         // Render rows in the current page
@@ -689,6 +691,7 @@ console.log(this.duplicatebilldata,"dupicate bill data first");
         <div style="position: absolute; left: 10.5cm; top: 8.4cm; font-weight: bold; font-size: 15pt;">
            ${grandTotalAmount.toFixed(2)}
         </div>
+         
       </div>`; // Close receipt page
       allReceiptsContent += receiptContent;
     });

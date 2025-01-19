@@ -53,6 +53,7 @@ import { NgxPrintModule } from 'ngx-print';
 import { ConfirmationDialogComponent } from '../../../shared/component/confirmation-dialog/confirmation-dialog.component';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { BillingViaMobilenumberComponent } from '../billing-via-mobilenumber/billing-via-mobilenumber.component';
 
 @Component({
   selector: 'app-areareceipt',
@@ -107,7 +108,8 @@ export class AreareceiptComponent implements OnInit {
   generatedCurrentBillnumber: string;
   selectedVazhipadItem:any;
   CounterId: string | null;
-  cancelFlag:boolean=false
+  cancelFlag:boolean=false;
+  nameStarArray:any[];
   input1 = '';
   input2 = '';
   input3 = '';
@@ -1633,6 +1635,89 @@ if (currentElement instanceof HTMLInputElement || currentElement instanceof HTML
   },
 });
 }
+
+
+
+
+openBillingDialog() {
+  const dialogRef = this.dialog.open(BillingViaMobilenumberComponent , {
+    width: '600px',
+    data: {} // Pass any data to the dialog if needed
+  });
+
+  // Handle dialog result
+  dialogRef.afterClosed().subscribe(result => {
+    console.log('Selected Rows:', result);
+    this.nameStarArray=result
+    if (result) {
+       let index=this.vazhipadinfo.length-1;
+
+      // Add multiple rows based on the array of Name and Star pairs
+      result.forEach((item: { name: string, star: string }) => {
+        this.addRowsFromNameStarArray(item.name, item.star,index);
+        index++
+      });
+    }
+  });
+}
+
+ 
+ // Method to dynamically add a row to the form
+ addRowsFromNameStarArray(name: string, star: string,index:number): void {
+  // const index=this.vazhipadinfo.length-1;
+//   if(index==0){
+//   const row = this.vazhipadinfo.at(index) as FormGroup;
+//   row.patchValue({
+//    Name:name,
+//     starName:star,
+//     Star:"1"
+//   })
+//  }
+
+ 
+
+ this.addRowForNameAndStar(index ,name,star)
+
+}
+  
+addRowForNameAndStar(index: number,name:string,star:string): void {
+  if (index === -1 && this.vazhipadinfo.length === 0) {
+    this.vazhipadinfo.push(this.createRow());
+    this.setupAutocomplete(0);
+    this.setupStarAutocomplete(0);
+    this.updateTotalAmount();
+    return;
+  }
+  this.indexForAutoComplete = index;
+  // if (
+  //   this.vazhipadinfo.length > 0 &&
+  //   !this.vazhipadinfo.at(this.vazhipadinfo.length - 1).valid
+  // ) {
+  //   const row = this.vazhipadinfo.at(index) as FormGroup;
+
+   
+  // }
+
+  // const currentRow = this.vazhipadinfo.at(index) as FormGroup;
+  // const currentName = currentRow.get('Name')?.value;
+  // const currentStar = currentRow.get('Star')?.value;
+  const newRow = this.createRow();
+  newRow.patchValue({
+    Name: name,
+    Star: "1",
+    starName:star
+  });
+
+  this.vazhipadinfo.insert(index, newRow);
+  this.setupAutocomplete(index);
+  this.setupStarAutocomplete(index);
+  this.updateTotalAmount();
+  setTimeout(() => {
+    this.focusOnNewRow(); // Focus on the newly created row's text box
+  }, 0);
+}
+
+
 
 
 

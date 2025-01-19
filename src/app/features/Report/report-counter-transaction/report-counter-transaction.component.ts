@@ -282,5 +282,10 @@ export class ReportCounterTransactionComponent {
     return rows;
   }
 
+
+  
+  getTotalAmount(): number {
+    return this.data.reduce((sum, item) => sum + item.Amount, 0);
+  }
 }
 

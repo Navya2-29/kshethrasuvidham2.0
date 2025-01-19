@@ -82,7 +82,7 @@ filteredData:ReportData[] = [];
   // Call your API service to get the report data
   fetchReportData(type: string, fromDate: string, toDate: string): void {
     const payLoad = {
-      Type: "Counter",
+      Type: "DailyStmt",
       FromDate: fromDate,
       ToDate: toDate,
     };
@@ -124,9 +124,11 @@ filteredData:ReportData[] = [];
     this.pageSize = event.pageSize;
   }
 
+
   goBack(): void {
     console.log('Going back...'); // Log to verify method execution
     this.router.navigate(['/getReport']);
+    window.close();
   }
 
 
@@ -461,7 +463,7 @@ filteredData:ReportData[] = [];
   const total = items.reduce((sum, item) => {
     const qty = item.Qty || 0; // Default to 0 if Qty is missing
     const rate = item.Rate || 0; // Default to 0 if Rate is missing
-    return sum + qty * rate;
+    return sum + item.Amount;
   }, 0);
 
   return total;

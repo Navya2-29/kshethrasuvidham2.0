@@ -1,0 +1,37 @@
+table {
+    width: 100%;
+  }
+  
+  th.mat-header-cell {
+    text-align: left;
+  }
+  
+  td.mat-cell {
+    text-align: left;
+  }
+
+  .dialog-header {
+    background-color: navy;
+    color: white;
+    padding: 10px;
+    font-size: 16px;
+  }
+  
+  .dialog-footer {
+    background-color: navy;
+    color: white;
+    padding: 10px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  
+  .dialog-body {
+    padding: 20px;
+  }
+  
+  button {
+    color: white;
+  }
+  
+  

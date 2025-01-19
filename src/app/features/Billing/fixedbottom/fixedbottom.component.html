@@ -162,10 +162,9 @@
                 customerdetailsForBillingForm.get('Trnsmode')?.value != 'CS'
               "
               formControlName="Instno"
-              placeholder="Enter Inst No"
+              [placeholder]=" 'PLACEHOLDER.CHEQUENO' | translate"
               class="form-control phone"
               [class.is-invalid]="customerdetailsForBillingForm.get('Instno')?.invalid && customerdetailsForBillingForm.get('Instno')?.touched"
-
             />
             <input
               type="date"
@@ -186,10 +185,9 @@
                 'CH'
               "
               formControlName="InstBank"
-              placeholder="Enter Bank Name"
+              [placeholder]=" 'PLACEHOLDER.BANKNAME' | translate "
               class="form-control phone"
               [class.is-invalid]="customerdetailsForBillingForm.get('InstBank')?.invalid && customerdetailsForBillingForm.get('InstBank')?.touched"
-
             />
           </div>
           <div style="display: flex; flex-direction: column; gap: 0px">

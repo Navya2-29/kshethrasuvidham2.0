@@ -322,9 +322,9 @@ if (this.differentDateArray.length > 0) {
          <div style="position: absolute; left: 5cm; top: 9.15cm;">
   ${fromDate != toDate ? `${this.convertDateFormat(fromDate)} to ${this.convertDateFormat(toDate)}` : `${this.convertDateFormat(fromDate)}`}
 </div>
-${group.nalBy ? `<div style="position: absolute; left: 10cm; top: 9.15cm;">- ${group.nalBy},</div>` : ''}
+${group.nalBy ? `<div style="position: absolute; left: 10cm; top: 9cm;">- ${group.nalBy},</div>` : ''}
 ${group.mday ? `<div style="position: absolute; left: 10cm; top: 9.15cm;">- ${group.mday},</div>` : ''}
-${group.mmonth ? `<div style="position: absolute; left: 10cm; top:9.15cmcm;">- ${group.mmonth}</div>` : ''}
+${group.mmonth ? `<div style="position: absolute; left: 10cm; top:9.3cm;">- ${group.mmonth}</div>` : ''}
  <div style="position: absolute; left: 3.5cm; top: 8.4cm;">User id:${this.name}  ${Trnsmode=='CR'?"Not Paid":""}</div>
           `
 
@@ -830,11 +830,30 @@ getTransactionType(transmode: string): string {
     });
   }
 
+
+  formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+
+
   getTodayCollection() {
-    this.masterService.getTodaycollection().subscribe({
+    const fromDate = this.formatDate(new Date());
+    const payLoad={
+      "Type":"TodayCollection",
+      "FromDate":fromDate,
+      "ToDate":fromDate,
+      "PMId":this.loginId,
+      "VazhId":this.counterId
+    }
+    console.log(payLoad,"Payload");
+    this.masterService.getVazhipadWiseReport(payLoad).subscribe({
       next: (todaycollection) => {
         console.log(todaycollection);
-        this.todayCollection = todaycollection[0].Total;
+        this.todayCollection = todaycollection[0].Amount;
       },
     });
   }

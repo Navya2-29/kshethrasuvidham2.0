@@ -21,4 +21,5 @@ export interface ReportData {
     NM_RName?:string;
     Receipt_Amt?:string;
     Reason?:string;
+    vazhipad?:string;
   }

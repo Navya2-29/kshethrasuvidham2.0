@@ -7,6 +7,7 @@
   "RATE": "നിരക്ക്",
   "DATE": "തീയതി",
   "TIME": "സമയം",
+  "Select":"സെലക്ട്",
   "TODAYCOLLECTION": "ആകെ വരവ്",
   "LastBillNo": "അവസാന ബിൽ നമ്പർ",
   "Cash": "ക്യാഷ്",
@@ -20,6 +21,8 @@
   "END DATE":"അവസാന തീയതി ",
   "Nadavaravu":"നടവരവ് ",
   "Credit Collection":"ക്രെഡിറ്റ് ശേഖരണം ",
+  "Search":"സെർച്ച്",
+  "Back":"പുറകിലേക്ക്",
 "START DATE":"ആരംഭിക്കുന്ന തീയതി ",
 "ADD DEVOTEE":"ഭക്തനെ ചേർക്കുക",
 "starwise":"നക്ഷത്രമായി",
@@ -29,9 +32,9 @@
 "English Datewise":"ഇംഗ്ലീഷ് തീയതി തിരിച്ച്",
 "Thithi":"തിഥി",
 "Filter Options":"ഫിൽട്ടർ ഓപ്ഷനുകൾ",
-"Day List":"ദിവസ പട്ടിക",
+"Day List":"ബുക്കിംഗ് തീയ്യതികൾ",
 "Select Item":"സെലക്ട് ഐറ്റം",
-
+"Multi day Booking":"വഴിപാട് ബുക്കിംഗ്",
   "PLACEHOLDER": {
     "VAZHIPAD": "വഴിപാട് ",
     "NAME": "പേര് ",
@@ -50,8 +53,8 @@
     "PINCODE": "പിൻ കോഡ് ",
     "PHONE": "മൊബൈൽ നമ്പർ",
     "EMAIL": "ഇമെയിൽ ",
-    "CHEQUENO": "",
-    "BANKNAME": "BANKNAME",
+    "CHEQUENO": "ഐഡി/നമ്പർ",
+    "BANKNAME": "ബാങ്കിന്റെ പേര്",
     "Remark":"റിമാർക്",
     "Description":"വിവരണം"
   },
@@ -60,6 +63,27 @@
     "TIME2": "രാവിലെ",
     "TIME3": "വൈകുന്നേരം",
     "TIME4": "രാത്രി"
-  }
+  },
+  "Report":{
+    
+"All Vazhipad List":"പൂർണം",
+"Daily Statement(Transaction)":"ഡെയിലി സ്റ്റേറ്റ്മെന്റ്(ട്രാൻസാക്ഷൻ)",
+"Daily Statement (Detailed)":"ഡെയിലി സ്റ്റേറ്റ്മെന്റ്(ഡീറ്റൈൽഡ്)",
+"Advance Booking":"ഡെയിലി  സ്റ്റേറ്റ്മെന്റ് മുൻകൂർ ബുക്കുചെയ്യുന്നവ ",
+"Daily Statement (Counter)":"ഡെയിലി സ്റ്റേറ്റ്മെന്റ്(കൗണ്ടർ)",
+"All Counter":"എല്ലാ കൗണ്ടർ",
+"Online Report":"ഓൺലൈൻ റിപ്പോർട്ട് ",
+"Cancel Report":"ക്യാൻസൽ റിപ്പോർട്ട് ",
+"Nadavaravu Cancel":"നടവരവ് ക്യാൻസൽ ",
+"Debit/Credit Card":"ഡെബിറ്റ്/ക്രെഡിറ്റ്  കാർഡ് ",
+"Money Order":"മണി ഓർഡർ",
+"Cheque Statement":"ചെക്ക്  സ്റ്റേറ്റ്മെന്റ് ",
+"Due/Credit":"ഡ്യൂ /ക്രെഡിറ്റ്",
+"UPI":"യുപിഐ സ്റ്റേറ്റ്മെന്റ്",
+"Offering Only":"വഴിപാട് മാത്രം",
+"Nadavaravu Booking":"നടവരവ് ബുക്കിംഗ്",
+"Vazhipad Cancel" :"വഴിപാട് ക്യാൻസൽ"
+}
+
 }
  

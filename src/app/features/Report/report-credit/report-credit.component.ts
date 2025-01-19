@@ -374,7 +374,7 @@ generatePDF(){
 }
 
 getTotalAmount(): number {
-  return this.filteredData.reduce((sum, item) => sum + item.Amount, 0);
+  return this.data.reduce((sum, item) => sum + item.Amount, 0);
 }
 
   getTransactionType(transmode: string): string {

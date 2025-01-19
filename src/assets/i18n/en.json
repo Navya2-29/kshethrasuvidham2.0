@@ -10,6 +10,7 @@
   "TODAYCOLLECTION": "Today Collection",
   "LastBillNo": "Last Bill No.",
   "Cash": "Cash",
+  "Select":"Select",
   "Credit": "Credit",
   "UPI": "Upi",
   "Debit": "Debit",
@@ -18,10 +19,12 @@
   "Money order": "Money Order",
   "Nadavaravu":"Nadavaravu",
   "Credit Collection":"Credit Collection",
+  "Multi day Booking":"Multi day Booking",
 "START DATE":"Starting date",
 "NUMBER OF DAYS":"No. Of days ",
 "END DATE":"End date ",
-
+"Search":"Search",
+"Back":"Back",
 "ADD DEVOTEE":"Add devotee",
 "starwise":"Starwise",
 "Malayalam Monthwise":"Malayalam Monthwise",
@@ -59,5 +62,27 @@
     "TIME2": "Morning",
     "TIME3": "Evening",
     "TIME4": "Night"
-  }
+  },
+  "Report":{
+    
+    "All Vazhipad List":"All Vazhipad List",
+    "Daily Statement(Transaction)":"Daily Statement(Transaction)",
+    "Daily Statement (Detailed)":"Daily Statement (Detailed)",
+    "Advance Booking":"Advance Booking",
+    "Daily Statement (Counter)":"Daily Statement (Counter)",
+    "All Counter":"All Counter",
+    "Online Report":"Online Report",
+    "Cancel Report":"Cancel Report",
+    "Nadavaravu Cancel":"Nadavaravu Cancel",
+    "Debit/Credit Card":"Debit/Credit Card",
+    "Money Order":"Money Order",
+    "Cheque Statement":"Cheque Statement ",
+"Due/Credit":"Due/Credit",
+"UPI":"UPI",
+"Offering Only":"Offering Only",
+"Nadavaravu Booking":"Nadavaravu Booking",
+"Vazhipad Cancel" :"Vazhipad Cancel"
+
+      }
+      
 }
