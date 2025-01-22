@@ -72,7 +72,34 @@ export class ReportDashboardComponent {
     this.ts.setDefaultLang(languageCode);
     this.ts.use(this.lang || 'en');
 
+
+    if ( this.lang === 'ml') {
+      document.body.classList.add('lang-ml');
+    } else {
+      document.body.classList.remove('lang-ml');
+    }
+
   }
+
+
+  radioOptions = [
+    { value: 'Poornam', label: 'Report.All Vazhipad List' },
+    { value: 'debit', label: 'Report.Debit/Credit Card' },
+    { value: 'DailyStmt', label: 'Report.Daily Statement(Transaction)' },
+    { value: 'moneyorder', label: 'Report.Money Order' },
+    { value: 'DailyStmtDetaild', label: 'Report.Daily Statement (Detailed)' },
+    { value: 'cheque', label: 'Report.Cheque Statement' },
+    { value: 'AdvanceBook', label: 'Report.Advance Booking' },
+    { value: 'credit', label: 'Report.Due/Credit' },
+    { value: 'upi', label: 'Report.UPI' },
+    { value: 'online', label: 'Report.Online Report' },
+    { value: 'offering', label: 'Report.Offering Only' },
+    { value: 'cancel', label: 'Report.Vazhipad Cancel' },
+    { value: 'nadavaravu', label: 'Report.Nadavaravu Booking' },
+    { value: 'nadavaravu-cancel', label: 'Report.Nadavaravu Cancel' },
+  ];
+  
+
 
   // searchcall
   onSearch() {

@@ -11,12 +11,13 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { HttpClient } from '@angular/common/http';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 
 @Component({
   selector: 'app-report-upi',
   standalone: true,
-  imports: [CommonModule,MatTableModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
+  imports: [CommonModule,MatTableModule,TranslateModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
   templateUrl: './report-upi.component.html',
   styleUrl: './report-upi.component.css'
 })
@@ -36,7 +37,7 @@ export class ReportUpiComponent {
   lang:string|null;
   templeName:string|null;
   templeAddress:string|null;
-  constructor(private route: ActivatedRoute, private service: ReportService,private router: Router, private http:HttpClient) {
+  constructor(private route: ActivatedRoute,private ts: TranslateService, private service: ReportService,private router: Router, private http:HttpClient) {
     this.lang=localStorage.getItem('Language');
     this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
     this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
@@ -94,6 +95,14 @@ export class ReportUpiComponent {
   goBack(): void {
     console.log('Going back...'); // Log to verify method execution
     this.router.navigate(['/getReport']);
+
+    if (window.history.length > 1) {
+      window.history.back(); // Goes back to the previous page in history
+    } else {
+      window.close(); // Closes the tab if it's the only page open
+    }
+
+
   }
   
   applyFilter(event: Event) {

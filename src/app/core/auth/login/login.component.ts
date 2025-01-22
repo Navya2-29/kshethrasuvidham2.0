@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, HostListener, OnInit, inject } from '@angular/core';
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -137,16 +137,16 @@ getTempleData(){
     localStorage.setItem('Printer',data[0].Printer);
   })
 
-
-
-  
 }
-
+// 
 
 
 getLogoUrl(): string {
   return `assets/images/${this.logo}`;  // Assuming logo images are stored in the 'assets/images' folder
 }
+
+
+
 
 
 

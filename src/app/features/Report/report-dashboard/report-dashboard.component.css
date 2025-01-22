@@ -23,6 +23,7 @@
   font-weight: bold;
   cursor: pointer;
   gap: 8px; /* Space between radio button and label text */
+  font-size: 12px;
 }
 
 /* Styling for the date section */

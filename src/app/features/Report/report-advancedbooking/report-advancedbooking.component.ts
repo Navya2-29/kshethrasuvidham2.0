@@ -11,12 +11,14 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { HttpClient } from '@angular/common/http';
+import { TranslateService } from '@ngx-translate/core';
 
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-report-advancedbooking',
   standalone: true,
-  imports: [CommonModule,MatTableModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
+  imports: [CommonModule,MatTableModule,MatPaginatorModule,TranslateModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
   templateUrl: './report-advancedbooking.component.html',
   styleUrl: './report-advancedbooking.component.css'
 })
@@ -35,10 +37,17 @@ export class ReportAdvancedbookingComponent {
   templeAddress:string|null;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   groupedData: { [key: string]: ReportData[] } = {};
-  constructor(private route: ActivatedRoute, private service: ReportService,private router: Router, private http:HttpClient) {
+  constructor(private route: ActivatedRoute, private ts: TranslateService, private service: ReportService,private router: Router, private http:HttpClient) {
     this.lang=localStorage.getItem('Language');
     this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
     this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
+    this.lang = localStorage.getItem('Language');
+    const userLang = navigator.language || 'en';
+    const languageCode = userLang.split('-')[0];
+    this.ts.setDefaultLang(languageCode);
+    this.ts.use(this.lang || 'en');
+
+
   }
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
@@ -89,6 +98,16 @@ export class ReportAdvancedbookingComponent {
   goBack(): void {
     console.log('Going back...'); // Log to verify method execution
     this.router.navigate(['/getReport']);
+
+
+    if (window.history.length > 1) {
+      window.history.back(); // Goes back to the previous page in history
+    } else {
+      window.close(); // Closes the tab if it's the only page open
+    }
+
+
+
   }
 
   applyFilter(event: Event) {

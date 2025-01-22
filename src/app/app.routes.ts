@@ -46,6 +46,7 @@ import { ReportCreditCollectionComponent } from './features/Report/report-credit
 import { SettingsComponent } from './core/settings/settings.component';
 import { ReportCounterSelfComponent } from './features/Report/report-counter-self/report-counter-self.component';
 import { ReportVazhipadwiseComponent } from './features/Report/report-vazhipadwise/report-vazhipadwise.component';
+import { AllvazhipadlistComponent } from './features/Report/vazhipad-list/allvazhipadlist/allvazhipadlist.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -160,6 +161,7 @@ export const routes: Routes = [
   { path: 'report-counter-self', component: ReportCounterSelfComponent },
   { path: 'settings', component: SettingsComponent },
   {path:"vazhipadwise",component: ReportVazhipadwiseComponent },
+  {path:"vazhipadlistwithprathista",component: AllvazhipadlistComponent },
   {
     path: '**',
     pathMatch: 'full',

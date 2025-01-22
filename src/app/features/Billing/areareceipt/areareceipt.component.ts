@@ -54,6 +54,7 @@ import { ConfirmationDialogComponent } from '../../../shared/component/confirmat
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { BillingViaMobilenumberComponent } from '../billing-via-mobilenumber/billing-via-mobilenumber.component';
+import { AuthService } from '../../../core/auth/service/auth.service';
 
 @Component({
   selector: 'app-areareceipt',
@@ -133,7 +134,8 @@ export class AreareceiptComponent implements OnInit {
     public dialog: MatDialog,
     private datePipe: DatePipe,
     private router: Router,
-    private ts: TranslateService
+    private ts: TranslateService,
+    private authService:AuthService
   ) {
     this.CounterId = localStorage.getItem('counterId');
     this.role = localStorage.getItem('Role');
@@ -1580,11 +1582,8 @@ if (currentElement instanceof HTMLInputElement || currentElement instanceof HTML
       }
     }
   }
-
-
-
-        
-      }
+   
+}
       
   
   
@@ -1638,6 +1637,20 @@ if (currentElement instanceof HTMLInputElement || currentElement instanceof HTML
 
 
 
+@HostListener('window:beforeunload', ['$event'])
+handleBeforeUnload(event: Event): void {
+  // Check if the session storage indicates a page refresh
+  const isPageRefreshed = sessionStorage.getItem('isPageRefreshed') === 'true';
+
+  if (!isPageRefreshed) {
+    // Perform logout or session cleanup if not a page refresh
+    this.authService.logout();
+  }
+
+  // Remove the flag to prepare for next load
+  sessionStorage.removeItem('isPageRefreshed');
+}
+
 
 openBillingDialog() {
   const dialogRef = this.dialog.open(BillingViaMobilenumberComponent , {
@@ -1687,6 +1700,7 @@ addRowForNameAndStar(index: number,name:string,star:string): void {
     this.setupStarAutocomplete(0);
     this.updateTotalAmount();
     return;
+
   }
   this.indexForAutoComplete = index;
   // if (
@@ -1709,16 +1723,14 @@ addRowForNameAndStar(index: number,name:string,star:string): void {
   });
 
   this.vazhipadinfo.insert(index, newRow);
-  this.setupAutocomplete(index);
-  this.setupStarAutocomplete(index);
+  this.setupAutocomplete(index+1);
+  this.setupStarAutocomplete(index+1);
   this.updateTotalAmount();
   setTimeout(() => {
     this.focusOnNewRow(); // Focus on the newly created row's text box
   }, 0);
+
 }
-
-
-
 
 
 }

@@ -14,11 +14,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { HttpClient } from '@angular/common/http';
 import { MasterService } from '../../../services/master/master.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-report-dailystmt',
   standalone: true,
-  imports: [CommonModule,MatTableModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule],
+  imports: [CommonModule,MatTableModule,MatPaginatorModule,TranslateModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule],
   templateUrl: './report-dailystmt.component.html',
   styleUrl: './report-dailystmt.component.css'
 })
@@ -39,13 +40,17 @@ export class ReportDailystmtComponent {
   toDate:string;
   templeName:string|null;
 templeAddress:string|null;
-  constructor(private route: ActivatedRoute,private masterService:MasterService, private service: ReportService,private router: Router, private http:HttpClient) {
+  constructor(private route: ActivatedRoute,private ts: TranslateService,private masterService:MasterService, private service: ReportService,private router: Router, private http:HttpClient) {
     this.loadStarData();
     this.lang = localStorage.getItem('Language');
 
     // this.lang=localStorage.getItem('Language');
     this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
     this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
+    const userLang = navigator.language || 'en';
+    const languageCode = userLang.split('-')[0];
+    this.ts.setDefaultLang(languageCode);
+    this.ts.use(this.lang || 'en');
   }
 
   ngOnInit(): void {
@@ -94,6 +99,16 @@ templeAddress:string|null;
   goBack(): void {
     console.log('Going back...'); // Log to verify method execution
     this.router.navigate(['/getReport']);
+
+
+    if (window.history.length > 1) {
+      window.history.back(); // Goes back to the previous page in history
+    } else {
+      window.close(); // Closes the tab if it's the only page open
+    }
+
+
+
   }
 
 

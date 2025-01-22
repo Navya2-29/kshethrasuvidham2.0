@@ -6,21 +6,34 @@ import { SpinnerComponent } from '../../../shared/component/spinner/spinner.comp
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { Router } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-vazhipad-list',
   standalone: true,
-  imports: [CommonModule,HeaderComponent,SpinnerComponent],
+  imports: [CommonModule, HeaderComponent, SpinnerComponent, TranslateModule],
   templateUrl: './vazhipad-list.component.html',
-  styleUrl: './vazhipad-list.component.css'
+  styleUrl: './vazhipad-list.component.css',
 })
 export class VazhipadListComponent {
   vazhipadDetails: any = [];
   currentDate: Date = new Date();
-  loading:boolean=true;
+  loading: boolean = true;
   printWindow: Window | null = null;
-  prathistalist:any=[];
-  prathistaName:string="";
-  constructor(private service: MasterService, private router:Router) {}
+  prathistalist: any = [];
+  prathistaName: string = '';
+  lang: string | null;
+  constructor(
+    private service: MasterService,
+    private router: Router,
+    private ts: TranslateService
+  ) {
+    this.lang = localStorage.getItem('Language');
+
+    const userLang = navigator.language || 'en';
+    const languageCode = userLang.split('-')[0];
+    this.ts.setDefaultLang(languageCode);
+    this.ts.use(this.lang || 'en');
+  }
 
   ngOnInit(): void {
     this.fetchVazhipadDetails();
@@ -29,29 +42,27 @@ export class VazhipadListComponent {
 
   fetchVazhipadDetails() {
     this.service.getAllActiveVazhipad().subscribe({
-     next: (response) => {
+      next: (response) => {
         this.vazhipadDetails = response;
-        this.sortVazhipadDetails(); 
-        this.loading=false;
+        this.sortVazhipadDetails();
+        this.loading = false;
       },
-      error:(error)=>{
+      error: (error) => {
         console.error('Error fetching vazhipad details:', error);
-      }
-   } );
+      },
+    });
   }
-
 
   sortVazhipadDetails() {
     this.vazhipadDetails.sort((a: any, b: any) => {
       // Convert the string to a number for comparison
       const aNumber = parseFloat(a.VM_Code);
       const bNumber = parseFloat(b.VM_Code);
-  
+
       // Return the difference for ascending order
       return aNumber - bNumber;
     });
   }
-
 
   saveToComputer(): void {
     const pdf = new jsPDF('p', 'pt', 'a4'); // Create a new PDF document
@@ -59,7 +70,7 @@ export class VazhipadListComponent {
     // Adding title
     pdf.setFontSize(20);
     pdf.text('Vazhipad Report', 40, 50);
-    
+
     // Adding date
     pdf.setFontSize(12);
     pdf.text(`Date: ${this.currentDate.toLocaleDateString('en-GB')}`, 40, 70);
@@ -72,7 +83,7 @@ export class VazhipadListComponent {
         item.VM_Code,
         item.VM_Name,
         item.VM_Amt,
-        item.VM_Time
+        item.VM_Time,
       ]),
       startY: 100,
       margin: { top: 20, bottom: 20 },
@@ -89,8 +100,8 @@ export class VazhipadListComponent {
 
     // Prepare the print document with inline styles
     if (this.printWindow && printContent) {
-        this.printWindow.document.write('<html><head><title>Print</title>');
-        this.printWindow.document.write(`
+      this.printWindow.document.write('<html><head><title>Print</title>');
+      this.printWindow.document.write(`
             <style>
                 @page {
                     size: A4; /* A4 page size */
@@ -148,39 +159,38 @@ export class VazhipadListComponent {
                 }
             </style>
         `);
-        this.printWindow.document.write('</head><body class="document-container">');
-        this.printWindow.document.write('<div class="document-content">');
-        this.printWindow.document.write(printContent.innerHTML);
-        this.printWindow.document.write('</div>');
-        this.printWindow.document.write('</body></html>');
+      this.printWindow.document.write(
+        '</head><body class="document-container">'
+      );
+      this.printWindow.document.write('<div class="document-content">');
+      this.printWindow.document.write(printContent.innerHTML);
+      this.printWindow.document.write('</div>');
+      this.printWindow.document.write('</body></html>');
 
-        this.printWindow.document.close(); // Close the document to trigger rendering
-        this.printWindow.print(); // Open the print dialog
+      this.printWindow.document.close(); // Close the document to trigger rendering
+      this.printWindow.print(); // Open the print dialog
     }
-}
+  }
 
-save() {
+  save() {
     // Your save logic here
 
     // Close the print window if it's open
     if (this.printWindow) {
-        this.printWindow.close();
-        this.printWindow = null; // Clear the reference
+      this.printWindow.close();
+      this.printWindow = null; // Clear the reference
     }
-}
+  }
 
-cancel() {
+  cancel() {
     // Logic to handle cancel action
 
     // Close the print window if it's open
     if (this.printWindow) {
-        this.printWindow.close();
-        this.printWindow = null; // Clear the reference
+      this.printWindow.close();
+      this.printWindow = null; // Clear the reference
     }
-}
-
-
-
+  }
 
   downloadExcel() {
     const csvData = this.convertToCSV(this.vazhipadDetails);
@@ -189,7 +199,7 @@ cancel() {
     // Create a Blob from the CSV string
     const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
-    
+
     // Create a link to download the Blob
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
@@ -202,7 +212,7 @@ cancel() {
 
   private convertToCSV(data: any[]) {
     const header = Object.keys(data[0]).join(','); // Create CSV header
-    const rows = data.map(item => Object.values(item).join(',')); // Create CSV rows
+    const rows = data.map((item) => Object.values(item).join(',')); // Create CSV rows
     return [header, ...rows].join('\n'); // Combine header and rows with line breaks
   }
 
@@ -210,56 +220,51 @@ cancel() {
     return date.toLocaleDateString('en-GB').replace(/\//g, '-'); // Format date as dd-mm-yyyy
   }
 
-
-  backButtonClick(){
-  this.router.navigate(['/vmaster'])
+  backButtonClick() {
+    this.router.navigate(['/vmaster']);
   }
 
-  getAllPrathista(){
+  getAllPrathista() {
     this.service.getPmaster().subscribe({
-      next:(data)=>{
-        this.prathistalist=data;
-        console.log(this.prathistalist)
-      }
-    })
-
-
-
+      next: (data) => {
+        this.prathistalist = data;
+        console.log(this.prathistalist);
+      },
+    });
   }
-  
-
-
 
   onPrathistaChange(event: Event) {
     const selectedPrathista = (event.target as HTMLSelectElement).value;
     this.prathistaName = this.getPrathistaNameByCode(selectedPrathista);
     // Call your API with the selected option
     this.vazhipadListBasedOnPrathista(selectedPrathista);
-    console.log(selectedPrathista)
+    console.log(selectedPrathista);
   }
 
-
-
   getPrathistaNameByCode(code: string): string {
-    const prathista = this.prathistalist.find((item: any) => item.PM_Code === code);
+    const prathista = this.prathistalist.find(
+      (item: any) => item.PM_Code === code
+    );
     return prathista ? prathista.PM_Name : ''; // Return the pm_name or an empty string if not found
   }
 
-
-  vazhipadListBasedOnPrathista(prathista:any){
-    if(prathista){
-
-   
-console.log(typeof(prathista))
-    const payLoad={"Type":"DietywiseVazhipad","Code":prathista}
-this.service.getVazhipadListBasedOnPrathistaList(payLoad).subscribe((data)=>{
-  console.log(data)
-  this.vazhipadDetails=data;
-  this.sortVazhipadDetails()
-})
-  }else{
-    this.fetchVazhipadDetails();
+  vazhipadListBasedOnPrathista(prathista: any) {
+    if (prathista) {
+      console.log(typeof prathista);
+      const payLoad = { Type: 'DietywiseVazhipad', Code: prathista };
+      this.service
+        .getVazhipadListBasedOnPrathistaList(payLoad)
+        .subscribe((data) => {
+          console.log(data);
+          this.vazhipadDetails = data;
+          this.sortVazhipadDetails();
+        });
+    } else {
+      this.fetchVazhipadDetails();
+    }
   }
-}
 
+  showAllVazhipadWithPrathist() {
+    this.router.navigate(['/vazhipadlistwithprathista']);
+  }
 }

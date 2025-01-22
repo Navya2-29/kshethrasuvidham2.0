@@ -15,6 +15,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { HttpClient } from '@angular/common/http';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-report-counter-self',
   standalone: true,
@@ -22,7 +23,7 @@ import { HttpClient } from '@angular/common/http';
       MatTableModule,
       MatPaginatorModule,
       HeaderComponent,
-      MatTooltipModule,MatFormFieldModule, MatInputModule,],
+      MatTooltipModule,MatFormFieldModule, MatInputModule,TranslateModule],
   templateUrl: './report-counter-self.component.html',
   styleUrl: './report-counter-self.component.css'
 })
@@ -62,12 +63,17 @@ filteredData:ReportData[] = [];
     private route: ActivatedRoute,
     private service: ReportService,
     private router: Router,
-    private http:HttpClient
+    private http:HttpClient,
+    private ts: TranslateService,
   ) {
     this.counterId=localStorage.getItem('counterId');
     this.lang=localStorage.getItem('Language');
     this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
     this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
+    const userLang = navigator.language || 'en';
+    const languageCode = userLang.split('-')[0];
+    this.ts.setDefaultLang(languageCode);
+    this.ts.use(this.lang || 'en');
   }
 
   ngOnInit(): void {
@@ -128,7 +134,12 @@ filteredData:ReportData[] = [];
   goBack(): void {
     console.log('Going back...'); // Log to verify method execution
     this.router.navigate(['/getReport']);
-    window.close();
+    
+    if (window.history.length > 1) {
+      window.history.back(); // Goes back to the previous page in history
+    } else {
+      window.close(); // Closes the tab if it's the only page open
+    }
   }
 
 

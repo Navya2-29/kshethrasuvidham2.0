@@ -22,7 +22,9 @@ import { HttpClient } from '@angular/common/http';
     MatTableModule,
     MatPaginatorModule,
     HeaderComponent,
-    MatTooltipModule,],
+    MatTooltipModule,
+    
+  ],
   templateUrl: './report-counter-transaction.component.html',
   styleUrl: './report-counter-transaction.component.css'
 })
@@ -178,6 +180,15 @@ export class ReportCounterTransactionComponent {
   goBack(): void {
     console.log('Going back...'); // Log to verify method execution
     this.router.navigate(['/getReport']);
+
+
+    if (window.history.length > 1) {
+      window.history.back(); // Goes back to the previous page in history
+    } else {
+      window.close(); // Closes the tab if it's the only page open
+    }
+
+
   }
 
   generatePDF(): void {

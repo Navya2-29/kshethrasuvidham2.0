@@ -15,6 +15,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { HttpClient } from '@angular/common/http';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-report-money-order',
   standalone: true,
@@ -26,6 +27,7 @@ import { HttpClient } from '@angular/common/http';
     MatTooltipModule,
     MatFormFieldModule,
     MatInputModule,
+    TranslateModule 
   ],
   templateUrl: './report-money-order.component.html',
   styleUrl: './report-money-order.component.css',
@@ -59,12 +61,17 @@ export class ReportMoneyOrderComponent {
     private route: ActivatedRoute,
     private service: ReportService,
     private router: Router,
-    private http: HttpClient
+    private http: HttpClient,
+     private ts: TranslateService
   ) {
 
     this.lang=localStorage.getItem('Language');
     this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
     this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address'; 
+    const userLang = navigator.language || 'en';
+    const languageCode = userLang.split('-')[0];
+    this.ts.setDefaultLang(languageCode);
+    this.ts.use(this.lang || 'en');
   }
 
   ngOnInit(): void {
@@ -123,6 +130,14 @@ export class ReportMoneyOrderComponent {
   goBack(): void {
     console.log('Going back...'); // Log to verify method execution
     this.router.navigate(['/getReport']);
+
+
+    if (window.history.length > 1) {
+      window.history.back(); // Goes back to the previous page in history
+    } else {
+      window.close(); // Closes the tab if it's the only page open
+    }
+
   }
 
   formatDateToDDMMYYYY(date: string): string {

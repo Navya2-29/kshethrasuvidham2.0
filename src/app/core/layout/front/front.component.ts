@@ -1,15 +1,16 @@
+import { MasterService } from './../../../services/master/master.service';
 import { ToastrService } from 'ngx-toastr';
-import { AfterViewInit, Component, ElementRef, Renderer2, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, Renderer2, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { Router, RouterModule } from '@angular/router';
-import { MasterService } from '../../../services/master/master.service';
 import { HttpClient } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { CouterPopupComponent } from '../../couter-popup/couter-popup.component';
+import { AuthService } from '../../auth/service/auth.service';
 
 @Component({
   selector: 'app-front',
@@ -46,7 +47,8 @@ export class FrontComponent implements AfterViewInit {
     private service: MasterService,
     private notification: ToastrService,
     private renderer: Renderer2,
-    private router: Router
+    private router: Router,
+    private authService:AuthService
   ) {
     this.templeName = localStorage.getItem('TempleName');
     this.logo = localStorage.getItem('Logo');
@@ -63,11 +65,13 @@ export class FrontComponent implements AfterViewInit {
     if (!storedCounterId) {
       this.openCounterIdDialog();
     }
+    sessionStorage.setItem('isPageRefreshed', 'true');
   }
 
   getLogoUrl(): string {
     return `assets/images/${this.logo}`; // Assuming logo images are stored in the 'assets/images' folder
   }
+
   ngAfterViewInit(): void {
     this.buttons = [
       this.billingButton!,
@@ -152,19 +156,8 @@ export class FrontComponent implements AfterViewInit {
               });
             
           }
-
-
         }
-       
-
-
-
-
       }
-
-
-
-
     });
   }
 
@@ -182,4 +175,20 @@ export class FrontComponent implements AfterViewInit {
       // }
     });
   }
+
+
+  @HostListener('window:beforeunload', ['$event'])
+  handleBeforeUnload(event: Event): void {
+    // Check if the session storage indicates a page refresh
+    const isPageRefreshed = sessionStorage.getItem('isPageRefreshed') === 'true';
+
+    if (!isPageRefreshed) {
+      // Perform logout or session cleanup if not a page refresh
+      this.authService.logout();
+    }
+
+    // Remove the flag to prepare for next load
+    sessionStorage.removeItem('isPageRefreshed');
+  }
+
 }

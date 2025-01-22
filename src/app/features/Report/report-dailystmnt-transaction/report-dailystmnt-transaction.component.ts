@@ -19,6 +19,7 @@ import { MatInputModule } from '@angular/material/input';
 import { ReportDailyStmt } from '../../../models/dailytrasaction.model';
 
 import { PDFDocument } from 'pdf-lib';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 // Fix TypeScript issues with `vfs`
 // (pdfMake as any).setVfs(pdfFonts.pdfMake.vfs);
@@ -32,6 +33,7 @@ import { PDFDocument } from 'pdf-lib';
     HeaderComponent,
     MatTooltipModule,
     MatFormFieldModule, MatInputModule,
+    TranslateModule
   ],
   templateUrl: './report-dailystmnt-transaction.component.html',
   styleUrl: './report-dailystmnt-transaction.component.css',
@@ -66,12 +68,17 @@ templeAddress:string|null;
     private route: ActivatedRoute,
     private service: ReportService,
     private router: Router,
-    private http:HttpClient
+    private http:HttpClient,
+     private ts: TranslateService,
   ) {
     this.lang=localStorage.getItem('Language');
     this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
     this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
 
+ const userLang = navigator.language || 'en';
+    const languageCode = userLang.split('-')[0];
+    this.ts.setDefaultLang(languageCode);
+    this.ts.use(this.lang || 'en');
   }
 
   ngOnInit(): void {
@@ -221,6 +228,14 @@ generatePDF(){
   goBack(): void {
     console.log('Going back...'); // Log to verify method execution
     this.router.navigate(['/getReport']);
+
+
+    if (window.history.length > 1) {
+      window.history.back(); // Goes back to the previous page in history
+    } else {
+      window.close(); // Closes the tab if it's the only page open
+    }
+
   }
 
   

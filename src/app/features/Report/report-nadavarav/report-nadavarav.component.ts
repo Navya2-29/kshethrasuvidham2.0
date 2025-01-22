@@ -16,6 +16,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { NadavaravReport } from '../../../models/nadavarav.model';
 import { HttpClient } from '@angular/common/http';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-report-nadavarav',
@@ -24,7 +25,7 @@ import { HttpClient } from '@angular/common/http';
     MatTableModule,
     MatPaginatorModule,
     HeaderComponent,
-    MatTooltipModule,MatFormFieldModule, MatInputModule,],
+    MatTooltipModule,MatFormFieldModule, MatInputModule,TranslateModule  ],
   templateUrl: './report-nadavarav.component.html',
   styleUrl: './report-nadavarav.component.css'
 })
@@ -51,11 +52,17 @@ templeAddress:string|null;
     private route: ActivatedRoute,
     private service: ReportService,
     private router: Router,
-    private http:HttpClient
+    private http:HttpClient,
+    private ts: TranslateService
   ) {
 this.lang=localStorage.getItem('Language');
 this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
 this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
+const userLang = navigator.language || 'en';
+    const languageCode = userLang.split('-')[0];
+    this.ts.setDefaultLang(languageCode);
+    this.ts.use(this.lang || 'en');
+
   }
 
   genearatePDF(){
@@ -189,6 +196,15 @@ this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address
   goBack(): void {
     console.log('Going back...'); // Log to verify method execution
     this.router.navigate(['/getReport']);
+
+
+    if (window.history.length > 1) {
+      window.history.back(); // Goes back to the previous page in history
+    } else {
+      window.close(); // Closes the tab if it's the only page open
+    }
+
+
   }
   formatDateToDDMMYYYY(date: string): string {
     const [year, month, day] = date.split('-');
