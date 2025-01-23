@@ -82,7 +82,8 @@
                         maxlength="100"
                         formControlName="VM_Name"
                         placeholder="Enter Name"
-                      />
+                        [readOnly]="checkVazhipadData>0"
+                                                                   />
                       <div
                         *ngIf="
                           vmasterFormControl['VM_Name'].invalid &&
@@ -127,6 +128,7 @@
                         formControlName="VM_RName"
                         class="form-control"
                         placeholder="Enter Name in Regional Language"
+                        [readOnly]="checkVazhipadData>0"
                       />
                       <div
                         *ngIf="

@@ -43,7 +43,7 @@ export class MenuitemsComponent {
     // { label: 'Combo-master ', path: '/combo-master' },
     { label: 'Item/Nadavaravu Master', path: '/item-master' },
     // { label: 'ഇനം/നടവരവ്  മാസ്റ്റർ', path: '/item-master' },
-    
+    { label: 'Devotee Master', path: '/member-master' },
   ];
 
   onLinkClick(event: Event): void {

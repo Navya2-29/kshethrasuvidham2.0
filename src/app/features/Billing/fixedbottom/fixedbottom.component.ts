@@ -1217,6 +1217,12 @@ focusPaymentDropdown(): void {
     this.paymentDropdown.nativeElement.focus();
   }
 }
+getNameAndStarByMobilenumber(){
 
+ console.log(this.mobileNumber,"mobile number data");
+ this.receiptPrinrservice.setMobileNumber(this.mobileNumber);
+    console.log('Mobile number sent:', this.mobileNumber);
+
+}
 
 }

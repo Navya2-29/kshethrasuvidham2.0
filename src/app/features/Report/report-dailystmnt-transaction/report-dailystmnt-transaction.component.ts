@@ -32,15 +32,15 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     MatPaginatorModule,
     HeaderComponent,
     MatTooltipModule,
-    MatFormFieldModule, MatInputModule,
-    TranslateModule
+    MatFormFieldModule,
+    MatInputModule,
+    TranslateModule,
   ],
   templateUrl: './report-dailystmnt-transaction.component.html',
   styleUrl: './report-dailystmnt-transaction.component.css',
 })
 export class ReportDailystmntTransactionComponent {
   displayedColumns: string[] = [
-    
     'BillDate',
     'Vazhipad',
     'Qty',
@@ -51,31 +51,37 @@ export class ReportDailystmntTransactionComponent {
   dataSource = new MatTableDataSource<ReportDailyStmt>();
   length = 0;
   pageSize = 10;
-  pageSizeOptions: number[] = [10,50,100,200,300,500,1000];
+  pageSizeOptions: number[] = [10, 50, 100, 200, 300, 500, 1000];
   pageIndex = 0;
   data: ReportDailyStmt[] = [];
-  fromDate:string;
-  toDate:string;
+  fromDate: string;
+  toDate: string;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   groupedData: { [key: string]: ReportDailyStmt[] } = {};
-  groupedDatas: { [key: string]: { [key: string]: { Qty: number, Rate: number, Amount: number } } } = {};
+  groupedDatas: {
+    [key: string]: {
+      [key: string]: { Qty: number; Rate: number; Amount: number };
+    };
+  } = {};
   currentDate: string = '';
   currentPage: number = 1;
-  lang:string|null;
-templeName:string|null;
-templeAddress:string|null;
+  lang: string | null;
+  templeName: string | null;
+  templeAddress: string | null;
   constructor(
     private route: ActivatedRoute,
     private service: ReportService,
     private router: Router,
-    private http:HttpClient,
-     private ts: TranslateService,
+    private http: HttpClient,
+    private ts: TranslateService
   ) {
-    this.lang=localStorage.getItem('Language');
-    this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
-    this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
+    this.lang = localStorage.getItem('Language');
+    this.templeName =
+      localStorage.getItem('TempleName') || 'Default Temple Name';
+    this.templeAddress =
+      localStorage.getItem('Address') || 'Default Temple Address';
 
- const userLang = navigator.language || 'en';
+    const userLang = navigator.language || 'en';
     const languageCode = userLang.split('-')[0];
     this.ts.setDefaultLang(languageCode);
     this.ts.use(this.lang || 'en');
@@ -106,8 +112,8 @@ templeAddress:string|null;
         //   const [numA, denomA] = a.BillNo.split('/').map(Number);
         //   const [numB, denomB] = b.BillNo.split('/').map(Number);
 
-          // Compare the two parts: first compare the numerator, then the denominator
-          // return numA - numB || denomA - denomB;
+        // Compare the two parts: first compare the numerator, then the denominator
+        // return numA - numB || denomA - denomB;
         // });
         this.dataSource.data = this.data;
         this.length = data.length;
@@ -121,12 +127,10 @@ templeAddress:string|null;
     });
   }
 
-
-
-  // code for showing in html 
+  // code for showing in html
 
   groupData() {
-    this.groupedDatas = this.data.reduce((acc:any, curr:any) => {
+    this.groupedDatas = this.data.reduce((acc: any, curr: any) => {
       const { TrnsMode, vazhipad, Qty, Rate } = curr;
       if (!acc[TrnsMode]) {
         acc[TrnsMode] = {};
@@ -135,29 +139,28 @@ templeAddress:string|null;
         acc[TrnsMode][vazhipad] = { Qty: 0, Rate, Amount: 0 };
       }
       acc[TrnsMode][vazhipad].Qty += Qty;
-      acc[TrnsMode][vazhipad].Amount = acc[TrnsMode][vazhipad].Rate * acc[TrnsMode][vazhipad].Qty;
+      acc[TrnsMode][vazhipad].Amount =
+        acc[TrnsMode][vazhipad].Rate * acc[TrnsMode][vazhipad].Qty;
       return acc;
     }, {});
   }
 
- // Calculate the grand total for each transaction mode
- getGrandTotalForTrnsMode(transactionMode: string): number {
-  const items = this.groupedData[transactionMode]; // Get items for the transaction mode
-  if (!items || items.length === 0) {
-    return 0; // No items found, return 0
+  // Calculate the grand total for each transaction mode
+  getGrandTotalForTrnsMode(transactionMode: string): number {
+    const items = this.groupedData[transactionMode]; // Get items for the transaction mode
+    if (!items || items.length === 0) {
+      return 0; // No items found, return 0
+    }
+
+    // Calculate the total
+    const total = items.reduce((sum, item) => {
+      const qty = item.Qty || 0; // Default to 0 if Qty is missing
+      const rate = item.Rate || 0; // Default to 0 if Rate is missing
+      return sum + item.Amount;
+    }, 0);
+
+    return total;
   }
-
-  // Calculate the total
-  const total = items.reduce((sum, item) => {
-    const qty = item.Qty || 0; // Default to 0 if Qty is missing
-    const rate = item.Rate || 0; // Default to 0 if Rate is missing
-    return sum +item. Amount;
-  }, 0);
-
-  return total;
-}
-
-
 
   // Grouping function
   groupDataByTransactionMode(data: ReportDailyStmt[]): void {
@@ -167,24 +170,24 @@ templeAddress:string|null;
     }, {} as { [key: string]: ReportDailyStmt[] });
   }
 
+  generatePDF() {
+    const printContent = document.getElementById('print-section');
+    if (!printContent) {
+      console.error('No content found to print');
+      return;
+    }
 
-  
-generatePDF(){
-  const printContent = document.getElementById('print-section');
-  if (!printContent) {
-    console.error('No content found to print');
-    return;
-  }
+    const WindowPrt = window.open('', '', 'width=800,height=600');
 
-  const WindowPrt = window.open('', '', 'width=800,height=600');
-  
-  // Check if the print window was successfully opened
-  if (!WindowPrt) {
-    console.error('Unable to open print window. Please check pop-up blockers.');
-    return;
-  }
+    // Check if the print window was successfully opened
+    if (!WindowPrt) {
+      console.error(
+        'Unable to open print window. Please check pop-up blockers.'
+      );
+      return;
+    }
 
-  WindowPrt.document.write(`
+    WindowPrt.document.write(`
     <html>
       <head>
         <title>Print</title>
@@ -207,18 +210,15 @@ generatePDF(){
     </html>
   `);
 
-  WindowPrt.document.close();
-  WindowPrt.focus();
+    WindowPrt.document.close();
+    WindowPrt.focus();
 
-  // Make sure that the window is still valid before calling print and close
-  if (WindowPrt) {
-    WindowPrt.print();
-    WindowPrt.close();
+    // Make sure that the window is still valid before calling print and close
+    if (WindowPrt) {
+      WindowPrt.print();
+      WindowPrt.close();
+    }
   }
-  }
-  
-
-
 
   onPageChange(event: PageEvent) {
     this.pageIndex = event.pageIndex;
@@ -229,16 +229,13 @@ generatePDF(){
     console.log('Going back...'); // Log to verify method execution
     this.router.navigate(['/getReport']);
 
-
     if (window.history.length > 1) {
       window.history.back(); // Goes back to the previous page in history
     } else {
       window.close(); // Closes the tab if it's the only page open
     }
-
   }
 
-  
   // generatePDF() {
   //   const templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
   //   const templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
@@ -278,7 +275,7 @@ generatePDF(){
 
   //       // Draw Header
   //       const drawHeader = () => {
-          
+
   //         doc.setFont("NotoSansMalayalam", "normal");
   //         doc.setFontSize(12);
   //         doc.text(templeName, pageWidth / 2, 12, { align: "center" });
@@ -442,8 +439,8 @@ generatePDF(){
     const words = text.split(' ');
     let currentLine = '';
     let wrappedText = '';
-  
-    words.forEach(word => {
+
+    words.forEach((word) => {
       if (doc.getTextWidth(currentLine + word) < maxWidth) {
         currentLine += word + ' ';
       } else {
@@ -451,49 +448,73 @@ generatePDF(){
         currentLine = word + ' ';
       }
     });
-  
+
     wrappedText += currentLine.trim();
     return wrappedText;
   }
- 
+
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
-  
 
   formatDateToDDMMYYYY(date: string): string {
     const [year, month, day] = date.split('-');
     return `${day}-${month}-${year}`;
   }
-  
 
   getTransactionType(transmode: string): string {
     switch (transmode) {
       case 'ON':
-        return 'ONLINE';
-      case 'CS':
-        return 'CASH';
-      case 'MO':
-        return 'MONEY ORDER';
-      case 'UP':
-        return 'UPI';
-      case 'CH':
-        return 'CHEQUE';
-      case 'CR':
-        return 'CREDIT';
-      case 'DE':
-        return 'DEBIT';
+        if (this.lang == 'en') {
+          return 'ONLINE';
+        } else {
+          return 'ഓൺലൈൻ';
+        }
 
+      case 'CS':
+        if (this.lang == 'en') {
+          return 'CASH';
+        } else {
+          return 'കാഷ്';
+        }
+      case 'MO':
+        if (this.lang == 'en') {
+          return 'MONEY ORDER';
+        } else {
+          return 'മണി ഓർഡർ';
+        }
+      case 'UP':
+        if (this.lang == 'en') {
+          return 'UPI';
+        } else {
+          return 'യുപിഐ';
+        }
+
+      case 'CH':
+        if (this.lang == 'en') {
+          return 'CHEQUE';
+        } else {
+          return 'ചെക്ക്';
+        }
+      case 'CR':
+        if (this.lang == 'en') {
+          return 'CREDIT';
+        } else {
+          return 'ക്രെഡിറ്റ്';
+        }
+      case 'DE':
+        if (this.lang == 'en') {
+          return 'DEBIT';
+        } else {
+          return 'ഡെബിറ്റ്';
+        }
       default:
         return 'OTHERS';
     }
   }
 
-
-
   getTotalAmount(): number {
     return this.data.reduce((sum, item) => sum + item.Amount, 0);
   }
-
 }

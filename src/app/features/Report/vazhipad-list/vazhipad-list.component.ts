@@ -15,6 +15,8 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
   styleUrl: './vazhipad-list.component.css',
 })
 export class VazhipadListComponent {
+
+
   vazhipadDetails: any = [];
   currentDate: Date = new Date();
   loading: boolean = true;
@@ -44,6 +46,7 @@ export class VazhipadListComponent {
     this.service.getAllActiveVazhipad().subscribe({
       next: (response) => {
         this.vazhipadDetails = response;
+        console.log(this.vazhipadDetails)
         this.sortVazhipadDetails();
         this.loading = false;
       },
@@ -55,11 +58,8 @@ export class VazhipadListComponent {
 
   sortVazhipadDetails() {
     this.vazhipadDetails.sort((a: any, b: any) => {
-      // Convert the string to a number for comparison
       const aNumber = parseFloat(a.VM_Code);
       const bNumber = parseFloat(b.VM_Code);
-
-      // Return the difference for ascending order
       return aNumber - bNumber;
     });
   }
@@ -98,7 +98,6 @@ export class VazhipadListComponent {
     const printContent = document.getElementById('printableArea');
     this.printWindow = window.open('', '', 'height=600,width=800');
 
-    // Prepare the print document with inline styles
     if (this.printWindow && printContent) {
       this.printWindow.document.write('<html><head><title>Print</title>');
       this.printWindow.document.write(`
@@ -167,13 +166,12 @@ export class VazhipadListComponent {
       this.printWindow.document.write('</div>');
       this.printWindow.document.write('</body></html>');
 
-      this.printWindow.document.close(); // Close the document to trigger rendering
-      this.printWindow.print(); // Open the print dialog
+      this.printWindow.document.close(); 
+      this.printWindow.print(); 
     }
   }
 
   save() {
-    // Your save logic here
 
     // Close the print window if it's open
     if (this.printWindow) {
@@ -183,9 +181,7 @@ export class VazhipadListComponent {
   }
 
   cancel() {
-    // Logic to handle cancel action
 
-    // Close the print window if it's open
     if (this.printWindow) {
       this.printWindow.close();
       this.printWindow = null; // Clear the reference
@@ -220,9 +216,13 @@ export class VazhipadListComponent {
     return date.toLocaleDateString('en-GB').replace(/\//g, '-'); // Format date as dd-mm-yyyy
   }
 
+
+
   backButtonClick() {
     this.router.navigate(['/vmaster']);
   }
+
+
 
   getAllPrathista() {
     this.service.getPmaster().subscribe({
@@ -233,20 +233,26 @@ export class VazhipadListComponent {
     });
   }
 
+
   onPrathistaChange(event: Event) {
     const selectedPrathista = (event.target as HTMLSelectElement).value;
     this.prathistaName = this.getPrathistaNameByCode(selectedPrathista);
-    // Call your API with the selected option
     this.vazhipadListBasedOnPrathista(selectedPrathista);
     console.log(selectedPrathista);
   }
+
+
 
   getPrathistaNameByCode(code: string): string {
     const prathista = this.prathistalist.find(
       (item: any) => item.PM_Code === code
     );
-    return prathista ? prathista.PM_Name : ''; // Return the pm_name or an empty string if not found
+    if (!prathista) {
+      return ''; 
+    }
+    return this.lang === 'en' ? prathista.PM_Name : prathista.PM_RegName;  
   }
+
 
   vazhipadListBasedOnPrathista(prathista: any) {
     if (prathista) {
@@ -264,7 +270,13 @@ export class VazhipadListComponent {
     }
   }
 
+
+
   showAllVazhipadWithPrathist() {
     this.router.navigate(['/vazhipadlistwithprathista']);
   }
+
+
+
+
 }

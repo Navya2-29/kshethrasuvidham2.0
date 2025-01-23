@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MasterService } from '../../../services/master/master.service';
 export interface DataRow {
-  name: string;
-  star: string;
+  Name: string;
+  Star: string;
 }
 
 @Component({
@@ -14,21 +15,39 @@ export interface DataRow {
   templateUrl: './billing-via-mobilenumber.component.html',
   styleUrl: './billing-via-mobilenumber.component.css'
 })
-export class BillingViaMobilenumberComponent {
+export class BillingViaMobilenumberComponent implements OnInit {
   displayedColumns: string[] = ['select', 'name', 'star'];
-  dataSource: DataRow[] = [
-    { name: 'John', star: "അശ്വതി"},
-    { name: 'Jane', star: "അശ്വതി" },
-    { name: 'Smith', star: "അശ്വതി" },
-  ];
+  dataSource: DataRow[] = []
+    
   selectedRows = new Set<DataRow>();
   mobileNumber: string;
 
   constructor(
     public dialogRef: MatDialogRef<BillingViaMobilenumberComponent >,
-   
+    @Inject(MAT_DIALOG_DATA) public data: { mobileNumber: string },
+    private service:MasterService
   ) {
-    this.mobileNumber = "123456789" // Pass mobile number from parent
+    this.mobileNumber = data.mobileNumber // Pass mobile number from parent
+  }
+
+  ngOnInit(): void {
+    this.getDevoteeData(this.mobileNumber);
+  }
+
+
+  getDevoteeData(mobile:string){
+    const PayLoad={
+      Type:"NameStar",
+      Code:this.mobileNumber
+    }
+   this.service.getMaster(PayLoad).subscribe({
+      next:(data)=>{
+this.dataSource=data;
+console.log(this.dataSource,"data mobile")
+    },error:(err)=>{
+       
+    }
+   })
   }
 
   isAllSelected() {

@@ -1,3 +1,4 @@
+import { DevoteeMasterComponent } from './features/master/devotee-master/devotee-master.component';
 import { ReportDailystmtComponent } from './features/Report/report-dailystmt/report-dailystmt.component';
 import { ReportDashboardComponent } from './features/Report/report-dashboard/report-dashboard.component';
 import { VazhipadListComponent } from './features/Report/vazhipad-list/vazhipad-list.component';
@@ -162,6 +163,7 @@ export const routes: Routes = [
   { path: 'settings', component: SettingsComponent },
   {path:"vazhipadwise",component: ReportVazhipadwiseComponent },
   {path:"vazhipadlistwithprathista",component: AllvazhipadlistComponent },
+  {path:"devotee-master",component: DevoteeMasterComponent},
   {
     path: '**',
     pathMatch: 'full',

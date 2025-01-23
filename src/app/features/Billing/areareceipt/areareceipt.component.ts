@@ -123,7 +123,7 @@ export class AreareceiptComponent implements OnInit {
   lastEnterTime = 0;  // Variable to track the time of the last Enter press
   doubleEnterThreshold = 500;  // Time threshold in milliseconds to consider as double press
   @ViewChild('vTimeSelect', { static: false }) vTimeSelect!: ElementRef;
-
+devoteeSearchMobileNumber:string |null;
   private subscription: Subscription;
   private masterservice = inject(MasterService);
   private eventService = inject(TotalAmountService);
@@ -165,6 +165,18 @@ export class AreareceiptComponent implements OnInit {
       // this.sendDataToApi(combinedData);
       this.sendDataToApi(combinedData);
     });
+
+
+
+    this.receiptPrintService.mobileNumber$.subscribe((number) => {
+      this.devoteeSearchMobileNumber = number;
+      console.log('Mobile number received:', this.devoteeSearchMobileNumber);
+      if(this.devoteeSearchMobileNumber){
+        this.openBillingDialog(this.devoteeSearchMobileNumber)
+      }
+    });
+
+
   }
 
   ngOnDestroy() {
@@ -1652,10 +1664,10 @@ handleBeforeUnload(event: Event): void {
 }
 
 
-openBillingDialog() {
+openBillingDialog(mobileNumber:string) {
   const dialogRef = this.dialog.open(BillingViaMobilenumberComponent , {
     width: '600px',
-    data: {} // Pass any data to the dialog if needed
+    data: {mobileNumber} // Pass any data to the dialog if needed
   });
 
   // Handle dialog result
@@ -1666,10 +1678,11 @@ openBillingDialog() {
        let index=this.vazhipadinfo.length-1;
 
       // Add multiple rows based on the array of Name and Star pairs
-      result.forEach((item: { name: string, star: string }) => {
-        this.addRowsFromNameStarArray(item.name, item.star,index);
+      result.forEach((item: { Name: string, Star: string }) => {
+        this.addRowsFromNameStarArray(item.Name, item.Star,index);
         index++
       });
+      
     }
   });
 }

@@ -1,6 +1,9 @@
+
+
+
 /* General Document Styles */
 .document-container {
-    width: 100%; /* A4 page width */
+    max-width: 100%; /* A4 page width */
     min-height: 29.7cm; /* A4 page height */
     padding: 10px; /* Page margins */
     margin: 0 auto; /* Center the page */
@@ -9,7 +12,6 @@
     box-shadow: none; /* No shadow */
     font-family: 'Arial', sans-serif;
     color: #333;
-    padding-top: 2.5cm;
 }
 
 /* Header Styles */
@@ -23,8 +25,13 @@
 /* Content Styles */
 .document-content h2 {
     margin-top: 0;
-    margin-bottom: 1cm;
+    /* margin-bottom: 1cm; */
     text-align: left;
+}
+.document-content {
+    position: relative; /* Relative positioning for the container */
+    max-height: 400px; /* Set a maximum height (adjust as needed) */
+    overflow-y: auto;  /* Enable vertical scrolling */
 }
 
 .document-content table {
@@ -33,6 +40,12 @@
     page-break-inside: auto; /* Allow breaks inside the table */
 }
 
+.document-content .thead {
+    position: sticky;
+    top: 0;
+    background-color: #f9f9f9; /* Light gray background for header */
+    z-index: 1; /* Ensure the header stays on top */
+}
 .document-content th,
 .document-content td {
     padding: 8px;
@@ -53,14 +66,16 @@
 
 /* Fixed Button Container */
 .fixed-button-container {
-    position: fixed; /* Keep buttons fixed at the top */
-    top: 0; /* Position from the top of the page */
-    left: 0; /* Align to the left */
-    right: 0; /* Align to the right */
+    /* Removed 'fixed' to allow natural flow */
     background-color: #fff; /* Background color */
-    padding: 10px; /* Padding around the buttons */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow effect */
-    z-index: 1000; /* Make sure it stays on top of other content */
+    padding: 20px 0;  /* Padding around the buttons */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);  /* Optional shadow effect */
+    /* z-index: 1000; Make sure it stays on top of other content */
+    display: flex;
+    justify-content: center;  /* Center the buttons horizontally */
+    gap: 15px;  /* Space between buttons */
+    
+  
 }
 
 /* Button Styles */
@@ -113,17 +128,6 @@
     .document-container:first-of-type {
         margin-top: 2cm; /* Add top margin for the first page */
     }
-}
-/* Button Container */
-.fixed-button-container {
-    position: fixed; /* Keep buttons fixed at the top */
-    top: 0; /* Position from the top of the page */
-    left: 0; /* Align to the left */
-    right: 0; /* Align to the right */
-    background-color: #fff; /* Background color */
-    padding: 20px 0; /* Padding around the buttons */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow effect */
-    z-index: 1000; /* Make sure it stays on top of other content */
 }
 
 /* Button Wrapper */

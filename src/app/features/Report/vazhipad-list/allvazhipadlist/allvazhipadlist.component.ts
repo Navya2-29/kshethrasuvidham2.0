@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { MasterService } from '../../../../services/master/master.service';
 import { error } from 'pdf-lib';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-allvazhipadlist',
@@ -21,7 +22,7 @@ export class AllvazhipadlistComponent implements OnInit {
   templeName:string|null;
   templeAddress:string|null;
   
-  constructor(private service: MasterService,private ts: TranslateService,) {
+  constructor(private service: MasterService,private ts: TranslateService, private router:Router ) {
 
     this.lang=localStorage.getItem('Language');
     this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
@@ -36,14 +37,63 @@ export class AllvazhipadlistComponent implements OnInit {
   ngOnInit(): void {
     this.getAllVazhipadListWithPrathishta();
   }
-  printTable() {
-    const printContents = document.getElementById('printableTable')!.outerHTML;
-    const originalContents = document.body.innerHTML;
+ 
+  goBack(): void {
+    // this.location.back();
+    this.router.navigate(['/vazhipadReport']);
+  }
 
-    document.body.innerHTML = printContents; // Replace body with table HTML
-    window.print();
-    document.body.innerHTML = originalContents; // Restore original content
-    window.location.reload(); // Reload to restore event bindings
+  // Print the current page
+  printPage(): void {
+    const printContent = document.getElementById('print-section');
+    if (printContent) {
+      const WindowPrt = window.open('', '', 'width=900,height=650');
+      WindowPrt?.document.write(`
+        <html>
+          <head>
+            <title>Print</title>
+            <style>
+              @page {
+                margin: 20mm;
+              }
+              body {
+                font-family: Arial, sans-serif;
+                margin: 30px 30px;
+                padding: 0;
+              }
+              .responsive-table {
+                border-collapse: collapse;
+                width: 100%;
+              }
+              .responsive-table th, .responsive-table td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+              }
+              .responsive-table th {
+                background-color: #f4f4f4;
+              }
+              thead {
+                display: table-header-group;
+              }
+              tr {
+                page-break-inside: avoid; /* Prevents breaking rows within a page */
+              }
+              /* Force page break before each Prathista group */
+              .group-container {
+                page-break-before: always; /* Forces new page before each Prathista */
+              }
+            </style>
+          </head>
+          <body>
+            ${printContent.innerHTML}
+          </body>
+        </html>
+      `);
+      WindowPrt?.document.close();
+      WindowPrt?.focus();
+      WindowPrt?.print();
+    }
   }
 
   getAllVazhipadListWithPrathishta() {

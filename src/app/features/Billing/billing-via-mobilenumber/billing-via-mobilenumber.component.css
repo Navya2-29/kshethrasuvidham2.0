@@ -34,4 +34,8 @@ table {
     color: white;
   }
   
-  
+  .dialog-body {
+    padding: 20px;
+    max-height: 400px; /* Adjust the height according to your needs */
+    overflow-y: auto;  /* Enable vertical scrolling */
+  }

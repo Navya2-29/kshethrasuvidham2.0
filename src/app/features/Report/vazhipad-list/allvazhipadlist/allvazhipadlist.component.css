@@ -1,7 +1,8 @@
 .table-container {
     max-width: 100%;
-    margin: 0 10px;  /* Minimal left and right margins */
-    padding: 10px 0; /* Add padding only on top and bottom for better spacing */
+
+    margin: 10px 100px;  /* Minimal left and right margins */
+    padding: 10px 20px; /* Add padding only on top and bottom for better spacing */
     background-color: #f9f9f9;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -51,9 +52,12 @@
     background-color: #f4f4f4;
     font-weight: bold;
   }
-  
-  .responsive-table th:nth-child(3),
-  .responsive-table td:nth-child(3) {
+  .responsive-table th:nth-child(1),
+  .responsive-table td:nth-child(1) {
+    width: 12%; /* Adjusted width for 'Code' column */
+  }
+  .responsive-table th:nth-child(2),
+  .responsive-table td:nth-child(2) {
     width: 12%; /* Adjusted width for 'Code' column */
   }
   
@@ -108,4 +112,29 @@
     }
   }
   
+/* Button container aligned to the right */
+.button-container {
   
+  display: flex;
+  justify-content: flex-end; /* Align buttons to the right */
+  gap: 10px; /* Add spacing between buttons */
+  margin-bottom: 20px; /* Add some space below the buttons */
+  max-width: 100%;
+  padding-right: 10px;
+}
+
+.back-button, .print-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.back-button:hover, .print-button:hover {
+  background-color: #0056b3;
+}
+
+

@@ -70,6 +70,7 @@ export class VmasterComponent implements OnInit {
   deities: any[];
   code: string;
   showNoRecordsMessage: boolean = false;
+  checkVazhipadData:number=0;
   private formBuilder = inject(FormBuilder);
   private masterService = inject(MasterService);
   private duplicateCheck = inject(DuplicatecheckService);
@@ -137,6 +138,7 @@ export class VmasterComponent implements OnInit {
     this.getVmaster();
     this.getCategory();
     this.fetchDeities();
+    // this.checkVazhipadName()
     // filter for autocompleate category
     this.filteredCategory = this.vazhipadMasterForm
       .get('VC_Name')!
@@ -356,7 +358,7 @@ export class VmasterComponent implements OnInit {
       VM_Time: data.VM_Time,
       VM_Mattinam: data.VM_Mattinam== 'Y' ? true : false,
     });
-
+    this.checkVazhipadName(this.Id);
     this.loading = false;
   }
 
@@ -642,4 +644,27 @@ export class VmasterComponent implements OnInit {
   gotoPrintPage() {
     this.router.navigate(['/vazhipadReport']);
   }
+
+
+  checkVazhipadName(id:any){
+
+    const payLoad={
+      Type:"CheckName",
+      Code:id
+    }
+    this.masterService.getMaster(payLoad).subscribe({
+      next:(data)=>{
+        console.log(data,"check vazhipad")
+        this.checkVazhipadData=data.length;
+        if(this.checkVazhipadData!=0){
+          this.notification.showError("You cant Rename the vazhipad name , its already make recipt so please create new one")
+        }
+      },error:(err)=>{
+        console.log(err,"check vazhipad") 
+      }
+    })
+
+  }
+
+
 }

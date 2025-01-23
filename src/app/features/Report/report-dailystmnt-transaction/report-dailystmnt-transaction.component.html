@@ -97,15 +97,15 @@
 
 
 <div *ngFor="let mode of groupedData | keyvalue" style="margin-left: 100px; margin-right: 100px;"  >
-  <h3 style="font-weight: bold;">{{ getTransactionType(mode.key) }}</h3> <!-- Transaction Mode as Table Heading -->
+  <h3 style="font-weight: bold;">{{ getTransactionType(mode.key) | translate }} </h3> 
 
   <table border="1">
     <thead>
       <tr>
-        <th>Vazhipad</th>
-        <th>Qty</th>
-        <th>Rate</th>
-        <th>Amount</th>
+        <th>{{"VAZHIPAD" | translate}}</th>
+        <th>{{"QUANTITY" | translate }}</th>
+        <th>{{"RATE" | translate}}</th>
+        <th>{{"AMOUNT" | translate}}</th>
       </tr>
     </thead>
     <tbody>

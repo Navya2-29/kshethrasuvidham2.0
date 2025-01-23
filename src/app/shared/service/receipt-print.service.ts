@@ -19,5 +19,23 @@ export class ReceiptPrintService {
   setBooleanValue(value: boolean): void {
     this.booleanSubject.next(value);
   }
+
+
+  private mobileNumberSubject = new BehaviorSubject<string | null>(null);
+  mobileNumber$ = this.mobileNumberSubject.asObservable();
+
+  // Set the mobile number
+  setMobileNumber(number: string) {
+    this.mobileNumberSubject.next(number);
+  }
+
+  // Get the latest mobile number (optional)
+  getMobileNumber(): string | null {
+    return this.mobileNumberSubject.getValue();
+  }
+
+
+
+
   
  }
