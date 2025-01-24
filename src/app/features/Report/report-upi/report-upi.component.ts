@@ -41,7 +41,10 @@ export class ReportUpiComponent {
     this.lang=localStorage.getItem('Language');
     this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
     this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
-
+    const userLang = navigator.language || 'en';
+    const languageCode = userLang.split('-')[0];
+    this.ts.setDefaultLang(languageCode);
+    this.ts.use(this.lang || 'en');
   }
 
   ngOnInit(): void {

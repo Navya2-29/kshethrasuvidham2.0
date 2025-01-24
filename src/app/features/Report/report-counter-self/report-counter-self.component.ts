@@ -58,7 +58,7 @@ export class ReportCounterSelfComponent {
   lang:string|null;
   templeName:string|null;
   templeAddress:string|null;
-filteredData:ReportData[] = [];
+  filteredData:ReportData[] = [];
   constructor(
     private route: ActivatedRoute,
     private service: ReportService,

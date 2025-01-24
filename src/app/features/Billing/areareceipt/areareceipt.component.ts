@@ -783,7 +783,7 @@ console.log(this.selectedVazhipadItem)
   openMultiDayDialog(rowIndex: number): void {
     const dialogRef = this.dialog.open(MultidayitemsComponent, {
       height: '80vh', // Adjust height as needed
-      width: '100vw', // Fullscreen width
+      width: '85vw', // Fullscreen width
       maxWidth: '100vw', // Prevent dialog from being constrained
       panelClass: 'full-screen-dialog',
       disableClose: true,

@@ -802,7 +802,7 @@ getTransactionType(transmode: string): string {
 
   openDialogBillNumber(data: any) {
     this.dialog.open(SearchByBillNumberComponent, {
-      width: '80vw', // Set the width of the dialog
+      width: '90vw', // Set the width of the dialog
       data: data,
     });
   }

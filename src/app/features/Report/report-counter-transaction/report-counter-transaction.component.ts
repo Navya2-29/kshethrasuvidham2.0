@@ -31,7 +31,6 @@ import { HttpClient } from '@angular/common/http';
 export class ReportCounterTransactionComponent {
   displayedColumns: string[] = [
     'BillNo',
-    
     'BillDate',
     "Counter",
     'Vazhipad',
@@ -63,7 +62,9 @@ export class ReportCounterTransactionComponent {
     private service: ReportService,
     private router: Router,
     private http:HttpClient,
-  ) {}
+  ) {
+    
+  }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {

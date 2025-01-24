@@ -909,6 +909,12 @@ updateNadavaravuBillNumber(currentbillnumber: any): Observable<any[]> {
   
   }
 
+  updateBookingTransmode(payLoad:any){
+    return this.http.post<any>(Constant.BASE_URL+Constant.METHODS.UPDATEBILLMODE,payLoad)
+  
+  }
+
+
   // error handling
   private errorHandler(error: HttpErrorResponse) {
     //

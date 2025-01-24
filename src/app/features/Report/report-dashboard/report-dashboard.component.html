@@ -55,10 +55,7 @@
           />
            {{ 'Report.Cheque Statement' | translate}}
         </label>
-       
-       
-       
-        
+    
         <label>
           <input
             type="radio"
@@ -149,15 +146,31 @@
   
   <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; ">
     <form [formGroup]="searchForm">
-    <label for="prathishta" >Diety</label>
+    <label for="prathishta" style="margin:10px 0px;" >{{"PRATHISTA" | translate }}</label>
     <select  class="form-control" style="width: 200px;" formControlName="prathista" id="prathishta">
-      <option value="">Select Diety</option>
-      <option *ngFor="let item of pmaster" [value]="item.PM_ID" >{{item.PM_Name}}</option>
+      <option value="">{{"Select Diety" | translate }}</option>
+<ng-container *ngIf="lang=='en'" >
+  <option *ngFor="let item of pmaster" [value]="item.PM_ID" >{{item.PM_Name}}</option>
+</ng-container>
+
+<ng-container *ngIf="lang!='en'" >
+  <option *ngFor="let item of pmaster" [value]="item.PM_ID" >{{item.PM_RegName}}</option>
+</ng-container>
       </select>
-    <label for="Vazhipad">Vazhipad</label>
+    <label for="Vazhipad" style="margin:10px 0px;">{{"VAZHIPAD"| translate }}</label>
     <select class="form-control" style="width: 200px;" formControlName="vazhipad" id="prathishta">
-      <option value="">Select Vazhipad</option>
-      <option *ngFor="let item of Vmaster" [value]="item.VM_Id" >{{item.VM_Name}}</option>
+      <option value="">{{"Select Vazhipad" |translate }}</option>
+<ng-container *ngIf="lang=='en'">
+  <option *ngFor="let item of Vmaster" [value]="item.VM_Id" >{{item.VM_Name}}</option>
+
+</ng-container>
+
+<ng-container *ngIf="lang!='en'">
+  <option *ngFor="let item of Vmaster" [value]="item.VM_Id" >{{item.VM_RName}}</option>
+
+</ng-container>
+
+
     </select>
   </form>
   </div>
@@ -166,28 +179,24 @@
     <div class="date-card">
       <form [formGroup]="searchForm" class="date-form">
         <div class="form-group">
-          <label for="from-date">From Date</label>
+          <label for="from-date" style="margin-right: 10px;">{{"FROMDATE" | translate }}</label>
           <input type="date" id="from-date" formControlName="fromDate" />
         </div>
         <div class="form-group">
-          <label for="to-date">To Date</label>
+          <label for="to-date" style="margin-right: 20px;">{{"TODATE" | translate }}</label>
           <input type="date" id="to-date" formControlName="toDate" />
         </div>
       </form>
+    </div>
+    <div class="right-buttons" >
+      <button class="action-button" style="background-color: green;" (click)="onSearch()">{{'Search' |translate}}</button><br/>
+      <button class="action-button" (click)="onBack()">{{'Back' |translate}} </button>
+    
     </div>
   </div>
 </div>
 
 </div>
 
-<div class="right-buttons" >
-  <button class="action-button" style="background-color: green;" (click)="onSearch()">{{'Search' |translate}}</button><br/>
-  <button class="action-button" (click)="onBack()">{{'Back' |translate}} </button>
 
-<!-- </div>
-<div class="right-buttons">
-  
-</div> -->
-
-</div>
 

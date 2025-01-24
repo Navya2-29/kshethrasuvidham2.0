@@ -37,6 +37,8 @@ import { MasterService } from '../../../services/master/master.service';
 import { NotificationService } from '../../../services/notification/notification.service';
 import { multiDayFilter } from '../../../models/multidayFilter.model';
 import { TranslateService } from '@ngx-translate/core';
+import { UpperCaseDirective } from '../../../shared/directives/upper-case.directive';
+
 @Component({
   selector: 'app-multidayitems',
   standalone: true,
@@ -50,6 +52,7 @@ import { TranslateService } from '@ngx-translate/core';
     CommonModule,
     MatAutocompleteModule,
     AsyncPipe,
+    UpperCaseDirective,
     FormsModule,
     MatInputModule,
     NumberDirective,

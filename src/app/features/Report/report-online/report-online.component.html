@@ -89,13 +89,14 @@
      <table>
        <thead>
          <tr>
-           <th>Bill No</th>
-           <th>Bill Date</th>
-           <th>Vazhipad</th>
-           
-           <th>Qty</th>
-           <th>Rate</th>
-           <th>Amount</th>
+           <th>{{"BILL NO" | translate}}</th>
+           <th>{{"BILLDATE" | translate}}</th>
+           <th>{{"ID" | translate }}</th>
+           <th>{{"VAZHIPAD" | translate }}</th>
+           <th>{{"NAME" | translate }}</th>
+           <th>{{"QUANTITY" | translate }}</th>
+           <th>{{"RATE" | translate }}</th>
+           <th>{{"AMOUNT" | translate }}</th>
           
          </tr>
        </thead>
@@ -103,8 +104,9 @@
          <tr *ngFor="let item of data">
            <td>{{ item.BillNo }}</td>
            <td>{{ item.BillDate }}</td>
+           <td>{{item.InstNo}}</td>
            <td>{{item.Vazhipad}}</td>
-           
+           <td>{{item.Name}}</td>
            <td>{{ item.Qty  }}</td>
            <td style="text-align: right;">{{ item.Rate | number: '1.2-2' }}</td>
            <td style="text-align: right;" >{{ item.Amount | number: '1.2-2'}}</td>
@@ -119,7 +121,7 @@
        </tbody>
        <tfoot>
          <tr>
-           <td colspan="5" style="text-align: right;"><strong>Grand Total:</strong></td>
+           <td colspan="6" style="text-align: right;"><strong>Grand Total:</strong></td>
            <td style="font-weight: bold;text-align: right;">{{ getTotalAmount() | number: '1.2-2' }}</td>
            <!-- <td colspan="2"></td> -->
          </tr>

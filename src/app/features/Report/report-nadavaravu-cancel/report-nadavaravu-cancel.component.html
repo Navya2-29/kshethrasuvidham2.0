@@ -18,7 +18,7 @@
     <h3 style="align-items: center;text-align:center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;" >{{templeName}}</h3>
     <h4 style="align-items: center;text-align:center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;" >{{templeAddress}}</h4>
     <h5 style="align-items: center;text-align:center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;" >{{"Report Name.NADAVARAVU CANCEL REPORT" |translate}}</h5>
-    <p style="align-items: center;text-align: center;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;">{{formatDateToDDMMYYYY(fromDate)}} -{{formatDateToDDMMYYYY(toDate)}}</p>
+    <p style="align-items: center;text-align: center;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;">{{formatDateToDDMMYYYY(fromDate)}} to {{formatDateToDDMMYYYY(toDate)}}</p>
   </div>
 <!-- <div class="report-table">
   <mat-form-field>
@@ -113,13 +113,13 @@
      <table>
        <thead>
          <tr>
-           <th>Bill No</th>
-           <th>Bill Date</th>
-           <th>Vazhipad</th>
-           
-           <th>Qty</th>
-           <th>Rate</th>
-           <th>Remarks</th>
+           <th>{{"BILL NO" | translate}}</th>
+           <th>{{"BILLDATE" | translate }}</th>
+           <th>{{"VAZHIPAD" | translate }}</th>
+           <th>{{"NAME" | translate }}</th>
+           <th>{{"QUANTITY" | translate }}</th>
+           <th>{{"RATE" | translate }}</th>
+           <th>{{"REMARKS" | translate }}</th>
           
          </tr>
        </thead>
@@ -128,7 +128,7 @@
            <td>{{ item.BillNo }}</td>
            <td>{{ item.BillDate }}</td>
            <td><span *ngIf="lang=='en'">{{item.NM_Name}}</span><span *ngIf="lang!='en'">{{item.NM_RName}}</span></td>
-           
+           <td>{{item.Name}}</td>
            <td>{{ item.Qty  }}</td>
            <td style="text-align: right;">{{ item.Receipt_Amt | number: '1.2-2' }}</td>
            <td >{{ item.Reason }}</td>
@@ -143,7 +143,7 @@
        </tbody>
        <tfoot>
          <tr>
-           <td colspan="4" style="text-align: right;"><strong>Grand Total:</strong></td>
+           <td colspan="5" style="text-align: right;"><strong>Grand Total:</strong></td>
            <td style="font-weight: bold;text-align: right;">{{ getTotalAmount() | number: '1.2-2' }}</td>
            <!-- <td colspan="2"></td> -->
          </tr>

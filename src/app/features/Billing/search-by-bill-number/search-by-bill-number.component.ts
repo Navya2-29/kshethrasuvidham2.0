@@ -16,7 +16,7 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MasterService } from '../../../services/master/master.service';
 import { CommonModule } from '@angular/common';
 import { ReceiptPrintService } from '../../../shared/service/receipt-print.service';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
@@ -48,9 +48,12 @@ export interface Data {
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
-    MatSelectModule, // Add this
-    MatInputModule, // Add this
+    MatSelectModule, 
+    MatInputModule, 
     MatFormFieldModule,
+
+    ReactiveFormsModule,
+
   ],
   templateUrl: './search-by-bill-number.component.html',
   styleUrl: './search-by-bill-number.component.css',
@@ -81,6 +84,7 @@ export class SearchByBillNumberComponent {
   nakshatham: any[];
   logo: string | null;
   name:string | null;
+  updateTransMode:FormGroup
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   cancellationReason: string = '';
@@ -96,14 +100,15 @@ export class SearchByBillNumberComponent {
     @Inject(MAT_DIALOG_DATA) public data: any,
     private masterService: MasterService,
     private notification: NotificationService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private fb:FormBuilder
   ) {
     this.lastBillNo = data[0].BillNo;
     this.billDate=this.convertDateFormat(data[0].BillDate);
     this.TrnStatus = data[0].TrnStatus;
     this.displayTrnsmode = data[0].TrnsMode;
     this.duplicatebilldata = data;
-console.log(this.duplicatebilldata,"dupicate bill data first");
+    console.log(this.duplicatebilldata,"dupicate bill data first");
     this.dataSource = new MatTableDataSource(this.duplicatebilldata);
     this.role = localStorage.getItem('Role');
     this.loginId = localStorage.getItem('LoginId');
@@ -114,6 +119,25 @@ console.log(this.duplicatebilldata,"dupicate bill data first");
     this.lang = localStorage.getItem('Language');
     this.printerType=localStorage.getItem('Printer');
     this.name=localStorage.getItem('name');
+
+
+this.updateTransMode=this.fb.group({
+ 
+  
+  InstaNo:[""],
+  InstaDate:[""],
+  InstaBank:[''],
+  TransMode:[""],
+  PaidStaus:['']
+
+})
+
+
+
+
+
+
+
   }
 
   ngOnInit() {
@@ -752,6 +776,24 @@ console.log(this.duplicatebilldata,"dupicate bill data first");
     const month = String(date.getMonth() + 1).padStart(2, '0'); // Get the month and pad with 0
     const year = date.getFullYear(); // Get the year
     return `${day}-${month}-${year}`; // Format as dd-mm-yyyy
+  }
+
+
+  onEditTransmode(){
+    const formValue=this.updateTransMode.value;
+    const payLoad={
+      Type:"Booking",
+      BillNo:this.lastBillNo,
+      InstaNo:formValue.InstaNo,
+      InstaDate:formValue.InstaDate,
+      InstaBank:formValue.InstaBank,
+      TransMode:formValue.TransMode,
+      PaidStatus:"Y"
+    }
+    console.log(payLoad,"payLoad")
+    this.masterService.updateBookingTransmode(payLoad).subscribe((data)=>{
+      console.log(data, "subscription data")
+    })
   }
 
 

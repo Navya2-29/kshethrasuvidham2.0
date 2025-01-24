@@ -150,6 +150,28 @@
   </div>
 </mat-dialog-content>
 
+<div class="input-section">
+  <!-- Textboxes for input -->
+   <form [formGroup]="updateTransMode">
+  <p><input matInput class="form-control" formControlName="InstaNo" placeholder="Insta Number" ></p>
+  <p><input type="date" matInput class="form-control" formControlName="InstaDate" placeholder="Date" ></p>
+  <p><input matInput class="form-control" formControlName="InstaBank" placeholder="Bank" ></p>
+
+  <!-- Dropdown for selecting an option -->
+  <p><select matNativeControl class="form-control" formControlName="TransMode" >
+    <option value="CS" >Cash</option>
+    <option value="UP">UPI</option>
+    <option value="CR" >Credit/Due</option>
+    <option value="DB">Debit</option>
+    <option value="MO">Money order</option>
+    <option value="ON">Online</option>
+    <option value="CH">Cheque</option>
+  </select></p>
+  <p><button class="btn btn-priamary" (click)="onEditTransmode()">Edit Payment Mode</button></p>
+  </form>
+</div>
+
+
 <mat-dialog-actions class="menuend">
   <button mat-button [mat-dialog-close]="true" class="close">Close</button>
   <!-- <button

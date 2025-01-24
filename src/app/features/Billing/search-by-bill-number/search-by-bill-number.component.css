@@ -51,3 +51,34 @@ table {
   .status.cancelled {
     color: red;
   }
+  .input-section {
+    display: flex; /* Flexbox for horizontal alignment */
+    align-items: center; /* Vertically center the items */
+    gap: 10px; /* Adds space between items */
+  }
+  
+  .input-section .form-control {
+    width: auto; /* Let the width of the inputs and dropdown adjust automatically */
+    margin: 0; /* Remove any extra margins */
+  }
+  
+  .input-section button {
+    margin-left: 10px; /* Adds space between the dropdown and the button */
+  }
+  
+  @media (max-width: 768px) {
+    .input-section {
+      flex-direction: row; /* Keep items in a row even on small screens */
+      align-items: center; /* Vertically center the items */
+    }
+  
+    .input-section .form-control,
+    .input-section select {
+      width: 150px; /* Optional: Set a fixed width for inputs/select for better layout */
+    }
+  
+    .input-section button {
+      margin-left: 10px; /* Space between the button and other form elements */
+    }
+  }
+  

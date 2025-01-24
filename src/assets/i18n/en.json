@@ -34,7 +34,19 @@
   "Thithi": "Thithi",
   "Filter Options": "Filter Options",
   "Day List": "Day List",
-
+"Select Item": "Select Item",
+  
+  "BILL NO":"Bill No",
+  "BILLDATE":"Bill Date",
+  "CANCEL DATE":"Cancel Date",
+  "REMARKS":"Remarks",
+  "CHEQUEDATE":"Cheque Date",
+  "CHEQUENO":"Cheque No",
+  "ID":"Id",
+  "FROMDATE":"From Date",
+  "TODATE":"To Date",
+  "Select Diety":"Select Prathishta",
+  "Select Vazhipad":"Select Vazhipad",
   "PLACEHOLDER": {
     "VAZHIPAD": "Select Vazhipad",
     "NAME": "Enter your Name",
@@ -55,7 +67,9 @@
     "EMAIL": "Enter Email ",
     "CHEQUENO": "Upi/cheque/DD/",
     "BANKNAME": "Enter your bank Name",
-    "Description": "Description"
+    "Description": "Description",
+    "COUNTERID":"Counter Id",
+    "ITEM":"Item"
   },
   "OPTIONS": {
     "TIME1": "Any Time",
@@ -103,6 +117,20 @@
     "Vazhipad Name": "Name",
     "Vazhipad Code": "Code",
     "Amount": "Amount",
-    "Print":"Print"
+    "Print":"Print",
+    "Code":"Code",
+    "Vazhipad":"Vazhipad",
+    "Active":"Active",
+    "Blocking":"Blocking",
+    "Booking":"Booking",
+    "Seasonal":"Seasonal",
+    "Special":"Special",
+    "Receipt":"Reciept",
+    "MultiName":"MultiName",
+    "Description":"Description",
+    "Rate-Change":"Rate-Change",
+    "SMS":"SMS",
+    "Vazhipad List":"Vazhipad List",
+   "Select prathista":"Select Prathishta"
   }
 }

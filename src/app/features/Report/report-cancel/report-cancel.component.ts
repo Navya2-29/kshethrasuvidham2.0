@@ -52,8 +52,6 @@ export class ReportCancelComponent {
 
   }
 
-
-
 ngOnInit() {
   this.route.queryParams.subscribe((params) => {
     const type = params['type'];
