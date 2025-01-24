@@ -1220,8 +1220,13 @@ focusPaymentDropdown(): void {
 getNameAndStarByMobilenumber(){
 
  console.log(this.mobileNumber,"mobile number data");
- this.receiptPrinrservice.setMobileNumber(this.mobileNumber);
-    console.log('Mobile number sent:', this.mobileNumber);
+ if(this.mobileNumber){
+  this.receiptPrinrservice.setMobileNumber(this.mobileNumber);
+  console.log('Mobile number sent:', this.mobileNumber);
+ }else{
+  this.notiication.showError("Please enter the valid mobile number and try again")
+ }
+ 
 
 }
 

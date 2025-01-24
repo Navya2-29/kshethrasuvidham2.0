@@ -81,23 +81,25 @@
      <table>
        <thead>
          <tr>
-           <th>Bill No</th>
+           <th>{{"BILL NO" | translate}}</th>
           
-           <th>Bank Name</th>
-           <th>Vazhipad</th>
-           <th>Cheque Date</th>
-           <th>Cheque No.</th>
-           <th>Amount</th>
-          
+           <th>{{"PLACEHOLDER.BANKNAME" | translate}}</th>
+           <th>{{"CHEQUEDATE" |translate}}</th>
+           <th>{{"CHEQUENO" |translate }}</th>
+           <th>{{"VAZHIPAD" |translate }}</th>
+           <th>{{"NAME" |translate}}</th>
+           <th>{{"AMOUNT" | translate}}</th>
          </tr>
        </thead>
        <tbody>
          <tr *ngFor="let item of filteredData">
            <td>{{ item.BillNo }}</td>
            <td>{{ item.InstBank }}</td>
-           <td>{{item.Vazhipad}}</td>
            <td>{{ item.InstDate }}</td>
            <td style="text-align: right;">{{ item.InstNo  }}</td>
+           <td>{{item.Vazhipad}}</td>
+           <td>{{item.Name}}</td>
+         
            <td style="text-align: right;" >{{ item.Amount | number: '1.2-2'}}</td>
           
       
@@ -106,13 +108,14 @@
            
            <!-- <td>{{ item.Remarks }}</td> -->
          </tr>
-         <tr *ngIf="filteredData.length<=0">No data found</tr>
+         <tr *ngIf="filteredData.length<=0">
+          No data found</tr>
        </tbody>
        <tfoot>
          <tr>
-           <td colspan="5" style="text-align: right;"><strong>Grand Total:</strong></td>
+           <td colspan="6" style="text-align: right;"><strong>Grand Total:</strong></td>
            <td style="font-weight: bold;text-align: right;">{{ getTotalAmount() | number: '1.2-2' }}</td>
-           <td colspan="2"></td>
+           <!-- <td colspan="2"></td> -->
          </tr>
         
        </tfoot>

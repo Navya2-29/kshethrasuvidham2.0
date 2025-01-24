@@ -166,14 +166,15 @@ devoteeSearchMobileNumber:string |null;
       this.sendDataToApi(combinedData);
     });
 
-
-
     this.receiptPrintService.mobileNumber$.subscribe((number) => {
       this.devoteeSearchMobileNumber = number;
       console.log('Mobile number received:', this.devoteeSearchMobileNumber);
       if(this.devoteeSearchMobileNumber){
         this.openBillingDialog(this.devoteeSearchMobileNumber)
       }
+      // else{
+      //   this.notification.error("Please enter valid Mobile number and try again")
+      // }
     });
 
 
@@ -1676,7 +1677,7 @@ openBillingDialog(mobileNumber:string) {
     this.nameStarArray=result
     if (result) {
        let index=this.vazhipadinfo.length-1;
-
+console.log(index,"firsrt index check")
       // Add multiple rows based on the array of Name and Star pairs
       result.forEach((item: { Name: string, Star: string }) => {
         this.addRowsFromNameStarArray(item.Name, item.Star,index);
@@ -1707,15 +1708,15 @@ openBillingDialog(mobileNumber:string) {
 }
   
 addRowForNameAndStar(index: number,name:string,star:string): void {
-  if (index === -1 && this.vazhipadinfo.length === 0) {
-    this.vazhipadinfo.push(this.createRow());
-    this.setupAutocomplete(0);
-    this.setupStarAutocomplete(0);
-    this.updateTotalAmount();
-    return;
+  // if (index === -1 && this.vazhipadinfo.length === 0) {
+  //   this.vazhipadinfo.push(this.createRow());
+  //   this.setupAutocomplete(0);
+  //   this.setupStarAutocomplete(0);
+  //   this.updateTotalAmount();
+  //   return;
 
-  }
-  this.indexForAutoComplete = index;
+  // }
+  // this.indexForAutoComplete = index;
   // if (
   //   this.vazhipadinfo.length > 0 &&
   //   !this.vazhipadinfo.at(this.vazhipadinfo.length - 1).valid
@@ -1728,6 +1729,15 @@ addRowForNameAndStar(index: number,name:string,star:string): void {
   // const currentRow = this.vazhipadinfo.at(index) as FormGroup;
   // const currentName = currentRow.get('Name')?.value;
   // const currentStar = currentRow.get('Star')?.value;
+if(index==0){
+  const row = this.vazhipadinfo.at(index) as FormGroup;
+    row.patchValue({
+     Name:name,
+      starName:star,
+      Star:"1"
+    })
+}
+else{
   const newRow = this.createRow();
   newRow.patchValue({
     Name: name,
@@ -1736,13 +1746,13 @@ addRowForNameAndStar(index: number,name:string,star:string): void {
   });
 
   this.vazhipadinfo.insert(index, newRow);
-  this.setupAutocomplete(index+1);
-  this.setupStarAutocomplete(index+1);
+  this.setupAutocomplete(index);
+  this.setupStarAutocomplete(index);
   this.updateTotalAmount();
   setTimeout(() => {
     this.focusOnNewRow(); // Focus on the newly created row's text box
   }, 0);
-
+}
 }
 
 

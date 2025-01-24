@@ -20,7 +20,7 @@
   <h4 style="align-items: center;text-align:center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;" >{{templeAddress}}</h4>
 
   <h5 style="align-items: center;text-align:center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;" >{{'Report Name.ADVANCE BOOKING REPORT'|translate}}</h5>
-  <p style="align-items: center;text-align: center;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;">{{formatDateToDDMMYYYY(fromDate)}} -{{formatDateToDDMMYYYY(toDate)}}</p>
+  <p style="align-items: center;text-align: center;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;">{{formatDateToDDMMYYYY(fromDate)}} to {{formatDateToDDMMYYYY(toDate)}}</p>
 
 </div>
 
@@ -97,13 +97,13 @@
     <table style="width: 100%; border-collapse: collapse; text-align: left; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
       <thead>
         <tr style="background-color:#ddd ; color: black; font-weight: bold;">
-          <th style="padding: 10px; border: 1px solid #ddd;">Bill No</th>
-          <th style="padding: 10px; border: 1px solid #ddd;">Vazhipad</th>
-          <th style="padding: 10px; border: 1px solid #ddd;">Name</th>
-          <th style="padding: 10px; border: 1px solid #ddd;">Star</th>
-          <th style="padding: 10px; border: 1px solid #ddd;">Qty</th>
-          <th style="padding: 10px; border: 1px solid #ddd; text-align: right;">Rate</th>
-          <th style="padding: 10px; border: 1px solid #ddd; text-align: right;">Amount</th>
+          <th style="padding: 10px; border: 1px solid #ddd;">{{"BILL NO" |translate}}</th>
+          <th style="padding: 10px; border: 1px solid #ddd;">{{"VAZHPAD" |translate}}</th>
+          <th style="padding: 10px; border: 1px solid #ddd;">{{"NAME" |translate}}</th>
+          <th style="padding: 10px; border: 1px solid #ddd;">{{"STAR" | translate}}</th>
+          <th style="padding: 10px; border: 1px solid #ddd;">{{"QUANTITY" | translate}}</th>
+          <th style="padding: 10px; border: 1px solid #ddd; text-align: right;">{{"RATE" | translate}}</th>
+          <th style="padding: 10px; border: 1px solid #ddd; text-align: right;">{{"AMOUNT"| translate }}</th>
         </tr>
       </thead>
       <tbody>
