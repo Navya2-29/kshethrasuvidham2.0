@@ -52,19 +52,29 @@ table {
     color: red;
   }
   .input-section {
+    margin-top: 20px;
     display: flex; /* Flexbox for horizontal alignment */
+    flex-direction: row; /* Ensure items are in one row */
     align-items: center; /* Vertically center the items */
-    gap: 10px; /* Adds space between items */
+    gap: 10px; /* Space between the items */
+    flex-wrap: nowrap; /* Prevent wrapping to the next line */
   }
   
   .input-section .form-control {
-    width: auto; /* Let the width of the inputs and dropdown adjust automatically */
-    margin: 0; /* Remove any extra margins */
+    flex: 1 1 auto; /* Let inputs take available space but don't stretch them too much */
+    min-width: 120px; /* Set a minimum width to prevent inputs from becoming too small */
+  }
+  
+  .input-section select {
+    flex: 1 1 auto; /* Let the select dropdown take available space */
+    min-width: 120px; /* Set a minimum width to prevent the dropdown from becoming too small */
   }
   
   .input-section button {
-    margin-left: 10px; /* Adds space between the dropdown and the button */
+    margin-left: 10px; /* Adds space between the last input and the button */
+    white-space: nowrap; /* Prevent text from wrapping in the button */
   }
+  
   
   @media (max-width: 768px) {
     .input-section {
@@ -82,3 +92,7 @@ table {
     }
   }
   
+  .is-invalid {
+    border: 2px solid red !important; /* !important ensures it overrides other styles */
+    border-radius: 4px;
+  }

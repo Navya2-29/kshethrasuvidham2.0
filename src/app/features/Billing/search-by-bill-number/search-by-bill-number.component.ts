@@ -14,9 +14,9 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MasterService } from '../../../services/master/master.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { ReceiptPrintService } from '../../../shared/service/receipt-print.service';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
@@ -95,19 +95,28 @@ export class SearchByBillNumberComponent {
   differentDateArray:any[]
   printerType:string |null;
   billDate:any;
+  InstaNo:string;
+  InstaDate:string;
+  InstaBank:string;
+  MobileNo:string;
   constructor(
     public dialogRef: MatDialogRef<SearchByBillNumberComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private masterService: MasterService,
     private notification: NotificationService,
     private dialog: MatDialog,
-    private fb:FormBuilder
+    private fb:FormBuilder,
+   
   ) {
     this.lastBillNo = data[0].BillNo;
     this.billDate=this.convertDateFormat(data[0].BillDate);
     this.TrnStatus = data[0].TrnStatus;
     this.displayTrnsmode = data[0].TrnsMode;
     this.duplicatebilldata = data;
+   this. InstaNo=data[0].InstNo;
+    this.InstaDate=data[0].InstDate;
+      this.InstaBank=data[0].InstBank;
+      this.MobileNo=data[0].MobileNo;
     console.log(this.duplicatebilldata,"dupicate bill data first");
     this.dataSource = new MatTableDataSource(this.duplicatebilldata);
     this.role = localStorage.getItem('Role');
@@ -120,37 +129,30 @@ export class SearchByBillNumberComponent {
     this.printerType=localStorage.getItem('Printer');
     this.name=localStorage.getItem('name');
 
+   
 
-this.updateTransMode=this.fb.group({
- 
-  
-  InstaNo:[""],
-  InstaDate:[""],
-  InstaBank:[''],
-  TransMode:[""],
-  PaidStaus:['']
-
-})
-
-
-
-
-
-
-
-  }
+}
 
   ngOnInit() {
     this.loadStarData();
+
+console.log(this.TrnStatus,"transmode");
+    this.updateTransMode=this.fb.group({
+ 
+      InstaNo:[this.InstaNo],
+      InstaDate:[this.convertToDateFormatyyymmdd(this.InstaDate)],
+      InstaBank:[this.InstaBank],
+      Trnsmode:[this.displayTrnsmode],
+      PaidStatus:['Y'],
+      MobileNo:[this.MobileNo]
+    })
     // this.getStarData();
+    this.subscribeToTrnsmodeChanges()
   }
 
   getNakshthram(id: string): string {
     return this.starData[id] || 'Unknown'; // Return 'Unknown' if ID not found
   }
-
- 
-
 
   loadStarData(): void {
     const payLoad = { Type: 'ListStar', Code: '' };
@@ -487,6 +489,12 @@ this.updateTransMode=this.fb.group({
     return `${day}-${month}-${year}`;
   }
 
+
+  // convertToDateFormat(dateString: string): any {
+  //   const date = new Date(dateString); // Convert the string to a Date object
+  //   return this.datePipe.transform(date, 'yyyy-MM-dd'); // Format to 'yyyy-MM-dd'
+  // }
+
   editRow(row: any) {
     console.log(row);
     row.isEditing = true;
@@ -779,24 +787,160 @@ this.updateTransMode=this.fb.group({
   }
 
 
-  onEditTransmode(){
-    const formValue=this.updateTransMode.value;
-    const payLoad={
-      Type:"Booking",
-      BillNo:this.lastBillNo,
-      InstaNo:formValue.InstaNo,
-      InstaDate:formValue.InstaDate,
-      InstaBank:formValue.InstaBank,
-      TransMode:formValue.TransMode,
-      PaidStatus:"Y"
-    }
-    console.log(payLoad,"payLoad")
-    this.masterService.updateBookingTransmode(payLoad).subscribe((data)=>{
-      console.log(data, "subscription data")
-    })
+
+  private showValidationErrors() {
+    Object.keys(this.updateTransMode.controls).forEach((key) => {
+      const controlErrors = this.updateTransMode.get(key)?.errors;
+      if (controlErrors) {
+        if (controlErrors['required']) {
+          this.notification.showError(`${key} is required`, 'Billing');
+        }
+        if (controlErrors['pattern']) {
+          if (key === 'MobileNo') {
+            this.notification.showError(
+              'Invalid phone number. Must be 10 digits atleast.'
+            );
+          }
+         
+        }
+     
+        if (controlErrors['minLength']) {
+          if (key === 'MobileNo') {
+            this.notification.showError(
+              'Invalid phone number. Must be 10 digits atleast.'
+            );
+          }
+        }
+      }
+    });
   }
 
 
+  private markAllFieldsAsTouched() {
+    this.updateTransMode.markAllAsTouched();
+  }
+
+  onEditTransmode(){
+if(this.updateTransMode.invalid){
+  this.showValidationErrors();
+  this.markAllFieldsAsTouched();
+  return;
+}
+
+
+   
+
+      const formValue=this.updateTransMode.value;
+
+      const payLoad={
+        Type:"Booking",
+        BillNo:this.lastBillNo,
+        InstaNo:formValue.InstaNo,
+        InstaDate:formValue.InstaDate,
+        InstaBank:formValue.InstaBank,
+        TransMode:formValue.Trnsmode,
+        PaidStatus:formValue.PaidStatus,
+        MobileNo:formValue.MobileNo,
+      }
+      console.log(payLoad,"payLoad")
+      this.masterService.updateBookingTransmode(payLoad).subscribe((data)=>{
+        console.log(data, "subscription data")
+      })
+
+    
+    
+  }
+
+
+
+  private subscribeToTrnsmodeChanges() {
+    
+    this.updateTransMode
+      .get('Trnsmode')
+      ?.valueChanges.subscribe((value) => {
+        if (value == 'CH') {
+          this.setChequeValidators();
+          this.clearCreditValidators();
+        } else if (value == 'CR' ) {
+          this.updateTransMode.patchValue({ PaidStatus: 'N' });
+          this.clearChequeValidators();
+          this.setCreditValidators();
+        } 
+        // else if (value === 'upi' || value === 'debit' || value === 'bank' ) {
+        //   // this.customerdetailsForBillingForm.patchValue({ PaidStatus: 'N' });
+        //   this.clearChequeValidators();
+        //   this.clearCreditValidators();
+        //   this.setUpiValidators();
+        // } 
+        else {
+          this.clearChequeValidators();
+          this.clearCreditValidators();
+          this.clearUpiValidators();
+        }
+      });
+  }
+
+
+
+  private setChequeValidators() {
+    this.updateTransMode
+      .get('InstaNo')
+      ?.setValidators([Validators.required,Validators.minLength(6)]);
+    this.updateTransMode
+      .get('InstaBank')
+      ?.setValidators([Validators.required]);
+    this.updateTransMode
+      .get('InstaDate')
+      ?.setValidators([Validators.required]);
+    this.updateTransMode.get('InstaNo')?.updateValueAndValidity();
+    this.updateTransMode
+      .get('InstaBank')
+      ?.updateValueAndValidity();
+    this.updateTransMode
+      .get('InstaDate')
+      ?.updateValueAndValidity();
+  }
+
+
+  private clearChequeValidators() {
+    this.updateTransMode.get('InstaNo')?.clearValidators();
+    this.updateTransMode.get('InstaBank')?.clearValidators();
+    this.updateTransMode.get('InstaDate')?.clearValidators();
+    this.updateTransMode.get('InstaNo')?.updateValueAndValidity();
+    this.updateTransMode
+      .get('InstaBank')
+      ?.updateValueAndValidity();
+    this.updateTransMode
+      .get('InstaDate')
+      ?.updateValueAndValidity();
+  }
+
+
+  private setCreditValidators() {
+    this.updateTransMode
+      .get('MobileNo')
+      ?.setValidators([Validators.required,Validators.minLength(10),Validators.pattern('^[0-9]{10}$')],);
+    this.updateTransMode.get('MobileNo')?.updateValueAndValidity();
+  }
+
+
+  private clearCreditValidators() {
+    this.updateTransMode.get('MobileNo')?.clearValidators();
+    this.updateTransMode.get('MobileNo')?.updateValueAndValidity();
+  }
+
+  private clearUpiValidators() {
+    this.updateTransMode.get('InstaNo')?.clearValidators();
+    this.updateTransMode.get('InstaNo')?.updateValueAndValidity();
+  }
+
+  convertToDateFormatyyymmdd(dateString: string): string {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = ('0' + (date.getMonth() + 1)).slice(-2); // Months are 0-based
+    const day = ('0' + date.getDate()).slice(-2);
+    return `${year}-${month}-${day}`;
+  }
   }
 
 
