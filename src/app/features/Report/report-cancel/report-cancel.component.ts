@@ -61,9 +61,9 @@ ngOnInit() {
   });
 }
 
-getTotalAmount(): number {
-  return this.data.reduce((sum, item) => sum + item.Amount, 0);
-}
+// getTotalAmount(): number {
+//   return this.data.reduce((sum, item) => sum + item.Amount, 0);
+// }
 // / Call your API service to get the report data
   fetchReportData(type: string, fromDate: string, toDate: string): void {
     const payLoad = {

@@ -23,6 +23,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { CancelBillRemarkComponent } from '../cancel-bill-remark/cancel-bill-remark.component';
 import { NotificationService } from '../../../services/notification/notification.service';
 import { MatSelectModule } from '@angular/material/select';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 export interface Data {
   vazhipad: string;
@@ -51,7 +52,7 @@ export interface Data {
     MatSelectModule, 
     MatInputModule, 
     MatFormFieldModule,
-
+    TranslateModule,
     ReactiveFormsModule,
 
   ],
@@ -106,7 +107,7 @@ export class SearchByBillNumberComponent {
     private notification: NotificationService,
     private dialog: MatDialog,
     private fb:FormBuilder,
-   
+   private ts: TranslateService,
   ) {
     this.lastBillNo = data[0].BillNo;
     this.billDate=this.convertDateFormat(data[0].BillDate);
@@ -129,14 +130,21 @@ export class SearchByBillNumberComponent {
     this.printerType=localStorage.getItem('Printer');
     this.name=localStorage.getItem('name');
 
-   
+
+    // this.lang=localStorage.getItem('Language');
+    // this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
+    // this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address'; 
+    const userLang = navigator.language || 'en';
+    const languageCode = userLang.split('-')[0];
+    this.ts.setDefaultLang(languageCode);
+    this.ts.use(this.lang || 'en');
 
 }
 
   ngOnInit() {
     this.loadStarData();
 
-console.log(this.TrnStatus,"transmode");
+    console.log(this.TrnStatus,"transmode");
     this.updateTransMode=this.fb.group({
  
       InstaNo:[this.InstaNo],
@@ -844,11 +852,10 @@ if(this.updateTransMode.invalid){
       }
       console.log(payLoad,"payLoad")
       this.masterService.updateBookingTransmode(payLoad).subscribe((data)=>{
-        console.log(data, "subscription data")
+        console.log(data, "subscription data");
+        this.notification.showSuccess(" Payment mode Updated successfully")
       })
 
-    
-    
   }
 
 

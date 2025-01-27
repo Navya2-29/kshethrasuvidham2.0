@@ -96,8 +96,8 @@
            <th>{{"VAZHIPAD" | translate }}</th>
            <th>{{"NAME"| translate }}</th>
            <th>{{"PLACEHOLDER.PHONE" | translate}}</th>
-           <th>{{"QUANTITY" | translate }}</th>
-           <th>{{"RATE" | translate }}</th>
+           <!-- <th>{{"QUANTITY" | translate }}</th>
+           <th>{{"RATE" | translate }}</th> -->
            <th>{{"AMOUNT" | translate }}</th>
           
          </tr>
@@ -109,8 +109,8 @@
            <td>{{item.Vazhipad}}</td>
            <td>{{item.Name}}</td>
            <td>{{item.MobileNo}}</td>
-           <td>{{ item.Qty  }}</td>
-           <td style="text-align: right;">{{ item.Rate | number: '1.2-2' }}</td>
+           <!-- <td>{{ item.Qty  }}</td>
+           <td style="text-align: right;">{{ item.Rate | number: '1.2-2' }}</td> -->
            <td style="text-align: right;" >{{ item.Amount | number: '1.2-2'}}</td>
            
       
@@ -123,7 +123,7 @@
        </tbody>
        <tfoot>
          <tr>
-           <td colspan="7" style="text-align: right;"><strong>Grand Total:</strong></td>
+           <td colspan="5" style="text-align: right;"><strong>Grand Total:</strong></td>
            <td style="font-weight: bold;text-align: right;">{{ getTotalAmount() | number: '1.2-2' }}</td>
            <!-- <td colspan="2"></td> -->
          </tr>

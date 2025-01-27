@@ -85,7 +85,7 @@
     "Daily Statement (Counter)": "Daily Statement (Counter)",
     "All Counter": "All Counter",
     "Online Report": "Online Report",
-    "Cancel Report": "Cancel Report",
+    "Cancel Report": "Cancellation Report",
     "Nadavaravu Cancel": "Nadavaravu Cancel",
     "Debit/Credit Card": "Debit/Credit Card",
     "Money Order": "Money Order",
@@ -131,6 +131,7 @@
     "Rate-Change":"Rate-Change",
     "SMS":"SMS",
     "Vazhipad List":"Vazhipad List",
-   "Select prathista":"Select Prathishta"
+   "Select prathista":"Select Prathishta",
+   "Credit Collection":"Credit Collection"
   }
 }

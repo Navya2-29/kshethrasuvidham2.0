@@ -112,12 +112,12 @@
       <thead>
         <tr>
           <th>{{"BILL NO" |translate}}</th>
-          <th>{{"BILLDATE" |translate}}</th>
+          <!-- <th>{{"BILLDATE" |translate}}</th>
           <th>{{"VAZHIPAD" | translate}}</th>
           <th>{{"NAME" | translate }}</th>
           <th>{{"QUANTITY" |translate }}</th>
           <th>{{"RATE" | translate }}</th>
-          <th>{{"AMOUNT" |translate}}</th>
+          <th>{{"AMOUNT" |translate}}</th> -->
           <th>{{"CANCEL DATE" | translate }}</th>
           <th>{{"REMARKS" | translate}}</th>
         </tr>
@@ -125,24 +125,24 @@
       <tbody>
         <tr *ngFor="let item of data">
           <td>{{ item.BillNo }}</td>
-          <td>{{ item.BillDate }}</td>
+          <!-- <td>{{ item.BillDate }}</td>
           <td>{{item.Vazhipad}}</td>
           <td>{{item.Name}}</td>
           <td>{{ item.Qty  }}</td>
-          <td style="text-align: right;">{{ item.Rate | number: '1.2-2' }}</td>
-          <td style="text-align: right;" >{{ item.Amount | number: '1.2-2'}}</td>
-          <td>{{ item.Canceldt }}</td>
-          <td>{{item.Remarks}}</td>
+          <td style="text-align: right;">{{ item.Rate | number: '1.2-2' }}</td> -->
+          <!-- <td style="text-align: right;" >{{ item.Amount | number: '1.2-2'}}</td> -->
+          <td>{{ item.CancelDate }}</td>
+          <td>{{item.Reason}}</td>
           <!-- <td>{{ item.Remarks }}</td> -->
         </tr>
         <tr *ngIf="data.length<=0">No data found</tr>
       </tbody>
       <tfoot>
-        <tr>
+        <!-- <tr>
           <td colspan="6" style="text-align: right;"><strong>Grand Total:</strong></td>
           <td style="font-weight: bold;text-align: right;">{{ getTotalAmount() | number: '1.2-2' }}</td>
           <td colspan="2"></td>
-        </tr>
+        </tr> -->
       </tfoot>
     </table>
   </div>

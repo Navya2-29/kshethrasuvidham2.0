@@ -12,7 +12,7 @@
   "TODAYCOLLECTION": "ആകെ വരവ്",
   "LastBillNo": "അവസാന ബിൽ നമ്പർ",
   "Cash": "ക്യാഷ്",
-  "Credit": "ക്രെഡിറ്റ്",
+  "Credit": "ക്രെഡിറ്റ്/ഡ്യൂ",
   "UPI": "യുപിഐ",
   "Debit": "ഡെബിറ്റ്",
   "Online": "ഓൺലൈൻ ",
@@ -47,6 +47,7 @@
   "TODATE":"വരെ",
   "Select Diety":"സെലക്ട് പ്രതിഷ്ഠ",
   "Select Vazhipad":"സെലക്ട് വഴിപാട്",
+   "Mode":"പെയ്മെന്റ് മോഡ്",
   "PLACEHOLDER": {
     "VAZHIPAD": "വഴിപാട്",
     "NAME": "പേര് ",
@@ -71,6 +72,7 @@
     "Description": "വിവരണം",
     "COUNTERID":"കൌണ്ടർ ഐഡി",
     "ITEM":"ഐറ്റം"
+   
   },
   "OPTIONS": {
     "TIME1": "എപ്പോൾ വേണമെങ്കിലും",
@@ -86,7 +88,7 @@
     "Daily Statement (Counter)": "ഡെയിലി സ്റ്റേറ്റ്മെന്റ്(കൗണ്ടർ)",
     "All Counter": "എല്ലാ കൗണ്ടർ",
     "Online Report": "ഓൺലൈൻ ",
-    "Cancel Report": "കാൻസൽ",
+    "Cancel Report": "കാൻസൽ റിപ്പോർട്ട്",
     "Nadavaravu Cancel": "നടവരവ് കാൻസൽ",
     "Debit/Credit Card": "ഡെബിറ്റ്/ക്രെഡിറ്റ്  കാർഡ് ",
     "Money Order": "മണി ഓർഡർ",
@@ -95,7 +97,8 @@
     "UPI": "യുപിഐ സ്റ്റേറ്റ്മെന്റ്",
     "Offering Only": "വഴിപാട് മാത്രം",
     "Nadavaravu Booking": "നടവരവ് ബുക്കിംഗ്",
-    "Vazhipad Cancel": "വഴിപാട് ക്യാൻസൽ"
+    
+    "Credit Collection":"ക്രെഡിറ്റ് കളക്ഷൻ "
   },
   "Report Name": {
     "ADVANCE BOOKING REPORT": "മുൻകൂർ ബുക്കുചെയ്യുന്നവ",
@@ -104,7 +107,7 @@
     "DAILY STATEMENT (DETAILED) REPORT": "ഡെയിലി സ്റ്റെമെന്റ്റ് (ഡീറ്റൈൽഡ്) റിപ്പോർട്ട് ",
     "DAILY TEMPLE COLLECTION (COUNTER)": "ഡെയിലി ടെംപ്ളേ കളക്ഷൻ (കൌണ്ടർ)",
     "ONLINE REPORT": "ഓൺലൈൻ റിപ്പോർട്ട്",
-    "VAZHIPAD BOOKING CANCEL REPORT": "വഴിപാട് ബുക്കിംഗ് കാൻസൽ റിപ്പോർട്ട്",
+    "VAZHIPAD BOOKING CANCEL REPORT": "കാൻസൽ റിപ്പോർട്ട്",
     "NADAVARAVU CANCEL REPORT": "നടവറവ് കാൻസൽ റിപ്പോർട്ട്",
     "DEBIT REPORT": "ഡെബിറ്റ് റിപ്പോർട്ട്",
     "MONEY ORDER REPORT": "മണി ഓർഡർ റിപ്പോർട്ട്",
@@ -131,7 +134,8 @@
     "Rate-Change":"റേറ്റ് -ചേഞ്ച്",
     "SMS":"എസ്എംഎസ് ",
     "Vazhipad List":"വഴിപാട്  ലിസ്റ്റ്",
-   "Select prathista":"സെലക്ട് പ്രതിഷ്ട"
+   "Select prathista":"സെലക്ട് പ്രതിഷ്ട",
+  "Credit Collection Report":"ക്രെഡിറ്റ് കളക്ഷൻ റിപ്പോർട്ട്"
   
   }
 }

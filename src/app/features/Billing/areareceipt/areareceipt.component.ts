@@ -185,6 +185,8 @@ devoteeSearchMobileNumber:string |null;
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
+
+    
   }
 
   onBack() {
@@ -1755,5 +1757,13 @@ else{
 }
 }
 
+
+
+
+// ngOnDestroy(): void {
+//   // Stop monitoring when this component is destroyed
+//   this.authService.logout();
+//   console.log('Stopped monitoring for this component');
+// }
 
 }
