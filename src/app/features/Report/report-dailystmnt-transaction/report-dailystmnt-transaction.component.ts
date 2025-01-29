@@ -476,7 +476,7 @@ export class ReportDailystmntTransactionComponent {
         if (this.lang == 'en') {
           return 'CASH';
         } else {
-          return 'കാഷ്';
+          return 'ക്യാഷ്';
         }
       case 'MO':
         if (this.lang == 'en') {

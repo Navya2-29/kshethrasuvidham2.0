@@ -148,10 +148,20 @@
           />
           {{'Report.Credit Collection' | translate }}
         </label>
+
+
+        <label>
+          <input
+            type="radio"
+            formControlName="vazhipadOption"
+            value="duplicate"
+          />
+          {{'Report.report-duplicate' | translate }}
+        </label>
       </div>
     </form>
   </div>
-  
+ 
   <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; ">
     <form [formGroup]="searchForm">
     <label for="prathishta" style="margin:10px 0px;" >{{"PRATHISTA" | translate }}</label>
