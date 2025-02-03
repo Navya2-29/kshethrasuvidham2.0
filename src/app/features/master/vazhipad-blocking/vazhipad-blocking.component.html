@@ -12,7 +12,7 @@
         <h1 class="tname">{{templeName}}</h1>
       </div>
       <div class="master">
-        <div class="col-md-5 fixitems" style="height: 90vh; overflow: scroll">
+        <div class="col-md-5 fixitems" style="height: 80vh; overflow: scroll">
           <h1 style="font-weight: 500">Vazhipad Blocking Master</h1>
           <form [formGroup]="vazhipadBlockingForm">
             <table class="table">
@@ -61,6 +61,61 @@
               <tr>
                 <td>Blocking Category<span class="text-danger">*</span></td>
               </tr>
+
+              <tr>
+                <td>
+                  From date<span class="text-danger">*</span
+                  ><input
+                    required
+                    type="date"
+                    [min]="today"
+                    class="form-control sps"
+                    formControlName="VB_FromDate"
+                  />
+                </td>
+                <td>
+                  To date<span class="text-danger">*</span
+                  ><input
+                    required
+                    type="date"
+                    class="form-control sps"
+                    formControlName="VB_ToDate"
+                  />
+                </td>
+              </tr>
+              <div
+                *ngIf="
+                  vazhipadBlockingControl['VB_FromDate'].invalid &&
+                  (vazhipadBlockingControl['VB_FromDate'].dirty ||
+                    vazhipadBlockingControl['VB_FromDate'].touched)
+                "
+                class="pl-1 text-danger"
+              >
+                <div
+                  *ngIf="
+                    vazhipadBlockingControl['VB_FromDate'].hasError('required')
+                  "
+                >
+                  <small>from date is required.</small>
+                </div>
+                <div
+                  *ngIf="
+                    vazhipadBlockingControl['VB_ToDate'].invalid &&
+                    (vazhipadBlockingControl['VB_ToDate'].dirty ||
+                      vazhipadBlockingControl['VB_ToDate'].touched)
+                  "
+                  class="pl-1 text-danger"
+                >
+                  <div
+                    *ngIf="
+                      vazhipadBlockingControl['VB_ToDate'].hasError('required')
+                    "
+                  >
+                    <small>To Date is required.</small>
+                  </div>
+                </div>
+              </div>
+
               <tr>
                 <td colspan="3">
                   <input
@@ -163,59 +218,7 @@
                   </mat-select>
                 </td>
               </tr>
-              <tr>
-                <td>
-                  From date<span class="text-danger">*</span
-                  ><input
-                    required
-                    type="date"
-                    [min]="today"
-                    class="form-control sps"
-                    formControlName="VB_FromDate"
-                  />
-                </td>
-                <td>
-                  To date<span class="text-danger">*</span
-                  ><input
-                    required
-                    type="date"
-                    class="form-control sps"
-                    formControlName="VB_ToDate"
-                  />
-                </td>
-              </tr>
-              <div
-                *ngIf="
-                  vazhipadBlockingControl['VB_FromDate'].invalid &&
-                  (vazhipadBlockingControl['VB_FromDate'].dirty ||
-                    vazhipadBlockingControl['VB_FromDate'].touched)
-                "
-                class="pl-1 text-danger"
-              >
-                <div
-                  *ngIf="
-                    vazhipadBlockingControl['VB_FromDate'].hasError('required')
-                  "
-                >
-                  <small>from date is required.</small>
-                </div>
-                <div
-                  *ngIf="
-                    vazhipadBlockingControl['VB_ToDate'].invalid &&
-                    (vazhipadBlockingControl['VB_ToDate'].dirty ||
-                      vazhipadBlockingControl['VB_ToDate'].touched)
-                  "
-                  class="pl-1 text-danger"
-                >
-                  <div
-                    *ngIf="
-                      vazhipadBlockingControl['VB_ToDate'].hasError('required')
-                    "
-                  >
-                    <small>To Date is required.</small>
-                  </div>
-                </div>
-              </div>
+             
               <tr *ngIf="dateType == 'Malayalam'">
                 <td>
                   From date<span class="text-danger">*</span>

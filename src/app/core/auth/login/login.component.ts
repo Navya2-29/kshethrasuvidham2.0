@@ -33,15 +33,14 @@ export class LoginComponent implements OnInit {
   private readonly formBuilder=inject(FormBuilder);
   private readonly authService=inject(AuthService);
   private readonly router=inject(Router);
-  constructor(private http:HttpClient, private dialog: MatDialog, private  service:MasterService){    
-  }
+  constructor(private http:HttpClient, private dialog: MatDialog, private  service:MasterService){ }
   ngOnInit(): void {
     this.getTempleData()
     this.loginForm=this.formBuilder.group({
       username:['',[Validators.required]],
       password:['',[Validators.required]]
    })
-   this.autoLogin();
+  //  this.autoLogin();
   }
 
 
@@ -87,7 +86,7 @@ submitLogin(login:Login){
           localStorage.setItem('alertmsg', response.alertmsg);
           localStorage.setItem('Role', response.Role);
           localStorage.setItem('LoginId',response.LoginId);
-          localStorage.setItem('loggedIn', 'true');
+          sessionStorage.setItem('loggedIn', 'true');
           
           // Optional: Redirect to the dashboard or another page
           

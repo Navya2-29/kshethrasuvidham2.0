@@ -2,9 +2,9 @@ import { NgPluralCase } from '@angular/common';
 
 export const Constant = {
   BASE_URL: 'http://api.suvidham.in/api/KshetramAPI/',
-   
+  
   // BASE_URL: 'https://panchiyammaapi.suvidham.in/api/KshetramAPI/',
-
+// urlForIp: 'http://ip-api.com/json',
   METHODS: {
     // master view
     GET_MASTER: 'ViewMasters',

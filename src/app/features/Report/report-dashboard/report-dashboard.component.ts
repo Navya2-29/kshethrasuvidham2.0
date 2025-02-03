@@ -199,6 +199,9 @@ if(prathista || vazhipad){
     else if (reportType === 'duplicate') {
       this.newTab = window.open(`#/report-duplicate${queryString}`, '_blank');
     }
+    else if (reportType === 'group') {
+      this.newTab = window.open(`#/report-counter-trnsaction${queryString}`, '_blank');
+    }
   }
 
     if (this.newTab) {

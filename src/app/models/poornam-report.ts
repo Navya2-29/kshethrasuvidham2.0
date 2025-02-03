@@ -15,7 +15,9 @@ export interface ReportData {
     TrnsMode:string;
     CounterId:string
     CancelDate?:string;
+    Cuser?:string;
     Remarks?:string;
+    ct?:string;
     MobileNo?:string;
     NM_Name?:string;
     NM_RName?:string;

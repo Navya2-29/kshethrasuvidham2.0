@@ -3,6 +3,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MasterService } from '../../../services/master/master.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 export interface DataRow {
   Name: string;
   Star: string;
@@ -11,7 +12,7 @@ export interface DataRow {
 @Component({
   selector: 'app-billing-via-mobilenumber',
   standalone: true,
-  imports: [MatTableModule, MatCheckboxModule],
+  imports: [MatTableModule, MatCheckboxModule,TranslateModule],
   templateUrl: './billing-via-mobilenumber.component.html',
   styleUrl: './billing-via-mobilenumber.component.css'
 })
@@ -21,13 +22,21 @@ export class BillingViaMobilenumberComponent implements OnInit {
     
   selectedRows = new Set<DataRow>();
   mobileNumber: string;
-
+  lang: string | null;
   constructor(
     public dialogRef: MatDialogRef<BillingViaMobilenumberComponent >,
     @Inject(MAT_DIALOG_DATA) public data: { mobileNumber: string },
-    private service:MasterService
+    private service:MasterService,
+    private ts: TranslateService
   ) {
     this.mobileNumber = data.mobileNumber // Pass mobile number from parent
+
+
+    this.lang = localStorage.getItem('Language');
+    const userLang = navigator.language || 'en';
+    const languageCode = userLang.split('-')[0];
+    this.ts.setDefaultLang(languageCode);
+    this.ts.use(this.lang || 'en');
   }
 
   ngOnInit(): void {

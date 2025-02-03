@@ -251,7 +251,7 @@
                           <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_NameEng}}</option>
 
                         </ng-container>
-                        <ng-container *ngIf="lang=='ml'">
+                        <ng-container *ngIf="lang!='en'">
                           <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_Name}}</option>
 
                         </ng-container>
@@ -301,8 +301,20 @@
                         style="width: 100%; height: 30.6px"
                         formControlName="Star"
                       >
-                      <option value="">-Select-</option>
-                       <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.SM_NameEng"> {{nakshtra.SM_NameEng}}</option>
+
+                      <option value="">Select</option>
+                      <ng-container
+                       *ngIf="lang=='en'">
+                        <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.SM_NameEng"> {{nakshtra.SM_NameEng}}</option>
+
+                      </ng-container>
+                      <ng-container *ngIf="lang!='en'">
+                        <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.SM_NameEng"> {{nakshtra.SM_Name}}</option>
+
+                      </ng-container>
+
+                      <!-- <option value="">-Select-</option> -->
+                       <!-- <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.SM_NameEng"> {{nakshtra.SM_NameEng}}</option> -->
                       </select>
                 </td>
               </tr>
@@ -324,13 +336,13 @@
                   <select class="form-control select-star"
                   style="width: 100%; height: 30.6px" formControlName="EngMonth">
                   <option value="">-Select-</option>
-                    <option value="Sunday">SUNDAY</option>
-                    <option value="Monday">MONDAY</option>
-                    <option value="Tuesday">TUESDAY</option>
-                    <option value="wednesday">WEDNESDAY</option>
-                    <option value="Thursday">THURSDAY</option>
-                    <option value="Friday">FRIDAY</option>
-                    <option value="saturday">SATURDAY</option>
+                    <option value="Sunday">{{"Day.SUNDAY" |translate}}</option>
+                    <option value="Monday">{{"Day.MONDAY" | translate}}</option>
+                    <option value="Tuesday">{{"Day.TUESDAY" | translate}}</option>
+                    <option value="wednesday">{{"Day.WEDNESDAY" | translate}}</option>
+                    <option value="Thursday">{{"Day.THURSDAY" | translate}}</option>
+                    <option value="Friday">{{"Day.FRIDAY" | translate}}</option>
+                    <option value="saturday">{{"Day.SATURDAY" |translate }}</option>
                   </select>
                 </td>
               </tr>
@@ -400,9 +412,6 @@
           </table>
         </div>
       </div>
-
-
-
     </div>
   </div>
 

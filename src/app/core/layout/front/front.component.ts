@@ -40,7 +40,9 @@ export class FrontComponent implements AfterViewInit {
   @ViewChild('reportButton') reportButton: ElementRef | undefined;
   @ViewChild('nadavaruButton') nadavaruButton: ElementRef | undefined;
   buttons: ElementRef[] = [];
+  ipAddress: string = '';
   currentIndex: number = 0;
+  deviceName: string | undefined;
   constructor(
     private http: HttpClient,
     private dialog: MatDialog,
@@ -48,7 +50,8 @@ export class FrontComponent implements AfterViewInit {
     private notification: ToastrService,
     private renderer: Renderer2,
     private router: Router,
-    private authService:AuthService
+    private authService:AuthService,
+    private masterService:MasterService
   ) {
     this.templeName = localStorage.getItem('TempleName');
     this.logo = localStorage.getItem('Logo');
@@ -65,7 +68,9 @@ export class FrontComponent implements AfterViewInit {
     if (!storedCounterId) {
       this.openCounterIdDialog();
     }
-    sessionStorage.setItem('isPageRefreshed', 'true');
+    // sessionStorage.setItem('isPageRefreshed', 'true');
+// this.getIdaddress();
+
   }
 
   getLogoUrl(): string {
@@ -177,18 +182,44 @@ export class FrontComponent implements AfterViewInit {
   }
 
 
-  @HostListener('window:beforeunload', ['$event'])
-  handleBeforeUnload(event: Event): void {
-    // Check if the session storage indicates a page refresh
-    const isPageRefreshed = sessionStorage.getItem('isPageRefreshed') === 'true';
+  // @HostListener('window:beforeunload', ['$event'])
+  // handleBeforeUnload(event: Event): void {
+  //   // Check if the session storage indicates a page refresh
+  //   const isPageRefreshed = sessionStorage.getItem('isPageRefreshed') === 'true';
 
-    if (!isPageRefreshed) {
-      // Perform logout or session cleanup if not a page refresh
-      this.authService.logout();
-    }
+  //   if (!isPageRefreshed) {
+  //     // Perform logout or session cleanup if not a page refresh
+  //     this.authService.logout();
+  //   }
 
-    // Remove the flag to prepare for next load
-    sessionStorage.removeItem('isPageRefreshed');
-  }
+  //   // Remove the flag to prepare for next load
+  //   sessionStorage.removeItem('isPageRefreshed');
+  // }
+
+
+  // getIdaddress(){
+  //   this.masterService.getIpDetails().subscribe(
+  //     (response) => {
+  //       console.log('IP Details:', response);
+  //       this.ipAddress = response.query; // IP address from ip-api
+  //       this.getDeviceNameFromServer(this.ipAddress);
+  //     },
+  //     (error) => {
+  //       console.error('Error fetching IP details:', error);
+  //     }
+  //   );
+  // }
+
+
+
+
+
+  // getDeviceNameFromServer(ip: string) {
+  //   // Call a backend API to fetch the device name using the IP
+  //   this.http.get<{ deviceName: string }>(`/api/device-name?ip=${ip}`).subscribe((response) => {
+  //     this.deviceName = response.deviceName;
+  //     console.log('Device Name:', this.deviceName);
+  //   });
+  // }
 
 }

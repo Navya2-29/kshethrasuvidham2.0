@@ -48,6 +48,7 @@
   "Select Diety":"സെലക്ട് പ്രതിഷ്ഠ",
   "Select Vazhipad":"സെലക്ട് വഴിപാട്",
    "Mode":"പെയ്മെന്റ് മോഡ്",
+   "user":"യൂസർ",
   "PLACEHOLDER": {
     "VAZHIPAD": "വഴിപാട്",
     "NAME": "പേര് ",
@@ -98,7 +99,8 @@
     "Offering Only": "വഴിപാട് മാത്രം",
     "Nadavaravu Booking": "നടവരവ് ബുക്കിംഗ്",
     
-    "Credit Collection":"ക്രെഡിറ്റ് കളക്ഷൻ "
+    "Credit Collection":"ക്രെഡിറ്റ് കളക്ഷൻ ",
+    "report-duplicate":"ഡ്യൂപ്ലിക്കേറ്റ്"
   },
   "Report Name": {
     "ADVANCE BOOKING REPORT": "മുൻകൂർ ബുക്കുചെയ്യുന്നവ",
@@ -135,7 +137,17 @@
     "SMS":"എസ്എംഎസ് ",
     "Vazhipad List":"വഴിപാട്  ലിസ്റ്റ്",
    "Select prathista":"സെലക്ട് പ്രതിഷ്ട",
-  "Credit Collection Report":"ക്രെഡിറ്റ് കളക്ഷൻ റിപ്പോർട്ട്"
+  "Credit Collection Report":"ക്രെഡിറ്റ് കളക്ഷൻ റിപ്പോർട്ട്",
+  "report-duplicate":"ഡ്യൂപ്ലിക്കേറ്റ് റിപ്പോർട്ട്"
   
+  },
+  "Day":{
+    "SUNDAY":"ഞായർ",
+    "MONDAY":"തിങ്കൾ",
+    "TUESDAY":"ചൊവ്വ",
+    "WEDNESDAY":"ബുധൻ",
+    "THURSDAY":"വ്യാഴം",
+    "FRIDAY":"വെള്ളി",
+    "SATURDAY":"ശനി"
   }
 }

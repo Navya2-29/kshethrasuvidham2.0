@@ -48,6 +48,7 @@ import { SettingsComponent } from './core/settings/settings.component';
 import { ReportCounterSelfComponent } from './features/Report/report-counter-self/report-counter-self.component';
 import { ReportVazhipadwiseComponent } from './features/Report/report-vazhipadwise/report-vazhipadwise.component';
 import { AllvazhipadlistComponent } from './features/Report/vazhipad-list/allvazhipadlist/allvazhipadlist.component';
+import { ReportDuplicateComponent } from './features/Report/report-duplicate/report-duplicate.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -164,6 +165,7 @@ export const routes: Routes = [
   {path:"vazhipadwise",component: ReportVazhipadwiseComponent },
   {path:"vazhipadlistwithprathista",component: AllvazhipadlistComponent },
   {path:"devotee-master",component: DevoteeMasterComponent},
+  {path:"report-duplicate",component: ReportDuplicateComponent},
   {
     path: '**',
     pathMatch: 'full',

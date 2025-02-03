@@ -76,8 +76,6 @@ export class VazhipadBlockingComponent {
     })
   }
 
-
-
   dayMapping: { [key: string]: number } = {
     'Sunday': 1,
     'Monday': 2,

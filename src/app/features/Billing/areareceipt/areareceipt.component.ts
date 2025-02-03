@@ -306,6 +306,7 @@ devoteeSearchMobileNumber:string |null;
     }
   }
 
+
   zeroRateValidator(control: AbstractControl): ValidationErrors | null {
     const rate = control.value;
     if (rate === 0) {
@@ -691,10 +692,6 @@ console.log(this.selectedVazhipadItem)
     }
   }
 
-  // fetch parthishta details
-  // private formatDate(date: Date): string {
-  //   return date.toISOString().split('T')[0];
-  // }
 
   focusSelect(): void {
     if (this.vTimeSelect) {
@@ -1652,19 +1649,7 @@ if (currentElement instanceof HTMLInputElement || currentElement instanceof HTML
 
 
 
-@HostListener('window:beforeunload', ['$event'])
-handleBeforeUnload(event: Event): void {
-  // Check if the session storage indicates a page refresh
-  const isPageRefreshed = sessionStorage.getItem('isPageRefreshed') === 'true';
 
-  if (!isPageRefreshed) {
-    // Perform logout or session cleanup if not a page refresh
-    this.authService.logout();
-  }
-
-  // Remove the flag to prepare for next load
-  sessionStorage.removeItem('isPageRefreshed');
-}
 
 
 openBillingDialog(mobileNumber:string) {
@@ -1760,10 +1745,5 @@ else{
 
 
 
-// ngOnDestroy(): void {
-//   // Stop monitoring when this component is destroyed
-//   this.authService.logout();
-//   console.log('Stopped monitoring for this component');
-// }
 
 }

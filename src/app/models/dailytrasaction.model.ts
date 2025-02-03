@@ -13,5 +13,6 @@ export interface ReportDailyStmt {
     InstDate?:string;
     InstNo?:string;
     TrnsMode:string;
-    CounterId:string
+    CounterId:string;
+    cuser:string;
   }

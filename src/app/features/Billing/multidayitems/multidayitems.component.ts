@@ -68,6 +68,7 @@ export class MultidayitemsComponent implements OnInit {
   starData: Observable<any[]>;
   VMList: any[] = [];
   nakshatham: any[];
+  
   thithiList: any[] = [];
   prathishtaOptions: any[] = [];
   totalAmount: number = 0;
@@ -862,7 +863,7 @@ const endDate = new Date(year, month - 1, day);
       NoofDays: this.form.get('NoOfDays')?.value,
       VazhipadDate: formattedDate,
     };
-    console.log(payLoad);
+    console.log(payLoad,"multiday filter console");
     this.masterservice.getMultidyaFilterinddata(payLoad).subscribe({
       next: (data: multiDayFilter) => {
         console.log(data);

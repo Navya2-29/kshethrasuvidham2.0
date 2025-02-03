@@ -47,6 +47,7 @@
   "TODATE":"To Date",
   "Select Diety":"Select Prathishta",
   "Select Vazhipad":"Select Vazhipad",
+  "user":"User",
   "PLACEHOLDER": {
     "VAZHIPAD": "Select Vazhipad",
     "NAME": "Enter your Name",
@@ -94,7 +95,8 @@
     "UPI": "UPI",
     "Offering Only": "Offering Only",
     "Nadavaravu Booking": "Nadavaravu Booking",
-    "Vazhipad Cancel": "Vazhipad Cancel"
+    "Vazhipad Cancel": "Vazhipad Cancel",
+    "report-duplicate":"Duplicate"
   },
 
   "Report Name": {
@@ -132,6 +134,16 @@
     "SMS":"SMS",
     "Vazhipad List":"Vazhipad List",
    "Select prathista":"Select Prathishta",
-   "Credit Collection":"Credit Collection"
+   "Credit Collection":"Credit Collection",
+   "report-duplicate":"Duplicate Report"
+  },
+  "Day":{
+    "SUNDAY":"SUNDAY",
+    "MONDAY":"MONDAY",
+    "TUESDAY":"TUESDAY",
+    "WEDNESDAY":"WEDNESDAY",
+    "THURSDAY":"THURSDAY",
+    "FRIDAY":"FRIDAY",
+    "SATURDAY":"SATURDAY"
   }
 }

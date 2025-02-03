@@ -914,6 +914,11 @@ updateNadavaravuBillNumber(currentbillnumber: any): Observable<any[]> {
   
   }
 
+// getting ip address
+
+// getIpDetails(): Observable<any> {
+//   return this.http.get<any>(Constant.urlForIp);
+// }
 
   // error handling
   private errorHandler(error: HttpErrorResponse) {
