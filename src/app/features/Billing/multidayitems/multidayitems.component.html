@@ -43,7 +43,7 @@
                             {{option.VM_Code}}-{{ option.VM_Name }}
                           </mat-option>
                           <mat-option
-                           *ngIf="lang=='ml'"
+                           *ngIf="lang!='en'"
                             [value]="option.VM_RName"
                           >
                         
@@ -150,17 +150,13 @@
                       style="width: 80%; height: 30.6px"
                       style="width: 100px;height: 30px;"
                     >
-                    <option *ngFor="let time of vazhipadtime" [value]="time.id" >   {{ 'OPTIONS.' + time.key | translate }}</option>
+                    <option *ngFor="let time of vazhipadtime" [value]="time.id" > {{ 'OPTIONS.' + time.key | translate }}</option>
                       
                     </select>
                       </td>
                     </tr>
                    </table>
-                    
-            
-              <div
-               
-              >
+              <div>
                 <!-- <button class="btn btn-primary" (click)=" addDevotee()" >
                   {{"ADD DEVOTEE" |translate }}
                 </button>   -->
@@ -326,7 +322,14 @@
                   formControlName="MalMonth"
                   >
                   <option value="">-Select-</option>
-                    <option *ngFor="let month of malayalamMonthList " [value]="month.mmon"> {{month.mmon}}</option>
+                  <ng-container *ngIf="lang=='en'">
+                    <option *ngFor="let month of malayalamMonthList " [value]="month.mmonEng"> {{month.mmonEng}}</option>
+
+                  </ng-container>
+                  <ng-container  *ngIf="lang!='en'" >
+                    <option *ngFor="let month of malayalamMonthList " [value]="month.mmonEng"> {{month.mmon}}</option>
+
+                  </ng-container>
                   </select>
                 </td>
               </tr>
@@ -374,8 +377,12 @@
                   <select class="form-control select-star"  formControlName="Thithi"
                   style="width: 100%; height: 30.6px" >
                   <option value="">-select-</option>
-                    <option *ngFor="let thithi of thithiList" [value]="thithi.Thithi">{{thithi.Thithi}}</option>
-                    
+                  <ng-container *ngIf="lang=='en'">
+                    <option *ngFor="let thithi of thithiList" [value]="thithi.ThithiEng">{{thithi.ThithiEng}}</option>
+                  </ng-container>
+                  <ng-container *ngIf="lang!='en'">
+                    <option *ngFor="let thithi of thithiList" [value]="thithi.ThithiEng">{{thithi.Thithi}}</option>
+                  </ng-container>
                   </select>
                 </td>
               </tr>

@@ -77,7 +77,7 @@ submitLogin(login:Login){
     this.authService.getLoginInfo(login).subscribe({
       next:(response)=>{
         console.log(response);
-        if (response.alertmsg === "Login Sucessfully") {
+        if (response.alertmsg == "Login Sucessfully") {
           console.log(response.alertmsg);
           // Storing relevant details in localStorage
           localStorage.setItem('name', response.name);
@@ -87,7 +87,7 @@ submitLogin(login:Login){
           localStorage.setItem('Role', response.Role);
           localStorage.setItem('LoginId',response.LoginId);
           sessionStorage.setItem('loggedIn', 'true');
-          
+          localStorage.setItem('loggedIn', 'true');
           // Optional: Redirect to the dashboard or another page
           
           this.router.navigate(['/front']);
@@ -137,11 +137,11 @@ getTempleData(){
   })
 
 }
-// 
+
 
 
 getLogoUrl(): string {
-  return `assets/images/${this.logo}`;  // Assuming logo images are stored in the 'assets/images' folder
+  return `assets/images/${this.logo}`; 
 }
 
 
