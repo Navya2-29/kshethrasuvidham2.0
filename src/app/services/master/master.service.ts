@@ -914,6 +914,16 @@ updateNadavaravuBillNumber(currentbillnumber: any): Observable<any[]> {
   
   }
 
+  getMultiBlockDayList(payLoad:any){
+    return this.http.post<any>(Constant.BASE_URL+Constant.METHODS.CHECKMULTIBLOCKS,payLoad)
+  }
+
+
+getDayList(payLoad:any){
+  return this.http.post<any>(Constant.BASE_URL+Constant.METHODS.DAY,payLoad)
+
+}
+
 // getting ip address
 
 // getIpDetails(): Observable<any> {

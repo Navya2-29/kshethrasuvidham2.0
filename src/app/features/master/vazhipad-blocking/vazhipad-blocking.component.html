@@ -205,7 +205,7 @@
                 <td>
                   <mat-label>Days</mat-label>
 
-                  <mat-select
+                  <!-- <mat-select
                     [formControl]="toppings"
                     multiple
                     style="background-color: white"
@@ -215,7 +215,16 @@
                     @for (topping of toppingList; track topping) {
                     <mat-option [value]="topping">{{ topping }}</mat-option>
                     }
-                  </mat-select>
+                  </mat-select> -->
+
+                  <select>
+                    <option>
+                      Select
+                    </option>
+                    <option>
+                      
+                    </option>
+                  </select>
                 </td>
               </tr>
              
@@ -431,6 +440,9 @@
                   </button>
                   <button class="btn btn-secondary ml-1" (click)="onReset()">
                     Cancel
+                  </button>
+                  <button class="btn btn-warning ml-1" (click)="onSearchBlockList()">
+                    Search
                   </button>
                 </td>
               </tr>

@@ -235,6 +235,8 @@ export class FixedbottomComponent implements OnInit {
     });
 }
 
+
+// dotmetrix print function
 printReceiptsDotmetrix(data: any) {
   const { BillNo, Billdate, vazhipadinfo ,Trnsmode} = data;
 
@@ -1227,7 +1229,6 @@ getNameAndStarByMobilenumber(){
   this.notiication.showError("Please enter the valid mobile number and try again")
  }
  
-
 }
 
 }

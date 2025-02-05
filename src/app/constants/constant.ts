@@ -82,6 +82,8 @@ export const Constant = {
   ADDCOUNTER:"ADDCounter",
   UPDATESETTING:"UpdateSetting",
   VAZHIPADWISEREPRT:"VazhipadWiseReport",
-  UPDATEBILLMODE:"UpdateBillMode"
+  UPDATEBILLMODE:"UpdateBillMode",
+  CHECKMULTIBLOCKS:"CheckMultiBlocks",
+  DAY:"Day"
   },
 };

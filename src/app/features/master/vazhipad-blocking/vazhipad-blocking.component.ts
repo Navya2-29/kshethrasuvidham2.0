@@ -164,7 +164,7 @@ export class VazhipadBlockingComponent {
 
 
   // get Categary
-  getCategory(category: string) {
+    getCategory(category: string) {
     console.log(category);
     const fromDateControl = this.vazhipadBlockingForm.get('VB_FromDate');
     const toDateControl = this.vazhipadBlockingForm.get('VB_ToDate');
@@ -186,6 +186,8 @@ export class VazhipadBlockingComponent {
       toDateControl!.clearValidators();
     }
   }
+
+
 
    getDteTpe(dateType: string) {
     if (dateType === "M" ) {
@@ -213,6 +215,7 @@ export class VazhipadBlockingComponent {
     return this.vazhipadBlockingForm.controls;
   }
 
+  
   formatDate(date: string): string {
     return this.datePipe.transform(date, 'dd-MM-yyyy') || '';
   }
@@ -337,13 +340,6 @@ export class VazhipadBlockingComponent {
       VB_MalTYear: '',
       dayInfo: [],
 
-
-
-
-
-
-
-
     }
     );
     this.ngOnInit();
@@ -464,5 +460,16 @@ export class VazhipadBlockingComponent {
   fromDateControl?.updateValueAndValidity();
   toDateControl?.updateValueAndValidity();
 }
+
+
+onSearchBlockList(){
+  const payLoad={
+
+  }
+this.masterService.getMultiBlockDayList(payLoad)
+
+}
+
+
 
 }
