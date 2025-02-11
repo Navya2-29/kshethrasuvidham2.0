@@ -3,7 +3,7 @@ import { HeaderComponent } from '../../../../core/layout/header/header.component
 import { SpinnerComponent } from '../../../../shared/component/spinner/spinner.component';
 import { CommonModule } from '@angular/common';
 import { MasterService } from '../../../../services/master/master.service';
-import { error } from 'pdf-lib';
+
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 

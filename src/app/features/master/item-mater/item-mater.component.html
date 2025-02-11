@@ -14,9 +14,21 @@
           <form [formGroup]="itemMasterForm">
             <table class="table">
               <tr>
-                <td > Item Code<span class="text-danger">*</span><input type="text" [readonly]="updateFlag"  maxlength="3" (input)="onInputChange($event)" appUpperCase matInput formControlName="NM_Code" class="form-control sps"
+                <td>
+                 Select Type <span class="text-danger">*</span>
+                  <select class="form-control sps" style="width:100%" formControlName="ItemType" >
+                    <option value="">Select</option>
+                    <option value="Nadavaravu">Nadavarav</option>
+                    <option value="Members">Subscription</option>
+                    <option value="Thulabaram">Thulabharam</option>
+                    <option value="others">Others</option>
+                  </select>
+                 
+                </td>
+              </tr>
+              <tr>
+                <td> Item Code<span class="text-danger">*</span><input type="text" [readonly]="updateFlag"  maxlength="3" (input)="onInputChange($event)" appUpperCase matInput formControlName="NM_Code" class="form-control sps"
                     placeholder="Enter Code" style="width:126px;"> </td>
-
               </tr>
               <div
                 *ngIf="itemMasterFormControl['NM_Code'].invalid && (itemMasterFormControl['NM_Code'].dirty || itemMasterFormControl['NM_Code'].touched)"
@@ -59,13 +71,19 @@
                     class="form-control" placeholder="Enter RName"> </td>
 
               </tr>
-              <tr>
+              <tr *ngIf="itemMasterForm.get('ItemType')?.value === 'Nadavaravu'">
                 <td> Category<span class="text-danger">*</span><select  class="form-control sps" style="width: 100%;"  name="" id="" formControlName="category">
                   <option value="">Select Category</option>
                   <option value="metal">Sprecious/Metal</option>
                   <option value="nonmetal">Non Sprecious/ or Non Metal</option>
                   <option value="others">Others</option>
                 </select>
+              </tr>
+              <tr *ngIf="itemMasterForm.get('ItemType')?.value !== 'Nadavaravu'">
+                <td>Amount<span class="text-danger">*</span>
+                  <input type="number"  formControlName="Amount" matInput
+                    class="form-control" placeholder="Enter RName">
+                </td>
               </tr>
               <tr>
                 <td>
@@ -111,7 +129,6 @@
                     <mat-icon title="Delete" class="small" style="vertical-align: middle;"
                       (click)="onDelete(data.NM_Id)">delete</mat-icon>
                   </td>
-
                 </tr>
               </tbody>
               <tfoot>

@@ -23,10 +23,6 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 })
 export class ReportCreditCollectionComponent {
 
-
-
-
-
   displayedColumns: string[] = ['BillNo','BillDate','Vazhipad', 'Name', 'Mobile','Qty','Rate','Amount', 'TransMode'  ];
   dataSource = new MatTableDataSource<ReportData>();
   length = 0;

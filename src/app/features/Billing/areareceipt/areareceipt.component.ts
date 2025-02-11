@@ -23,6 +23,7 @@ import {
   AbstractControl,
   FormArray,
   FormBuilder,
+  FormControl,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
@@ -145,7 +146,6 @@ devoteeSearchMobileNumber:string |null;
     const languageCode = userLang.split('-')[0];
     this.ts.setDefaultLang(languageCode);
     this.ts.use(this.lang || 'en');
-
     this.form = this.fb.group({
       vazhipadinfo: this.fb.array([]),
     });
@@ -176,8 +176,6 @@ devoteeSearchMobileNumber:string |null;
       //   this.notification.error("Please enter valid Mobile number and try again")
       // }
     });
-
-
   }
 
   ngOnDestroy() {
@@ -186,7 +184,6 @@ devoteeSearchMobileNumber:string |null;
       this.subscription.unsubscribe();
     }
 
-    
   }
 
   onBack() {
@@ -232,14 +229,12 @@ devoteeSearchMobileNumber:string |null;
       allowedDays: this.fb.array([]),
       VM_Receipt: [{ disabled: true, value: '' }],
       dateToSet: [''],
-    
       seasonalDates: this.fb.group({
         fromDate: [''],
         toDate: [''],
       }),
       blockingDates: this.fb.group({
-        fromDate: [''],
-        toDate: [''],
+        dates: this.fb.array([])
       }),
     });
     row.get('Qty')?.valueChanges.subscribe(() => this.updateAmount(row));
@@ -256,11 +251,12 @@ devoteeSearchMobileNumber:string |null;
 
   checkVazhipadDate(row: FormGroup) {
     // Retrieve values from the form
+    console.log(row,"datacheck bocking")
     const vazhipadDateStr = row.get('VazhipadDate')?.value;
     const fromDateStr = row.get('seasonalDates.fromDate')?.value;
     const toDateStr = row.get('seasonalDates.toDate')?.value;
-    const fromBlckDate=row.get('blockingDates.fromDate')?.value;
-    const toBlckDate=row.get('blockingDates.toDate')?.value;
+    const blockingDatesArray = row.get('blockingDates.dates')?.value || [];
+
     if (fromDateStr && toDateStr) {
       // Convert string dates to Date objects
       const vazhipadDate = vazhipadDateStr ? new Date(vazhipadDateStr) : null;
@@ -282,26 +278,21 @@ devoteeSearchMobileNumber:string |null;
       } else {
         row.get('VazhipadDate')?.setErrors({ invalidDateRange: true });
       }
-    }else if(fromBlckDate && toBlckDate ){
+    }else if(vazhipadDateStr && blockingDatesArray.length > 0 ){
       const vazhipadDate = vazhipadDateStr ? new Date(vazhipadDateStr) : null;
-      const fromDate = fromBlckDate ? new Date(fromBlckDate) : null;
-      const toDate = toBlckDate ? new Date(toBlckDate) : null;
+      const formattedVazhipadDate = this.datePipe.transform(vazhipadDateStr, 'yyyy-MM-dd');
+
+      // const fromDate = fromBlckDate ? new Date(fromBlckDate) : null;
+      // const toDate = toBlckDate ? new Date(toBlckDate) : null;
 
       // Validate date ranges
-      if (vazhipadDate && fromDate && toDate) {
-        if (vazhipadDate >= fromDate && vazhipadDate <= toDate) {
-
-          row.get('VazhipadDate')?.setErrors({ invalidDateRange: true });
-          this.notification.error(
-            `Vazhipad date not allowed this dates ${
-              fromDate.toISOString().split('T')[0]
-            } - ${toDate.toISOString().split('T')[0]}`
-          );
-        } else {
-          row.get('VazhipadDate')?.setErrors(null);
-        }
+      if (blockingDatesArray.includes(formattedVazhipadDate)) {
+        // Set error if the date is blocked
+        row.get('VazhipadDate')?.setErrors({ invalidBlockedDate: true });
+        this.notification.error(`The selected Vazhipad date (${formattedVazhipadDate}) is blocked.`);
       } else {
-        row.get('VazhipadDate')?.setErrors({ invalidDateRange: true });
+        // Clear errors if the date is valid
+        row.get('VazhipadDate')?.setErrors(null);
       }
     }
   }
@@ -397,6 +388,7 @@ devoteeSearchMobileNumber:string |null;
       this.removeMultidayData(index);
     }
   }
+
   removeMultidayData(index: number): void {
     if (index >= 0 && index < this.multidayBooking.length) {
       this.multidayBooking.splice(index, 1);
@@ -592,7 +584,7 @@ console.log(this.selectedVazhipadItem)
 
       // Fetch vazhipad details using VM_Code
       this.getSeasnalalVazhipadData(this.selectedVazhipadItem.VM_Id, index);
-      this.getBlockingvazipadDate(this.selectedVazhipadItem.VM_Id, index)
+      this.getBlockingvazipadDate(this.selectedVazhipadItem.VM_Id, index);
       this.getDatamasterdateCheck(this.selectedVazhipadItem.VM_Id, index);
       const vazhipadCode = this.selectedVazhipadItem.VM_Code;
 
@@ -1605,31 +1597,25 @@ if (currentElement instanceof HTMLInputElement || currentElement instanceof HTML
     this.masterservice.getMaster(payLoad).subscribe({next:(data)=>{
     console.log(data,"datablocing");
 
+    const row = this.vazhipadinfo.at(index) as FormGroup;
 
     if (data && data.length > 0) {
-      const blockingDates = {
-        fromDate: data[0].VB_FromDate,
-        toDate: data[0].VB_ToDate,
-      };
+      const blockingDatesArray = data.map((d: any) => this.datePipe.transform(d.VBDate, 'yyyy-MM-dd'));
+  console.log(blockingDatesArray, "blockingDatesArray");
 
-      const row = this.vazhipadinfo.at(index) as FormGroup;
-      const formattedFromDate = this.datePipe.transform(
-        blockingDates.fromDate,
-        'yyyy-MM-dd'
-      );
-      const formattedToDate = this.datePipe.transform(
-        blockingDates.toDate,
-        'yyyy-MM-dd'
-      );
-      // Update the form with the fetched seasonal dates
-      row.get('blockingDates')?.patchValue({
-        fromDate: formattedFromDate,
-        toDate: formattedToDate,
-      });
+  // Get the FormArray and reset it
+  const blockingDatesControl = row.get('blockingDates.dates') as FormArray;
+  blockingDatesControl.clear();
+
+  // Populate the FormArray with blocking dates
+  blockingDatesArray.forEach((date:any) => {
+    blockingDatesControl.push(new FormControl(date));
+  });
+console.log(row,"roqqqqqqqqqqqqqqqqq")
+      // this.setVazhipadDate(index);
       this.setVazhipadDate(index);
     } else {
-      const row = this.vazhipadinfo.at(index) as FormGroup;
-      row.get('blockingDates')?.patchValue({ fromDate: '', toDate: '' });
+      row.get('blockingDates')?.patchValue({ dates: [] });
       row.get('vazhipadDate')?.patchValue('');
       // Optionally, show a notification or alert to inform the user
     }
@@ -1637,7 +1623,7 @@ if (currentElement instanceof HTMLInputElement || currentElement instanceof HTML
   error: (err) => {
     // Handle error case by resetting seasonal dates
     const row = this.vazhipadinfo.at(index) as FormGroup;
-    row.get('blockingDates')?.patchValue({ fromDate: '', toDate: '' });
+    row.get('blockingDates')?.patchValue({ dates: [] });
     row.get('vazhipadDate')?.patchValue('');
     // Optionally, show a notification or alert to inform the user
     this.notification.error(

@@ -919,10 +919,10 @@ updateNadavaravuBillNumber(currentbillnumber: any): Observable<any[]> {
   }
 
 
-getDayList(payLoad:any){
-  return this.http.post<any>(Constant.BASE_URL+Constant.METHODS.DAY,payLoad)
+// getDayList(payLoad:any){
+//   return this.http.post<any>(Constant.BASE_URL+Constant.METHODS.DAY,payLoad)
 
-}
+// }
 
 // getting ip address
 

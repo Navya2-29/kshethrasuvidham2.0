@@ -1,6 +1,8 @@
 <h2 mat-dialog-title style="background: #223d61; color: white">
-  Bill Number -{{ lastBillNo }}
+  Bill Number -{{ lastBillNo }}  <span style="background: #223d61; color: rgb(229, 241, 54)">Counter - {{CounterId}}({{userName}})</span>
+  
 </h2>
+
 <div class="cancel-container">
   <h3 class="status" [ngClass]="TrnStatus === 'C' ? 'cancelled' : 'success'">
     Status :<span [ngClass]="TrnStatus === 'C' ? 'cancelled' : 'success'">{{

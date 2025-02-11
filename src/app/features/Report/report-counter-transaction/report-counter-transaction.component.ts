@@ -18,11 +18,16 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ReportDailyStmt } from '../../../models/dailytrasaction.model';
 
-import { PDFDocument } from 'pdf-lib';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 interface GroupedData {
-  [key: number]: {
-    [key: string]: ReportDailyStmt[];
+  [key: number]: {  // CounterId level
+    counterTotalAmount: number;  // Store total amount per CounterId
+    users: {
+      [key: string]: {  // Cuser level
+        transactions: ReportDailyStmt[];
+        totalAmount: number;  // Store total amount per user
+      };
+    };
   };
 }
 @Component({
@@ -122,21 +127,35 @@ export class ReportCounterTransactionComponent {
 
 
   groupData() {
-    this.groupedData = this.data.reduce((acc:any, item:any) => {
+    this.groupedData = this.data.reduce((acc: any, item: any) => {
+      // Initialize CounterId if not exists
       if (!acc[item.CounterId]) {
-        acc[item.CounterId] = {};
+        acc[item.CounterId] = {
+          counterTotalAmount: 0, // Initialize counter-wise total
+          users: {}
+        };
       }
-      if (!acc[item.CounterId][item.Cuser]) {
-        acc[item.CounterId][item.Cuser] = [];
+  
+      // Initialize Cuser if not exists
+      if (!acc[item.CounterId].users[item.Cuser]) {
+        acc[item.CounterId].users[item.Cuser] = {
+          transactions: [],
+          totalAmount: 0
+        };
       }
-      acc[item.CounterId][item.Cuser].push(item);
+  
+      // Add transaction to user's transaction list
+      acc[item.CounterId].users[item.Cuser].transactions.push(item);
+  
+      // Update user's total amount
+      acc[item.CounterId].users[item.Cuser].totalAmount += item.Amount;
+  
+      // Update counter-wise total amount
+      acc[item.CounterId].counterTotalAmount += item.Amount;
+  
       return acc;
     }, {});
   }
-  
-
-
- 
  
   generatePDF() {
     const printContent = document.getElementById('print-section');

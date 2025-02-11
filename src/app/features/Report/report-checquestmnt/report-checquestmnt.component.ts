@@ -112,6 +112,9 @@ export class ReportChecquestmntComponent implements OnInit{
       window.close(); // Closes the tab if it's the only page open
     }
   }
+
+
+  
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();

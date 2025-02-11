@@ -58,6 +58,7 @@
                   />
                 </td>
               </tr>
+
               <tr>
                 <td>Blocking Category<span class="text-danger">*</span></td>
               </tr>
@@ -138,6 +139,7 @@
                     formControlName="VB_radio"
                     name="VB_radio"
                     value="N"
+
                   />
                   Nakshathra
                 </td>
@@ -202,7 +204,7 @@
               </div>
 
               <tr *ngIf="VB_category === 'Weakly'">
-                <td>
+                <td colspan="3" >
                   <mat-label>Days</mat-label>
 
                   <!-- <mat-select
@@ -217,11 +219,12 @@
                     }
                   </mat-select> -->
 
-                  <select>
-                    <option>
-                      Select
+                  <select class="form-control sps" style="width: 100%;" formControlName="VB_Day">
+                    <option value="">
+                     -Select
                     </option>
-                    <option>
+                    
+                    <option *ngFor="let day of toppingList" [value]="day.DayEng">{{day.DayEng}}
                       
                     </option>
                   </select>
@@ -229,7 +232,17 @@
               </tr>
              
               <tr *ngIf="dateType == 'Malayalam'">
-                <td>
+
+<td colspan="3">
+  <mat-label>Month</mat-label>
+  <select name="" id="" class="form-control sps" style="width: 100%;" formControlName="VB_MalMonth" >
+    <option value=""> - Select</option>
+    <option *ngFor="let month of mMonthList"  [value]="month.mmonEng">{{month.mmonEng}}</option>
+
+  </select>
+</td>
+
+                <!-- <td>
                   From date<span class="text-danger">*</span>
                   <input
                     type="text"
@@ -303,10 +316,10 @@
                   >
                     <small>only numbers are allowed</small>
                   </div>
-                </div>
+                </div> -->
               </tr>
-              <tr *ngIf="dateType == 'Malayalam'">
-                <td>
+              <!-- <tr *ngIf="dateType == 'Malayalam'"> -->
+                <!-- <td>
                   To date<span class="text-danger">*</span>
                   <input
                     type="text"
@@ -329,8 +342,8 @@
                   >
                     <small>only numbers are allowed</small>
                   </div>
-                </div>
-                <td>
+                </div> -->
+                <!-- <td>
                   month<span class="text-danger">*</span
                   ><input
                     type="text"
@@ -363,9 +376,9 @@
                     class="form-control sps"
                     formControlName="VB_MalTYear"
                   />
-                </td>
-              </tr>
-              <div
+                </td> -->
+              <!-- </tr> -->
+              <!-- <div
                 *ngIf="
                   vazhipadBlockingControl['VB_MalTYear'].invalid &&
                   (vazhipadBlockingControl['VB_MalTYear'].dirty ||
@@ -380,7 +393,7 @@
                 >
                   <small>only numbers are allowed</small>
                 </div>
-              </div>
+              </div> -->
               <tr *ngIf="blockingFlag">
                 <td colspan="3">
                   Nakshathra
@@ -389,12 +402,21 @@
                     style="background-color: whitesmoke"
                   >
                     <mat-option
-                      [value]="item.id"
+                      [value]="item.name"
                       *ngFor="let item of nakshatham"
                       >{{ item.name }}</mat-option
                     >
                   </mat-select>
                 </td>
+              </tr>
+              <tr *ngIf="bockDayList">
+                <td colspan="3">
+                <div style="width:100%;height:100px;overflow-y:scroll;background-color: white;">
+<span *ngFor="let item of bockDayList">
+{{item.disdate}},
+</span>
+                </div>
+              </td>
               </tr>
               <tr>
                 <td colspan="3">
@@ -427,15 +449,17 @@
                   <button
                     *ngIf="!updateFlag"
                     class="btn btn-primary"
-                    (click)="onSubmit()"
+                    (click)="onSubmit()" 
                   >
-                    Save
+                  <!-- (click)="onSubmit()"   -->
+                  Save
                   </button>
                   <button
                     *ngIf="updateFlag"
                     class="btn btn-primary"
-                    (click)="onUpdate(vazhipadBlockingForm.value)"
                   >
+                  <!-- (click)="onUpdate(vazhipadBlockingForm.value)" -->
+
                     Update
                   </button>
                   <button class="btn btn-secondary ml-1" (click)="onReset()">

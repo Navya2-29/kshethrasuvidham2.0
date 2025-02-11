@@ -30,14 +30,14 @@
       <tbody>
         <ng-container *ngFor="let counter of (groupedData | keyvalue)">
           <!-- Counter Heading -->
-          <tr style="background-color: #2196F3; color: white;">
-            <th colspan="5">Counter ID: {{ counter.key }}</th>
+          <tr style="background-color: #2196F3; color: rgb(14, 12, 12);">
+            <th colspan="5"><u>Counter ID: {{ counter.key }}</u></th>
           </tr>
     
-          <ng-container *ngFor="let user of (counter.value | keyvalue)">
+          <ng-container *ngFor="let user of (counter.value.users | keyvalue)">
             <!-- User Heading -->
-            <tr style="background-color: #64B5F6; color: white;">
-              <th colspan="5">User: {{ user.key }}</th>
+            <tr style="background-color: #64B5F6; color: rgb(8, 7, 7);">
+              <th colspan="5"><u>User: {{ user.key }}</u></th>
             </tr>
     
             <!-- Table Headers -->
@@ -50,27 +50,32 @@
             </tr>
     
             <!-- Table Rows -->
-            <tr *ngFor="let item of user.value">
+            <tr *ngFor="let item of user.value.transactions">
               <td>{{ item.vazhipad }}</td>
               <td>{{ item.Qty }}</td>
               <td>{{ item.Rate }}</td>
-              <td>{{ item.Amount }}</td>
+              <td style="text-align: right;">{{ item.Amount }}</td>
               <td>{{ item.BillDate }}</td>
             </tr>
+            <tr>
+              <td colspan="3" ><b>Total Amount for {{ user.key }}</b></td>
+              <td style="text-align: right;"> <b>{{ user.value.totalAmount | number: '1.2-2' }}</b> </td>
+              <td></td>
+            </tr>
+          
+
           </ng-container>
+         
+<tr>
+  <td style="color: red;" colspan="3">Total Amount for Counter {{ counter.key }}</td>
+  <td style="text-align: right;color: red;">{{ counter.value.counterTotalAmount | number: '1.2-2' }}</td>
+</tr>
         </ng-container>
       </tbody>
     </table>
-    
- 
- 
- 
- 
   </div>
-  
-  
 
-  <!-- <div style="margin-left: 100px; margin-right: 100px; text-align: right; font-weight: bold;">
+  <div style="margin-left: 100px; margin-right: 350px; text-align: right; font-weight: bold;">
     Grand Total: {{ getTotalAmount() | number: '1.2-2' }}
-  </div> -->
+  </div>
 </div>

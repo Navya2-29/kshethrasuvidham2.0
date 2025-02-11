@@ -18,7 +18,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ReportDailyStmt } from '../../../models/dailytrasaction.model';
 
-import { PDFDocument } from 'pdf-lib';
+
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 // Fix TypeScript issues with `vfs`

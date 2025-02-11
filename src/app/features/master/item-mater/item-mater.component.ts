@@ -64,6 +64,13 @@ export class ItemMAterComponent {
     this.templeName=localStorage.getItem('TempleName') 
     this.userId = localStorage.getItem('LoginId');
     this.itemMasterForm = this.formBuilder.group({
+      ItemType:[
+        '',
+        [
+          Validators.required,
+         
+          
+        ]],
       NM_Code: [
         '',
         [
@@ -82,14 +89,40 @@ export class ItemMAterComponent {
         ],
       ],
       NM_RName: ['',Validators.required,],
-      category:['', Validators.required,],
+      category:[''],
+      Amount:[''],
       NM_Description: ['',Validators.required,],
     });
   }
   ngOnInit(): void {
     this.loading = true;
     this.getItemMaster();
+    this.itemMasterForm.get('ItemType')?.valueChanges.subscribe((value) => {
+      if (value === 'Nadavaravu') {
+        // Show category and make it required
+        this.itemMasterForm.get('category')?.setValidators([Validators.required]);
+        this.itemMasterForm.get('category')?.updateValueAndValidity();
+  
+        // Hide amount and remove required validation
+        this.itemMasterForm.get('Amount')?.clearValidators();
+        this.itemMasterForm.get('Amount')?.setValue('');
+      } else {
+        // Hide category validation
+        this.itemMasterForm.get('category')?.clearValidators();
+        this.itemMasterForm.get('category')?.updateValueAndValidity();
+  
+        // Show amount and make it required
+        this.itemMasterForm.get('Amount')?.setValidators([Validators.required]);
+      }
+      this.itemMasterForm.get('Amount')?.updateValueAndValidity();
+    });
+  
+
+
+
   }
+
+
   // view prathishta
   getItemMaster() {
     this.loading = true;
@@ -105,7 +138,6 @@ export class ItemMAterComponent {
           this.filtereditemMaster = this.itemMaster;
           this.sortByCMCode();
           console.log(this.itemMaster);
-          
           console.log(this.filtereditemMaster, 'filteredmaster');
         }
       },
@@ -120,13 +152,15 @@ export class ItemMAterComponent {
     return this.itemMasterForm.controls;
   }
 
+
   // submitt pmasterform
   onSubmit(data: ItemMaster) {
     console.log(data, 'insert item master');
-
     const obj = this.itemMasterForm.value;
     if (this.itemMasterForm.valid) {
       const payload = {
+        Itemtype:data.ItemType,
+        Amount:data.Amount?.toString(),
         NMId: '',
         NMCode: data.NM_Code,
         NMName: data.NM_Name,
@@ -143,7 +177,6 @@ export class ItemMAterComponent {
           if(res.RespStatus==='I'){
             this.notification.success(
               ' Item Details created successfully',
-             
               'success'
             );
           }
@@ -162,6 +195,8 @@ export class ItemMAterComponent {
       this.notification.success(' Please fill the  details of item');
     }
   }
+
+
   // resetting form controls
   onReset() {
     this.itemMasterForm.reset();
@@ -185,6 +220,7 @@ export class ItemMAterComponent {
     this.loading = false;
   }
 
+
   //update data
   onUpdate(updatedata: ItemMaster) {
     console.log(updatedata, 'hhhhhhhhhhhhhhhh');
@@ -200,19 +236,14 @@ export class ItemMAterComponent {
       Type: 'UPDATE',
     };
     if (this.itemMasterForm.valid) {
-
       this.masterService.updateItemMaster(payload).subscribe((res) => {
-
         if(res.RespStatus==='U'){
           this.loading = false;
           this.notification.success(
             ' Item Details updated successfully',
-           
             'success'
           );
         }
-       
-  
         console.log(res);
         this.getItemMaster();
         this.itemMasterForm.reset();
@@ -223,8 +254,7 @@ export class ItemMAterComponent {
       this.markFormGroupTouched(this.itemMasterForm);
       this.loading = false;
       this.notification.success(' Please Fill the  details');
-    }
-    
+    }  
   }
 
   // deleteData

@@ -112,8 +112,9 @@ export class FixedbottomComponent implements OnInit {
     this.logo=localStorage.getItem('Logo');
     this.name=localStorage.getItem('name');
     if(this.logo){
-      console.log( this.templeLogoUrl)
-      this.templeLogoUrl=`assets/images/${this.logo}`;
+     
+      this.templeLogoUrl=window.location.origin + `/assets/images/${this.logo}`;
+      console.log( this.templeLogoUrl,"url img")
     }
     this.currentDate = this.getCurrentDateMMYY();
     this.getLastBillNumber();
@@ -144,7 +145,6 @@ export class FixedbottomComponent implements OnInit {
 
   ngOnInit(): void {
     this.getTodayCollection();
-   
     this.totalService.totalAmount$.subscribe((amount) => {
       this.totalAmount = amount;
     });
@@ -786,7 +786,7 @@ getTransactionType(transmode: string): string {
     const payLoad = { Type: 'SearchBillno', Code: this.billNumber };
     this.masterService.SearchByBillNo(payLoad).subscribe({
       next: (data) => {
-        console.log(data);
+        console.log(data,"by bill number");
         if (data.length > 0) {
           this.openDialogBillNumber(data);
           this.billNumber = '';
@@ -1201,9 +1201,92 @@ groupDataByVazhipadDate(vazhipadinfo: any[]) {
     return Object.values(groupedData);
 }
 
-printReceiptsThermal(data:any){
+printReceiptsThermal(data: any) {
+  const { BillNo, Billdate, vazhipadinfo, Trnsmode } = data;
 
+  let receiptContent = `
+  <html>
+    <head>
+      <style>
+        @media print {
+          body {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            width: 80mm;
+          }
+          .receipt-container {
+            width: 100%;
+            text-align: center;
+          }
+          .header, .footer {
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+          }
+          .item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            border-bottom: 1px dashed black;
+          }
+          .total {
+            font-size: 14px;
+            font-weight: bold;
+            text-align: right;
+          }
+            .logo {
+          width: 50px; /* Adjust size */
+          height: auto;
+          margin-bottom: 5px;
+        }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="receipt-container">
+              <div><img src="${this.templeLogoUrl}" class="logo" alt="Temple Logo"/></div>
+
+        <div class="header">${this.templeName}</div>
+        <div>${this.templeAddress}</div>
+        <div>Date: ${BillNo}</div>
+        <hr>
+        <div><b>Details</b></div>
+  `;
+
+  let totalAmount = 0;
+
+  vazhipadinfo.forEach((item: any) => {
+    const amount = item.Qty * item.Rate;
+    totalAmount += amount;
+
+    receiptContent += `
+      <div class="item">
+        <div>${item.Name}</div>
+        <div>${item.Qty} x ${item.Rate}</div>
+        <div>${amount.toFixed(2)}</div>
+      </div>
+    `;
+  });
+
+  receiptContent += `
+      <hr>
+      <div class="total">Total: ₹${totalAmount.toFixed(2)}</div>
+      <div class="footer">Thank You</div>
+    </body>
+  </html>
+  `;
+
+  const printWindow = window.open('', '_blank', 'width=300,height=600');
+  if (printWindow) {
+    printWindow.document.open();
+    printWindow.document.write(receiptContent);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
+  }
 }
+
 
 
 // @HostListener('document:keydown', ['$event'])
@@ -1219,16 +1302,18 @@ focusPaymentDropdown(): void {
     this.paymentDropdown.nativeElement.focus();
   }
 }
+
 getNameAndStarByMobilenumber(){
 
  console.log(this.mobileNumber,"mobile number data");
+
  if(this.mobileNumber){
   this.receiptPrinrservice.setMobileNumber(this.mobileNumber);
   console.log('Mobile number sent:', this.mobileNumber);
  }else{
-  this.notiication.showError("Please enter the valid mobile number and try again")
- }
- 
+  this.notiication.showError("Please enter the valid mobile number and try again");
+}
+
 }
 
 }

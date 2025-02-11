@@ -100,6 +100,8 @@ export class SearchByBillNumberComponent {
   InstaDate:string;
   InstaBank:string;
   MobileNo:string;
+  CounterId:String;
+  userName:string;
   constructor(
     public dialogRef: MatDialogRef<SearchByBillNumberComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -114,10 +116,12 @@ export class SearchByBillNumberComponent {
     this.TrnStatus = data[0].TrnStatus;
     this.displayTrnsmode = data[0].TrnsMode;
     this.duplicatebilldata = data;
-   this. InstaNo=data[0].InstNo;
+    this. InstaNo=data[0].InstNo;
     this.InstaDate=data[0].InstDate;
       this.InstaBank=data[0].InstBank;
       this.MobileNo=data[0].MobileNo;
+      this.CounterId=data[0].CounterId;
+      this.userName=data[0].UName
     console.log(this.duplicatebilldata,"dupicate bill data first");
     this.dataSource = new MatTableDataSource(this.duplicatebilldata);
     this.role = localStorage.getItem('Role');
