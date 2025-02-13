@@ -239,9 +239,7 @@ export class VmasterComponent implements OnInit {
 
       // Add prathistainfo to formValue
       formValue.prathistainfo = prathistainfo;
-
       console.log('Form value with prathistainfo:', formValue);
-
       const selectedVc = this.category.find(
         (vc) => vc.VC_Name === formValue.VC_Name
       );

@@ -59,6 +59,7 @@ export class FixedbottomComponent implements OnInit {
   currentBillNumber: string;
   todayCollection: string = '0';
   printerLayOut:string | null;
+  memberDevoteeCheck:boolean=false;
   @ViewChild('payButton', { static: true }) payButton!: ElementRef;
   private subscription: Subscription = new Subscription();
   private totalService = inject(TotalAmountService);
@@ -77,6 +78,7 @@ export class FixedbottomComponent implements OnInit {
   name:string | null;
   nakshatham:any[];
   receivedBooleanValue: boolean;
+  memberId:string | null;
   @ViewChild('phone') phoneInput!: ElementRef<HTMLInputElement>;
   @ViewChild('paymentDropdown', { static: true }) paymentDropdown!: ElementRef<HTMLSelectElement>;
   @ViewChild('address1Input', { static: true }) address1Input!: ElementRef;
@@ -97,7 +99,6 @@ export class FixedbottomComponent implements OnInit {
     private receiptPrinrservice: ReceiptPrintService,
     private ts:TranslateService,
     private service :MasterService,
-    
   ) {
     this.lang=localStorage.getItem('Language') || 'en';
     const userLang=navigator.language || "en";
@@ -119,6 +120,7 @@ export class FixedbottomComponent implements OnInit {
     this.currentDate = this.getCurrentDateMMYY();
     this.getLastBillNumber();
     this.loggedInUserLastBillNumber();
+
     const today = this.getFormattedDate(new Date());
     console.log(this.currentBillNumber);
     this.customerdetailsForBillingForm = this.fb.group({
@@ -136,7 +138,7 @@ export class FixedbottomComponent implements OnInit {
       Instno: [''],
       Instdate: [today],
       InstBank: [''],
-      Memberid: ['1'],
+      Memberid: ['0'],
       PaidStatus: ['Y'],
     });
 
@@ -147,6 +149,13 @@ export class FixedbottomComponent implements OnInit {
     this.getTodayCollection();
     this.totalService.totalAmount$.subscribe((amount) => {
       this.totalAmount = amount;
+    });
+    this.receiptPrinrservice.memberId$.subscribe(id => {
+      this.memberId = id;
+      this.customerdetailsForBillingForm.patchValue({
+        Memberid:this.memberId
+      })
+      console.log("Received Member ID:", this.memberId);
     });
     console.log(this.customerdetailsForBillingForm.value);
     this.subscription.add(
@@ -1307,13 +1316,28 @@ getNameAndStarByMobilenumber(){
 
  console.log(this.mobileNumber,"mobile number data");
 
+console.log(this.memberDevoteeCheck,"dsssssssssssssss");
  if(this.mobileNumber){
-  this.receiptPrinrservice.setMobileNumber(this.mobileNumber);
+  // this.masterService.getMaster
+  const data={
+    mobile:this.mobileNumber,
+    member:this.memberDevoteeCheck
+  }
+  this.receiptPrinrservice.setMobileNumber(data);
   console.log('Mobile number sent:', this.mobileNumber);
+ 
  }else{
   this.notiication.showError("Please enter the valid mobile number and try again");
 }
 
 }
+
+
+getdevoteeDetailsforBiling(){
+
+}
+
+
+
 
 }

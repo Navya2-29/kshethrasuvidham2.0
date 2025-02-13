@@ -1,5 +1,5 @@
 <app-header></app-header>
-<app-spinner></app-spinner>
+<app-spinner *ngIf="loading"></app-spinner>
 <div class="amster">
   <div class="container">
     <div class="card-body outlook" style="background:white;">
@@ -11,7 +11,7 @@
       <div class="master">
         <div class="col-md-9" style="background:rgba(98, 6, 202, .1); border-radius: 15px; height: 70vh;" >
           <!-- [ngStyle]="{'overflow-y': dynamicRows.length > 5 ? 'scroll' : 'hidden'}" -->
-          <h1 style="font-weight:500;">Member Master</h1>
+          <h1 style="font-weight:500;">Devotee Master</h1>
           <form [formGroup]="memeberForm">
           <div class="row">
             <div class="col-md-4">
@@ -23,17 +23,11 @@
                 </tr>
 
                 <tr>
-                  <td colspan="3"> Address 1<input formControlName="address1" type="text" class="form-control" placeholder="Enter Name"> </td>
+                  <td colspan="3"> Address <input formControlName="address1" type="text" class="form-control" placeholder="Enter Name"> </td>
                 </tr>
-                <tr>
+                <!-- <tr>
                   <td colspan="3"> Address 2<input type="text" formControlName="address2" class="form-control" placeholder="Enter Name"> </td>
-                </tr>
-                <tr>
-                  <td colspan="3"> Star<input type="text" formControlName="star" class="form-control" placeholder="Enter star"> </td>
-                </tr>
-                <tr>
-                  <td colspan="3"> Phone<input type="text" formControlName="phone" class="form-control" placeholder="Enter Name"> </td>
-                </tr>
+                </tr> -->
                 <tr>
                   <td colspan="3"> Mobile<input type="text" formControlName="mobile" class="form-control" placeholder="Enter Name"> </td>
                 </tr>
@@ -44,35 +38,19 @@
             </div>
             <div class="col-md-8">
               <table class="table">
-                    <div>
-                      <tr>
-                        <td ><a  color="accent"><mat-icon class="icons">delete</mat-icon></a></td>
-                        <td><input  formControlName="relativeName" type="text" placeholder="Enter Name" style="border:none;"></td>
+                    <div formArrayName="relativesDetails">
+                      <tr  *ngFor="let devotee of relativesDetails.controls; let i = index" [formGroupName]="i" >
+                        <td ><a  color="accent"><mat-icon class="icons" (click)="removeDevotee(i)">delete</mat-icon></a></td>
+                        <td><input  formControlName="Name" type="text" placeholder="Enter Name" style="border:none;"></td>
                         <td>
-                          <select class="form-control" formControlName="star" style="width:100%;height:30.6px;">
+                          <select class="form-control" formControlName="Star" style="width:100%;height:30.6px;">
                             <option>Select Star</option>
-                            <option>Aswathy</option>
-                            <option>Bharany</option>
-                            <option>Makayiram</option>
-                            <option>Karthika</option>
-                            <option>Thiruvathira</option>
-                            <option>Punartham</option>
-                            <option>Pooyam</option>
+                            <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_NameEng}}</option>
                           </select>
                         </td>
-                        <td><select formControlName="realtion" class="form-control" style="width:100%;height:30.6px;">
-                            <option>Select relation</option>
-                            <option>father</option>
-                            <option>Mother</option>
-                            <option>son</option>
-                            <option>daughter</option>
-                            <option>wife</option>
-                            <option>husband</option>
-                            <option>grand mother</option>
-                            <option>grand father</option>
-                          </select> </td>
+                      
                         <td style="vertical-align:center;" >
-                          <a (click)="addRelativeDetails()" color="accent"><mat-icon class="icons">add_comment</mat-icon></a>
+                          <mat-icon class="icons" (click)="addRelativeDetails()" style="color: blue;">add_comment</mat-icon>
                         </td>
                       </tr>
                     </div>
@@ -85,7 +63,7 @@
                   >update</button> -->
                     <button class="btn btn-danger ml-4">cancel</button>
                     <!-- <button class="btn btn-primary ml-4">Edit</button> -->
-                    
+                    <button class="btn btn-danger ml-4" (click)="onUpdate(memeberForm.value)">Update</button>
                   </td>
                 </tr>
               </table>
@@ -103,17 +81,20 @@
                   <tr>
                     <th>Code</th>
                     <th>Name</th>
+                    <th>Mobile</th>
                     <th>
                     </th>
                   </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>abc</td>
-                    <td> <a href="#" color="accent"><mat-icon class="icons">add_comment</mat-icon></a><br/>
-                      <mat-icon title="Edit" class="small" style="vertical-align: middle;"
+                  <tr *ngFor="let member of memberList">
+                    <td>{{member.MID}}</td>
+                    <td>{{member.Name}}</td>
+                    <td>{{member.mobile}}</td>
+                    <td> 
+                      <!-- <a href="#" color="accent"><mat-icon class="icons">add_comment</mat-icon></a><br/> -->
+                      <mat-icon title="Edit" class="small" style="vertical-align: middle;" (click)="onEdit(member)"
                      >edit</mat-icon>
                     <mat-icon title="Delete" class="small" style="vertical-align: middle;"
-                    >delete</mat-icon>
+                  (click)="onDeleteAll(member.MID)">delete</mat-icon>
                   </td>
                     
                   </tr>

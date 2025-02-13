@@ -1,5 +1,5 @@
 <app-header></app-header>
-<div class="amster">
+<div class="amster" >
 
   <div class="container">
     <div class="card-body outlook" style="background:white;">
@@ -11,6 +11,7 @@
       <div class="master">
         <div class="col-md-4">
           <h1 style="font-weight:500;">Item Master</h1>
+          <div class="fixitems">
           <form [formGroup]="itemMasterForm">
             <table class="table">
               <tr>
@@ -18,8 +19,8 @@
                  Select Type <span class="text-danger">*</span>
                   <select class="form-control sps" style="width:100%" formControlName="ItemType" >
                     <option value="">Select</option>
-                    <option value="Nadavaravu">Nadavarav</option>
-                    <option value="Members">Subscription</option>
+                    <option value="Nadavaravu">Nadavaravu</option>
+                    <option value="Subscription">Subscription</option>
                     <option value="Thulabaram">Thulabharam</option>
                     <option value="others">Others</option>
                   </select>
@@ -87,6 +88,23 @@
               </tr>
               <tr>
                 <td>
+                  Account Head<span class="text-danger">*</span> <select class="form-control"  style="width: 100%;"  formControlName="ACHeadCode" >
+                    <option value="">Select 1</option>
+                    <option value="123456">Select 2</option>
+                  </select> 
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Account SubHead<span class="text-danger ">*</span>   
+                  <select class="form-control"  style="width: 100%;" formControlName="ACSubCode" >
+                    <option value="">Select 1</option>
+                    <option value="123456">Select 2</option>
+                  </select> 
+                </td>
+              </tr>
+              <tr>
+                <td>
                     Item Description<span class="text-danger">*</span><textarea type="text"  formControlName="NM_Description" class="form-control" placeholder="Enter Decription" matInput></textarea>
                 </td>
               </tr>
@@ -98,8 +116,10 @@
                   <button class="btn btn-danger ml-1" (click)="onReset()">cancel</button>
                 </td>
               </tr>
+             
             </table>
           </form>
+        </div>
         </div>
         <div class="col-md-6 search">
           <div style="display:flex;" class="search-container mt-3">

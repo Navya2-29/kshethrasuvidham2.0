@@ -7,4 +7,6 @@ export interface ItemMaster{
     category:string,
     ItemType?:string,
     Amount?:string;
+    ACHeadCode:string;
+    ACSubCode:string;
 }

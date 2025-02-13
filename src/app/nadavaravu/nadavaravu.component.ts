@@ -242,7 +242,7 @@ export class NadavaravuComponent implements OnInit {
 
   getNadavaravuItem() {
     const payLoad = {
-      Type: 'NadavaravuALL',
+      Type: 'NadavaravuItem',
       Code: '',
     };
 

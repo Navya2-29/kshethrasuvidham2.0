@@ -134,7 +134,6 @@ export class ReportCounterSelfComponent {
   goBack(): void {
     console.log('Going back...'); // Log to verify method execution
     this.router.navigate(['/getReport']);
-    
     if (window.history.length > 1) {
       window.history.back(); // Goes back to the previous page in history
     } else {
@@ -396,20 +395,20 @@ export class ReportCounterSelfComponent {
 
 
   
-  groupData() {
-    this.groupedDatas = this.filteredData.reduce((acc:any, curr:any) => {
-      const { CounterId, vazhipad, Qty, Rate } = curr;
-      if (!acc[CounterId]) {
-        acc[CounterId] = {};
-      }
-      if (!acc[CounterId][vazhipad]) {
-        acc[CounterId][vazhipad] = { Qty: 0, Rate, Amount: 0 };
-      }
-      acc[CounterId][vazhipad].Qty += Qty;
-      acc[CounterId][vazhipad].Amount = acc[CounterId][vazhipad].Rate * acc[CounterId][vazhipad].Qty;
-      return acc;
-    }, {});
-  }
+  // groupData() {
+  //   this.groupedDatas = this.filteredData.reduce((acc:any, curr:any) => {
+  //     const { CounterId, vazhipad, Qty, Rate } = curr;
+  //     if (!acc[CounterId]) {
+  //       acc[CounterId] = {};
+  //     }
+  //     if (!acc[CounterId][vazhipad]) {
+  //       acc[CounterId][vazhipad] = { Qty: 0, Rate, Amount: 0 };
+  //     }
+  //     acc[CounterId][vazhipad].Qty += Qty;
+  //     acc[CounterId][vazhipad].Amount = acc[CounterId][vazhipad].Rate * acc[CounterId][vazhipad].Qty;
+  //     return acc;
+  //   }, {});
+  // }
 
 
   generatePDF(){

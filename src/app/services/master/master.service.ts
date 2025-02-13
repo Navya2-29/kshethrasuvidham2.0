@@ -917,7 +917,9 @@ updateNadavaravuBillNumber(currentbillnumber: any): Observable<any[]> {
   getMultiBlockDayList(payLoad:any){
     return this.http.post<any>(Constant.BASE_URL+Constant.METHODS.CHECKMULTIBLOCKS,payLoad)
   }
-
+AddDevoteeMaster(payLoad:any){
+return this.http.post<any>(Constant.BASE_URL+Constant.METHODS.DEVOTEEMASTER,payLoad)
+}
 
 // getDayList(payLoad:any){
 //   return this.http.post<any>(Constant.BASE_URL+Constant.METHODS.DAY,payLoad)

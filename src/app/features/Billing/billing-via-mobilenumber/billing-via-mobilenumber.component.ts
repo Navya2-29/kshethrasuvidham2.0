@@ -4,9 +4,11 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MasterService } from '../../../services/master/master.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ReceiptPrintService } from '../../../shared/service/receipt-print.service';
 export interface DataRow {
   Name: string;
   Star: string;
+  MID:string;
 }
 
 @Component({
@@ -23,13 +25,15 @@ export class BillingViaMobilenumberComponent implements OnInit {
   selectedRows = new Set<DataRow>();
   mobileNumber: string;
   lang: string | null;
+  devoteeType:string;
   constructor(
     public dialogRef: MatDialogRef<BillingViaMobilenumberComponent >,
-    @Inject(MAT_DIALOG_DATA) public data: { mobileNumber: string },
+    @Inject(MAT_DIALOG_DATA) public data: { mobile: string,member:boolean },
     private service:MasterService,
-    private ts: TranslateService
+    private ts: TranslateService,
+    private sharedService:ReceiptPrintService
   ) {
-    this.mobileNumber = data.mobileNumber // Pass mobile number from parent
+    this.mobileNumber = data.mobile // Pass mobile number from parent
 
 
     this.lang = localStorage.getItem('Language');
@@ -45,13 +49,23 @@ export class BillingViaMobilenumberComponent implements OnInit {
 
 
   getDevoteeData(mobile:string){
+    if(this.data){
+if(this.data.member==true){
+  this.devoteeType="DevoteeNameStar"
+}else{
+this.devoteeType="NameStar"
+}
+    }
     const PayLoad={
-      Type:"NameStar",
+      Type:this.devoteeType,
       Code:this.mobileNumber
     }
    this.service.getMaster(PayLoad).subscribe({
       next:(data)=>{
 this.dataSource=data;
+if (this.dataSource && this.dataSource[0].MID) {
+  this.sharedService.setMemberId(this.dataSource[0].MID); // Pass memberId to service
+}
 console.log(this.dataSource,"data mobile")
     },error:(err)=>{
        

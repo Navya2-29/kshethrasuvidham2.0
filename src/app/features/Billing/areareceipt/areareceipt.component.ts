@@ -166,11 +166,11 @@ devoteeSearchMobileNumber:string |null;
       this.sendDataToApi(combinedData);
     });
 
-    this.receiptPrintService.mobileNumber$.subscribe((number) => {
-      this.devoteeSearchMobileNumber = number;
+    this.receiptPrintService.mobileNumber$.subscribe((data:any) => {
+      this.devoteeSearchMobileNumber = data?.mobile;
       console.log('Mobile number received:', this.devoteeSearchMobileNumber);
       if(this.devoteeSearchMobileNumber){
-        this.openBillingDialog(this.devoteeSearchMobileNumber)
+        this.openBillingDialog(data)
       }
       // else{
       //   this.notification.error("Please enter valid Mobile number and try again")
@@ -1638,10 +1638,10 @@ console.log(row,"roqqqqqqqqqqqqqqqqq")
 
 
 
-openBillingDialog(mobileNumber:string) {
+openBillingDialog(mobileNumber:any) {
   const dialogRef = this.dialog.open(BillingViaMobilenumberComponent , {
     width: '600px',
-    data: {mobileNumber} // Pass any data to the dialog if needed
+    data: mobileNumber // Pass any data to the dialog if needed
   });
 
   // Handle dialog result
@@ -1727,9 +1727,5 @@ else{
   }, 0);
 }
 }
-
-
-
-
 
 }

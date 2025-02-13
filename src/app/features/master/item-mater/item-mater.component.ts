@@ -55,6 +55,7 @@ export class ItemMAterComponent {
   showMaxLengthError: boolean = false;
   sortAscending: boolean = true;
   userId: string | null;
+  itemType:string="NadavaravuItem";
   private masterService = inject(MasterService);
   private formBuilder = inject(FormBuilder);
   private notification = inject(ToastrService);
@@ -91,6 +92,8 @@ export class ItemMAterComponent {
       NM_RName: ['',Validators.required,],
       category:[''],
       Amount:[''],
+      ACHeadCode:[''],
+      ACSubCode:[''],
       NM_Description: ['',Validators.required,],
     });
   }
@@ -100,6 +103,7 @@ export class ItemMAterComponent {
     this.itemMasterForm.get('ItemType')?.valueChanges.subscribe((value) => {
       if (value === 'Nadavaravu') {
         // Show category and make it required
+        this.itemType="NadavaravuItem";
         this.itemMasterForm.get('category')?.setValidators([Validators.required]);
         this.itemMasterForm.get('category')?.updateValueAndValidity();
   
@@ -108,18 +112,21 @@ export class ItemMAterComponent {
         this.itemMasterForm.get('Amount')?.setValue('');
       } else {
         // Hide category validation
+        // if(value=="Thulabaram"){
+        //   this.itemType="ThulabaramItem"
+        // }else if(value="Subscription"){
+        //   this.itemType="SubscriptionItem"
+        // }
         this.itemMasterForm.get('category')?.clearValidators();
         this.itemMasterForm.get('category')?.updateValueAndValidity();
-  
+  this.itemMasterForm.patchValue({
+    category:""
+  })
         // Show amount and make it required
         this.itemMasterForm.get('Amount')?.setValidators([Validators.required]);
       }
       this.itemMasterForm.get('Amount')?.updateValueAndValidity();
     });
-  
-
-
-
   }
 
 
@@ -160,7 +167,7 @@ export class ItemMAterComponent {
     if (this.itemMasterForm.valid) {
       const payload = {
         Itemtype:data.ItemType,
-        Amount:data.Amount?.toString(),
+        Amount:data.Amount?data.Amount?.toString():"0",
         NMId: '',
         NMCode: data.NM_Code,
         NMName: data.NM_Name,
@@ -168,6 +175,8 @@ export class ItemMAterComponent {
         NMDescription: data.NM_Description,
         Category:data.category,
         Cuser: this.userId,
+        ACHeadCode:data.ACHeadCode,
+        ACSubCode:data.ACSubCode,
         Type: 'INSERT',
       };
 
@@ -176,7 +185,7 @@ export class ItemMAterComponent {
 
           if(res.RespStatus==='I'){
             this.notification.success(
-              ' Item Details created successfully',
+              'Item Details created successfully',
               'success'
             );
           }
@@ -199,7 +208,20 @@ export class ItemMAterComponent {
 
   // resetting form controls
   onReset() {
-    this.itemMasterForm.reset();
+    this.itemMasterForm.reset({
+      Itemtype:"Nadavaravu",
+      Amount:"0",
+      
+      NMCode: "",
+      NMName: "",
+      NMRName:"",
+      NMDescription: "",
+      Category:"",
+      
+      ACHeadCode:"",
+      ACSubCode:"",
+     
+    });
     this.updateFlag = false;
     this.loading = false;
   }

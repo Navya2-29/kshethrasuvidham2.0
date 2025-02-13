@@ -25,8 +25,8 @@ export class ReceiptPrintService {
   mobileNumber$ = this.mobileNumberSubject.asObservable();
 
   // Set the mobile number
-  setMobileNumber(number: string) {
-    this.mobileNumberSubject.next(number);
+  setMobileNumber(data: any) {
+    this.mobileNumberSubject.next(data);
   }
 
   // Get the latest mobile number (optional)
@@ -34,7 +34,12 @@ export class ReceiptPrintService {
     return this.mobileNumberSubject.getValue();
   }
 
+  private memberIdSource = new BehaviorSubject<string | null>(null);
+  memberId$ = this.memberIdSource.asObservable();
 
+  setMemberId(id: string) {
+    this.memberIdSource.next(id);
+  }
 
 
   

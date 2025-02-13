@@ -40,14 +40,16 @@
           >
             Find
           </button>
-          <button
+         <button
           class="btn btn-secondary"
           (click)="getNameAndStarByMobilenumber()"
           style="padding: 5px; font-size: 9pt;width: 100%; background-color: #223d61"
         >
           Search for Devotee
         </button>
+  
         </div>
+        <div> <input type="checkbox" [(ngModel)]="memberDevoteeCheck" > </div>
       </div>
     </div>
     <div class="col-md-2">
