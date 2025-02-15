@@ -11,11 +11,12 @@ import { CreditcollectionComponent } from '../../../creditcollection/creditcolle
 import {MatTabsModule} from '@angular/material/tabs';
 import { TranslateService } from '@ngx-translate/core';
 import { TranslateModule } from '@ngx-translate/core';
+import { DevoteeFeeCollectionComponent } from '../devotee-fee-collection/devotee-fee-collection.component';
 @Component({
   selector: 'app-areaothers',
   standalone: true,
   providers: [provideNativeDateAdapter()],
-  imports: [MatButtonModule, MatExpansionModule,TranslateModule, MatIconModule, MatFormFieldModule, MatInputModule, NadavaravuComponent, MatTabsModule,CreditcollectionComponent],
+  imports: [MatButtonModule, MatExpansionModule,DevoteeFeeCollectionComponent,TranslateModule, MatIconModule, MatFormFieldModule, MatInputModule, NadavaravuComponent, MatTabsModule,CreditcollectionComponent],
   templateUrl: './areaothers.component.html',
   styleUrl: './areaothers.component.css'
 })

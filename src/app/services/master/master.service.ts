@@ -917,9 +917,15 @@ updateNadavaravuBillNumber(currentbillnumber: any): Observable<any[]> {
   getMultiBlockDayList(payLoad:any){
     return this.http.post<any>(Constant.BASE_URL+Constant.METHODS.CHECKMULTIBLOCKS,payLoad)
   }
+  
 AddDevoteeMaster(payLoad:any){
-return this.http.post<any>(Constant.BASE_URL+Constant.METHODS.DEVOTEEMASTER,payLoad)
+ return this.http.post<any>(Constant.BASE_URL+Constant.METHODS.DEVOTEEMASTER,payLoad);
 }
+
+upLoadTransaction(payLoad:any){
+  return this.http.post<any>('https://www.plutuscloudserviceuat.in:8201/API/CloudBasedIntegration/V1/UploadBilledTransaction',payLoad)
+}
+
 
 // getDayList(payLoad:any){
 //   return this.http.post<any>(Constant.BASE_URL+Constant.METHODS.DAY,payLoad)

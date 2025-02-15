@@ -1009,6 +1009,43 @@ console.log(this.selectedVazhipadItem)
       });
       dialogRef.afterClosed().subscribe((result) => {
         if (result) {
+const transactionPayLoad={
+  
+    "TransactionNumber":"1412/0225",   
+    "SequenceNumber": 14929301196,                            
+    "AllowedPaymentMode": "10",                              
+    "MerchantStorePosCode": "1221258967",
+    "Amount": "1000",                                     
+   "UserID": "Rinsha",                 
+   "MerchantID":29610 ,                                
+   "SecurityToken": "a4c9741b-2889-47b8-be2f-ba42081a246e",
+   "IMEI": "CUBIXTEST01",
+   "AutoCancelDurationInMinutes":5
+ 
+ 
+}
+this.masterservice.upLoadTransaction(transactionPayLoad).subscribe((data)=>{
+  console.log(data);
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
           this.prnitConfirmDialog(formattedData);
         } else {
           // this.resetForm();
