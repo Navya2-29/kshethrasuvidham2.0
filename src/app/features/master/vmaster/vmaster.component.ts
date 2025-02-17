@@ -129,6 +129,7 @@ export class VmasterComponent implements OnInit {
       VM_SMS: [false],
       VM_Whatsapp: [false],
       VM_Mattinam: [false],
+      VM_SalesItem:[false],
       prathistainfo: this.formBuilder.array([]),
       //  deities: this.formBuilder.array([]),
     });
