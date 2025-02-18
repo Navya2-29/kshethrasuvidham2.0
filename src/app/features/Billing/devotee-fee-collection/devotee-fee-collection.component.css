@@ -481,3 +481,22 @@ mat-option {
 .small-select .mat-form-field-wrapper {
   padding-bottom: 0px !important;
 }
+.input-container {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.input-container input {
+  width: 100%;
+  padding-right: 35px; /* Space for the icon */
+}
+
+.input-container .icon {
+  position: absolute;
+  right: 10px;  /* Aligns the icon to the right */
+  top: 50%;
+  transform: translateY(-50%);
+  color: gray;
+  pointer-events: none; /* Prevents interaction */
+}

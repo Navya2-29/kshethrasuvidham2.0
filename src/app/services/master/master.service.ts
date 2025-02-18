@@ -228,6 +228,7 @@ this.userId=localStorage.getItem('LoginId');
       DisplayMode: obj.DisplayMode ? 'Y' : 'N',
       VM_SMS: obj.VM_SMS ? 'Y' : 'N',
       VM_Whatsapp: obj.VM_Whatsapp ? 'Y' : 'N',
+      VM_Sales:obj.VM_Sales ? 'Y':'N',
       prathistainfo: obj.prathistainfo,
     };
     console.log(payLoad,"create vmaster last data")
@@ -276,6 +277,7 @@ this.userId=localStorage.getItem('LoginId');
       DisplayMode: obj.DisplayMode ? 'Y' : 'N',
       VM_SMS: obj.VM_SMS ? 'Y' : 'N',
       VM_Whatsapp: obj.VM_Whatsapp ? 'Y' : 'N',
+      VM_Sales:obj.VM_Sales ? 'Y':'N',
       prathistainfo: obj.prathistainfo,
     };
     console.log(payLoad,"update payload");
@@ -926,6 +928,10 @@ upLoadTransaction(payLoad:any){
   return this.http.post<any>('https://www.plutuscloudserviceuat.in:8201/API/CloudBasedIntegration/V1/UploadBilledTransaction',payLoad)
 }
 
+addFeeCollection(payLoad:any){
+  return this.http.post<any>(Constant.BASE_URL+Constant.METHODS.FEECOLLECTION,payLoad);
+
+}
 
 // getDayList(payLoad:any){
 //   return this.http.post<any>(Constant.BASE_URL+Constant.METHODS.DAY,payLoad)

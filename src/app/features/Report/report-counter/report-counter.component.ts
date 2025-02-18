@@ -55,7 +55,7 @@ export class ReportCounterComponent {
   groupedDatas: { [key: string]: { [key: string]: { Qty: number, Rate: number, Amount: number } } } = {};
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  groupedData: { [key: string]: ReportDailyStmt[] } = {};
+  groupedData: { [counterId: string]: { [cuser: string]: { [trnsMode: string]: ReportData[] } } } = {};
   currentDate: string = '';
   currentPage: number = 1;
   counterId:string | null;
@@ -102,7 +102,7 @@ this.ts.use(this.lang || 'en');
       next: (data) => {
         console.log('Fetched report data:', data);
         this.data = data;
-        this.groupDataByTransactionMode(this.data); // Group the data
+      this.groupData() // Group the data
         // this.data = data.sort((a: any, b: any) => {
         //   const [numA, denomA] = a.BillNo.split('/').map(Number);
         //   const [numB, denomB] = b.BillNo.split('/').map(Number);
@@ -122,13 +122,53 @@ this.ts.use(this.lang || 'en');
     });
   }
 
-  // Grouping function
-  groupDataByTransactionMode(data: ReportDailyStmt[]): void {
-    this.groupedData = data.reduce((acc, item) => {
-      (acc[item.CounterId] = acc[item.CounterId] || []).push(item);
-      return acc;
-    }, {} as { [key: string]: ReportDailyStmt[] });
+ // Grouping function
+ groupData() {
+  this.groupedData = this.data.reduce((acc:any, item:any) => {
+    const counterKey = item.CounterId.toString();
+    const cuserKey = item.Cuser;
+    const trnsModeKey = item.TrnsMode;
+
+    if (!acc[counterKey]) {
+      acc[counterKey] = {};
+    }
+    if (!acc[counterKey][cuserKey]) {
+      acc[counterKey][cuserKey] = {};
+    }
+    if (!acc[counterKey][cuserKey][trnsModeKey]) {
+      acc[counterKey][cuserKey][trnsModeKey] = [];
+    }
+
+    acc[counterKey][cuserKey][trnsModeKey].push(item);
+    return acc;
+  }, {} as { [counterId: string]: { [cuser: string]: { [trnsMode: string]: ReportData[] } } });
+}
+
+// Function to calculate Counter-wise total
+getTotalForCounter(counterId: string): number {
+  let total = 0;
+  const cusers = this.groupedData[counterId] || {};
+  Object.keys(cusers).forEach(cuserKey => {
+    Object.keys(cusers[cuserKey]).forEach(trnsModeKey => {
+      total += cusers[cuserKey][trnsModeKey].reduce((sum, item) => sum + item.Amount, 0);
+    });
+  });
+  return total;
+}
+
+// Function to calculate Cuser & TrnsMode-wise total
+getTotalForCuserTrnsMode(counterId: string, cuser: string, trnsMode: string): number {
+  return this.groupedData[counterId]?.[cuser]?.[trnsMode]?.reduce((sum, item) => sum + item.Amount, 0) || 0;
+}
+getTotalForCuser(counterId: string, cuser: string): number {
+  if (!this.groupedData[counterId] || !this.groupedData[counterId][cuser]) {
+    return 0;
   }
+
+  return Object.keys(this.groupedData[counterId][cuser]).reduce((sum, modeKey) => 
+    sum + this.getTotalForCuserTrnsMode(counterId, cuser, modeKey), 0
+  );
+}
 
 
 
@@ -355,38 +395,38 @@ this.ts.use(this.lang || 'en');
   
   // code for showing in html 
 
-  groupData() {
-    this.groupedDatas = this.data.reduce((acc:any, curr:any) => {
-      const { CounterId, vazhipad, Qty, Rate } = curr;
-      if (!acc[CounterId]) {
-        acc[CounterId] = {};
-      }
-      if (!acc[CounterId][vazhipad]) {
-        acc[CounterId][vazhipad] = { Qty: 0, Rate, Amount: 0 };
-      }
-      acc[CounterId][vazhipad].Qty += Qty;
-      acc[CounterId][vazhipad].Amount = acc[CounterId][vazhipad].Rate * acc[CounterId][vazhipad].Qty;
-      return acc;
-    }, {});
-  }
+  // groupData() {
+  //   this.groupedDatas = this.data.reduce((acc:any, curr:any) => {
+  //     const { CounterId, vazhipad, Qty, Rate } = curr;
+  //     if (!acc[CounterId]) {
+  //       acc[CounterId] = {};
+  //     }
+  //     if (!acc[CounterId][vazhipad]) {
+  //       acc[CounterId][vazhipad] = { Qty: 0, Rate, Amount: 0 };
+  //     }
+  //     acc[CounterId][vazhipad].Qty += Qty;
+  //     acc[CounterId][vazhipad].Amount = acc[CounterId][vazhipad].Rate * acc[CounterId][vazhipad].Qty;
+  //     return acc;
+  //   }, {});
+  // }
 
  // Calculate the grand total for each transaction mode
  
  // Calculate the grand total for each transaction mode
- getGrandTotalForTrnsMode(CounterId: any): number {
-  const items = this.groupedData[CounterId]; // Get items for the transaction mode
-  if (!items || items.length === 0) {
-    return 0; // No items found, return 0
-  }
+//  getGrandTotalForTrnsMode(CounterId: any): number {
+//   const items = this.groupedData[CounterId]; // Get items for the transaction mode
+//   if (!items || items.length === 0) {
+//     return 0; // No items found, return 0
+//   }
 
-  // Calculate the total
-  const total = items.reduce((sum, item) => {
+//   // Calculate the total
+//   const total = items.reduce((sum, item) => {
     
-    return sum + item.Amount
-  }, 0);
+//     return sum + item.Amount
+//   }, 0);
 
-  return total;
-}
+//   return total;
+// }
 
 
 

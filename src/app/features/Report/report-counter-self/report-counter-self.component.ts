@@ -50,7 +50,7 @@ export class ReportCounterSelfComponent {
   fromDate:string;
   toDate:string;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  groupedData: { [key: string]: ReportData[] } = {};
+  groupedData: { [counterId: string]: { [cuser: string]: { [trnsMode: string]: ReportData[] } } } = {};
   currentDate: string = '';
   currentPage: number = 1;
   counterId:string | null;
@@ -96,8 +96,8 @@ export class ReportCounterSelfComponent {
       next: (data) => {
         console.log('Fetched report data:', data);
         this.data = data;
-        this.filteredData= this.data.filter(item => item.CounterId == this.counterId);  
-        this.groupDataByTransactionMode(this.data); // Group the data
+        this.filteredData= this.data.filter(item => item.CounterId == this.counterId); 
+        this.groupData() 
         // this.data = data.sort((a: any, b: any) => {
         //   const [numA, denomA] = a.BillNo.split('/').map(Number);
         //   const [numB, denomB] = b.BillNo.split('/').map(Number);
@@ -118,11 +118,51 @@ export class ReportCounterSelfComponent {
   }
 
   // Grouping function
-  groupDataByTransactionMode(data: ReportData[]): void {
-    this.groupedData = this.filteredData.reduce((acc, item) => {
-      (acc[item.CounterId] = acc[item.CounterId] || []).push(item);
+  groupData() {
+    this.groupedData = this.filteredData.reduce((acc:any, item:any) => {
+      const counterKey = item.CounterId.toString();
+      const cuserKey = item.Cuser;
+      const trnsModeKey = item.TrnsMode;
+  
+      if (!acc[counterKey]) {
+        acc[counterKey] = {};
+      }
+      if (!acc[counterKey][cuserKey]) {
+        acc[counterKey][cuserKey] = {};
+      }
+      if (!acc[counterKey][cuserKey][trnsModeKey]) {
+        acc[counterKey][cuserKey][trnsModeKey] = [];
+      }
+  
+      acc[counterKey][cuserKey][trnsModeKey].push(item);
       return acc;
-    }, {} as { [key: string]: ReportData[] });
+    }, {} as { [counterId: string]: { [cuser: string]: { [trnsMode: string]: ReportData[] } } });
+  }
+  
+  // Function to calculate Counter-wise total
+  getTotalForCounter(counterId: string): number {
+    let total = 0;
+    const cusers = this.groupedData[counterId] || {};
+    Object.keys(cusers).forEach(cuserKey => {
+      Object.keys(cusers[cuserKey]).forEach(trnsModeKey => {
+        total += cusers[cuserKey][trnsModeKey].reduce((sum, item) => sum + item.Amount, 0);
+      });
+    });
+    return total;
+  }
+  
+  // Function to calculate Cuser & TrnsMode-wise total
+  getTotalForCuserTrnsMode(counterId: string, cuser: string, trnsMode: string): number {
+    return this.groupedData[counterId]?.[cuser]?.[trnsMode]?.reduce((sum, item) => sum + item.Amount, 0) || 0;
+  }
+  getTotalForCuser(counterId: string, cuser: string): number {
+    if (!this.groupedData[counterId] || !this.groupedData[counterId][cuser]) {
+      return 0;
+    }
+  
+    return Object.keys(this.groupedData[counterId][cuser]).reduce((sum, modeKey) => 
+      sum + this.getTotalForCuserTrnsMode(counterId, cuser, modeKey), 0
+    );
   }
 
   onPageChange(event: PageEvent) {
@@ -146,6 +186,134 @@ export class ReportCounterSelfComponent {
     const [year, month, day] = date.split('-');
     return `${day}-${month}-${year}`;
   }
+
+  
+  // Helper function to wrap text for a given column width
+  wrapText(doc: jsPDF, text: string, maxWidth: number): string {
+    const words = text.split(' ');
+    let currentLine = '';
+    let wrappedText = '';
+  
+    words.forEach(word => {
+      if (doc.getTextWidth(currentLine + word) < maxWidth) {
+        currentLine += word + ' ';
+      } else {
+        wrappedText += currentLine.trim() + '\n';
+        currentLine = word + ' ';
+      }
+    });
+  
+    wrappedText += currentLine.trim();
+    return wrappedText;
+  }
+  
+  
+  
+  // Helper function to wrap text for a given column width
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+  
+
+  getTransactionType(transmode: string): string {
+    switch (transmode) {
+      case 'ON':
+        return 'Bank';
+      case 'CS':
+        return 'CASH';
+      case 'MO':
+        return 'MONEY ORDER';
+      case 'UP':
+        return 'UPI';
+      case 'CH':
+        return 'CHEQUE';
+      case 'CR':
+        return 'CREDIT';
+      case 'DE':
+        return 'DEBIT';
+
+      default:
+        return 'OTHERS';
+    }
+  }
+
+
+
+  
+
+  generatePDF(){
+    const printContent = document.getElementById('print-section');
+    if (!printContent) {
+      console.error('No content found to print');
+      return;
+    }
+  
+    const WindowPrt = window.open('', '', 'width=800,height=600');
+    
+    // Check if the print window was successfully opened
+    if (!WindowPrt) {
+      console.error('Unable to open print window. Please check pop-up blockers.');
+      return;
+    }
+  
+    WindowPrt.document.write(`
+      <html>
+        <head>
+          <title>Print</title>
+          <style>
+            /* Add custom styles for printing if needed */
+            table {
+              width: 100%;
+              border-collapse: collapse;
+            }
+            table, th, td {
+              border: 1px solid black;
+            }
+            th, td {
+              padding: 5px;
+              text-align: left;
+            }
+          </style>
+        </head>
+        <body>${printContent.innerHTML}</body>
+      </html>
+    `);
+  
+    WindowPrt.document.close();
+    WindowPrt.focus();
+  
+    // Make sure that the window is still valid before calling print and close
+    if (WindowPrt) {
+      WindowPrt.print();
+      WindowPrt.close();
+    }
+
+    }
+    
+
+
+ // Calculate the grand total for each transaction mode
+//  getGrandTotalForTrnsMode(CounterId: any): number {
+//   const items = this.groupedData[CounterId]; // Get items for the transaction mode
+//   if (!items || items.length === 0) {
+//     return 0; // No items found, return 0
+//   }
+
+//   // Calculate the total
+//   const total = items.reduce((sum, item) => {
+//     const qty = item.Qty || 0; // Default to 0 if Qty is missing
+//     const rate = item.Rate || 0; // Default to 0 if Rate is missing
+//     return sum + item.Amount;
+//   }, 0);
+
+//   return total;
+// }
+
+
+
+
+
 
   // generatePDF() {
   //   const templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
@@ -341,60 +509,6 @@ export class ReportCounterSelfComponent {
   // }
 
   
-  
-  // Helper function to wrap text for a given column width
-  wrapText(doc: jsPDF, text: string, maxWidth: number): string {
-    const words = text.split(' ');
-    let currentLine = '';
-    let wrappedText = '';
-  
-    words.forEach(word => {
-      if (doc.getTextWidth(currentLine + word) < maxWidth) {
-        currentLine += word + ' ';
-      } else {
-        wrappedText += currentLine.trim() + '\n';
-        currentLine = word + ' ';
-      }
-    });
-  
-    wrappedText += currentLine.trim();
-    return wrappedText;
-  }
-  
-  
-  
-  // Helper function to wrap text for a given column width
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-  }
-  
-
-  getTransactionType(transmode: string): string {
-    switch (transmode) {
-      case 'ON':
-        return 'Bank';
-      case 'CS':
-        return 'CASH';
-      case 'MO':
-        return 'MONEY ORDER';
-      case 'UP':
-        return 'UPI';
-      case 'CH':
-        return 'CHEQUE';
-      case 'CR':
-        return 'CREDIT';
-      case 'DE':
-        return 'DEBIT';
-
-      default:
-        return 'OTHERS';
-    }
-  }
-
-
-
-  
   // groupData() {
   //   this.groupedDatas = this.filteredData.reduce((acc:any, curr:any) => {
   //     const { CounterId, vazhipad, Qty, Rate } = curr;
@@ -409,76 +523,6 @@ export class ReportCounterSelfComponent {
   //     return acc;
   //   }, {});
   // }
-
-
-  generatePDF(){
-    const printContent = document.getElementById('print-section');
-    if (!printContent) {
-      console.error('No content found to print');
-      return;
-    }
-  
-    const WindowPrt = window.open('', '', 'width=800,height=600');
-    
-    // Check if the print window was successfully opened
-    if (!WindowPrt) {
-      console.error('Unable to open print window. Please check pop-up blockers.');
-      return;
-    }
-  
-    WindowPrt.document.write(`
-      <html>
-        <head>
-          <title>Print</title>
-          <style>
-            /* Add custom styles for printing if needed */
-            table {
-              width: 100%;
-              border-collapse: collapse;
-            }
-            table, th, td {
-              border: 1px solid black;
-            }
-            th, td {
-              padding: 5px;
-              text-align: left;
-            }
-          </style>
-        </head>
-        <body>${printContent.innerHTML}</body>
-      </html>
-    `);
-  
-    WindowPrt.document.close();
-    WindowPrt.focus();
-  
-    // Make sure that the window is still valid before calling print and close
-    if (WindowPrt) {
-      WindowPrt.print();
-      WindowPrt.close();
-    }
-
-    }
-    
-
-
- // Calculate the grand total for each transaction mode
- getGrandTotalForTrnsMode(CounterId: any): number {
-  const items = this.groupedData[CounterId]; // Get items for the transaction mode
-  if (!items || items.length === 0) {
-    return 0; // No items found, return 0
-  }
-
-  // Calculate the total
-  const total = items.reduce((sum, item) => {
-    const qty = item.Qty || 0; // Default to 0 if Qty is missing
-    const rate = item.Rate || 0; // Default to 0 if Rate is missing
-    return sum + item.Amount;
-  }, 0);
-
-  return total;
-}
-
 
 
 }

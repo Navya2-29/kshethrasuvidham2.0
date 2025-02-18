@@ -6,28 +6,34 @@
       <mat-icon>arrow_back</mat-icon>
     </button>
     <div class="row">
+     
+
       <div class="col-md-5">
         <h2 style="margin-left: 100px">{{"FeeCollection"|translate }}</h2>
-        <div >
+        <div > <form [formGroup]="feeCollctionForm">
           <table class="table">
             <tr>
                 <td>
                   <label for="ItemValue">Mobile Number</label>
-                  <input
-                    type="text"
-                    id="ItemValue"
-                    formControlName="ItemValue"
-                    placeholder="Mobile"
-                    class="form-control sps"
-                  />
+                  <div class="input-container">
+                    <input
+                      type="text"
+                      id="mobile"
+                      placeholder="Mobile Number"
+                      class="form-control"
+                      formControlName="Mobile"
+                      (keyup.enter)="search()"
+                    />
+                    <mat-icon class="icon"  (keyup.enter)="search()" >search</mat-icon>
+                  </div>
                 </td>
                 <td>
                     <label for="ReceiptAmount">Member Id</label>
                     <input 
                       type="text" 
-                      id="ReceiptAmount" 
-                      formControlName="ReceiptAmount" 
+                      id="MemberId" 
                       placeholder="Member id" 
+                      formControlName="MemberId"
                       class="form-control sps">
                   </td>
                 <td>
@@ -40,19 +46,21 @@
                 <input
                   type="text"
                   [placeholder]="'PLACEHOLDER.BILLNUMBER' | translate"
-                  formControlName="BillNo"
                   readonly
+                  formControlName="BillNo"
                   class="form-control sps"
                 />
               </td>
-              <td >
+              <td>
                 <label>Item</label>
                 <select
                   class="form-control"
-                  formControlName="NMId"
                   style="width: 100%; height: 30.6px"
+                  formControlName="ItemType"
+                 
                 >
                   <option selected value="">Select item</option>
+                  <option [value]="item.NM_Id" *ngFor="let item of itemList">{{item.NM_Name}}</option>
                 </select>
               </td>
             </tr>
@@ -61,8 +69,8 @@
                 <input
                   type="text"   
                   [placeholder]="'PLACEHOLDER.NAME' | translate"
-                  formControlName="Name"
                   class="form-control sps"
+                  formControlName="Name"
                 />
               </td>
             </tr>
@@ -70,7 +78,7 @@
               <td colspan="2"> 
                 <textarea
                 [placeholder]="'PLACEHOLDER.ADDRESS' | translate"
-                  formControlName="Address"
+                 formControlName="Address"
                   class="form-control sps"
                   rows="5"
                 ></textarea>
@@ -91,8 +99,10 @@
                 <select
                   class="form-control"
                 style="width: 100%;" 
+                formControlName="Year"
                 >
                   <option value="">Select Year</option>
+                  <option *ngFor="let year of yearList" [value]="year">{{ year }}</option>
                 </select>
               </td>
             </tr>
@@ -102,6 +112,7 @@
                     type="text"
                     placeholder="Amount"
                     class="form-control sps"
+                    formControlName="Amount"
                   />
                 </td>
                 <td>
@@ -109,6 +120,7 @@
                     type="text"
                     placeholder="Total Amount"
                     class="form-control sps"
+                    formControlName="totalAmount"
                   />
                 </td>
             </tr>
@@ -117,7 +129,6 @@
                 <label>Upi id</label>
                 <input
                   type="text"
-                  formControlName="Remarks" 
                   class="form-control sps"
                 />
               </td>
@@ -126,27 +137,29 @@
                 <select
                   class="form-control"  
                   style="width: 100%; height: 30.6px"
+                  formControlName="TransMode"
                 >
                   <!-- <option value="">Select Payment mode</option> -->
                   <option value="CS">Cash</option>
                   <option value="UP">UPI</option>
+                  <option value="CH">Cheque</option>
                 </select>
               </td>
               <td>
-                <button class="btn btn-primary" >Save</button>
+                <button class="btn btn-primary"  (click)="onSubmit()">Save</button>
                 <button  class="btn btn-danger ml-2">
                   Cancel
                 </button>
               </td>
             </tr>
           </table>
-        </div>
+        </form> </div>
       </div>
+
       <div class="col-md-7 search">
         <div style="display: flex" >
           <input
             type="text"
-            formControlName="searchBillNO"
             class="form-control sps"
             placeholder="search by Bill No."
             style="width: 25%"

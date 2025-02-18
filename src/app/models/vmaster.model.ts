@@ -20,6 +20,7 @@ VM_Name:string;
 VM_RName:string;
 VM_Rate_Change:string;
 VM_Receipt:string;
+VM_Sales:string,
 VM_Seasonal:string;
 VM_Special:string;
 VM_Time:string;

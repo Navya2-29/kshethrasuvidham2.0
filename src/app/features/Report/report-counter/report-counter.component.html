@@ -149,34 +149,69 @@
 
 
 
-<div *ngFor="let mode of groupedData | keyvalue" style="margin-left: 100px; margin-right: 100px;margin-top: 50px;">
-  <h3 style="font-weight: bold;">Counter:{{ mode.key }}</h3> <!-- Transaction Mode as Table Heading -->
-
-  <table border="1">
-    <thead>
-      <tr>
-        <th>{{"VAZHIPAD" | translate}}</th>
-        <th>{{"QUANTITY" |translate}}</th>
-        <th>{{"RATE" |translate}}</th>
-        <th>{{"AMOUNT" | translate}}</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let item of mode.value">
-        <td>{{ item.vazhipad }}</td>
-        <td>{{ item.Qty }}</td>
-        <td style="text-align: right;">{{ item.Rate | number: '1.2-2' }}</td>
-        <td style="text-align: right;">{{ item.Amount | number: '1.2-2' }}</td>
-      </tr>
-      <tr *ngIf="mode.value.length > 0">
-        <td colspan="3" style="text-align: right;"> Total</td>
-        <td style="text-align: right;font-weight: bold;">{{ getGrandTotalForTrnsMode(mode.key) | number: '1.2-2'}}</td>
-      </tr>
-    </tbody>
-  </table>
- 
-</div>
-<div style="margin-left: 100px; margin-right: 100px;margin-top: 50px;text-align: right;font-weight: bold;">
-  Grand Total :{{ getTotalAmount() | number: '1.2-2' }}
+<div style="margin-left: 30px;margin-right: 30px;">
+  <div *ngFor="let counter of groupedData | keyvalue">
+    <span style="font-weight: bold;"><u>Counter: {{ counter.key }}</u></span>
+  
+    <div *ngFor="let user of counter.value | keyvalue">
+      <span style="font-weight: bold;">User: {{ user.key }}</span>
+  
+      <div *ngFor="let mode of user.value | keyvalue">
+        <span style="font-weight: bold;">Payment Mode: {{ getTransactionType(mode.key) }}</span>
+  
+        <table border="1">
+          <thead>
+            <tr>
+              <th>{{ "VAZHIPAD" | translate }}</th>
+              <th>{{ "QUANTITY" | translate }}</th>
+              <th>{{ "RATE" | translate }}</th>
+              <th>{{ "AMOUNT" | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of mode.value">
+              <td>{{ item.vazhipad }}</td>
+              <td>{{ item.Qty }}</td>
+              <td style="text-align: right;">{{ item.Rate | number: '1.2-2' }}</td>
+              <td style="text-align: right;">{{ item.Amount | number: '1.2-2' }}</td>
+            </tr>
+            <!-- Transaction Mode Total -->
+            <tr *ngIf="mode.value.length > 0">
+              <td colspan="3" style="text-align: right;">Total for {{ getTransactionType( mode.key) }}</td>
+              <td style="text-align: right; font-weight: bold;">
+                {{ getTotalForCuserTrnsMode(counter.key, user.key, mode.key) | number: '1.2-2' }}
+              </td>
+            </tr>
+          
+          </tbody>
+        </table>
+        <br />
+  
+      
+      </div>
+  
+      <!-- Cuser-wise Total -->
+      
+    
+    
+      <div style="text-align: right; font-weight: bold; font-size: 18px;">
+        Total for {{ user.key }}: 
+        {{ getTotalForCuser(counter.key, user.key) | number: '1.2-2' }}
+  
+        
+      </div>
+    
+    
+    
+    
+    
+    
+    </div>
+  
+  <!-- Counter-wise Total -->
+    <div style="font-weight: bold; font-size: 18px;text-align: right;">
+      Grand Total for Counter {{ counter.key }}: {{ getTotalForCounter(counter.key) | number: '1.2-2' }}
+    </div>
+    <br />
+  </div> 
   </div>
-</div>

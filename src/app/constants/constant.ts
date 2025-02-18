@@ -85,6 +85,7 @@ export const Constant = {
   UPDATEBILLMODE:"UpdateBillMode",
   CHECKMULTIBLOCKS:"CheckMultiBlocks",
   DAY:"Day",
-  DEVOTEEMASTER:"DevoteeMaster"
+  DEVOTEEMASTER:"DevoteeMaster",
+  FEECOLLECTION:"FeeCollection"
   },
 };

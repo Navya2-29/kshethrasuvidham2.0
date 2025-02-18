@@ -1012,7 +1012,7 @@ console.log(this.selectedVazhipadItem)
 const transactionPayLoad={
   
     "TransactionNumber":"1412/0225",   
-    "SequenceNumber": 14929301196,                            
+    "SequenceNumber": 1492930196,                            
     "AllowedPaymentMode": "10",                              
     "MerchantStorePosCode": "1221258967",
     "Amount": "1000",                                     

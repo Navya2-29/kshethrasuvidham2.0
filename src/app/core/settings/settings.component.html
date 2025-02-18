@@ -4,173 +4,129 @@
   <div class="container">
     <div class="card-body outlook" style="background: white">
       <div class="posback">
-        <a (click)="gotoDashBoard()" class="back"
-          >&nbsp;&nbsp;<mat-icon title="Edit" style="color: white"
-            >arrow_back_ios</mat-icon
-          ></a
-        >
+        <a (click)="gotoDashBoard()" class="back">&nbsp;&nbsp;<mat-icon title="Edit"
+            style="color: white">arrow_back_ios</mat-icon></a>
         <h1 class="tname">{{templeName}}</h1>
       </div>
       <div class="master">
         <div class="col-md-5">
           <form [formGroup]="settingsForm">
             <div class="row">
-             
-                <h1 style="font-weight: 500">Setting Master</h1>
-                <table class="table scrollable-table">
-                  <tr>
-                    <td>
-                      Temple Name<span class="text-danger">*</span
-                      ><input
-                        type="text"
-                       
-                        formControlName="templeName"
-                        class="form-control sps"
-                        placeholder="Enter Temple Name"               
-                      />
-                    </td>
-                    </tr>
-                    <tr>
-                    <td >
-                      Temple address<span class="text-danger">*</span>
-                      <textarea
-                        type="text"
-                        class="form-control"
-                        appUpperCase
-                        maxlength="100"
-                        formControlName="templeAddress"
-                        placeholder="Enter Name"
-                      >
-                      </textarea>
-                     
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      Email<span class="text-danger">*</span
-                      ><input
-                        type="email"
-                       
-                        formControlName="email"
-                        class="form-control sps"
-                        placeholder="Enter email address"
-                        
-                      />
 
-                    </td>
-                    </tr>
-                    <tr>
-                      <td>
-                       Phone
-                        <input
-                          type="text"
-                          formControlName="phone"
-                          class="form-control sps"
-                          placeholder="Enter phone number"
-                          
-                        />
-  
-                      </td>
-                      </tr>
-                     
-                  <tr>
-                    <td >Language
-                      <span class="text-danger"
-                        >*</span
-                      ><select
-                        type="text"
-                        formControlName="language"
-                        class="form-control sps"
-                        placeholder="Select Language"
-                      ><option value="">Select</option>
+              <h1 style="font-weight: 500">Setting Master</h1>
+              <table class="table scrollable-table">
+                <tr>
+                  <td>
+                    Temple Name<span class="text-danger">*</span><input type="text" formControlName="templeName"
+                      class="form-control sps" placeholder="Enter Temple Name" />
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    Temple address<span class="text-danger">*</span>
+                    <textarea type="text" class="form-control" appUpperCase maxlength="100"
+                      formControlName="templeAddress" placeholder="Enter Name">
+                      </textarea>
+
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    Email<span class="text-danger">*</span><input type="email" formControlName="email"
+                      class="form-control sps" placeholder="Enter email address" />
+
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    Phone
+                    <input type="text" formControlName="phone" class="form-control sps"
+                      placeholder="Enter phone number" />
+
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>Language
+                    <span class="text-danger">*</span><select type="text" formControlName="language"
+                      class="form-control sps" placeholder="Select Language">
+                      <option value="">Select</option>
                       <option value="en">English</option>
                       <option value="ml">Malayalam</option>
                       <option value="tm">Tamil</option>
                       <option value="kn">Kannada</option>
                       <option value="hi">Hindi</option>
-                      </select>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td >Printer
-                      <span class="text-danger"
-                        >*</span
-                      ><select
-                        type="text"
-                        formControlName="printer"
-                        class="form-control sps"
-                        placeholder="Select printer"
-                      ><option value="">Select</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Printer
+                    <span class="text-danger">*</span><select type="text" formControlName="printer"
+                      class="form-control sps" placeholder="Select printer">
+                      <option value="">Select</option>
                       <option value="dotMetrix">Dot Matrix</option>
                       <option value="inkjet">Inkjet Printer</option>
                       <option value="laser">Laser Printer</option>
                       <option value="thermal">Thermal Printer</option>
-                      
-                      </select>  
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                        Counter
-                      <span class="text-danger"
-                        >*</span>
-                        <input type="number" class="form-control sps"
-                        formControlName="Counter"
-                        placeholder="Enter counter"
-                        min="1"
-                        >
 
-                    </td>
-                  </tr>
-                  <tr style="display: none;">
-                    <td>
-                        Logo
-                      <span class="text-danger"
-                        >*</span>
-                        <input type="file" class="form-control"
-                        formControlName="logo"
-                        placeholder="Select Logo"
-                        >
-                    </td>
-                  </tr>
-                  <tr>
-                    <td> <button class="btn btn-primary" (click)="updateSettings()">Submit</button>
-                    
-                    <button class="btn btn-danger">Cancel</button></td>
-                  </tr>
-                </table>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    Counter
+                    <span class="text-danger">*</span>
+                    <input type="number" class="form-control sps" formControlName="Counter" placeholder="Enter counter"
+                      min="1">
+
+                  </td>
+                </tr>
+                <tr style="display: none;">
+                  <td>
+                    Logo
+                    <span class="text-danger">*</span>
+                    <input type="file" class="form-control" formControlName="logo" placeholder="Select Logo">
+                  </td>
+                </tr>
+                <tr>
+                  <td> <button class="btn btn-primary" (click)="updateSettings()">Submit</button>
+
+                    <button class="btn btn-danger">Cancel</button>
+                  </td>
+                </tr>
+              </table>
             </div>
           </form>
         </div>
         <div class="col-md-7">
-         
+
           <div>
             <h2>Lock settings</h2>
           </div>
           <div class="fixitems prathishta">
             <table class="table">
-              <tbody
-              >
-<tr >
-    <td class="settings" >Select Type of the Bill</td> 
-</tr>
-<tr>
-    <td class="settings">
-      <select class="form-control" style="width: 100%;" [(ngModel)]="billType">
-        <option value="">Plese select bill Type </option>
-<option value="UnLockBooking">vazhipad booking</option>
-<option value="UnLockNadavaravu">Nadavaravu</option>
+              <tbody>
+                <tr>
+                  <td class="settings">Select Type of the Bill</td>
+                </tr>
+                <tr>
+                  <td class="settings">
+                    <select class="form-control" style="width: 100%;" [(ngModel)]="billType">
+                      <option value="">Plese select bill Type </option>
+                      <option value="UnLockBooking">vazhipad booking</option>
+                      <option value="UnLockNadavaravu">Nadavaravu</option>
 
-<option value="UnLockCredit">Credit Collection</option>
-    </select>
-  </td> 
-</tr>
-<tr>
-    <td class="settings"><Button class="btn btn-primary" (click)="unLockBillNumber()">Unlock</Button></td>
-</tr>
+                      <option value="UnLockCredit">Credit Collection</option>
+                      <option value="UnLockFeeCollect">Fee Collection</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="settings"><Button class="btn btn-primary" (click)="unLockBillNumber()">Unlock</Button></td>
+                </tr>
 
               </tbody>
-             
+
             </table>
           </div>
         </div>

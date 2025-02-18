@@ -57,7 +57,19 @@ export class ReportDailystmntTransactionComponent {
   fromDate: string;
   toDate: string;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  groupedData: { [key: string]: ReportDailyStmt[] } = {};
+  groupedData: { 
+    [trnsMode: string]: { 
+      [category: string]: { 
+        [vazhipad: string]: { 
+          vazhipad: string;
+          Qty: number;
+          Rate: number;
+          Amount: number;
+        } 
+      } 
+    } 
+  } = {};
+  
   groupedDatas: {
     [key: string]: {
       [key: string]: { Qty: number; Rate: number; Amount: number };
@@ -107,7 +119,7 @@ export class ReportDailystmntTransactionComponent {
       next: (data) => {
         console.log('Fetched report data:', data);
         this.data = data;
-        this.groupDataByTransactionMode(this.data); // Group the data
+        this.groupDataByTransactionModeAndCategory()
         // this.data = data.sort((a: any, b: any) => {
         //   const [numA, denomA] = a.BillNo.split('/').map(Number);
         //   const [numB, denomB] = b.BillNo.split('/').map(Number);
@@ -146,30 +158,74 @@ export class ReportDailystmntTransactionComponent {
   }
 
   // Calculate the grand total for each transaction mode
-  getGrandTotalForTrnsMode(transactionMode: string): number {
-    const items = this.groupedData[transactionMode]; // Get items for the transaction mode
-    if (!items || items.length === 0) {
-      return 0; // No items found, return 0
+  // getGrandTotalForTrnsMode(transactionMode: string): number {
+  //   const items = this.groupedData[transactionMode]; // Get items for the transaction mode
+  //   if (!items || items.length === 0) {
+  //     return 0; // No items found, return 0
+  //   }
+
+  //   // Calculate the total
+  //   const total = items.reduce((sum, item) => {
+  //     const qty = item.Qty || 0; // Default to 0 if Qty is missing
+  //     const rate = item.Rate || 0; // Default to 0 if Rate is missing
+  //     return sum + item.Amount;
+  //   }, 0);
+
+  //   return total;
+  // }
+  getTotalForTransactionMode(trnsMode: string): number {
+    if (!this.groupedData[trnsMode]) {
+      return 0;
     }
-
-    // Calculate the total
-    const total = items.reduce((sum, item) => {
-      const qty = item.Qty || 0; // Default to 0 if Qty is missing
-      const rate = item.Rate || 0; // Default to 0 if Rate is missing
-      return sum + item.Amount;
+  
+    return Object.keys(this.groupedData[trnsMode]).reduce((total, category) => {
+      return total + this.getTotalForCategory(trnsMode, category);
     }, 0);
-
-    return total;
   }
+  
+  getGrandTotal(): number {
+    return Object.keys(this.groupedData).reduce((grandTotal, trnsMode) => {
+      return grandTotal + this.getTotalForTransactionMode(trnsMode);
+    }, 0);
+  }
+  
 
+  getTotalForCategory(trnsMode: string, category: string): number {
+    if (!this.groupedData[trnsMode] || !this.groupedData[trnsMode][category]) {
+      return 0;
+    }
+  
+    return Object.values(this.groupedData[trnsMode][category]).reduce((sum, item) => sum + item.Amount, 0);
+  }
   // Grouping function
-  groupDataByTransactionMode(data: ReportDailyStmt[]): void {
-    this.groupedData = data.reduce((acc, item) => {
-      (acc[item.TrnsMode] = acc[item.TrnsMode] || []).push(item);
+  groupDataByTransactionModeAndCategory(): void {
+    this.groupedData = this.data.reduce((acc:any, item:any) => {
+      const mode = item.TrnsMode; // Transaction Mode
+      const category = item.Category; // Category under Transaction Mode
+      const vazhipad = item.vazhipad; // Vazhipad Name
+  
+      if (!acc[mode]) {
+        acc[mode] = {}; // Initialize Transaction Mode group
+      }
+      if (!acc[mode][category]) {
+        acc[mode][category] = {}; // Initialize Category group
+      }
+      if (!acc[mode][category][vazhipad]) {
+        acc[mode][category][vazhipad] = { 
+          vazhipad: item.vazhipad, 
+          Qty: 0, 
+          Rate: item.Rate, 
+          Amount: 0 
+        };
+      }
+  
+      // Aggregate Qty and Amount
+      acc[mode][category][vazhipad].Qty += item.Qty;
+      acc[mode][category][vazhipad].Amount += item.Amount;
+  
       return acc;
-    }, {} as { [key: string]: ReportDailyStmt[] });
+    }, {} as { [trnsMode: string]: { [category: string]: { [vazhipad: string]: { vazhipad: string, Qty: number, Rate: number, Amount: number } } } });
   }
-
   generatePDF() {
     const printContent = document.getElementById('print-section');
     if (!printContent) {

@@ -95,37 +95,48 @@
   <iframe id="pdfIframe" style="width: 100%; height: 100%;" frameborder="0"></iframe>
 </div> -->
 
+<div *ngFor="let mode of groupedData | keyvalue" style="margin-left: 100px; margin-right: 100px;">
+  <span style="font-weight: bold;"><u>{{ getTransactionType(mode.key) | translate }}</u></span>
 
-<div *ngFor="let mode of groupedData | keyvalue" style="margin-left: 100px; margin-right: 100px;"  >
-  <h3 style="font-weight: bold;">{{ getTransactionType(mode.key) | translate }} </h3> 
+  <div *ngFor="let category of mode.value | keyvalue">
+    <span style="font-weight: bold;">{{ category.key }}</span>
 
-  <table border="1">
-    <thead>
-      <tr>
-        <th>{{"VAZHIPAD" | translate}}</th>
-        <th>{{"QUANTITY" | translate }}</th>
-        <th>{{"RATE" | translate}}</th>
-        <th>{{"AMOUNT" | translate}}</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let item of mode.value">
-        <td>{{ item.vazhipad }}</td>
-        <td>{{ item.Qty }}</td>
-        <td style="text-align: right;">{{ item.Rate | number: '1.2-2' }}</td>
-        <td style="text-align: right;">{{ item.Amount | number: '1.2-2' }}</td>
-      </tr>
-      <tr *ngIf="mode.value.length > 0">
-        <td colspan="3" style="text-align: right;"> Total</td>
-        <td style="text-align: right;font-weight: bold;">{{ getGrandTotalForTrnsMode(mode.key)| number: '1.2-2'  }}</td>
-      </tr>
-    </tbody>
-    
-  </table>
-  <br/>
+    <table border="1">
+      <thead>
+        <tr>
+          <th>{{ "VAZHIPAD" | translate }}</th>
+          <th>{{ "QUANTITY" | translate }}</th>
+          <th>{{ "RATE" | translate }}</th>
+          <th>{{ "AMOUNT" | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of category.value | keyvalue">
+          <td>{{ item.value.vazhipad }}</td>
+          <td>{{ item.value.Qty }}</td>
+          <td style="text-align: right;">{{ item.value.Rate | number: '1.2-2' }}</td>
+          <td style="text-align: right;">{{ item.value.Amount | number: '1.2-2' }}</td>
+        </tr>
+        <tr>
+          <td colspan="3" style="text-align: right; font-weight: bold;">Total</td>
+          <td style="text-align: right; font-weight: bold;">
+            {{ getTotalForCategory(mode.key, category.key) | number: '1.2-2' }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+  </div>
+
+  <!-- Total for each transaction mode -->
+  <div style="text-align: right; font-weight: bold; ">
+    Total for {{ getTransactionType(mode.key) | translate }}: 
+    {{ getTotalForTransactionMode(mode.key) | number: '1.2-2' }}
+  </div>
+  <br />
 </div>
-<div style="margin-left: 100px; margin-right: 100px; text-align: right;font-weight: bold;">
-  Grand Total : {{getTotalAmount()| number: '1.2-2'}}
-</div>
 
+<!-- Grand Total for all transaction modes -->
+<div style="margin-left: 100px; margin-right: 100px; text-align: right; font-weight: bold;">
+  Grand Total: {{ getGrandTotal() | number: '1.2-2' }}
 </div>
