@@ -38,10 +38,10 @@ export class MemberMasterComponent implements OnInit {
     this.getDevoteeMaster()
     this.memeberForm = this.formBuilder.group({
 
-      name: [''],
-      address1: [''],
+      name: ['',Validators.required],
+      address1: ['',Validators.required],
       address2: [''],
-      mobile: [''],
+      mobile: ['',Validators.required],
       email: [''],
       relativesDetails: this.formBuilder.array([])
     })
@@ -88,6 +88,10 @@ export class MemberMasterComponent implements OnInit {
     this.relativesDetails.removeAt(lessonIndex);
   }
   onSubmit(data: any) {
+    if(this.memeberForm.invalid){
+      this.notification.showError("Please fil the form");
+      return
+    }
     console.log(data);
     const payLoad = {
       DevoteeName: data.name,
@@ -109,7 +113,9 @@ export class MemberMasterComponent implements OnInit {
       next: (data) => {
         console.log(data)
         if (data.RespStatus === "I") {
-          this.notification.showSuccess("Devotee details added successfully")
+          this.notification.showSuccess("Devotee details added successfully");
+          this.resetForm();
+          this.getDevoteeMaster()
         }
       }
     })
@@ -138,6 +144,7 @@ export class MemberMasterComponent implements OnInit {
   this.masterservice.deleteMaster(payLoad).subscribe({
     next:(data)=>{
       console.log(data);
+      this.getDevoteeMaster()
     }
   })
   }
@@ -214,12 +221,20 @@ onUpdate(data:any){
   this.masterservice.AddDevoteeMaster(payLoad).subscribe({
     next: (data) => {
       console.log(data)
-      if (data.RespStatus === "I") {
+      if (data.RespStatus === "U") {
         this.notification.showSuccess("Devotee details added successfully")
+        this.resetForm()
       }
     }
   })
 
+}
+
+
+resetForm() {
+  this.memeberForm.reset();
+  this.relativesDetails.clear(); // Clears the FormArray
+  this.addRelativeDetails(); // Ensures at least one relative entry remains
 }
 
 }

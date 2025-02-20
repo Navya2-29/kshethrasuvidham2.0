@@ -8,13 +8,13 @@
     <div class="row">
      
 
-      <div class="col-md-5">
+      <div class="col-md-5 "  > 
         <h2 style="margin-left: 100px">{{"FeeCollection"|translate }}</h2>
-        <div > <form [formGroup]="feeCollctionForm">
+        <div class="fixitems"> <form [formGroup]="feeCollctionForm">
           <table class="table">
             <tr>
                 <td>
-                  <label for="ItemValue">Mobile Number</label>
+                  <label for="ItemValue">Mobile NO.<span class="text-danger">*</span></label>
                   <div class="input-container">
                     <input
                       type="text"
@@ -24,16 +24,17 @@
                       formControlName="Mobile"
                       (keyup.enter)="search()"
                     />
-                    <mat-icon class="icon"  (keyup.enter)="search()" >search</mat-icon>
+                    <mat-icon class="icon"  (click)="search()" >search</mat-icon>
                   </div>
                 </td>
                 <td>
-                    <label for="ReceiptAmount">Member Id</label>
+                    <label for="ReceiptAmount">Member ID<span class="text-danger">*</span></label>
                     <input 
                       type="text" 
                       id="MemberId" 
                       placeholder="Member id" 
                       formControlName="MemberId"
+                      readonly
                       class="form-control sps">
                   </td>
                 <td>
@@ -42,7 +43,7 @@
               </tr>
             <tr>
               <td >
-                <label for="ReceiptAmount">Bill No</label>
+                <label for="ReceiptAmount">Bill No<span class="text-danger">*</span></label>
                 <input
                   type="text"
                   [placeholder]="'PLACEHOLDER.BILLNUMBER' | translate"
@@ -52,14 +53,14 @@
                 />
               </td>
               <td>
-                <label>Item</label>
+                <label>Item<span class="text-danger">*</span></label>
                 <select
                   class="form-control"
                   style="width: 100%; height: 30.6px"
                   formControlName="ItemType"
                  
                 >
-                  <option selected value="">Select item</option>
+                  <option selected value="">Select item<span class="text-danger">*</span></option>
                   <option [value]="item.NM_Id" *ngFor="let item of itemList">{{item.NM_Name}}</option>
                 </select>
               </td>
@@ -71,6 +72,7 @@
                   [placeholder]="'PLACEHOLDER.NAME' | translate"
                   class="form-control sps"
                   formControlName="Name"
+                  readonly
                 />
               </td>
             </tr>
@@ -81,13 +83,14 @@
                  formControlName="Address"
                   class="form-control sps"
                   rows="5"
+                  readonly
                 ></textarea>
               </td>
             </tr>
             <tr>
               <td>
-                <label>Select Month</label>
-                <mat-select [formControl]="toppings" multiple style="background: rgb(226, 225, 225);">
+                <label>Month<span class="text-danger">*</span></label>
+                <mat-select [formControl]="toppings"   placeholder="Select Month" multiple  style="background-color: white" >
                     @for (topping of toppingList; track topping) {
                       <mat-option [value]="topping">{{topping}}</mat-option>
                     }
@@ -95,7 +98,7 @@
               </td>
               <!-- <td><input type="checkbox">&nbsp;&nbsp;Kanikka</td> -->
               <td >
-                <label>Select Year</label>
+                <label> Year<span class="text-danger">*</span><span class="text-danger">*</span> </label>
                 <select
                   class="form-control"
                 style="width: 100%;" 
@@ -108,14 +111,17 @@
             </tr>
             <tr>
                 <td>
+                  <label> Amount<span class="text-danger">*</span></label>
                     <input
                     type="text"
                     placeholder="Amount"
                     class="form-control sps"
                     formControlName="Amount"
+                    [readOnly]="feeCollctionForm.get('Amount')?.value>0"
                   />
                 </td>
                 <td>
+                  <label> Total Amount<span class="text-danger">*</span></label>
                     <input
                     type="text"
                     placeholder="Total Amount"
@@ -126,10 +132,11 @@
             </tr>
             <tr>
               <td>
-                <label>Upi id</label>
+                <label>Upi Id/Cheque no</label>
                 <input
                   type="text"
                   class="form-control sps"
+                  placeholder="Upi/cheque/debit ID"
                 />
               </td>
               <td>
@@ -145,9 +152,31 @@
                   <option value="CH">Cheque</option>
                 </select>
               </td>
+              
+            </tr>
+            <tr *ngIf="feeCollctionForm.get('TransMode')?.value === 'CH'">
               <td>
+                <label>Cheque Date</label>
+                <input
+                  type="date"
+                  class="form-control sps"
+                  formControlName="Instdate"
+                />
+              </td>
+              <td>
+                <label>Bank</label>
+                <input
+                  type="text"
+                  class="form-control sps"
+                  placeholder="Bank Name"
+                  formControlName="InstBank"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
                 <button class="btn btn-primary"  (click)="onSubmit()">Save</button>
-                <button  class="btn btn-danger ml-2">
+                <button  class="btn btn-danger ml-2" (click)="Reset()">
                   Cancel
                 </button>
               </td>
@@ -161,39 +190,32 @@
           <input
             type="text"
             class="form-control sps"
-            placeholder="search by Bill No."
+            placeholder="search by Mobile No."
             style="width: 25%"
+            [(ngModel)]="DevoteemobileNumber"
           />
-          <button class="btn btn-primary" >Search</button>
+          <button class="btn btn-primary" (click)="searchByDevoteeByMobileNumber()" >Search</button>
         </div>
-        <div class="fixitems">
+        <div *ngIf="devoteeFeeeCollectiondetails">
           <table class="table">
-            <tr style="border-bottom: 2px solid #223d61">
+            <tr  style="border-bottom: 2px solid #223d61">
               <th>Sl No.</th>
-              <th>Date</th>
-              <th>Receipt No.</th>
-              <th>Name</th>
+              <th>BillDate</th>
+              <th>BillNo</th>
               <th>Item</th>
-              <th>Weight</th>
-              <th></th>
+              <th>Month</th>
+            
+              <th>Year</th>
             </tr>
-            <tr>
-              <td>i</td>
-              <td class="left"></td>
-              <td class="left"></td>
-              <td class="left"></td>
-              <td class="left"></td>
-              <td></td>
-              <td>
-              <span
-                ><mat-icon
-                  title="Cancel bill"
-                  class="small"
-                  >delete</mat-icon
-                ></span
-              >
-              <span  title="Duplicate Print" class="material-icons small" >print</span>
-            </td>
+            <tr *ngFor="let item of devoteeFeeeCollectiondetails;let i=index ">
+              <td>{{i+1}}</td>
+              <!-- <td class="left">{{i+1}}</td> -->
+              <td class="left">{{item.BillDate}}</td>
+              <td class="left">{{item.BillNo}}</td>
+              <td class="left">{{item.NM_Name}}</td>
+              <td class="left">{{item.Month}}</td>
+              <td class="left">{{item.Year}}</td>
+              
             </tr>
           </table>
         </div>
@@ -201,4 +223,15 @@
     </div>
   </div>
   
+  
+<div id="receipt" style="width: 6in; height: 4in; display: none; position: relative; font-size: 12px; font-family: Arial, sans-serif;">
+  <div style="position: absolute; left: 2.1cm; top: 3.9cm;">{{ feeCollctionForm.get('ItemType')?.value }}</div>
+  <div style="position: absolute; left: 10.5cm; top: 3.4cm;">{{ formatDateToDDMMYYYY(todayDate) }}</div>
+  <div style="position: absolute; left: 10.5cm; top: 3.9cm;">{{ feeCollctionForm.get('BillNo')?.value }}</div>
+  <div style="position: absolute; left: 0.5cm; top: 5cm;">{{ feeCollctionForm.get('Name')?.value }}<p>{{feeCollctionForm.get('Address')?.value }}</p></div>
+  <!-- <div style="position: absolute; left: 6.9cm; top: 5cm;">{{ getStarNameById(nadavaravForm.get('Star')?.value) }}</div> -->
+  <!-- <div style="position: absolute; left: 10.5cm; top: 5cm;">{{ feeCollctionForm.get('vazhipadinfo')?.value }}</div> -->
+  <div style="position: absolute; left: 13cm; top: 5cm;">{{ feeCollctionForm.get('Amount')?.value  }}</div>
+  <div style="position: absolute;  left: 10.5cm; top: 8.4cm;">{{ feeCollctionForm.get('totalAmount')?.value  }}</div>
+</div>
   

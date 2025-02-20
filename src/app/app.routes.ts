@@ -49,6 +49,9 @@ import { ReportCounterSelfComponent } from './features/Report/report-counter-sel
 import { ReportVazhipadwiseComponent } from './features/Report/report-vazhipadwise/report-vazhipadwise.component';
 import { AllvazhipadlistComponent } from './features/Report/vazhipad-list/allvazhipadlist/allvazhipadlist.component';
 import { ReportDuplicateComponent } from './features/Report/report-duplicate/report-duplicate.component';
+import { ReportMattinangalComponent } from './features/Report/report-mattinangal/report-mattinangal.component';
+import { ReportSalesitemComponent } from './features/Report/report-salesitem/report-salesitem.component';
+import { ReportFeecollectionComponent } from './features/Report/report-feecollection/report-feecollection.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -166,6 +169,10 @@ export const routes: Routes = [
   {path:"vazhipadlistwithprathista",component: AllvazhipadlistComponent },
   {path:"devotee-master",component: DevoteeMasterComponent},
   {path:"report-duplicate",component: ReportDuplicateComponent},
+  {path:"report-mattinamgal",component: ReportMattinangalComponent},
+  {path:"report-salesitem",component: ReportSalesitemComponent},
+  {path:"report-feecollection",component: ReportFeecollectionComponent},
+
   {
     path: '**',
     pathMatch: 'full',

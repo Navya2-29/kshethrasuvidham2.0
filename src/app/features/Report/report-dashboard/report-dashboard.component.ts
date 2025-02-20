@@ -199,8 +199,14 @@ if(prathista || vazhipad){
     else if (reportType === 'duplicate') {
       this.newTab = window.open(`#/report-duplicate${queryString}`, '_blank');
     }
-    else if (reportType === 'group') {
-      this.newTab = window.open(`#/report-counter-trnsaction${queryString}`, '_blank');
+    else if (reportType === 'mattinamgal') {
+      this.newTab = window.open(`#/report-mattinamgal${queryString}`, '_blank');
+    }
+    else if (reportType === 'feecollection') {
+      this.newTab = window.open(`#/report-feecollection${queryString}`, '_blank');
+    }
+    else if (reportType === 'salesitem') {
+      this.newTab = window.open(`#/report-salesitem${queryString}`, '_blank');
     }
   }
 

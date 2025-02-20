@@ -134,9 +134,9 @@
           <input
             type="radio"
             formControlName="vazhipadOption"
-            value="group"
+            value="mattinamgal"
           />
-        Daily sataement group
+       Mattinangal 
         </label>
           <label>
             <input
@@ -154,6 +154,22 @@
               value="duplicate"
             />
             {{ "Report.report-duplicate" | translate }}
+          </label>
+          <label>
+            <input
+              type="radio"
+              formControlName="vazhipadOption"
+              value="feecollection"
+            />
+            Fee Collection
+          </label>
+          <label>
+            <input
+              type="radio"
+              formControlName="vazhipadOption"
+              value="salesitem"
+            />
+            Sales Item
           </label>
         </div>
       </form>
@@ -205,7 +221,6 @@
               {{ item.VM_Name }}
             </option>
           </ng-container>
-
           <ng-container *ngIf="lang != 'en'">
             <option *ngFor="let item of Vmaster" [value]="item.VM_Id">
               {{ item.VM_RName }}

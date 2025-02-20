@@ -152,9 +152,16 @@ export class FixedbottomComponent implements OnInit {
     });
     this.receiptPrinrservice.memberId$.subscribe(id => {
       this.memberId = id;
-      this.customerdetailsForBillingForm.patchValue({
-        Memberid:this.memberId
-      })
+      if(Number(this.memberId)>0){
+        this.customerdetailsForBillingForm.patchValue({
+          Memberid:this.memberId
+        })
+      }else{
+        this.customerdetailsForBillingForm.patchValue({
+          Memberid:"0"
+        })
+      }
+     
       console.log("Received Member ID:", this.memberId);
     });
     console.log(this.customerdetailsForBillingForm.value);
@@ -1196,9 +1203,12 @@ groupDataByVazhipadDate(vazhipadinfo: any[]) {
     return Object.values(groupedData);
 }
 
+
+
+
+
+
 printReceiptsThermal(data: any) {
-  
-  
   const { BillNo, Billdate, vazhipadinfo ,Trnsmode} = data;
   this.differentDateArray = [];
   vazhipadinfo.forEach((item:any) => {
@@ -1387,6 +1397,10 @@ console.log(this.memberDevoteeCheck,"dsssssssssssssss");
 }
 
 }
+
+
+
+
 
 
 getdevoteeDetailsforBiling(){
