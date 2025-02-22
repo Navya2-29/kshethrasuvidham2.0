@@ -52,6 +52,7 @@ import { ReportDuplicateComponent } from './features/Report/report-duplicate/rep
 import { ReportMattinangalComponent } from './features/Report/report-mattinangal/report-mattinangal.component';
 import { ReportSalesitemComponent } from './features/Report/report-salesitem/report-salesitem.component';
 import { ReportFeecollectionComponent } from './features/Report/report-feecollection/report-feecollection.component';
+import { HomeComponent } from './core/layout/home/home.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -172,7 +173,7 @@ export const routes: Routes = [
   {path:"report-mattinamgal",component: ReportMattinangalComponent},
   {path:"report-salesitem",component: ReportSalesitemComponent},
   {path:"report-feecollection",component: ReportFeecollectionComponent},
-
+  {path:"Home",component: HomeComponent},
   {
     path: '**',
     pathMatch: 'full',

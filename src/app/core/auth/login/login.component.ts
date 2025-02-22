@@ -90,7 +90,7 @@ submitLogin(login:Login){
           localStorage.setItem('loggedIn', 'true');
           // Optional: Redirect to the dashboard or another page
           
-          this.router.navigate(['/front']);
+          this.router.navigate(['/Home']);
         } else {
           // Handle case when login is not successful
           this.errorMessage = response.alertmsg; // Show the error message

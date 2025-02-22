@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MasterService } from '../../../services/master/master.service';
 import { NotificationService } from '../../../services/notification/notification.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-member-master',
@@ -28,7 +29,9 @@ export class MemberMasterComponent implements OnInit {
   private formBuilder = inject(FormBuilder);
   private masterservice = inject(MasterService);
   // constructor
-  constructor(private notification: NotificationService) {
+  constructor(private notification: NotificationService,
+    private router:Router
+  ) {
     this.addRow();
     this.userId = localStorage.getItem("LoginId")
   }
@@ -37,7 +40,6 @@ export class MemberMasterComponent implements OnInit {
     this.getNakshthram();
     this.getDevoteeMaster()
     this.memeberForm = this.formBuilder.group({
-
       name: ['',Validators.required],
       address1: ['',Validators.required],
       address2: [''],
@@ -217,7 +219,6 @@ onUpdate(data:any){
 
   }
   console.log(payLoad, "paylod")
-
   this.masterservice.AddDevoteeMaster(payLoad).subscribe({
     next: (data) => {
       console.log(data)
@@ -236,5 +237,11 @@ resetForm() {
   this.relativesDetails.clear(); // Clears the FormArray
   this.addRelativeDetails(); // Ensures at least one relative entry remains
 }
+
+
+  gotoDashBoard() {
+    this.router.navigate(['/dashboard']);
+  } 
+
 
 }

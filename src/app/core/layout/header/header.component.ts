@@ -48,5 +48,9 @@ export class HeaderComponent {
     // }
     this.router.navigate(['/login']);
   }
+  goBack(){
+    this.router.navigate(['/front']);
+
+  }
   
 }

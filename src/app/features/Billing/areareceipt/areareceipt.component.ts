@@ -705,9 +705,7 @@ console.log(this.selectedVazhipadItem)
           rname:item.PM_RegName
         }));
         const selectedRow = this.vazhipadinfo.at(index) as FormGroup;
-
         if(this.lang=='en'){
-
           if (this.prathishtaOptions[index].length > 0) {
             const defaultPrathishta = this.prathishtaOptions[index][0].name;
             const defaultPrathishtaId = this.prathishtaOptions[index][0].id;
@@ -1010,42 +1008,21 @@ console.log(this.selectedVazhipadItem)
       dialogRef.afterClosed().subscribe((result) => {
         if (result) {
 const transactionPayLoad={
-  
-    "TransactionNumber":"1412/0225",   
-    "SequenceNumber": 1492930196,                            
-    "AllowedPaymentMode": "10",                              
-    "MerchantStorePosCode": "1221258967",
-    "Amount": "1000",                                     
-   "UserID": "Rinsha",                 
-   "MerchantID":29610 ,                                
-   "SecurityToken": "a4c9741b-2889-47b8-be2f-ba42081a246e",
-   "IMEI": "CUBIXTEST01",
-   "AutoCancelDurationInMinutes":5
- 
- 
+
+  "TransactionNumber":"1419/0229",   
+  "SequenceNumber": 1492930196,                            
+  "AllowedPaymentMode": "10",                              
+  "MerchantStorePosCode": "1221258967",
+  "Amount": "1000",                                     
+ "UserID": "Rinsha",                 
+ "MerchantID":29610 ,                                
+ "SecurityToken": "a4c9741b-2889-47b8-be2f-ba42081a246e",
+ "IMEI": "CUBIXTEST01",
+ "AutoCancelDurationInMinutes":5
 }
 this.masterservice.upLoadTransaction(transactionPayLoad).subscribe((data)=>{
   console.log(data);
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
           this.prnitConfirmDialog(formattedData);
         } else {
           // this.resetForm();
@@ -1671,10 +1648,6 @@ console.log(row,"roqqqqqqqqqqqqqqqqq")
 }
 
 
-
-
-
-
 openBillingDialog(mobileNumber:any) {
   const dialogRef = this.dialog.open(BillingViaMobilenumberComponent , {
     width: '600px',
@@ -1710,11 +1683,7 @@ console.log(index,"firsrt index check")
 //     Star:"1"
 //   })
 //  }
-
- 
-
  this.addRowForNameAndStar(index ,name,star)
-
 }
   
 addRowForNameAndStar(index: number,name:string,star:string): void {
@@ -1744,14 +1713,14 @@ if(index==0){
     row.patchValue({
      Name:name,
       starName:star,
-      Star:"1"
+      Star:this.getStarbyIName(star)
     })
 }
 else{
   const newRow = this.createRow();
   newRow.patchValue({
     Name: name,
-    Star: "1",
+    Star: this.getStarbyIName(star),
     starName:star
   });
 
@@ -1764,5 +1733,27 @@ else{
   }, 0);
 }
 }
+
+
+
+getStarbyIName(Name:string){
+  console.log(Name,"star id")
+  if(this.lang=='en'){
+    const star= this.nakshatham.find(
+      (item) => item.SM_Name == Name
+    );
+    return star ? star.SM_Id : ''; 
+
+  }else if(this.lang!='en'){
+    const star= this.nakshatham.find(
+      (item) => item.SM_RName == Name
+    );
+    return star ? star.SM_RName : ''; 
+  }
+ 
+  // console.log(star,"sssssssssssssssss")
+  
+}
+
 
 }

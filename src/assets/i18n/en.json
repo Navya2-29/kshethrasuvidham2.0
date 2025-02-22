@@ -69,7 +69,7 @@
     "PHONE": "Enter Mobile No.",
     "EMAIL": "Enter Email ",
     "CHEQUENO": "Upi/cheque/DD/",
-    "BANKNAME": "Enter your bank Name",
+    "BANKNAME": "Bank Name",
     "Description": "Description",
     "COUNTERID":"Counter Id",
     "ITEM":"Item"

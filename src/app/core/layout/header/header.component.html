@@ -6,14 +6,27 @@
   <div class="">
     
     <div class="" style="display:flex;justify-content: space-between;border:0px solid red;width:100%;align-items:center;padding-left:20px;padding-right:20px;background-image:url('assets/images/banner.png');background-size:cover;height:100px;background-position:center;">
-      <div class="">
-        <div class="counter" style="flex: 1; text-align: center;color: white;font-weight: bold;">
-         Counter : {{ counterId }}  <!-- This will display the value of counterId -->
+      <div class="back">
+        <div style="width:45px;">
+          <a (click)="goBack()"><img src="assets/images/back.png" style="width:100%;"></a>
         </div>
-        <div class="card top">
-          <app-menu></app-menu>
+        <div>
+          <div class="counter" style=" text-align: center;color: white;font-weight: bold;">
+            Counter : {{ counterId }}  <!-- This will display the value of counterId -->
+            </div>
+            <div class="card top">
+              <app-menu></app-menu>
+            </div>
+         </div>
+         <div style="width:200px;">
+          <a href="https://kshethrasuvidham.com/" target="blank"><img src="assets/images/logo.jpg" style="width:100%;"></a>
         </div>
-        
+        <div style="margin-right:45px;margin-left:15px;padding-top:11.7px;">
+          <h3 style="color:white">Version 1.0</h3>
+        </div>
+        <div style="padding-left:15px;padding-right:15px;padding-top:10px;border:1px solid white;display:flex;align-items:center;justify-content: center;background:white;border-radius:9px;box-shadow:0px 0px 10px rgb(15, 15, 15) inset;">
+          <h1 style="font-weight:800;font-size:18pt;">Temple Management Software | <span style="font-size:10pt;">Copyright &#x40; 2025 <a href="https://kshethrasuvidham.com/" target="blank">Cubix Software Solutions</a></span></h1>
+        </div>
       </div>
       
       <div class="">
@@ -23,7 +36,7 @@
             <span class="logidin"></span>
           </div>
           
-          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu" style="background:#ffffff;color:black;padding:0px;width:25px;height:25px;" >
+          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu" style="background:#ffffff;color:black;padding:0px;width:50px;height:50px;" >
             <mat-icon style="color:#6206ca;padding:0px;font-size:22px;">supervisor_account</mat-icon> 
           </button>
           <mat-menu #menu="matMenu">

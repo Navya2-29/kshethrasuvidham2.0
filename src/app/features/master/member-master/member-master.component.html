@@ -4,8 +4,8 @@
   <div class="container">
     <div class="card-body outlook" style="background:white;">
       <div class="posback">
-        <a routerLink="/dashboard" class="back">&nbsp;&nbsp;<mat-icon title="Edit"
-            style="color:white;">arrow_back_ios</mat-icon></a>
+        <a (click)="gotoDashBoard()" class="back">&nbsp;&nbsp;<mat-icon title="Edit"
+            style="color:white;" routerLink="/dashboard" >arrow_back_ios</mat-icon></a>
         <h1 class="tname">Guruvayurappan Temple</h1>
       </div>
       <div class="master">

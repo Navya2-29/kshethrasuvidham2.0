@@ -175,9 +175,7 @@ export class FrontComponent implements AfterViewInit {
       console.log(data);
       this.countercount = data[0].cnt;
       console.log(this.countercount, 'cc');
-      // if (this.countercount != null && this.allowedContercount != null && this.countercount > this.allowedContercount) {
-      //   this.openCounterIdDialog()
-      // }
+
     });
   }
 
@@ -221,5 +219,8 @@ export class FrontComponent implements AfterViewInit {
   //     console.log('Device Name:', this.deviceName);
   //   });
   // }
+  goBack(){
+    this.router.navigate(['/Home']);
 
+  }
 }
