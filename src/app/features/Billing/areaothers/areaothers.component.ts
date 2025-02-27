@@ -12,6 +12,7 @@ import {MatTabsModule} from '@angular/material/tabs';
 import { TranslateService } from '@ngx-translate/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { DevoteeFeeCollectionComponent } from '../devotee-fee-collection/devotee-fee-collection.component';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-areaothers',
   standalone: true,
@@ -24,11 +25,17 @@ import { DevoteeFeeCollectionComponent } from '../devotee-fee-collection/devotee
 export class AreaothersComponent {
   @ViewChild(MatAccordion) accordion: MatAccordion;
   lang:string |null;
-  constructor( private ts: TranslateService){
+  constructor( private ts: TranslateService, private router:Router){
     this.lang=localStorage.getItem('Language')
     const userLang = navigator.language || 'en';
     const languageCode = userLang.split('-')[0];
     this.ts.setDefaultLang(languageCode);
     this.ts.use(this.lang || 'en');
   }
+
+
+  goBack() {
+    this.router.navigate(['dashboard']);
+  }
+
 }

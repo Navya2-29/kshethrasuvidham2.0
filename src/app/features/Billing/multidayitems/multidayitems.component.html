@@ -40,14 +40,20 @@
                             [value]="option.VM_Name"
                           >
                         
-                            {{option.VM_Code}}-{{ option.VM_Name }}
+                          <p style="margin-bottom: 0;margin-top: 0;padding-top:0 ; padding-bottom: 0; font-size: 12px; line-height: normal;font-weight:800;">
+                            {{ option.VM_Code }}-{{ option.VM_Name }}
+                          </p>
                           </mat-option>
                           <mat-option
                            *ngIf="lang!='en'"
                             [value]="option.VM_RName"
                           >
                         
-                            {{option.VM_Code}}-{{ option.VM_RName }}
+                          <p style="margin-bottom: 0; padding-bottom: 0; font-size: 12px; line-height: normal;">
+                            {{ option.VM_Code }}-
+                          
+                            {{ option.VM_RName }}
+                          </p>
                           </mat-option>
 
                         }

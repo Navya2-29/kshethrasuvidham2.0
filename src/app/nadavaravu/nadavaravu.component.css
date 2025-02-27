@@ -428,7 +428,7 @@ mat-option {
 }
 
 .back-btn {
-  position: absolute;
+  /* position: absolute; */
   top: 10px; /* Adjust vertical position relative to card-body */
   left: 10px; /* Add margin-left to position it slightly inside */
   width: 40px;

@@ -126,7 +126,7 @@
                     formControlName="VB_radio"
                     class="m-2"
                   />
-                  Weakly
+                  Weekly
                   <input
                     type="radio"
                     name="VB_radio"
@@ -516,34 +516,34 @@
                   </td>
 
                   <!-- <td *ngIf="data.VB_DateType!='M'">{{data.VB_FromDate | date:'dd-MM-yyyy'}}</td> -->
-                  <ng-container
+                  <!-- <ng-container
                     *ngIf="data.VB_DateType !== 'M'; else otherContent"
-                  >
+                  > -->
                     <td style="text-align: left">
                       {{ data.VB_FromDate | date : "dd-MM-yyyy" }}
                     </td>
-                  </ng-container>
-                  <ng-template #otherContent>
-                    <td style="text-align: left">
+                  <!-- </ng-container> -->
+                  <!-- <ng-template #otherContent> -->
+                    <!-- <td style="text-align: left">
                       {{ data.VB_MalFDay }}-{{ data.VB_MalFMonth }}-{{
                         data.VB_MalFYear
                       }}
-                    </td>
-                  </ng-template>
+                    </td> -->
+                  <!-- </ng-template>
                   <ng-container
                     *ngIf="data.VB_DateType !== 'M'; else otherToDate"
-                  >
+                  > -->
                     <td style="text-align: left; width: 15%">
                       {{ data.VB_ToDate | date : "dd-MM-yyyy" }}
                     </td>
-                  </ng-container>
+                  <!-- </ng-container>
                   <ng-template #otherToDate>
                     <td style="text-align: left">
                       {{ data.VB_MalTDay }}-{{ data.VB_MalTMonth }}-{{
                         data.VB_MalTYear
                       }}
-                    </td>
-                  </ng-template>
+                    </td> -->
+                  <!-- </ng-template> -->
                   <!-- <td>{{data.VB_ToDate | date :'dd-MM-yyyy'}}</td> -->
                   <td style="text-align: left; width: 20%" class="wrap-text">
                     {{ data.VB_Reasion }}

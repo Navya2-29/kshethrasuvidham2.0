@@ -18,7 +18,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MasterService } from '../../../services/master/master.service';
 import { CommonModule } from '@angular/common';
 import { UpperCaseDirective } from '../../../shared/directives/upper-case.directive';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { ItemMaster } from '../../../models/item-master.model';
 import { DuplicatecheckService } from '../../../services/duplicateCheckValidator/duplicatecheck.service';
@@ -166,7 +165,7 @@ export class ItemMAterComponent {
     const obj = this.itemMasterForm.value;
     if (this.itemMasterForm.valid) {
       const payload = {
-        Itemtype:data.ItemType,
+        Itemtype:data.Type,
         Amount:data.Amount?data.Amount?.toString():"0",
         NMId: '',
         NMCode: data.NM_Code,
@@ -237,7 +236,9 @@ export class ItemMAterComponent {
       NM_Name: data.NM_Name,
       NM_RName: data.NM_RName,
       NM_Description: data.NM_Description,
-      category:data.category
+      category:data.category,
+      Amount:data.Amount,
+      ItemType:data.Type
     });
     this.loading = false;
   }

@@ -68,7 +68,7 @@ export class MultidayitemsComponent implements OnInit {
   starData: Observable<any[]>;
   VMList: any[] = [];
   nakshatham: any[];
-  
+
   thithiList: any[] = [];
   prathishtaOptions: any[] = [];
   totalAmount: number = 0;
@@ -90,10 +90,10 @@ export class MultidayitemsComponent implements OnInit {
   filteredStars: Observable<string[]>[] = [];
   starList: string[] = [];
   MlayalamDays = [
-    '1','2','3', '4', '5','6','7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23','24','25','26','27','28','29','30','31','32',
+    '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32',
   ];
   EnglishDays = [
-    '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', ' 17', '18', '19','20','21','22','23',' 24','25','26','27',' 28',' 29','30','31',
+    '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', ' 17', '18', '19', '20', '21', '22', '23', ' 24', '25', '26', '27', ' 28', ' 29', '30', '31',
   ];
   malayalamMonthList: any[];
   multidayFilterForm: FormGroup;
@@ -139,8 +139,8 @@ export class MultidayitemsComponent implements OnInit {
       Mday: [''],
       NalBy: [''],
       Mmonth: [''],
-      FromDate:[''],
-      SearchBy:[''],
+      FromDate: [''],
+      SearchBy: [''],
       multiname: [{ disabled: true, value: '' }],
       booking: [{ disabled: true, value: '' }],
       ratechange: [{ disabled: true, value: '' }],
@@ -279,6 +279,7 @@ export class MultidayitemsComponent implements OnInit {
     this.onDropdownChange();
     this.form.get('VazhipadDate')?.valueChanges.subscribe((value) => {
       this.getmultidayfilterData();
+      this.checkVazhipadDate()
     });
     this.form.get('NoOfDays')?.valueChanges.subscribe((value) => {
       this.getmultidayfilterData();
@@ -339,14 +340,50 @@ export class MultidayitemsComponent implements OnInit {
     });
   }
 
-  private _filter(value: string): any[] {
+  // private _filter(value: string): any[] {
+  //   const filterValue = value.toLowerCase();
+  //   return this.VMList.filter(
+  //     (option) =>
+  //       option.VM_Name.toLowerCase().includes(filterValue) ||
+  //       option.VM_Code.toLowerCase().includes(filterValue) ||
+  //       option.VM_RName.toLowerCase().includes(filterValue)
+  //   );
+  // }
+
+
+  private _filter(value: string | null | undefined): any[] {
+    if (value === null || value === undefined) {
+      return [];
+    }
+
     const filterValue = value.toLowerCase();
-    return this.VMList.filter(
-      (option) =>
-        option.VM_Name.toLowerCase().includes(filterValue) ||
-        option.VM_Code.toLowerCase().includes(filterValue) ||
-        option.VM_RName.toLowerCase().includes(filterValue)
-    );
+    const normalizedValue = value.normalize('NFC');
+
+    // Check if the entered value is a number
+    const isNumber = !isNaN(Number(value));
+
+    let filteredList = this.VMList.filter((option) => {
+      const vmName = option.VM_Name ? option.VM_Name.toLowerCase() : '';
+      const vmCode = option.VM_Code ? option.VM_Code.toLowerCase() : '';
+      const vmRName = option.VM_RName ? option.VM_RName.normalize('NFC') : '';
+
+      return (
+        vmName.includes(filterValue) ||
+        vmCode.includes(filterValue) ||
+        vmRName.includes(normalizedValue)
+      );
+    });
+
+    // If the entered value is a number, sort the filtered list by VM_Code in ascending order
+    if (isNumber) {
+      filteredList = filteredList.sort((a, b) => {
+        const aCode = Number(a.VM_Code); // Convert VM_Code to a number for comparison
+        const bCode = Number(b.VM_Code);
+        return aCode - bCode;
+      });
+    }
+
+    return filteredList;
   }
 
   setDefaultVazhipadDate() {
@@ -530,16 +567,16 @@ export class MultidayitemsComponent implements OnInit {
     if (this.seasonalDates) {
       // const seasonalFromDate = new Date(this.seasonalDates.fromDate);
       // const seasonalToDate = new Date(this.seasonalDates.toDate);
-const seasonaldateValidate=this.isDateWithinRange(
-  enteredFromDate,
-  enteredToDate,
-  this.seasonalDates.fromDate,
-  this.seasonalDates.toDate
-)
+      const seasonaldateValidate = this.isDateWithinRange(
+        enteredFromDate,
+        enteredToDate,
+        this.seasonalDates.fromDate,
+        this.seasonalDates.toDate
+      )
       if (
-        seasonaldateValidate===false
+        seasonaldateValidate === false
       ) {
-        console.log(seasonaldateValidate,"vaidation after")
+        console.log(seasonaldateValidate, "vaidation after")
         this.notification.showError(
           `The selected dates are not within the allowed range `,
           'Invalid Dates'
@@ -547,11 +584,11 @@ const seasonaldateValidate=this.isDateWithinRange(
         return; // Stop submission
       }
     }
-console.log(this.form.valid ,"vaidate forms sssssssssssssssssssssss")
+    console.log(this.form.valid, "vaidate forms sssssssssssssssssssssss")
     // Proceed with form submission if validation passes
     if (this.form.valid && this.devotees.valid) {
       const formValues = this.form.value;
-console.log(formValues,"forms valuessssssssssssssssssssssssssssssssssssssssssssssssssssssss")
+      console.log(formValues, "forms valuessssssssssssssssssssssssssssssssssssssssssssssssssssssss")
       const devoteeArray = formValues.devotees.map((devotee: any) => ({
         Slno: '',
         PMid: formValues.PMid,
@@ -576,8 +613,8 @@ console.log(formValues,"forms valuesssssssssssssssssssssssssssssssssssssssssssss
         NalBy: formValues.NalBy,
         Mmonth: formValues.Mmonth,
         VTime: '1',
-        FromDate:this.convertWithDatePipe(formValues.FromDate),
-        ToDate:this.convertWithDatePipe(formValues.EndDate),
+        FromDate: this.convertWithDatePipe(formValues.FromDate),
+        ToDate: this.convertWithDatePipe(formValues.EndDate),
       }));
 
       const finalArray: any[] = [];
@@ -595,7 +632,7 @@ console.log(formValues,"forms valuesssssssssssssssssssssssssssssssssssssssssssss
         });
       });
 
-      console.log(finalArray,"data with additions added newly");
+      console.log(finalArray, "data with additions added newly");
       this.dialogRef.close(finalArray);
     } else {
       this.showValidationErrors();
@@ -622,7 +659,7 @@ console.log(formValues,"forms valuesssssssssssssssssssssssssssssssssssssssssssss
     const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
     const year = date.getFullYear();
     return `${day}-${month}-${year}`;
-}
+  }
 
   isDateWithinRange(
     enteredFromDate: any,
@@ -632,19 +669,19 @@ console.log(formValues,"forms valuesssssssssssssssssssssssssssssssssssssssssssss
   ): boolean {
     const seasonalFromDates = this.formatToDDMMYYYY(seasonalFromDate);
     const seasonalToDates = this.formatToDDMMYYYY(seasonalToDate);
-    const enteredFromDates=this.formatToDDMMYYYY(enteredFromDate);
+    const enteredFromDates = this.formatToDDMMYYYY(enteredFromDate);
 
     const [day, month, year] = enteredToDate.split('-').map(Number);
-const endDate = new Date(year, month - 1, day);
-    const enteredToDates=this.formatToDDMMYYYYDate(endDate)
-    console.log(seasonalFromDates, seasonalToDates ,enteredFromDates,enteredToDates,"after data formt " )
-    console.log(typeof(seasonalFromDates), typeof(seasonalToDates) ,typeof(enteredFromDates),typeof(enteredToDates),"after data formt types " )
-    console.log( enteredFromDates >=seasonalFromDates &&
+    const endDate = new Date(year, month - 1, day);
+    const enteredToDates = this.formatToDDMMYYYYDate(endDate)
+    console.log(seasonalFromDates, seasonalToDates, enteredFromDates, enteredToDates, "after data formt ")
+    console.log(typeof (seasonalFromDates), typeof (seasonalToDates), typeof (enteredFromDates), typeof (enteredToDates), "after data formt types ")
+    console.log(enteredFromDates >= seasonalFromDates &&
       enteredToDates <= seasonalToDates &&
-      enteredFromDates <= enteredToDates,"to know the output ");
-    
+      enteredFromDates <= enteredToDates, "to know the output ");
+
     return (
-      enteredFromDates >=seasonalFromDates &&
+      enteredFromDates >= seasonalFromDates &&
       enteredToDates <= seasonalToDates &&
       enteredFromDates <= enteredToDates
     );
@@ -658,7 +695,7 @@ const endDate = new Date(year, month - 1, day);
     this.dialogRef.close();
   }
 
- 
+
   vazhipadtime = [
     { id: '0', key: 'TIME1' },
     { id: '1', key: 'TIME2' },
@@ -687,7 +724,7 @@ const endDate = new Date(year, month - 1, day);
       Mday: engMonth,
       NalBy: star,
       Mmonth: malMonth,
-      SearchBy:thithi
+      SearchBy: thithi
     });
     console.log(englishday);
     let type: string | null = null;
@@ -862,7 +899,7 @@ const endDate = new Date(year, month - 1, day);
       NoofDays: this.form.get('NoOfDays')?.value,
       VazhipadDate: formattedDate,
     };
-    console.log(payLoad,"multiday filter console");
+    console.log(payLoad, "multiday filter console");
     this.masterservice.getMultidyaFilterinddata(payLoad).subscribe({
       next: (data: multiDayFilter) => {
         console.log(data);
@@ -881,12 +918,12 @@ const endDate = new Date(year, month - 1, day);
         //finding end date
         if (this.multiDayList.length > 0) {
           let lastItem = this.multiDayList[this.multiDayList.length - 1];
-          let firstitem=this.multiDayList[0];
+          let firstitem = this.multiDayList[0];
           // let lastDate = lastItem ? lastItem.date : null;
           const endDate = lastItem.edate1;
           this.form.patchValue({
             EndDate: this.datePipe.transform(endDate, 'dd-MM-YYYY'),
-             FromDate:this.datePipe.transform(firstitem.edate1, 'dd-MM-YYYY'),
+            FromDate: this.datePipe.transform(firstitem.edate1, 'dd-MM-YYYY'),
           });
           console.log('Last Date:', endDate);
           console.log(this.form.get('VazhipadDate'))
@@ -955,13 +992,81 @@ const endDate = new Date(year, month - 1, day);
     if (this.multiDayList.length > 0) {
       let lastItem = this.multiDayList[this.multiDayList.length - 1];
       let lastDate = lastItem ? lastItem.date : null;
-      let firstItem=this.multiDayList[0];
+      let firstItem = this.multiDayList[0];
       const endDate = lastItem.edate1;
       this.form.patchValue({
         EndDate: this.datePipe.transform(endDate, 'dd-MM-YYYY'),
-        VazhipadDate:firstItem.edate1
+        VazhipadDate: firstItem.edate1
       });
       console.log('Last Date:', endDate);
     }
   }
+  checkVazhipadDate() {
+    // Retrieve values from the form
+    // console.log(row, "datacheck bocking")
+    const vazhipadDateStr = this.form.get('VazhipadDate')?.value;
+    const fromDateStr = this.form.get('seasonalDates.fromDate')?.value;
+    const toDateStr = this.form.get('seasonalDates.toDate')?.value;
+    const blockingDatesArray = this.form.get('blockingDates.dates')?.value || [];
+    const allowedDaysArray: string[] = this.form.get('allowedDays')?.value || [];
+    if (fromDateStr && toDateStr) {
+      // Convert string dates to Date objects
+      const vazhipadDate = vazhipadDateStr ? new Date(vazhipadDateStr) : null;
+      const fromDate = fromDateStr ? new Date(fromDateStr) : null;
+      const toDate = toDateStr ? new Date(toDateStr) : null;
+
+      // Validate date ranges
+      if (vazhipadDate && fromDate && toDate) {
+        if (vazhipadDate < fromDate || vazhipadDate > toDate) {
+          this.form.get('VazhipadDate')?.setErrors({ invalidDateRange: true });
+          this.notification.showError(
+            `Vazhipad date must be within ${fromDate.toISOString().split('T')[0]
+            } - ${toDate.toISOString().split('T')[0]}`
+          );
+        } else {
+          this.form.get('VazhipadDate')?.setErrors(null);
+        }
+      } else {
+        this.form.get('VazhipadDate')?.setErrors({ invalidDateRange: true });
+      }
+    } else if (vazhipadDateStr && blockingDatesArray.length > 0) {
+      const vazhipadDate = vazhipadDateStr ? new Date(vazhipadDateStr) : null;
+      const formattedVazhipadDate = this.datePipe.transform(vazhipadDateStr, 'yyyy-MM-dd');
+
+      // const fromDate = fromBlckDate ? new Date(fromBlckDate) : null;
+      // const toDate = toBlckDate ? new Date(toBlckDate) : null;
+
+      // Validate date ranges
+      if (blockingDatesArray.includes(formattedVazhipadDate)) {
+        // Set error if the date is blocked
+        this.form.get('VazhipadDate')?.setErrors({ invalidBlockedDate: true });
+        this.notification.showError(`The selected Vazhipad date (${formattedVazhipadDate}) is blocked.`);
+      } else {
+        // Clear errors if the date is valid
+        this.form.get('VazhipadDate')?.setErrors(null);
+      }
+    } else if (vazhipadDateStr && allowedDaysArray.length > 0) {
+
+      const vazhipadDate = new Date(vazhipadDateStr);
+
+      // Get the day name of the selected date
+      const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const selectedDayName = dayNames[vazhipadDate.getDay()];
+      console.log(selectedDayName, "selectedDayName");
+
+      // Check if selected day is in allowedDaysArray
+      if (allowedDaysArray.includes(selectedDayName)) {
+        this.form.get('VazhipadDate')?.setErrors(null); // Clear errors if the day is valid
+
+      } else {
+        this.form.get('VazhipadDate')?.setErrors({ invalidDay: true });
+        this.notification.showError(
+          `The selected Vazhipad date (${vazhipadDateStr}) falls on ${selectedDayName}, which is not allowed.`
+        );
+      }
+
+    }
+  }
+
+
 }

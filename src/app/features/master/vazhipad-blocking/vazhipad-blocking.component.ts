@@ -316,19 +316,19 @@ if(this.dateArray){
         "VBID": "",
         "VazhBlockType": this.vazhipadBlockingForm.value.VB_radio,
         "VazhDateType": this.vazhipadBlockingForm.value.VB_DateType,
-        "Fromdate": this.vazhipadBlockingForm.value.VB_FromDate,
-        "Todate": this.vazhipadBlockingForm.value.VB_ToDate,
+        "Fromdate": this.formatDateddmmyy(this.dateArray[0]),
+        "Todate":this.formatDateddmmyy( this.dateArray[this.dateArray.length-1]),
         "VazhNakshatram":this.getIdofNakshthra(this.vazhipadBlockingForm.value.Nakshathra),
         "VazhReason": this.vazhipadBlockingForm.value.VB_Reasion,
         "VazhMalFday": "",
-        "VazhMalFMonth":this.getIdofMonth( this.vazhipadBlockingForm.value.VB_MalFMonth),
+        "VazhMalFMonth":this.getIdofMonth( this.vazhipadBlockingForm.value.VB_MalMonth),
         "VazhMalFYear": "",
         "VazhMalTDay":"",
         "VazhMalTMonth": "",
         "VazhMalTYear": "",
         "Cuser":this.loginId,
         "Type": "INSERT",
-        "dayinfo":[{"vazhId":this.vazhipadBlockingForm.value.VB_Day?`${this.VM_Id}`:"","Day": this.getIdOfDay(this.vazhipadBlockingForm.value.VB_Day)?.toString()}],
+        "dayinfo":[{"vazhId":this.vazhipadBlockingForm.value.VB_Day!=""?`${this.VM_Id}`:"","Day": this.getIdOfDay(this.vazhipadBlockingForm.value.VB_Day)?.toString()}],
         "VazhDateinfo":dataArryList
       }
       console.log(payLoad ,"day")
@@ -357,7 +357,8 @@ if(this.dateArray){
   onReset() {
     this.loading = true;
     this.updateFlag = false;
-    this.vazhipadBlockingForm.reset({
+    // this.vazhipadBlockingForm.reset()
+    this.vazhipadBlockingForm.patchValue({
       VB_radio: "W",
       VB_DateType: "E",
 
@@ -379,9 +380,9 @@ if(this.dateArray){
       dayInfo: [],
 
     }
-   
     );
-    
+    // this.dayInfo.clear()
+ 
     this.bockDayList=[]
     this.ngOnInit();
     this.blockingFlag=false;

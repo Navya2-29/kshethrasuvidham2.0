@@ -256,7 +256,7 @@ devoteeSearchMobileNumber:string |null;
     const fromDateStr = row.get('seasonalDates.fromDate')?.value;
     const toDateStr = row.get('seasonalDates.toDate')?.value;
     const blockingDatesArray = row.get('blockingDates.dates')?.value || [];
-
+    const allowedDaysArray: string[] = row.get('allowedDays')?.value || [];
     if (fromDateStr && toDateStr) {
       // Convert string dates to Date objects
       const vazhipadDate = vazhipadDateStr ? new Date(vazhipadDateStr) : null;
@@ -294,6 +294,26 @@ devoteeSearchMobileNumber:string |null;
         // Clear errors if the date is valid
         row.get('VazhipadDate')?.setErrors(null);
       }
+    }else if(vazhipadDateStr && allowedDaysArray.length > 0){
+
+      const vazhipadDate = new Date(vazhipadDateStr);
+
+      // Get the day name of the selected date
+      const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const selectedDayName = dayNames[vazhipadDate.getDay()];
+      console.log(selectedDayName, "selectedDayName");
+  
+      // Check if selected day is in allowedDaysArray
+      if (allowedDaysArray.includes(selectedDayName)) {
+        row.get('VazhipadDate')?.setErrors(null); // Clear errors if the day is valid
+
+      } else {
+        row.get('VazhipadDate')?.setErrors({ invalidDay: true });
+        this.notification.error(
+          `The selected Vazhipad date (${vazhipadDateStr}) falls on ${selectedDayName}, which is not allowed.`
+        );
+      }
+    
     }
   }
 
@@ -566,8 +586,7 @@ devoteeSearchMobileNumber:string |null;
     selectedRow.get('Vazhipad')?.setValue(selectedVazhipad);
 
     // Fetch vazhipad details
-if(this.lang==='en'){
-
+   if(this.lang==='en'){
   this.selectedVazhipadItem = this.VMList.find(
     (item) => item.VM_Name === selectedVazhipad
   );
@@ -637,7 +656,6 @@ console.log(this.selectedVazhipadItem)
         selectedRow.get('ratechange')?.setValue(res[0].VM_Rate_Change);
         selectedRow.get('VTime')?.setValue(res[0].VM_Time);
         this.selectedVazhipadPrathistaDetails(vazhipadcode, index);
-
         this.setVazhipadDate(index);
       });
   }
@@ -1278,53 +1296,68 @@ this.masterservice.upLoadTransaction(transactionPayLoad).subscribe((data)=>{
       },
     });
   }
+// Define a day mapping object
+private dayMapping: { [key: number]: string } = {
+  1: 'Sunday',
+  2: 'Monday',
+  3: 'Tuesday',
+  4: 'Wednesday',
+  5: 'Thursday',
+  6: 'Friday',
+  7: 'Saturday'
+};
 
-  // get the day master vazhipad data
-  getDatamasterdateCheck(vid: string, index: number) {
-    const row = this.vazhipadinfo.at(index) as FormGroup;
-    this.masterservice.getDayMastervazhipaddateCheck(vid).subscribe({
-      next: (data) => {
-        // Extract only the 'Day' field from each object in the response
+// Get the day master vazhipad data
+getDatamasterdateCheck(vid: string, index: number) {
+  const row = this.vazhipadinfo.at(index) as FormGroup;
+  this.masterservice.getDayMastervazhipaddateCheck(vid).subscribe({
+    next: (data) => {
+      console.log(data, "day master");
 
-        const allowedDays = data.map((item: any) => item.Day);
+      // Extract 'Day' field values
+      const allowedDays = data.map((item: any) => item.Day);
 
-        // Get the 'allowDays' FormArray from the current row
-        const allowDaysFormArray = row.get('allowedDays') as FormArray;
+      // Convert day IDs to day names
+      const allowedDayNames = allowedDays.map(dayId => this.dayMapping[dayId] || 'Unknown');
 
-        // Clear the previous allowed days in the FormArray
-        while (allowDaysFormArray.length) {
-          allowDaysFormArray.removeAt(0);
-        }
+      // Get the 'allowedDays' FormArray from the current row
+      const allowDaysFormArray = row.get('allowedDays') as FormArray;
 
-        // Push the extracted 'Day' values into the 'allowDays' FormArray
-        allowedDays.forEach((day: number) => {
-          allowDaysFormArray.push(this.fb.control(day));
+      // Clear previous allowed days in the FormArray
+      while (allowDaysFormArray.length) {
+        allowDaysFormArray.removeAt(0);
+      }
+
+      // Push the extracted 'Day' values into the 'allowedDays' FormArray
+        // Push the **day names** into the FormArray
+        allowedDayNames.forEach((dayName: string) => {
+          allowDaysFormArray.push(this.fb.control(dayName));
         });
 
-        console.log('Allowed Days:', allowedDays);
-        console.log(row);
-      },
-      error: (err) => {
-        console.error('Error fetching day master data:', err);
-      },
-    });
-  }
-
-  checkDayBasedVazhipadDate(row: FormGroup): void {
-    const allowedDays = row.get('allowedDays')?.value as number[];
-    const vazhipadDate = row.get('VazhipadDate')?.value;
-    if (allowedDays && vazhipadDate) {
-      const dateToCheck = new Date(vazhipadDate);
-      const dayOfWeek = dateToCheck.getDay(); // Sunday: 0, Monday: 1, etc
-      if (!allowedDays.includes(dayOfWeek + 1)) {
-        // Adjusting dayOfWeek to match your numbering
-        this.notification.error(
-          'Selected VazhipadDate is not on an allowed day.'
-        );
-        row.get('VazhipadDate')?.setValue(''); // Optionally reset the date
-      }
-    }
-  }
+      console.log('Allowed Days (IDs):', allowedDays);
+      console.log('Allowed Days (Names):', allowedDayNames);
+      console.log(row);
+    },
+    error: (err) => {
+      console.error('Error fetching day master data:', err);
+    },
+  });
+}
+  // checkDayBasedVazhipadDate(row: FormGroup): void {
+  //   const allowedDays = row.get('allowedDays')?.value as number[];
+  //   const vazhipadDate = row.get('VazhipadDate')?.value;
+  //   if (allowedDays && vazhipadDate) {
+  //     const dateToCheck = new Date(vazhipadDate);
+  //     const dayOfWeek = dateToCheck.getDay(); // Sunday: 0, Monday: 1, etc
+  //     if (!allowedDays.includes(dayOfWeek + 1)) {
+  //       // Adjusting dayOfWeek to match your numbering
+  //       this.notification.error(
+  //         'Selected VazhipadDate is not on an allowed day.'
+  //       );
+  //       row.get('VazhipadDate')?.setValue(''); // Optionally reset the date
+  //     }
+  //   }
+  // }
 
   clearAll() {
     this.resetForm();

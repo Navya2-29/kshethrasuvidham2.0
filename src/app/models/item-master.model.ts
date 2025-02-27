@@ -5,7 +5,7 @@ export interface ItemMaster{
     NM_Id:string;
     NM_Description:string;
     category:string,
-    ItemType?:string,
+    Type?:string,
     Amount?:string;
     ACHeadCode:string;
     ACSubCode:string;
