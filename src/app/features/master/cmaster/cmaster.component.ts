@@ -50,7 +50,7 @@ code:string;
   templeName:string |null;
   constructor() {
     this.templeName=localStorage.getItem('TempleName') 
-    this.loading = true;
+    // this.loading = true;
     this.cmasterForm = this.formBuilder.group({
       VC_Code: ['', [
         Validators.required,
@@ -68,7 +68,7 @@ code:string;
 
 
   ngOnInit(): void {
-    this.loading = true;
+    // this.loading = true;
     this.getcmaster();
   }
   // view prathishta
@@ -76,16 +76,17 @@ code:string;
     this.loading = true;
     this.masterService.getCmaster().subscribe({
       next: (data) => {
+        this.loading = false;
         if (data && data.length > 0) {
           this.cmaster = data;
           this.filteredCmaster = this.cmaster;
-          this.loading = false;
+          
           this.sortByCMCode()
         }
       },
       error: (error) => {
         this.notifiacation.showSuccess(error);
-        this.loading = true;
+        // this.loading = true;
 
       }
     });

@@ -73,7 +73,7 @@ export class PmasterComponent implements OnInit {
   templeName:string |null;
   constructor(private toastr: ToastrService) {
     this.templeName=localStorage.getItem('TempleName') 
-    this.loading = true;
+    // this.loading = true;
     // form model
     this.pmasterForm = this.formBuilder.group({
       PM_Code: [
@@ -104,7 +104,7 @@ export class PmasterComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loading = true;
+    // this.loading = true;
     this.getPmaster();
   }
 
@@ -113,11 +113,12 @@ export class PmasterComponent implements OnInit {
     this.loading = true;
     this.masterService.getPmaster().subscribe({
       next: (data) => {
+        this.loading = false;
+
         if (data && data.length > 0) {
           this.pmaster = data;
           this.filteredPmaster = this.pmaster;
           this.sortByCMCode();
-          this.loading = false;
           console.log(this.pmaster);
         }
       },
