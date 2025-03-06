@@ -124,7 +124,7 @@ this.ts.use(this.lang || 'en');
 
  // Grouping function
  groupData() {
-  this.groupedData = this.data.reduce((acc:any, item:any) => {
+  this.groupedData = this.data.reduce((acc: any, item: any) => {
     const counterKey = item.CounterId.toString();
     const cuserKey = item.Cuser;
     const trnsModeKey = item.TrnsMode;
@@ -139,10 +139,24 @@ this.ts.use(this.lang || 'en');
       acc[counterKey][cuserKey][trnsModeKey] = [];
     }
 
-    acc[counterKey][cuserKey][trnsModeKey].push(item);
+    // Find existing entry with the same vazhipad
+    const existingItem = acc[counterKey][cuserKey][trnsModeKey].find((v: any) => v.vazhipad === item.vazhipad);
+
+    if (existingItem) {
+      // Merge values
+      existingItem.Qty += item.Qty;
+      existingItem.Amount += item.Amount;
+    } else {
+      // Add as a new entry
+      acc[counterKey][cuserKey][trnsModeKey].push({ ...item });
+    }
+
     return acc;
-  }, {} as { [counterId: string]: { [cuser: string]: { [trnsMode: string]: ReportData[] } } });
+  }, {} as { [counterId: string]: { [cuser: string]: { [trnsMode: string]: any[] } } });
+
+  console.log(this.groupedData, "grouping");
 }
+
 
 // Function to calculate Counter-wise total
 getTotalForCounter(counterId: string): number {
@@ -198,7 +212,44 @@ getTotalForCuser(counterId: string, cuser: string): number {
     return `${day}-${month}-${year}`;
   }
 
-  // generatePDF() {
+
+  
+
+  getTransactionType(transmode: string): string {
+    switch (transmode) {
+      case 'ON':
+        return 'Bank';
+      case 'CS':
+        return 'CASH';
+      case 'MO':
+        return 'MONEY ORDER';
+      case 'UP':
+        return 'UPI';
+      case 'CH':
+        return 'CHEQUE';
+      case 'CR':
+        return 'CREDIT';
+      case 'DE':
+        return 'DEBIT';
+
+      default:
+        return 'OTHERS';
+    }
+  }
+
+  getGrandTotal(): number {
+    return this.data.reduce((sum, item) => sum + item.Qty * item.Rate, 0);
+  }
+
+
+
+
+
+
+
+
+
+    // generatePDF() {
   //   const templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
   //   const templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
   //   const doc = new jsPDF();
@@ -458,30 +509,4 @@ getTotalForCuser(counterId: string, cuser: string): number {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
-  
-
-  getTransactionType(transmode: string): string {
-    switch (transmode) {
-      case 'ON':
-        return 'Bank';
-      case 'CS':
-        return 'CASH';
-      case 'MO':
-        return 'MONEY ORDER';
-      case 'UP':
-        return 'UPI';
-      case 'CH':
-        return 'CHEQUE';
-      case 'CR':
-        return 'CREDIT';
-      case 'DE':
-        return 'DEBIT';
-
-      default:
-        return 'OTHERS';
-    }
-  }
-
-
-
 }

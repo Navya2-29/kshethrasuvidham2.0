@@ -36,7 +36,10 @@ export class UserComponent {
   userForm: FormGroup;
   loginId: string | null;
   staffList: any[] = [];
+  searchQuery: string = '';
   updateFlag: boolean = false;
+    filteredUmaster: any[] = [];
+  
   id: string;
   code: number;
   private duplicateCheck = inject(DuplicatecheckService);
@@ -80,6 +83,7 @@ export class UserComponent {
       next: (data) => {
         console.log(data);
         this.staffList = data;
+        this.filteredUmaster= this.staffList
       },
       error: (err) => {
         this.notification.error(
@@ -252,6 +256,27 @@ duplicateNameValidator(control: AbstractControl): ValidationErrors | null {
 
 get pmasterFormFormControl() {
   return this.userForm.controls;
+}
+
+
+
+
+// search functionality by name and code
+onSearch() {
+  if (!this.searchQuery.trim()) {
+    this.filteredUmaster = this.staffList;
+  } else {
+    this.filteredUmaster = this.staffList.filter((data) => {
+      console.log(data);
+      return (
+        data.UName.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        data.Umobile.toLowerCase().includes(this.searchQuery.toLowerCase())||
+        data.UEmailId.toLowerCase().includes(this.searchQuery.toLowerCase())
+
+      );
+    });
+  }
+  // this.showNoRecordsMessage = this.filteredPmaster.length === 0;
 }
 
 

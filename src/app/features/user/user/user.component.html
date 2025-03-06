@@ -84,9 +84,9 @@
         </div>
         <div class="col-md-6 search">
           <div style="display:flex;" class="search-container mt-3">
-            <input type="text" class="form-control sps search-input" 
-              placeholder="search by Code or Name" style="width:36%;">
-            <mat-icon class="search-icon" >search</mat-icon>
+            <input type="text" class="form-control sps search-input" (input)="onSearch()" 
+              placeholder="search by Name or Mobile" style="width:36%;" [(ngModel)]="searchQuery">
+            <mat-icon class="search-icon"  (click)="onSearch()" >search</mat-icon>
           </div>
           <div class="fixitems prathishta" >
             <table class="table">
@@ -100,7 +100,7 @@
                 <th></th>
             </thead>
               <tbody >
-                <tr *ngFor=" let item of staffList">
+                <tr *ngFor=" let item of filteredUmaster">
                   <!-- <td contenteditable="">{{data.PM_ID}}</td> -->
                   <td style="text-align: left;padding-left: 20px;">{{item.UName}}</td>
                   <td style="text-align:left;">{{item.UEmailId}}</td>

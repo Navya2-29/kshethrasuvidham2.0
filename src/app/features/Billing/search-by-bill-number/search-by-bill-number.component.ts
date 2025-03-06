@@ -36,6 +36,23 @@ export interface Data {
   time: string;
   position: number;
 }
+
+
+interface Entry {
+  Name: string;
+  Star: string;
+  Rate: number;
+  Amount: number;
+}
+
+interface GroupedData {
+  [prathista: string]: {
+    [vazhipad: string]: Entry[];
+  };
+}
+
+
+
 @Component({
   selector: 'app-search-by-bill-number',
   standalone: true,
@@ -85,7 +102,8 @@ export class SearchByBillNumberComponent {
   nakshatham: any[];
   logo: string | null;
   name:string | null;
-  updateTransMode:FormGroup
+  updateTransMode:FormGroup;
+  gropedData: GroupedData = {};
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   cancellationReason: string = '';
@@ -147,7 +165,7 @@ export class SearchByBillNumberComponent {
 
   ngOnInit() {
     this.loadStarData();
-
+this.groupDataByPrathistaAndVazhipad()
     console.log(this.TrnStatus,"transmode");
     this.updateTransMode=this.fb.group({
  
@@ -951,6 +969,122 @@ if(this.updateTransMode.invalid){
     const month = ('0' + (date.getMonth() + 1)).slice(-2); // Months are 0-based
     const day = ('0' + date.getDate()).slice(-2);
     return `${year}-${month}-${day}`;
+  }
+
+
+
+
+
+  printPage(): void {
+    const printContent = document.getElementById('print-section');
+    if (printContent) {
+      const WindowPrt = window.open('', '', 'width=900,height=650');
+      WindowPrt?.document.write(`
+        <html>
+          <head>
+            <title>Print</title>
+            <style>
+              @page { 
+                size: A4 portrait; 
+                margin: 20mm; /* Ensures left & right margins on all pages */
+              }
+              body { 
+                font-family: 'Arial', sans-serif; 
+                color: #333; 
+                line-height: 1.5;
+                margin: 0;
+                padding: 0;
+              }
+  
+              /* Hide Header on First Page */
+              .header:first-of-type {
+                display: none;
+              }
+  
+              /* Prathista & Vazhipad Title */
+              .prathista-title {
+                font-size: 20px;
+                font-weight: bold;
+                text-align: center;
+                padding: 10px;
+                margin-bottom: 5px;
+                border-bottom: 2px solid #444;
+              }
+              
+              /* Table Styling */
+              table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 10px;
+              }
+              th, td {
+                border: 1px solid #ccc;
+                padding: 10px;
+                text-align: left;
+              }
+              th {
+                background-color: #f4f4f4;
+                font-weight: bold;
+              }
+              tbody tr:nth-child(even) {
+                background-color: #f9f9f9;
+              }
+  
+              /* Page Break for Each Prathista & Vazhipad */
+              .group-container {
+                page-break-before: always; /* Ensures new page per section */
+                padding-left: 20mm;
+                padding-right: 20mm;
+              }
+            </style>
+          </head>
+          <body>
+            ${printContent.innerHTML}
+          </body>
+        </html>
+      `);
+      WindowPrt?.document.close();
+      WindowPrt?.focus();
+      WindowPrt?.print();
+    }
+  }
+  
+
+
+  groupDataByPrathistaAndVazhipad(): void {
+    this.gropedData = this.data.reduce((acc: GroupedData, item: any) => {
+      const prathistaKey = item.Prathista;
+      const vazhipadKey = item.Vazhipad;
+  
+      if (!acc[prathistaKey]) {
+        acc[prathistaKey] = {};
+      }
+  
+      if (!acc[prathistaKey][vazhipadKey]) {
+        acc[prathistaKey][vazhipadKey] = [];
+      }
+  
+      acc[prathistaKey][vazhipadKey].push({
+        Name: item.Name,
+        Star: item.Star,
+        Rate: item.Rate,
+        Amount: item.Amount,
+      });
+  
+      return acc;
+    }, {} as GroupedData);  // 👈 Type assertion ensures proper structure
+  
+    console.log(this.gropedData, "PDF making");
+  }
+  
+
+
+  calculateTotalAmount(entries: any[]): number {
+    return entries.reduce((total, entry) => total + entry.Amount, 0);
+  }
+
+  getKeys(obj: any): string[] {
+    return obj ? Object.keys(obj) : [];
   }
   }
 

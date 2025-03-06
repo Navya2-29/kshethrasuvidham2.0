@@ -331,8 +331,8 @@ printReceiptsDotmetrix(data: any) {
   ${fromDate != toDate ? `${this.convertDateFormat(fromDate)} to ${this.convertDateFormat(toDate)}` : `${this.convertDateFormat(fromDate)}`}
 </div>
 ${group.nalBy ? `<div style="position: absolute; left: 10cm; top: 9cm;">- ${group.nalBy},</div>` : ''}
-${group.mday ? `<div style="position: absolute; left: 10cm; top: 9.15cm;">- ${group.mday},</div>` : ''}
-${group.mmonth ? `<div style="position: absolute; left: 10cm; top:9.3cm;">- ${group.mmonth}</div>` : ''}
+${group.mday ? `<div style="position: absolute; left: 10cm; top: 9.25cm;">- ${group.mday},</div>` : ''}
+${group.mmonth ? `<div style="position: absolute; left: 10cm; top:9.5cm;">- ${group.mmonth}</div>` : ''}
  <div style="position: absolute; left: 3.5cm; top: 8.4cm;">User id:${this.name}  ${Trnsmode=='CR'?"Not Paid":""}</div>
           `
 

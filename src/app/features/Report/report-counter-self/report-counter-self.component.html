@@ -149,7 +149,7 @@
     <span style="font-weight: bold;">User: {{ user.key }}</span>
 
     <div *ngFor="let mode of user.value | keyvalue">
-      <span style="font-weight: bold;">Payment Mode: {{ getTransactionType(mode.key) }}</span>
+      <span style="font-weight: bold;"> {{ getTransactionType(mode.key) }}</span>
 
       <table border="1">
         <thead>

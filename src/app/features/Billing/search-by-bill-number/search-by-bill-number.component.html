@@ -189,21 +189,60 @@
 
 </form>
 
+
+<div id="print-section" style="display:none">
+  <div *ngFor="let prathista of getKeys(gropedData)">
+    <div *ngFor="let vazhipad of getKeys(gropedData[prathista])" class="group-container">
+      <div><div>Bill No:{{lastBillNo}}</div><div>BillDate:{{billDate | date:'dd-MM-yyyy' }}</div></div>
+
+      <h2>{{ prathista }} - {{ vazhipad }}</h2>
+      <table border="1" width="50%">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Star</th>
+            <th>Rate</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let entry of gropedData[prathista][vazhipad]">
+            <td>{{ entry.Name }}</td>
+            <td>{{ entry.Star }}</td>
+            <td>{{ entry.Rate }}</td>
+            <td>{{ entry.Amount }}</td>
+          </tr>
+          <!-- Total Row -->
+          <tr>
+            <td colspan="3" style="text-align: right;"><b>Total:</b></td>
+            <td><b>{{ calculateTotalAmount(gropedData[prathista][vazhipad]) }}</b></td>
+          </tr>
+        </tbody>
+      </table>
+      <br />
+    </div>
+  </div>
+</div>
+
+
+
+
+
 </mat-dialog-content>
 
 <mat-dialog-actions class="menuend">
   <button mat-button [mat-dialog-close]="true" class="close">Close</button>
-  <!-- <button
+  <button
   mat-button
   class="proceed"
   [disabled]="TrnStatus == 'C'"
-  (click)="generatePDF()"
+  (click)="printPage()"
 >
  PDF of the Bill
 </button>
 <button (click)="openWhatsAppWeb()"  mat-button
 class="proceed"
-[disabled]="TrnStatus == 'C'">Open WhatsApp Web</button> -->
+[disabled]="TrnStatus == 'C'">Open WhatsApp Web</button>
 
   <button
     mat-button

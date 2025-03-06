@@ -100,7 +100,10 @@
     "Nadavaravu Booking": "നടവരവ് ബുക്കിംഗ്",
     
     "Credit Collection":"ക്രെഡിറ്റ് കളക്ഷൻ ",
-    "report-duplicate":"ഡ്യൂപ്ലിക്കേറ്റ്"
+    "report-duplicate":"ഡ്യൂപ്ലിക്കേറ്റ്",
+    "SALES ITEM REPORT":"സെയിൽസ് ഐറ്റംസ്",
+    "MATTINAM REPORT":"മറ്റിനം",
+    "FEE COLLECTION REPORT":"ഫീ കളക്ഷൻ"
   },
   "Report Name": {
     "ADVANCE BOOKING REPORT": "മുൻകൂർ ബുക്കുചെയ്യുന്നവ",
@@ -118,6 +121,9 @@
     "UPI REPORT": "യുപിഐ റിപ്പോർട്ട്",
     "OFFERING REPORT": "ഓഫറിങ് റിപ്പോർട്ട്",
     "NADAVARAVU BOOKING REPORT": "നടവരവ് റിപ്പോർട്ട്",
+    "SALES ITEM REPORT":"സെയിൽസ് ഐറ്റംസ് റിപ്പോർട്ട്",
+    "MATTINAM REPORT":"മറ്റിനം റിപ്പോർട്ട്",
+    "FEE COLLECTION REPORT":"ഫീ കളക്ഷൻ റിപ്പോർട്ട് ",
     "SINO": "നമ്പർ",
     "Vazhipad Name": "പേര്",
     "Vazhipad Code": "കോഡ്",

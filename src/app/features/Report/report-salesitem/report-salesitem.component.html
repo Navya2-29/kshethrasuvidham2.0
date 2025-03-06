@@ -17,7 +17,7 @@
 <div>
   <h3 style="align-items: center;text-align:center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;" >{{templeName}}</h3>
   <h4 style="align-items: center;text-align:center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;" >{{templeAddress}}</h4>
-  <h5 style="align-items: center;text-align: center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;">Sles Item Report
+  <h5 style="align-items: center;text-align: center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;">{{"Report Name.SALES ITEM REPORT" | translate }}
 </h5>
 <p style="align-items: center;text-align: center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;">{{formatDateToDDMMYYYY(fromDate)}} to {{formatDateToDDMMYYYY(toDate)}}</p>  </div>
 
@@ -29,40 +29,43 @@
         <tr>
           <th style="background-color: #ddd;">{{"BILL NO" | translate }}</th>
           <th style="background-color: #ddd;" >{{"BILLDATE" |translate }}</th>
-          <th style="background-color: #ddd;">{{"ITEM" | translate }}</th>
-          <!-- <th style="background-color: #ddd;">{{"NAME" |translate }}</th> -->
-        <!-- <th style="background-color: #ddd;">{{"STAR" | translate }}</th> -->
+          <!-- <th style="background-color: #ddd;">{{"ITEM" | translate }}</th> -->
+          <th style="background-color: #ddd;">{{"NAME" |translate }}</th>
+        <th >{{"STAR" | translate }}</th>
           
-          
-          <th style="background-color: #ddd;">{{"AMOUNT" | translate}}</th>
-       <th style="background-color: #ddd;">{{"PAYMENTMODE" | translate}}</th>
+        <th>{{ "QUANTITY" | translate }}</th>
+        <th>{{ "RATE" | translate }}</th>
+                  <th >{{"AMOUNT" | translate}}</th>
+
+       <!-- <th style="background-color: #ddd;">{{"PAYMENTMODE" | translate}}</th> -->
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let item of name.value">
           <td>{{ item.BillNo }}</td>
           <td>{{ item.BillDate }}</td>
-          <td >{{item.NM_Name}}</td>
-          <!-- <td>{{ item.Name }}</td> -->
-          <!-- <td>{{ item.Star || 'N/A' }}</td> -->
-        
-          <!-- <td>{{ item.TrnMode }}</td> -->
+          <!-- <td >{{item.NM_Name}}</td> -->
+          <td>{{ item.Name }}</td> 
+           <td>{{ item.Star || 'N/A' }}</td>
+           <td>{{ item.Qty }}</td>
+           <td style="text-align: right;">{{ item.Rate | number: '1.2-2' }}</td>
+          <td style="text-align: right;">{{ item.Amount | number: '1.2-2' }}</td>
         
         
          
        
-          <td style="text-align: right;" >{{ item.Amount | number: '1.2-2' }}</td>
-          <td>{{ item.TrnMode }}</td>
+          <!-- <td style="text-align: right;" >{{ item.Amount | number: '1.2-2' }}</td> -->
+          <!-- <td>{{ item.TrnMode }}</td> -->
         </tr>
         
       </tbody>
       <tfoot>
         <tr>
-          <td colspan="3"> Total </td>
+          <td colspan="6"> Total </td>
           <td style="text-align: right;">
             {{getGrandTotalForTrnsMode(name.key) | number: '1.2-2' }}
           </td>
-          <td></td>
+          <!-- <td></td> -->
         </tr>
       </tfoot>
     </table>

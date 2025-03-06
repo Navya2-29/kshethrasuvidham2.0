@@ -24,8 +24,9 @@
                       formControlName="Mobile"
                       (keyup.enter)="search()"
                     />
-                    <mat-icon class="icon"  (click)="search()" >search</mat-icon>
-                  </div>
+                    <button type="button" class="icon-button" (click)="search()">
+                      <mat-icon class="icon">search</mat-icon>
+                    </button>                  </div>
                 </td>
                 <td>
                     <label for="ReceiptAmount">Member ID<span class="text-danger">*</span></label>

@@ -119,10 +119,10 @@ const userLang = navigator.language || 'en';
 
   groupDataByName(data: FeeCollection[]): { [key: string]: FeeCollection[] } {
     return data.reduce((acc:any, item:any) => {
-      if (!acc[item.Name]) {
-        acc[item.Name] = [];
+      if (!acc[item.Vazhipad]) {
+        acc[item.Vazhipad] = [];
       }
-      acc[item.Name].push(item);
+      acc[item.Vazhipad].push(item);
       return acc;
     }, {} as { [key: string]: FeeCollection[] });
   }

@@ -119,7 +119,7 @@ export class ReportCounterSelfComponent {
 
   // Grouping function
   groupData() {
-    this.groupedData = this.filteredData.reduce((acc:any, item:any) => {
+    this.groupedData = this.data.reduce((acc: any, item: any) => {
       const counterKey = item.CounterId.toString();
       const cuserKey = item.Cuser;
       const trnsModeKey = item.TrnsMode;
@@ -134,10 +134,24 @@ export class ReportCounterSelfComponent {
         acc[counterKey][cuserKey][trnsModeKey] = [];
       }
   
-      acc[counterKey][cuserKey][trnsModeKey].push(item);
+      // Find existing entry with the same vazhipad
+      const existingItem = acc[counterKey][cuserKey][trnsModeKey].find((v: any) => v.vazhipad === item.vazhipad);
+  
+      if (existingItem) {
+        // Merge values
+        existingItem.Qty += item.Qty;
+        existingItem.Amount += item.Amount;
+      } else {
+        // Add as a new entry
+        acc[counterKey][cuserKey][trnsModeKey].push({ ...item });
+      }
+  
       return acc;
-    }, {} as { [counterId: string]: { [cuser: string]: { [trnsMode: string]: ReportData[] } } });
+    }, {} as { [counterId: string]: { [cuser: string]: { [trnsMode: string]: any[] } } });
+  
+    console.log(this.groupedData, "grouping");
   }
+  
   
   // Function to calculate Counter-wise total
   getTotalForCounter(counterId: string): number {

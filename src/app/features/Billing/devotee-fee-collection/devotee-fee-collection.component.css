@@ -492,11 +492,17 @@ mat-option {
   padding-right: 35px; /* Space for the icon */
 }
 
-.input-container .icon {
+.input-container .icon-button {
   position: absolute;
-  right: 10px;  /* Aligns the icon to the right */
+  right: 10px;
   top: 50%;
   transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.input-container .icon {
   color: gray;
-  pointer-events: none; /* Prevents interaction */
+  pointer-events: auto; /* Ensure the icon is clickable */
 }

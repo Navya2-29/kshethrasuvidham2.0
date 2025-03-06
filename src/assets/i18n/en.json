@@ -59,6 +59,7 @@
     "RATE": "Rate",
     "DATE": "dd/mm/yyyy",
     "TIME": "Select Time",
+    "Remark":"Remark",
     "BILLNUMBER": "Bill number",
     "MOBILENUMBER": "Enter Mobile number ",
     "ADDRESS": " Enter Address",
@@ -98,7 +99,10 @@
     "Offering Only": "Offering Only",
     "Nadavaravu Booking": "Nadavaravu Booking",
     "Vazhipad Cancel": "Vazhipad Cancel",
-    "report-duplicate":"Duplicate"
+    "report-duplicate":"Duplicate",
+    "SALES ITEM REPORT":"Sales Item",
+    "MATTINAM REPORT":"Mattinmam",
+    "FEE COLLECTION REPORT":"Fee Collection"
   },
 
   "Report Name": {
@@ -117,6 +121,9 @@
     "UPI REPORT": "UPI REPORT",
     "OFFERING REPORT": "OFFERING REPORT",
     "NADAVARAVU BOOKING REPORT": "NADAVARAVU BOOKING REPORT",
+    "SALES ITEM REPORT":"Sales Item Report",
+    "MATTINAM REPORT":"Mattinam Report",
+    "FEE COLLECTION REPORT":"Fee Collection Report",
     "SINO": "SINO",
     "Vazhipad Name": "Name",
     "Vazhipad Code": "Code",
