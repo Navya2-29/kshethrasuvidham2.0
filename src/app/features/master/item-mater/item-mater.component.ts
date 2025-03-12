@@ -165,7 +165,7 @@ export class ItemMAterComponent {
     const obj = this.itemMasterForm.value;
     if (this.itemMasterForm.valid) {
       const payload = {
-        Itemtype:data.Type,
+        Itemtype:data.ItemType,
         Amount:data.Amount?data.Amount?.toString():"0",
         NMId: '',
         NMCode: data.NM_Code,
@@ -249,6 +249,7 @@ export class ItemMAterComponent {
     console.log(updatedata, 'hhhhhhhhhhhhhhhh');
     this.loading = true;
     const payload = {
+      ItemType:updatedata.ItemType,
       NMId: this.Id,
       NMCode: updatedata.NM_Code,
       NMName: updatedata.NM_Name,
@@ -256,7 +257,11 @@ export class ItemMAterComponent {
       NMDescription: updatedata.NM_Description,
       Category:updatedata.category,
       Cuser: this.userId,
+      Amount:updatedata.Amount?updatedata.Amount?.toString():"0",
       Type: 'UPDATE',
+      ACHeadCode:updatedata.ACHeadCode,
+      ACSubCode:updatedata.ACSubCode,
+
     };
     if (this.itemMasterForm.valid) {
       this.masterService.updateItemMaster(payload).subscribe((res) => {

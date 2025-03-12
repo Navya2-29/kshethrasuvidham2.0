@@ -86,26 +86,26 @@
      <table>
        <thead>
          <tr>
-           <th>{{"BILL NO" | translate }}</th>
-           <th>{{"BILLDATE" | translate }}</th>
+           <!-- <th>{{"BILL NO" | translate }}</th>
+           <th>{{"BILLDATE" | translate }}</th> -->
            <th>{{"VAZHIPAD" | translate }}</th>
-           <th> {{"NAME" | translate }} </th>
+           <th> {{"Report Name.Prathishta" | translate }} </th>
           
            <th>{{"QUANTITY" | translate }}</th>
-           <th>{{"RATE" | translate }}</th>
-           <th>{{"AMOUNT" | translate }}</th>
+           <!-- <th>{{"RATE" | translate }}</th>
+           <th>{{"AMOUNT" | translate }}</th> -->
           
          </tr>
        </thead>
        <tbody>
          <tr *ngFor="let item of data">
-           <td>{{ item.BillNo }}</td>
-           <td>{{ item.BillDate }}</td>
+           <!-- <td>{{ item.BillNo }}</td>
+           <td>{{ item.BillDate }}</td> -->
            <td>{{item.Vazhipad}}</td>
-           <td>{{ item.Name }}</td>
+           <td>{{ item.Prathista }}</td>
            <td>{{ item.Qty  }}</td>
-           <td style="text-align: right;">{{ item.Rate | number: '1.2-2' }}</td>
-           <td style="text-align: right;" >{{ item.Amount | number: '1.2-2'}}</td>
+           <!-- <td style="text-align: right;">{{ item.Rate | number: '1.2-2' }}</td>
+           <td style="text-align: right;" >{{ item.Amount | number: '1.2-2'}}</td> -->
            
       
        
@@ -115,14 +115,14 @@
          </tr>
          <tr *ngIf="data.length<=0">No data found</tr>
        </tbody>
-       <tfoot>
+       <!-- <tfoot>
          <tr>
            <td colspan="5" style="text-align: right;"><strong>Grand Total:</strong></td>
            <td style="font-weight: bold;text-align: right;">{{ getTotalAmount() | number: '1.2-2' }}</td>
-           <!-- <td colspan="2"></td> -->
-         </tr>
+           <td colspan="2"></td> -->
+         <!-- </tr> -->
         
-       </tfoot>
+       <!-- </tfoot> -->
      </table>
    </div>
  </div>

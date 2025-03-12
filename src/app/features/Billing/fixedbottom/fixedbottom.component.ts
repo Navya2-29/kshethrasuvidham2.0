@@ -86,6 +86,8 @@ export class FixedbottomComponent implements OnInit {
   sameDateArray:any [];
   differentDateArray:any[];
   isLockedShow: boolean = false;
+  groupedArray: any[] = [];
+
   // inputs!: QueryList<ElementRef>;
    // 2D navigation grid
    navigationGrid = [
@@ -1209,168 +1211,196 @@ groupDataByVazhipadDate(vazhipadinfo: any[]) {
 
 
 printReceiptsThermal(data: any) {
-  const { BillNo, Billdate, vazhipadinfo ,Trnsmode} = data;
+  const { BillNo, Billdate, vazhipadinfo, Trnsmode } = data;
   this.differentDateArray = [];
-  vazhipadinfo.forEach((item:any) => {
-          this.differentDateArray.push(item); 
+  vazhipadinfo.forEach((item: any) => {
+    this.differentDateArray.push(item);
   });
 
   console.log("Same Date Array:", this.sameDateArray);
   console.log("Different Date Array:", this.differentDateArray);
 
   if (this.differentDateArray.length > 0) {
-  // Group data by Prathista, Vazhipad, and From Date
-  const groupedData = this.differentDateArray.reduce((acc: any, item: any) => {
-    const key = `${item.Prethista}/${item.Vazhipad}/${item.FromDate}/${item.ToDate}`;
-    if (!acc[key]) {
-      acc[key] = { items: [], totalQty: 0, uniqueNames: new Set(), nalBy: '', mday: '', thithi: '',mmonth:'' };
-    }
-    acc[key].items.push(item);
-    acc[key].totalQty += parseInt(item.Qty, 10);
-    acc[key].uniqueNames.add(item.Name);
-  // Check if NalBy, Mday, or Thithi has data and store it
-  if (item.NalBy) acc[key].nalBy = item.NalBy;
-  if (item.Mday) acc[key].mday = item.Mday;
-  if (item.SearchBy) acc[key].thithi = item.SearchBy;
-  if (item.Mmonth) acc[key].mmonth = item.Mmonth;
-    return acc;
-  }, {});
-  const maxRowsPerPage = 4; // Maximum rows per page
-  let allReceiptsContent = '';
-  // Variable to store the total amount of all pages
-
-  Object.keys(groupedData).forEach((key) => {
-    const group = groupedData[key];
-    const [prathista, vazhipad, fromDate,toDate] = key.split('/');
-    const items = group.items;
-    let grandTotalAmount = 0;
-    // Group items by Name to sum Qty and avoid repetition
-    const nameGroupedItems = items.reduce((nameAcc: any, item: any) => {
-      if (!nameAcc[item.Name]) {
-        nameAcc[item.Name] = {
-          ...item,
-          Qty: 0, // Initialize Qty sum
-        };
+    // Group data by Prathista, Vazhipad, and From Date
+    const groupedData = this.differentDateArray.reduce((acc: any, item: any) => {
+      const key = `${item.Prethista}/${item.Vazhipad}/${item.FromDate}/${item.ToDate}`;
+      if (!acc[key]) {
+        acc[key] = { items: [], totalQty: 0, uniqueNames: new Set(), nalBy: '', mday: '', thithi: '', mmonth: '', Rate: "" };
       }
-      nameAcc[item.Name].Qty += parseInt(item.Qty, 10); // Sum Qty for the same Name
-      return nameAcc;
+      acc[key].items.push(item);
+      acc[key].totalQty += parseInt(item.Qty, 10);
+      acc[key].uniqueNames.add(item.Name);
+
+      // Store additional details if available
+      if (item.NalBy) acc[key].nalBy = item.NalBy;
+      if (item.Mday) acc[key].mday = item.Mday;
+      if (item.SearchBy) acc[key].thithi = item.SearchBy;
+      if (item.Mmonth) acc[key].mmonth = item.Mmonth;
+      if (item.Rate) acc[key].rate = item.Rate;
+      return acc;
     }, {});
 
-    // Convert grouped by Name items into an array
-    const uniqueNamesItems = Object.values(nameGroupedItems);
+    const maxRowsPerPage = 4; // Maximum rows per page
+    let allReceiptsContent = '';
 
-    // Split items into pages
-    const pages = [];
-    for (let i = 0; i < uniqueNamesItems.length; i += maxRowsPerPage) {
-      pages.push(uniqueNamesItems.slice(i, i + maxRowsPerPage));
-    }
+    Object.keys(groupedData).forEach((key) => {
+      const group = groupedData[key];
+      const [prathista, vazhipad, fromDate, toDate] = key.split('/');
+      const items = group.items;
+      let grandTotalAmount = 0;
 
-    // Render each page
-    pages.forEach((page, pageIndex) => {
-      let receiptContent = `
-       <div class="receipt-page" style="page-break-after: ${
-      pageIndex < pages.length - 1 ? 'always' : 'avoid'
-    };">
-          <!-- Prathista -->
-          <div style="position: absolute; left: 2.2cm; top: 3.4cm; max-width: 8cm;  white-space: pre-wrap; word-wrap: break-word; line-height: 1em;">${prathista}</div>
-          <!-- Vazhipad -->
-          <div style="position: absolute; left: 2.1cm; top: 3.9cm; max-width: 5cm; white-space: pre-wrap;">${vazhipad}</div>
-          <!-- From Date -->
-          <div style="position: absolute; left: 10.5cm; top: 3.4cm;">${Billdate}</div>
-          <!-- Total Quantity -->
-          <div style="position: absolute; left: 10.5cm; top: 3.9cm;"> ${BillNo}</div>
-           <!-- Vazhipad Date -->
-         <div style="position: absolute; left: 5cm; top: 9.15cm;">
-  ${fromDate != toDate ? `${this.convertDateFormat(fromDate)} to ${this.convertDateFormat(toDate)}` : `${this.convertDateFormat(fromDate)}`}
-</div>
-${group.nalBy ? `<div style="position: absolute; left: 10cm; top: 9cm;">- ${group.nalBy},</div>` : ''}
-${group.mday ? `<div style="position: absolute; left: 10cm; top: 9.15cm;">- ${group.mday},</div>` : ''}
-${group.mmonth ? `<div style="position: absolute; left: 10cm; top:9.3cm;">- ${group.mmonth}</div>` : ''}
- <div style="position: absolute; left: 3.5cm; top: 8.4cm;">User id:${this.name}  ${Trnsmode=='CR'?"Not Paid":""}</div>
-          `
+      // Group items by Name to sum Qty and avoid repetition
+      const nameGroupedItems = items.reduce((nameAcc: any, item: any) => {
+        if (!nameAcc[item.Name]) {
+          nameAcc[item.Name] = {
+            ...item,
+            Qty: 0,
+          };
+        }
+        nameAcc[item.Name].Qty += parseInt(item.Qty, 10);
+        return nameAcc;
+      }, {});
 
-      // Render rows in the current page
-      page.forEach((item: any, rowIndex: number) => {
-        let rowTop = 5 + rowIndex * 0.7; // Adjust row spacing
-        const amount = item.Qty * item.Rate;
-        grandTotalAmount += amount; // Add the amount to the grand total
-        receiptContent += `
-          <div style="position: absolute; left: 0.5cm; top: ${rowTop}cm; max-width: 5.5cm; white-space: pre-wrap; word-wrap: break-word; line-height: 1.2em;">${item.Name}${item.Name2 ? `<div style="margin-top: 0.1mm;">${item.Name2}</div>` : ''}</div>
-          <div style="position: absolute; left: 6.9cm; top: ${rowTop}cm;">${this.getStarbyId(item.Star)}${item.Star2 ? `<div style="margin-top: 0.1mm;">${this.getStarbyId(item.Star2)}</div>` : ''}</div>
-          <div style="position: absolute; left: 9.2cm; top: ${rowTop}cm;">${item.Qty}</div>
-          <div style="position: absolute; left: 10.3cm; top: ${rowTop}cm;">${item.Rate}</div>
-          <div style="position: absolute; left: 11.5cm; top: ${rowTop}cm;">${amount.toFixed(2)}</div>
+      // Convert grouped by Name items into an array
+      const uniqueNamesItems = Object.values(nameGroupedItems);
+
+      // Split items into pages
+      const pages = [];
+      for (let i = 0; i < uniqueNamesItems.length; i += maxRowsPerPage) {
+        pages.push(uniqueNamesItems.slice(i, i + maxRowsPerPage));
+      }
+
+      // Render each page
+      pages.forEach((page, pageIndex) => {
+        let receiptContent = `
+          <div class="receipt-page">
+            <div class="receipt-header">${this.templeName}</div>
+            <div class="receipt-sub-header">${this.templeAddress}</div>
+            <hr>
+            <div class="receipt-content">Bill Date: ${Billdate}</div>
+            <div class="receipt-content">Bill No: ${BillNo}</div>
+            <div class="receipt-content">Prathista: ${prathista}</div>
+            <div class="receipt-content">Vazhipad: ${vazhipad}</div>
         `;
+
+        // Render rows in the current page
+        page.forEach((item: any) => {
+          const amount = item.Qty * item.Rate;
+          grandTotalAmount += amount; // Add the amount to the grand total
+          receiptContent += `
+            <div class="receipt-content">Name: ${item.Name}</div>
+            ${item.Name2 ? `<div class="receipt-content">Name2: ${item.Name2}</div>` : ''}
+            <div class="receipt-content">Star: ${this.getStarbyId(item.Star)}</div>
+            ${item.Star2 ? `<div class="receipt-content">Star2: ${this.getStarbyId(item.Star2)}</div>` : ''}
+          `;
+        });
+
+        // Add grand total and other details
+        receiptContent += `
+            <div class="receipt-total">Rate: ${group.rate}</div>
+            <div class="receipt-total">Total Qty: ${group.totalQty}</div>
+            <div class="receipt-total">Total Amount: ${grandTotalAmount.toFixed(2)}</div>
+            <div class="receipt-content">Vazhipad Date: 
+              ${fromDate !== toDate ? `${this.convertDateFormat(fromDate)} to ${this.convertDateFormat(toDate)}` : `${this.convertDateFormat(fromDate)}`}
+            </div>
+            ${group.nalBy ? `<div class="receipt-footer">- ${group.nalBy}</div>` : ''}
+            ${group.mday ? `<div class="receipt-footer">- ${group.mday}</div>` : ''}
+            ${group.mmonth ? `<div class="receipt-footer">- ${group.mmonth}</div>` : ''}
+            <div class="receipt-footer">
+              User ID: ${this.name} ${Trnsmode == 'CR' ? "Not Paid" : ""}
+            </div>
+          </div> <!-- Close receipt-page -->
+        `;
+        allReceiptsContent += receiptContent;
       });
-      // receiptContent += `</div>`; // Close receipt page
-      // allReceiptsContent += receiptContent;
+    });
 
-      // Add grand total at the end of the page
-    // const grandTotalTop = 5 + page.length * 0.7 + 1; // Position it below the last row
-    receiptContent += `
-      <div style="position: absolute; left: 10.5cm; top: 8.4cm; font-weight: bold; font-size: 15pt;">
-         ${grandTotalAmount.toFixed(2)}
-      </div>
-    </div>`; // Close receipt page
-    allReceiptsContent += receiptContent;
-  });
-});
+    // Final print content with styling
+    const printContent = `
+      <html>
+        <head>
+          <style>
+            body {
+              margin: 10px;
+              padding: 0;
+              font-family: Arial, sans-serif;
+              font-size: 10pt;
+              font-weight: bold;
+              text-align: left;
+            }
 
-  const printContent = `
-  <html>
-    <head>
-    
-      <style>
-        body {
-          margin: 0;
-          padding: 0;
-          font-family: Arial, sans-serif;
-          font-size: 10pt;
-          font-weight: bold;
-        }
-        .receipt-page {
-          position: relative;
-          width: 6in;
-          height: 4in;
-          margin: 0 auto;
-          padding: 0;
-          overflow: hidden;
-          page-break-after: auto;
-        }
-      </style>
-    </head>
-    <body>
-      ${allReceiptsContent}
-    </body>
-  </html>
-`;
-  const printWindow = window.open('', '_blank', 'width=800,height=600');
-  if (printWindow) {
-    printWindow.document.open();
-    printWindow.document.write(printContent);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-    printWindow.close();
-    this.resetForm()
+            .receipt-page {
+              position: relative;
+              width: 80mm;;
+              height: auto;
+              margin: 0 auto;
+              padding: 10px;
+              overflow: hidden;
+              page-break-after: auto;
+              border: 1px dashed #000;
+            }
+
+            .receipt-header {
+              font-size: 14pt;
+              font-weight: bold;
+              text-align: center;
+              margin-bottom: 5px;
+            }
+
+            .receipt-sub-header {
+              font-size: 12pt;
+              text-align: center;
+              margin-bottom: 5px;
+            }
+
+            hr {
+              border: 0;
+              border-top: 1px solid black;
+              margin: 5px 0;
+            }
+
+            .receipt-content {
+              text-align: left;
+              font-size: 9pt;
+              margin-bottom: 3px;
+            }
+
+            .receipt-total {
+              margin-top: 10px;
+              font-weight: bold;
+              font-size: 11pt;
+              border-top: 1px solid #000;
+              padding-top: 5px;
+              text-align: left;
+            }
+
+            .receipt-footer {
+              font-size: 9pt;
+              margin-top: 10px;
+              font-style: italic;
+              text-align: left;
+            }
+          </style>
+        </head>
+        <body>
+          ${allReceiptsContent}
+        </body>
+      </html>
+    `;
+
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    if (printWindow) {
+      printWindow.document.open();
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+      printWindow.close();
+      this.resetForm();
+    }
   }
 }
 
-
-
-
-
-}
-
-
-
-// @HostListener('document:keydown', ['$event'])
-// handleGlobalKeyDown(event: KeyboardEvent): void {
-//   if (event.key === 'F2') { // Replace 'F2' with the desired key
-//     event.preventDefault(); // Prevent default behavior for the key
-//     this.focusPaymentDropdown();
-//   }
-// }
 
 focusPaymentDropdown(): void {
   if (this.paymentDropdown?.nativeElement) {

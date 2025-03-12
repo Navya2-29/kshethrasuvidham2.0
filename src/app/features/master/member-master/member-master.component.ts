@@ -26,6 +26,7 @@ export class MemberMasterComponent implements OnInit {
   editFlag:boolean=false;
   memberId:string;
   memberDetails:any[];
+  templeName:string | null;
   private formBuilder = inject(FormBuilder);
   private masterservice = inject(MasterService);
   // constructor
@@ -34,6 +35,7 @@ export class MemberMasterComponent implements OnInit {
   ) {
     this.addRow();
     this.userId = localStorage.getItem("LoginId")
+    this.templeName=localStorage.getItem('TempleName') 
   }
 
   ngOnInit(): void {

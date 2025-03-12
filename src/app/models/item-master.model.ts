@@ -9,4 +9,5 @@ export interface ItemMaster{
     Amount?:string;
     ACHeadCode:string;
     ACSubCode:string;
+    ItemType:string;
 }

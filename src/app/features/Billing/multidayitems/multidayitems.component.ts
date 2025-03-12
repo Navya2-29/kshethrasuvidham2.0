@@ -87,7 +87,8 @@ export class MultidayitemsComponent implements OnInit {
   filteredStars: Observable<string[]>[] = [];
   starList: string[] = [];
   formattedDates:any[];
-  blockingArray:any[]
+  blockingArray:any[];
+  VM_MaxNo:number;
   MlayalamDays = [
     '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32',
   ];
@@ -144,7 +145,7 @@ export class MultidayitemsComponent implements OnInit {
       booking: [{ disabled: true, value: '' }],
       ratechange: [{ disabled: true, value: '' }],
       VM_Receipt: [{ disabled: true, value: '' }],
-     
+      // VM_MaxNo:[],
       devotees: this.fb.array([this.createDevotee()]),
     });
     this.devotees = this.form.get('devotees') as FormArray;
@@ -450,10 +451,18 @@ export class MultidayitemsComponent implements OnInit {
         }
         this.form.get('multiName')?.setValue(res[0].VM_MultiName);
         this.form.get('VTime')?.setValue(res[0].VM_Time);
+        // this.form.get('VM_MaxNo')?.setValue(res[0].VM_MaxNo);
         this.rateChange = res[0].VM_Rate_Change;
         const booking = res[0].VM_Booking;
         const receipt = res[0].VM_Receipt;
-        this.calculateTotalAmount();
+        this.VM_MaxNo=res[0].VM_MaxNo;
+        console.log(this.VM_MaxNo,"vVM_MaxNo value")
+        if(this.VM_MaxNo>0){
+          this.form.get("NoOfDays")?.setValue(this.VM_MaxNo);
+        }else{
+          this.calculateTotalAmount();
+        }
+        
         
         this.masterservice
           .getVazhipadByCodeForDiety(vazhipadcode)
@@ -607,7 +616,8 @@ export class MultidayitemsComponent implements OnInit {
       });
 
       console.log(finalArray, "data with additions added newly");
-      this.dialogRef.close(finalArray);
+      const VM_MaxNo=this.VM_MaxNo
+      this.dialogRef.close({finalArray,VM_MaxNo});
     } else {
       this.showValidationErrors();
       this.form.markAllAsTouched();

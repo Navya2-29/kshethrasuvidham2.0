@@ -208,7 +208,7 @@
         <tbody>
           <tr *ngFor="let entry of gropedData[prathista][vazhipad]">
             <td>{{ entry.Name }}</td>
-            <td>{{ entry.Star }}</td>
+            <td>{{this.getStarbyId( entry.Star) }}</td>
             <td>{{ entry.Rate }}</td>
             <td>{{ entry.Amount }}</td>
           </tr>

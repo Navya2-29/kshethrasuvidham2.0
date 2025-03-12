@@ -44,16 +44,9 @@ export class MenuitemsComponent {
 
   onLinkClick(event: Event): void {
     if (this.role === 'staff') {
-      event.preventDefault(); // Prevent navigation if not admin
+      event.preventDefault(); 
     }
   }
   
-  // changeLanguage(lang:any){
-  //   const selectedlang=lang.target.value;
-  //   localStorage.setItem('Language',selectedlang)
-  //   this.ts.use(selectedlang);
-  //   this.cdRef.detectChanges();
-    
-  // }
 
 }

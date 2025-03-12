@@ -44,10 +44,15 @@
               <mat-icon>supervisor_account</mat-icon>
               <span>{{userName}}</span>
             </button>
+            <button mat-menu-item (click)="openChangepasswordDialog()"> 
+              <mat-icon>logout</mat-icon>
+              <span>Change Password</span>
+            </button>
             <button mat-menu-item (click)="logout()"> 
               <mat-icon>logout</mat-icon>
               <span>Logout</span>
             </button>
+           
           </mat-menu>    
         </div>
       </div>

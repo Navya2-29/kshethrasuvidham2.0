@@ -53,7 +53,7 @@
     "VAZHIPAD": "വഴിപാട്",
     "NAME": "പേര് ",
     "STAR": "നക്ഷത്രം ",
-    "PRATHISTA": "പ്രതിഷ്ഠ  ",
+    "PRATHISTA": "പ്രതിഷ്ഠ",
     "QUANTITY": "എണ്ണം",
     "RATE": "നിരക്ക് ",
     "DATE": "തീയതി   ",
@@ -72,7 +72,8 @@
     "Remark": "റിമാർക്",
     "Description": "വിവരണം",
     "COUNTERID":"കൌണ്ടർ ഐഡി",
-    "ITEM":"ഐറ്റം"
+    "ITEM":"ഐറ്റം",
+    "Endowment":"എൻഡോവ്മെന്റ്"
    
   },
   "OPTIONS": {
@@ -98,7 +99,6 @@
     "UPI": "യുപിഐ സ്റ്റേറ്റ്മെന്റ്",
     "Offering Only": "വഴിപാട് മാത്രം",
     "Nadavaravu Booking": "നടവരവ് ബുക്കിംഗ്",
-    
     "Credit Collection":"ക്രെഡിറ്റ് കളക്ഷൻ ",
     "report-duplicate":"ഡ്യൂപ്ലിക്കേറ്റ്",
     "SALES ITEM REPORT":"സെയിൽസ് ഐറ്റംസ്",
@@ -124,9 +124,11 @@
     "SALES ITEM REPORT":"സെയിൽസ് ഐറ്റംസ് റിപ്പോർട്ട്",
     "MATTINAM REPORT":"മറ്റിനം റിപ്പോർട്ട്",
     "FEE COLLECTION REPORT":"ഫീ കളക്ഷൻ റിപ്പോർട്ട് ",
+    "VAZHIPAD WISE REPORT":"വഴിപാട് വൈസ് റിപ്പോർട്ട്",
     "SINO": "നമ്പർ",
     "Vazhipad Name": "പേര്",
     "Vazhipad Code": "കോഡ്",
+    "Prathishta":"പ്രതിഷ്ഠ",
     "Amount": "തുക",
     "Print":"പ്രിന്റ്",
     "Code":"കോഡ്",

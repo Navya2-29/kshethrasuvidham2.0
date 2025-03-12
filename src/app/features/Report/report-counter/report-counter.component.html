@@ -6,15 +6,15 @@
   <button mat-icon-button matTooltip="Back to previous page" (click)="goBack()">
     <span class="material-icons">arrow_back</span>
 </button>
-    <button mat-icon-button matTooltip="Make PDF" >
-        <span class="material-icons">print</span>
+    <button mat-icon-button matTooltip="Make PDF" (click)="generatePDF()" >
+        <span class="material-icons" >print</span>
     </button> 
     <!-- <button mat-icon-button matTooltip="Export to Spreadsheet" >
         <span class="material-icons">grid_view</span>
     </button> -->
  </div>
  <div id="">
-
+  <div id="print-section">
 
 <div>
   <h3 style="align-items: center;text-align:center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;" >{{templeName}}</h3>
@@ -205,5 +205,6 @@
   </div> 
   <div style="text-align: right;font-weight: bold;">
 <h1>GrandTotal: {{"" +getGrandTotal()| number: '1.2-2'}}</h1>
+  </div>
   </div>
   </div>

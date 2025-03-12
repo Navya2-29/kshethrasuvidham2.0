@@ -25,6 +25,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([headerInterceptor])),
     provideAnimations(),
     provideToastr(),
+    
    importProvidersFrom(HttpClientModule),
    { provide: LocationStrategy, useClass: HashLocationStrategy }, 
    importProvidersFrom(TranslateModule.forRoot({

@@ -7,7 +7,6 @@
                 <div class="card">
                     <div class="card-header height" style="background-color:maroon;color:white;height:50px;">
                         <h3>Masters</h3>
-                        <!-- <h3> മാസ്റ്റേഴ്സ്</h3> -->
                     </div>
                     <div class="card-body">
                        <ul class="list-group list-group-flush">
@@ -25,24 +24,7 @@
                     </div>
                   </div>
             </div>
-            <!-- <div class="col-md-3.5">
-                <div class="card">
-                    <div class="card-header height" style="background-color:maroon;color:white;height:50px;">
-                        <h3>Transactions</h3>
-                    </div>
-                    <div class="card-body">
-                      <ul class="list-group list-group-flush">
-                        <a href=""><li class="list-group-item">Nadavaravu Details</li></a>
-                        <a href=""><li class="list-group-item">Mattinam Vazhipadu Entry</li></a>
-                        <a href=""><li class="list-group-item">Credit Collection</li></a>
-                        <a href=""><li class="list-group-item">Editing</li></a>
-                        <a routerLink="calander" [mat-dialog-close]="true"><li class="list-group-item">Calander</li></a>
-
-                      </ul>
-
-                    </div>
-                  </div>
-            </div> -->
+            
             <div class="col-md-2.5">
                 <div class="card">
                     <div class="card-header height" style="background-color:maroon;color:white;height:50px;">
@@ -52,7 +34,6 @@
                     <div class="card-body">
                       <ul class="list-group list-group-flush">
                         <a routerLink="getReport" [mat-dialog-close]="true"><li class="list-group-item">Reports</li></a>
-                        <!-- <a routerLink="getReport" [mat-dialog-close]="true"><li class="list-group-item">റിപ്പോർട്ടുകൾ</li></a> -->
                       </ul>
                     </div>
                   </div>
@@ -61,26 +42,18 @@
                 <div class="card">
                     <div class="card-header height" style="background-color:maroon;color:white;height:50px;">
                         <h3>Utilities</h3>
-                        <!-- <h3> യൂട്ടിലിറ്റികൾ</h3> -->
                     </div>
                     <div class="card-body">
                       <ul class="list-group list-group-flush">  
                         <a routerLink="/dashboard" [mat-dialog-close]="true"><li class="list-group-item">Billing </li></a>
-                        <!-- <a routerLink="/dashboard" [mat-dialog-close]="true"><li class="list-group-item">ബുക്കിംഗ് </li></a> -->
 
                         <a routerLink="/mattinagal" [mat-dialog-close]="true"><li class="list-group-item">Nadavaravu/Credit</li></a>
-                        <!-- <a routerLink="/mattinagal" [mat-dialog-close]="true"><li class="list-group-item">നടവരവ് എൻട്രി</li></a> -->
-                        <!-- <a  *ngIf="role === 'admin' " routerLink="/userSignup" [mat-dialog-close]="true"><li class="list-group-item">സൈൻ അപ്പ് ചെയ്യുക</li></a> -->
+                       
                         <a  *ngIf="role === 'admin' || role === 'super' " routerLink="/userSignup" [mat-dialog-close]="true"><li class="list-group-item">Signup</li></a>
                         <a  *ngIf="role === 'super' "  routerLink="/settings" [mat-dialog-close]="true"><li class="list-group-item">Settings</li></a>
 
                       </ul>
-                      <!-- <select (change)="changeLanguage($event)" class="sps form-control">
-                        <option [selected]="lang=='en'" value="en">English</option>
-                        <option [selected]="lang=='ml'" value="ml">malayalam</option>
-                         <option [selected]="lang=='hn'" value="hn">Hindi</option>
-                        <option [selected]="lang=='tm'" value="tm">Tamil</option> -->
-                      <!-- </select> --> 
+                   
                     </div>
                   </div>
             </div>
@@ -88,6 +61,5 @@
     </div>
 </mat-dialog-content>
 <mat-dialog-actions align="end" class="menuend">
-  <!-- <button mat-button mat-dialog-close>Cancel</button> -->
   <button mat-button [mat-dialog-close]="true">Close</button>
 </mat-dialog-actions>

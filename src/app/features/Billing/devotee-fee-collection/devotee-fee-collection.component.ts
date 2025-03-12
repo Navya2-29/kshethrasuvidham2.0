@@ -154,7 +154,7 @@ todayDate:any;
   search() {
     const mobileNumber = this.feeCollctionForm.get('Mobile')?.value;
     if(mobileNumber?.invalid){
-this.notification.showError("Invalid mobile number please enter a valid mobile number")
+    this.notification.showError("Invalid mobile number please enter a valid mobile number")
       return;
     }
     console.log(mobileNumber)

@@ -18,6 +18,7 @@
   "Cheque": "Cheque",
   "Money order": "Money Order",
   "Nadavaravu": "Nadavaravu",
+ 
   "Credit Collection": "Credit Collection",
   "Multi day Booking": "Multi day Booking",
   "START DATE": "Starting date",
@@ -35,7 +36,7 @@
   "Filter Options": "Filter Options",
   "Day List": "Day List",
 "Select Item": "Select Item",
-  
+  "Endowment":"Endowment",
   "BILL NO":"Bill No",
   "BILLDATE":"Bill Date",
   "CANCEL DATE":"Cancel Date",
@@ -102,7 +103,8 @@
     "report-duplicate":"Duplicate",
     "SALES ITEM REPORT":"Sales Item",
     "MATTINAM REPORT":"Mattinmam",
-    "FEE COLLECTION REPORT":"Fee Collection"
+    "FEE COLLECTION REPORT":"Fee Collection",
+    "Credit Collection":"Credit Collection"
   },
 
   "Report Name": {
@@ -124,12 +126,14 @@
     "SALES ITEM REPORT":"Sales Item Report",
     "MATTINAM REPORT":"Mattinam Report",
     "FEE COLLECTION REPORT":"Fee Collection Report",
+    "VAZHIPAD WISE REPORT":"Vazhipad Wise Report",
     "SINO": "SINO",
     "Vazhipad Name": "Name",
     "Vazhipad Code": "Code",
     "Amount": "Amount",
     "Print":"Print",
     "Code":"Code",
+    "Prathishta":"Prathishta",
     "Vazhipad":"Vazhipad",
     "Active":"Active",
     "Blocking":"Blocking",

@@ -799,8 +799,8 @@ console.log(this.selectedVazhipadItem)
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         // this.handleDialogData(result);
-
-        this.handleMultiDayBookingResult(result, rowIndex);
+        const { finalArray, VM_MaxNo } = result;
+        this.handleMultiDayBookingResult(finalArray, rowIndex,VM_MaxNo);
       }
     });
   }
@@ -815,7 +815,8 @@ console.log(this.selectedVazhipadItem)
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.handleMultiDayBookingResult(result, rowIndex);
+        const { finalArray, VM_MaxNo } = result;
+        // this.handleMultiDayBookingResult(finalArray, rowIndex,VM_MaxNo);
       }
     });
   }
@@ -827,7 +828,8 @@ console.log(this.selectedVazhipadItem)
     return `${year}-${month}-${day}`; // Return formatted string in yyyy-mm-dd format}
   }
 
-  private handleMultiDayBookingResult(result: any, rowIndex: number): void {
+  private handleMultiDayBookingResult(result: any, rowIndex: number,singlevazhipadmultiday:number): void {
+    console.log(result,"multiday filtering")
     const row = this.vazhipadinfo.at(rowIndex) as FormGroup;
 
     let lastIndex = result.length - 1;
@@ -849,7 +851,7 @@ console.log(this.selectedVazhipadItem)
       Vazhipad: data.Vazhipad,
       Vazhid: data.Vazhid,
       Prethista: data.Prethista,
-      Qty: data.Qty * result.length,
+      Qty: singlevazhipadmultiday>0?1:data.Qty * result.length,
       Rate: data.Rate,
       VazhipadDate: this.datePipe.transform(startDate, 'yyyy-MM-dd') || '',
       TotalAmt: this.totalAmount,
@@ -1025,23 +1027,25 @@ console.log(this.selectedVazhipadItem)
       });
       dialogRef.afterClosed().subscribe((result) => {
         if (result) {
-const transactionPayLoad={
 
-  "TransactionNumber":"1419/0229",   
-  "SequenceNumber": 1492930196,                            
-  "AllowedPaymentMode": "10",                              
-  "MerchantStorePosCode": "1221258967",
-  "Amount": "1000",                                     
+const transactionPayLoad={
+  "TransactionNumber":"1598/0229",   
+  "SequenceNumber": 1,                            
+  "AllowedPaymentMode": "1",                              
+  "MerchantStorePosCode": "1225053011",
+  "Amount": "100",                                     
  "UserID": "Rinsha",                 
- "MerchantID":29610 ,                                
- "SecurityToken": "a4c9741b-2889-47b8-be2f-ba42081a246e",
- "IMEI": "CUBIXTEST01",
- "AutoCancelDurationInMinutes":5
+ "MerchantID":181763 ,                                
+ "SecurityToken": "72aaee9c-37b0-4f52-bb9b-b411b0dd2d70",
+ "IMEI": "PINE2607971",
+ "AutoCancelDurationInMinutes":5,
+
 }
 this.masterservice.upLoadTransaction(transactionPayLoad).subscribe((data)=>{
   console.log(data);
 })
           this.prnitConfirmDialog(formattedData);
+
         } else {
           // this.resetForm();
           // User did not confirm, save the data to the database

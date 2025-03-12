@@ -13,11 +13,12 @@ import { TranslateService } from '@ngx-translate/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { DevoteeFeeCollectionComponent } from '../devotee-fee-collection/devotee-fee-collection.component';
 import { Router } from '@angular/router';
+import { ThulabaramComponent } from "../thulabaram/thulabaram.component";
 @Component({
   selector: 'app-areaothers',
   standalone: true,
   providers: [provideNativeDateAdapter()],
-  imports: [MatButtonModule, MatExpansionModule,DevoteeFeeCollectionComponent,TranslateModule, MatIconModule, MatFormFieldModule, MatInputModule, NadavaravuComponent, MatTabsModule,CreditcollectionComponent],
+  imports: [MatButtonModule, MatExpansionModule, DevoteeFeeCollectionComponent, TranslateModule, MatIconModule, MatFormFieldModule, MatInputModule, NadavaravuComponent, MatTabsModule, CreditcollectionComponent, ThulabaramComponent],
   templateUrl: './areaothers.component.html',
   styleUrl: './areaothers.component.css'
 })

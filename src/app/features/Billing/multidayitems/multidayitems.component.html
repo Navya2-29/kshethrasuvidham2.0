@@ -24,6 +24,7 @@
                           class="form-control sps"
                           formControlName="Vazhipad"
                           [matAutocomplete]="auto"
+                          
                           [ngClass]="{
                             'invalid-control': form.get('Vazhipad')?.invalid && form.get('Vazhipad')?.touched
                           }"
@@ -128,6 +129,7 @@
                           formControlName="NoOfDays"
                           [min]="1"
                           appNumber
+                          [readonly]="VM_MaxNo > 0"
                         />
                       </td>
                       <td>
@@ -138,6 +140,7 @@
                           formControlName="Qty"
                           [min]="1"
                           appNumber
+                          [readonly]="VM_MaxNo > 0"
                         />
                       </td>
                       <td>
@@ -167,7 +170,7 @@
                   {{"ADD DEVOTEE" |translate }}
                 </button>   -->
                 <!-- <mat-icon (click)=" addDevotee()" ><span class="icons" style="color: blue; width: 100px;height: 50px;" >add_comment</span></mat-icon> -->
-                <button mat-icon-button (click)="addDevotee()" style="font-size: 36px; ">
+                <button mat-icon-button (click)="addDevotee()" style="font-size: 36px; " [disabled]="VM_MaxNo>0">
                   <mat-icon style="font-size: 30px; color: blue;">add_comment</mat-icon>
                 </button>
               </div>
@@ -268,22 +271,6 @@
         </form>
       </div>
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
       <div class="col-md-3">
         <div>

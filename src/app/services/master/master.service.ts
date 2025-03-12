@@ -1,3 +1,4 @@
+import { ChangePasswordComponent } from './../../core/auth/change-password/change-password.component';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, catchError, throwError } from 'rxjs';
@@ -925,12 +926,16 @@ AddDevoteeMaster(payLoad:any){
 }
 
 upLoadTransaction(payLoad:any){
-  return this.http.post<any>('https://www.plutuscloudserviceuat.in:8201/API/CloudBasedIntegration/V1/UploadBilledTransaction',payLoad)
+  return this.http.post<any>('https://www.plutuscloudservice.in:8201/API/CloudBasedIntegration/V1/UploadBilledTransaction',payLoad)
 }
 
 addFeeCollection(payLoad:any){
   return this.http.post<any>(Constant.BASE_URL+Constant.METHODS.FEECOLLECTION,payLoad);
 
+}
+changePassword(payLoad:any){
+  return this.http.post<any>(Constant.BASE_URL+Constant.METHODS.CHANGEPASSWORD,payLoad);
+ 
 }
 
 // getDayList(payLoad:any){

@@ -403,7 +403,7 @@ mat-option {
 }
 
 .amster {
-    height:100%;width:100%;display:flex;align-items:center;justify-content:center;position:fixed;background-image:url('/assets/images/bgadmin.jpg');
+    background-size:cover; height:100%;width:100%;display:flex;align-items:center;justify-content:center;position:fixed;background-image:url('/assets/images/bgadmin.jpg');
 }
 
 .back {

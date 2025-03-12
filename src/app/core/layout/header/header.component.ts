@@ -7,6 +7,8 @@ import { AreaComponent } from '../../../features/Billing/area/area.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { ChangePasswordComponent } from '../../auth/change-password/change-password.component';
+import { MatDialog } from '@angular/material/dialog';
 @Component({
   selector: 'app-header',
   standalone: true,
@@ -28,7 +30,7 @@ export class HeaderComponent {
   userName: string | null = '';
   role:string |null='';
   counterId:string |null='';
-  constructor() {
+  constructor(private dialog: MatDialog,) {
     this.userName = localStorage.getItem('name');
     this.role=localStorage.getItem('Role');
     this.counterId=localStorage.getItem('counterId');
@@ -51,6 +53,17 @@ export class HeaderComponent {
   goBack(){
     this.router.navigate(['/front']);
 
+  }
+  openChangepasswordDialog(){
+     const dialogRef = this.dialog.open(ChangePasswordComponent, {
+          width: '300px',
+          disableClose: true,
+        });
+    
+        dialogRef.afterClosed().subscribe((result) => {
+          if (result) {
+          }
+        })
   }
   
 }

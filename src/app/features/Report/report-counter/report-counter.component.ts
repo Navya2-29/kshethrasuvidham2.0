@@ -140,7 +140,7 @@ this.ts.use(this.lang || 'en');
     }
 
     // Find existing entry with the same vazhipad
-    const existingItem = acc[counterKey][cuserKey][trnsModeKey].find((v: any) => v.vazhipad === item.vazhipad);
+    const existingItem = acc[counterKey][cuserKey][trnsModeKey].find((v: any) =>  v.vazhipad === item.vazhipad && v.Rate === item.Rate);
 
     if (existingItem) {
       // Merge values
@@ -238,11 +238,61 @@ getTotalForCuser(counterId: string, cuser: string): number {
   }
 
   getGrandTotal(): number {
-    return this.data.reduce((sum, item) => sum + item.Qty * item.Rate, 0);
+    return this.data.reduce((sum, item) => sum + item.Amount, 0);
   }
 
 
 
+
+  generatePDF(){
+    const printContent = document.getElementById('print-section');
+    if (!printContent) {
+      console.error('No content found to print');
+      return;
+    }
+  
+    const WindowPrt = window.open('', '', 'width=800,height=600');
+    
+    // Check if the print window was successfully opened
+    if (!WindowPrt) {
+      console.error('Unable to open print window. Please check pop-up blockers.');
+      return;
+    }
+  
+    WindowPrt.document.write(`
+      <html>
+        <head>
+          <title>Print</title>
+          <style>
+            /* Add custom styles for printing if needed */
+            table {
+              width: 100%;
+              border-collapse: collapse;
+            }
+            table, th, td {
+              border: 1px solid black;
+            }
+            th, td {
+              padding: 5px;
+              text-align: left;
+            }
+          </style>
+        </head>
+        <body>${printContent.innerHTML}</body>
+      </html>
+    `);
+  
+    WindowPrt.document.close();
+    WindowPrt.focus();
+  
+    // Make sure that the window is still valid before calling print and close
+    if (WindowPrt) {
+      WindowPrt.print();
+      WindowPrt.close();
+    }
+
+    }
+    
 
 
 
