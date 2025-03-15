@@ -120,6 +120,11 @@ export class SearchByBillNumberComponent {
   MobileNo:string;
   CounterId:String;
   userName:string;
+  loginUserName:string |null;
+  editTransmodevalue:string;
+  changeByValue:string;
+  // editName:string;
+  // editstar:string;
   constructor(
     public dialogRef: MatDialogRef<SearchByBillNumberComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -139,7 +144,8 @@ export class SearchByBillNumberComponent {
       this.InstaBank=data[0].InstBank;
       this.MobileNo=data[0].MobileNo;
       this.CounterId=data[0].CounterId;
-      this.userName=data[0].UName
+      this.userName=data[0].UName;
+      this.changeByValue=data[0].ChangeBy;
     console.log(this.duplicatebilldata,"dupicate bill data first");
     this.dataSource = new MatTableDataSource(this.duplicatebilldata);
     this.role = localStorage.getItem('Role');
@@ -528,9 +534,22 @@ this.groupDataByPrathistaAndVazhipad()
   editRow(row: any) {
     console.log(row);
     row.isEditing = true;
+    row.editName=row.Name,
+    row.editStar=row.Star
   }
+
   saveRow(row: any) {
     row.isEditing = false;
+    row.nameEdited=row.editName==row.Name?true:false
+    row.starEdited=row.editStar==row.Star?true:false
+    if(!row.nameEdited && !row.starEdited){
+      row.nameStarEdited=row.editName+","+this.getStarbyId(row.editStar)+"("+this.name+","+this.getTodayDate()+")"
+    }
+    else if(!row.nameEdited){
+      row.nameStarEdited=row.editName+","+"("+this.name+","+this.getTodayDate()+")"
+    }else if(!row.starEdited){
+      row.nameStarEdited=this.getStarbyId(row.editStar)+"("+this.name+","+this.getTodayDate()+")"
+    }
     console.log('Row saved:', row);
     const payLoad = {
       BillId: row.BillId,
@@ -538,18 +557,32 @@ this.groupDataByPrathistaAndVazhipad()
       Star: row.Star,
       Name2: row.Name2,
       Star2: row.Star2,
+      ChangeBy: row.nameStarEdited,
+      UserId:this.loginId 
     };
+    console.log(payLoad,"checking")
     // Example: Update the backend API with new values
     this.masterService.editBilllingDetils(payLoad).subscribe({
-      next: (response) => {
+      next: (response:any) => {
+        if(response.RespStatus){
+     this.notification.showSuccess("'Row updated successfully")
+        }
         console.log('Row updated successfully:', response);
       },
       error: (error) => {
+        this.notification.showError("Error in updatinag row")
+
         console.error('Error updatinag row:', error);
       },
     });
   }
 
+getTodayDate(){
+  const today = new Date();
+  console.log(today,"gggggg")
+const formattedDate = today.toLocaleDateString('en-GB').split('/').join('-'); 
+return formattedDate
+}
   // getStarData() {
   //   const payLoad = { Type: 'ListStar', Code: '' };
   //   this.masterService.getStarData(payLoad).subscribe((res) => {
@@ -856,8 +889,15 @@ if(this.updateTransMode.invalid){
   this.markAllFieldsAsTouched();
   return;
 }
+const editedTransmodeValue=this.updateTransMode.get("Trnsmode")?.value
+if(this.displayTrnsmode!=editedTransmodeValue){
+  if(this.changeByValue){
+    this.changeByValue=this.changeByValue+","+this.displayTrnsmode+"("+this.name+","+this.getTodayDate()+")"
+  }else{
+    this.changeByValue=this.displayTrnsmode+"("+this.name+","+this.getTodayDate()+")"
 
-
+  }
+}
    
 
       const formValue=this.updateTransMode.value;
@@ -871,6 +911,7 @@ if(this.updateTransMode.invalid){
         TransMode:formValue.Trnsmode,
         PaidStatus:formValue.PaidStatus,
         MobileNo:formValue.MobileNo,
+        ChangeBy:this.changeByValue
       }
       console.log(payLoad,"payLoad")
       this.masterService.updateBookingTransmode(payLoad).subscribe((data)=>{

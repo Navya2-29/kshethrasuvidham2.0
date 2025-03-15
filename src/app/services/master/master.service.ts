@@ -928,7 +928,14 @@ AddDevoteeMaster(payLoad:any){
 upLoadTransaction(payLoad:any){
   return this.http.post<any>('https://www.plutuscloudservice.in:8201/API/CloudBasedIntegration/V1/UploadBilledTransaction',payLoad)
 }
+gettransactionStatus(payLoad:any){
+  return this.http.post<any>('https://www.plutuscloudservice.in:8201/API/CloudBasedIntegration/V1/GetCloudBasedTxnStatus',payLoad)
 
+}
+cancelTransaction(payLoad:any){
+  return this.http.post<any>('https://www.plutuscloudservice.in:8201/API/CloudBasedIntegration/V1/CancelTransaction',payLoad)
+
+}
 addFeeCollection(payLoad:any){
   return this.http.post<any>(Constant.BASE_URL+Constant.METHODS.FEECOLLECTION,payLoad);
 

@@ -12,6 +12,7 @@ import { CommonModule } from '@angular/common';
 import { CouterPopupComponent } from '../../couter-popup/couter-popup.component';
 import { AuthService } from '../../auth/service/auth.service';
 import { FrontComponent } from '../front/front.component';
+import { ChangePasswordComponent } from '../../auth/change-password/change-password.component';
 
 @Component({
   selector: 'app-home',
@@ -39,6 +40,9 @@ export class HomeComponent {
   Role: string | null;
   countercount: number;
   allowedContercount: number | null;
+  storedDate:any;
+  Days:number;
+  // passwordChangeDate:number | null;
   constructor(
     private http: HttpClient,
     private dialog: MatDialog,
@@ -48,6 +52,7 @@ export class HomeComponent {
     this.templeName = localStorage.getItem('TempleName');
     this.logo = localStorage.getItem('Logo');
     // this.Role = localStorage.getItem('Role');
+
     this.allowedContercount = Number(localStorage.getItem('Counter'));
     this.Role = localStorage.getItem('Role');
     console.log(this.allowedContercount, 'ss');
@@ -56,6 +61,35 @@ export class HomeComponent {
     console.log(this.countercount > this.allowedContercount, 'bbb');
 }
 ngOnInit(): void {
+
+  const dateuserCreated=localStorage.getItem("CREATED_DT");
+if(localStorage.getItem("Days")){
+  this.Days=Number(localStorage.getItem("Days"));
+
+}
+
+
+  if(dateuserCreated){
+    this. storedDate = new Date(dateuserCreated);
+
+  }
+
+  // Get the current date (normalize time to midnight)
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
+
+ // Calculate absolute difference in milliseconds
+ const diffInMs = Math.abs(this.storedDate.getTime() - currentDate.getTime());
+
+ // Convert to positive number of days
+ const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+
+  console.log(`Difference in days: ${diffInDays}`);
+
+  if (this.Days !== 0 && diffInDays >= this.Days) {
+    this.openChangePasswordDialog();
+  }
+
   const storedCounterId = localStorage.getItem('counterId');
   if (!storedCounterId) {
     this.openCounterIdDialog();
@@ -123,6 +157,19 @@ getcounterCount() {
     // }
   });
 }
+openChangePasswordDialog(){
+ const dialogRef = this.dialog.open(ChangePasswordComponent, {
+          width: '300px',
+          disableClose: true,
+        });
+    
+        dialogRef.afterClosed().subscribe((result) => {
+          if (result) {
+          }
+        })
 
+
+
+}
 
 }

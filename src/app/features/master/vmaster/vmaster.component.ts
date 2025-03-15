@@ -433,7 +433,7 @@ export class VmasterComponent implements OnInit {
   
               this.onReset();
               this.notification.showSuccess(
-                'Vazhipad details updated suceesfully'
+                'Vazhipad details updated sucessfully'
               );
             },
             error: (error) => {
@@ -658,7 +658,7 @@ export class VmasterComponent implements OnInit {
         console.log(data,"check vazhipad")
         this.checkVazhipadData=data.length;
         if(this.checkVazhipadData!=0){
-          this.notification.showError("You cant Rename the vazhipad name , its already make recipt so please create new one")
+          this.notification.showError("You cant Rename the vazhipad name , its already make receipt so please create a new one")
         }
       },error:(err)=>{
         console.log(err,"check vazhipad") 

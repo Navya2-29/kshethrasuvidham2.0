@@ -258,7 +258,7 @@ export class DayMasterComponent implements OnInit {
           console.log(res);
           this.getDayMster();
           this.resetForm();
-          this.notification.showSuccess('Data inserted successfully');
+          this.notification.showSuccess('Data saved successfully');
         },
       });
     }

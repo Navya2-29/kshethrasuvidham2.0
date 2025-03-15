@@ -88,6 +88,8 @@ submitLogin(login:Login){
           localStorage.setItem('LoginId',response.LoginId);
           sessionStorage.setItem('loggedIn', 'true');
           localStorage.setItem('loggedIn', 'true');
+          localStorage.setItem("CREATED_DT",response.CREATED_DT);
+          localStorage.setItem("Days",response.Days);
           // Optional: Redirect to the dashboard or another page
           
           this.router.navigate(['/Home']);

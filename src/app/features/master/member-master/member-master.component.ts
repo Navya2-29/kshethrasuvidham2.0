@@ -225,7 +225,7 @@ onUpdate(data:any){
     next: (data) => {
       console.log(data)
       if (data.RespStatus === "U") {
-        this.notification.showSuccess("Devotee details added successfully")
+        this.notification.showSuccess("Devotee details updated successfully")
         this.resetForm()
       }
     }
