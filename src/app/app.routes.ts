@@ -53,6 +53,11 @@ import { ReportMattinangalComponent } from './features/Report/report-mattinangal
 import { ReportSalesitemComponent } from './features/Report/report-salesitem/report-salesitem.component';
 import { ReportFeecollectionComponent } from './features/Report/report-feecollection/report-feecollection.component';
 import { HomeComponent } from './core/layout/home/home.component';
+import { DevoteeCreditcollectioReportComponent } from './features/Report/devotee-creditcollectio-report/devotee-creditcollectio-report.component';
+import { DonationReportComponent } from './features/Report/donation-report/donation-report.component';
+import { MembersListComponent } from './features/Report/members-list/members-list.component';
+import { ReportMemberPendingCreditComponent } from './features/Report/report-member-pending-credit/report-member-pending-credit.component';
+import { ReportNonMemberPendingCreditComponent } from './features/Report/report-non-member-pending-credit/report-non-member-pending-credit.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -173,6 +178,11 @@ export const routes: Routes = [
   {path:"report-mattinamgal",component: ReportMattinangalComponent},
   {path:"report-salesitem",component: ReportSalesitemComponent},
   {path:"report-feecollection",component: ReportFeecollectionComponent},
+  {path:"report-devotee-creditcollection",component: DevoteeCreditcollectioReportComponent},
+  {path:"report-donation",component: DonationReportComponent},
+  {path:"members-list",component: MembersListComponent},
+  {path:"members-pending-report",component: ReportMemberPendingCreditComponent},
+  {path:"non-members-pending-report",component: ReportNonMemberPendingCreditComponent},
   {path:"Home",component: HomeComponent},
   {
     path: '**',

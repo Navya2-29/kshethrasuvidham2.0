@@ -193,9 +193,28 @@
 <div id="print-section" style="display:none">
   <div *ngFor="let prathista of getKeys(gropedData)">
     <div *ngFor="let vazhipad of getKeys(gropedData[prathista])" class="group-container">
-      <div><div>Bill No:{{lastBillNo}}</div><div>BillDate:{{billDate | date:'dd-MM-yyyy' }}</div></div>
+      <img src="/assets/images/panchiyamma_header_banner.png" width="800px" height="200px" alt="Panchiyamma Header Banner">
 
-      <h2>{{ prathista }} - {{ vazhipad }}</h2>
+      <!-- <div><div>Bill No:{{lastBillNo}}</div><div>BillDate:{{billDate | date:'dd-MM-yyyy' }}</div></div> -->
+<div><table style="border: none;" width="50%" class="table1">
+  <tr>
+    <td>
+Prathista:<span style="font-weight: bold;">{{ prathista }}</span>
+  </td>
+  <td style="text-align: right;">
+    Bill No:{{lastBillNo}}
+  </td>
+</tr>
+<tr>
+  <td >
+    Vazhipad:<span style="font-weight: bold;">{{ vazhipad }}</span>
+  </td>
+  <td style="text-align: right;">
+    BillDate:<span >{{billDate  }}</span>
+  </td>
+</tr>
+</table></div>
+      <!-- <h2>{{ prathista }} - {{ vazhipad }}</h2> -->
       <table border="1" width="50%">
         <thead>
           <tr>
@@ -209,6 +228,7 @@
           <tr *ngFor="let entry of gropedData[prathista][vazhipad]">
             <td>{{ entry.Name }}</td>
             <td>{{this.getStarbyId( entry.Star) }}</td>
+            <!-- <td>{{entry.fromDate }}</td> -->
             <td>{{ entry.Rate }}</td>
             <td>{{ entry.Amount }}</td>
           </tr>
@@ -218,6 +238,19 @@
             <td><b>{{ calculateTotalAmount(gropedData[prathista][vazhipad]) }}</b></td>
           </tr>
         </tbody>
+      </table>
+      <table class="table1">
+        <tr>
+          <td>
+            User id:{{this.name}}
+          </td>
+          <td>
+Counter:{{counterId}}
+          </td>
+          <td>
+Payment:{{displayTrnsmode=='CR'?"Not Paid":displayTrnsmode}}
+          </td>
+        </tr>
       </table>
       <br />
     </div>
@@ -238,11 +271,11 @@
   [disabled]="TrnStatus == 'C'"
   (click)="printPage()"
 >
- PDF of the Bill
+Make PDF
 </button>
 <button (click)="openWhatsAppWeb()"  mat-button
 class="proceed"
-[disabled]="TrnStatus == 'C'">Open WhatsApp Web</button>
+[disabled]="TrnStatus == 'C'">Share on WhatsApp Web</button>
 
   <button
     mat-button

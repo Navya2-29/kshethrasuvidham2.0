@@ -561,14 +561,17 @@
                       (click)="onEdit(data)"
                       >edit</mat-icon
                     >
-
+     <span                       
+     >                     
                     <mat-icon
                       title="Delete"
                       class="small"
+                      [attr.aria-disabled]="checkBillingVazjipad"
                       style="vertical-align: middle"
-                      (click)="onDelete(data.VM_Id)"
+                      (click)="onDeleteCheck(data.VM_Id)"
                       >delete</mat-icon
-                    >
+                    ></span>
+
                   </td>
                 </tr>
               </tbody>

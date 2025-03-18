@@ -1,0 +1,194 @@
+import { MembersReport } from './../../../models/members.model';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { ReportService } from '../service/report.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import {
+  MatPaginatorModule,
+} from '@angular/material/paginator';
+import { HeaderComponent } from '../../../core/layout/header/header.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { HttpClient } from '@angular/common/http';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { MasterService } from '../../../services/master/master.service';
+@Component({
+  selector: 'app-members-list',
+  standalone: true,
+  imports: [
+    CommonModule,
+    MatTableModule,
+    MatPaginatorModule,
+    HeaderComponent,
+    MatTooltipModule,MatFormFieldModule,TranslateModule, MatInputModule,
+  ],
+  templateUrl: './members-list.component.html',
+  styleUrl: './members-list.component.css'
+})
+export class MembersListComponent {
+ 
+  
+  data: MembersReport[] = [];
+ 
+
+  currentDate: string = '';
+
+  counterId:string | null;
+  lang:string|null;
+  templeName:string|null;
+  templeAddress:string|null;
+
+  constructor(
+    private route: ActivatedRoute,
+    private service: ReportService,
+    private router: Router,
+    private http:HttpClient,
+    private ts: TranslateService,
+    private masterService:MasterService
+  ) {
+    this.counterId=localStorage.getItem('Counter')
+    this.lang=localStorage.getItem('Language');
+this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
+this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
+const userLang = navigator.language || 'en';
+const languageCode = userLang.split('-')[0];
+this.ts.setDefaultLang(languageCode);
+this.ts.use(this.lang || 'en');
+  }
+
+  ngOnInit(): void { 
+      this.fetchReportData();
+  }
+  
+  // Call your API service to get the report data
+  fetchReportData(): void {
+    const payLoad = {
+      Type: "DevoteeMaster",
+     Code:""
+    };
+    this.masterService.getMaster(payLoad).subscribe({
+      next: (data) => {
+        console.log('Fetched report data:', data);
+        this.data = data;
+       
+       
+      },
+      error: (error) => {
+        console.error('Error fetching report data:', error);
+      },
+    });
+  }
+
+  formatDateToDDMMYYYY(date: string): string {
+    const [year, month, day] = date.split('-');
+    return `${day}-${month}-${year}`;
+  }
+
+
+
+  
+
+  goBack(): void {
+    console.log('Going back...'); // Log to verify method execution
+    this.router.navigate(['/getReport']);
+
+    if (window.history.length > 1) {
+      window.history.back(); // Goes back to the previous page in history
+    } else {
+      window.close(); // Closes the tab if it's the only page open
+    }
+
+
+
+  }
+
+
+ 
+
+
+  
+
+  getTransactionType(transmode: string): string {
+    switch (transmode) {
+      case 'ON':
+        return 'Bank';
+      case 'CS':
+        return 'CASH';
+      case 'MO':
+        return 'MONEY ORDER';
+      case 'UP':
+        return 'UPI';
+      case 'CH':
+        return 'CHEQUE';
+      case 'CR':
+        return 'CREDIT';
+      case 'DE':
+        return 'DEBIT';
+
+      default:
+        return 'OTHERS';
+    }
+  }
+
+ 
+
+
+
+  generatePDF(){
+    const printContent = document.getElementById('print-section');
+    if (!printContent) {
+      console.error('No content found to print');
+      return;
+    }
+  
+    const WindowPrt = window.open('', '', 'width=800,height=600');
+    
+    // Check if the print window was successfully opened
+    if (!WindowPrt) {
+      console.error('Unable to open print window. Please check pop-up blockers.');
+      return;
+    }
+  
+    WindowPrt.document.write(`
+      <html>
+        <head>
+          <title>Print</title>
+          <style>
+            /* Add custom styles for printing if needed */
+            body{
+            margin-top:30px;
+            }
+            h4,h5{
+            margin-top:0;
+            }
+            h1{
+            margin-top:10px;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+            }
+            table, th, td {
+              border: 1px solid black;
+            }
+            th, td {
+              padding: 5px;
+              text-align: center;
+            }
+          </style>
+        </head>
+        <body>${printContent.innerHTML}</body>
+      </html>
+    `);
+  
+    WindowPrt.document.close();
+    WindowPrt.focus();
+    // Make sure that the window is still valid before calling print and close
+    if (WindowPrt) {
+      WindowPrt.print();
+      WindowPrt.close();
+    }
+}
+}

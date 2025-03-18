@@ -172,18 +172,44 @@
             />
             {{"Report.SALES ITEM REPORT" |translate }}
           </label>
+
+          <label>
+            <input
+              type="radio"
+              formControlName="vazhipadOption"
+              value="devotee-creditcollection"
+            />
+            devotee-creditcollection
+          </label>
+          <label>
+            <input
+              type="radio"
+              formControlName="vazhipadOption"
+              value="donation"
+            />
+            donation
+          </label>
+          <label>
+            <input
+              type="radio"
+              formControlName="vazhipadOption"
+              value="non-members-pending-report"
+            />
+            non-members-pending-report
+          </label>
+          <label>
+            <input
+              type="radio"
+              formControlName="vazhipadOption"
+              value="members-pending-report"
+            />
+            members-pending-report
+          </label>
         </div>
       </form>
     </div>
 
-    <div
-      style="
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-      "
-    >
+    <div>
       <form [formGroup]="searchForm">
         <label for="prathishta" style="margin: 10px 0px">{{
           "PRATHISTA" | translate
@@ -229,37 +255,39 @@
           </ng-container>
         </select>
       </form>
+
+      <div class="date-section">
+        <div class="date-card">
+          <form [formGroup]="searchForm" class="date-form">
+            <div class="form-group">
+              <label for="from-date" style="margin-right: 10px">{{
+                "FROMDATE" | translate
+              }}</label>
+              <input type="date" id="from-date" formControlName="fromDate" />
+            </div>
+            <div class="form-group">
+              <label for="to-date" style="margin-right: 20px">{{
+                "TODATE" | translate
+              }}</label>
+              <input type="date" id="to-date" formControlName="toDate" />
+            </div>
+          </form>
+        </div>
+       
+      </div>
     </div>
-    <!-- Middle section for date inputs with enhanced design -->
-    <div class="date-section">
-      <div class="date-card">
-        <form [formGroup]="searchForm" class="date-form">
-          <div class="form-group">
-            <label for="from-date" style="margin-right: 10px">{{
-              "FROMDATE" | translate
-            }}</label>
-            <input type="date" id="from-date" formControlName="fromDate" />
-          </div>
-          <div class="form-group">
-            <label for="to-date" style="margin-right: 20px">{{
-              "TODATE" | translate
-            }}</label>
-            <input type="date" id="to-date" formControlName="toDate" />
-          </div>
-        </form>
-      </div>
-      <div class="right-buttons">
-        <button
-          class="action-button"
-          style="background-color: green"
-          (click)="onSearch()"
-        >
-          {{ "Search" | translate }}</button
-        ><br />
-        <button class="action-button" (click)="onBack()">
-          {{ "Back" | translate }}
-        </button>
-      </div>
+    <!-- buttons -->
+    <div>
+      <button
+        class="action-button"
+        style="background-color: green"
+        (click)="onSearch()"
+      >
+        {{ "Search" | translate }}</button
+      ><br />
+      <button class="action-button" (click)="onBack()">
+        {{ "Back" | translate }}
+      </button>
     </div>
   </div>
 </div>

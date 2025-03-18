@@ -15,4 +15,5 @@ export interface ReportDailyStmt {
     TrnsMode:string;
     CounterId:string;
     cuser:string;
+    Vazhipad?:string;
   }

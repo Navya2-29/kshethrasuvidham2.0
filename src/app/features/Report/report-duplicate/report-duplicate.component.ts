@@ -94,8 +94,6 @@ export class ReportDuplicateComponent {
     } else {
       window.close(); // Closes the tab if it's the only page open
     }
-
-
   }
 
   applyFilter(event: Event) {

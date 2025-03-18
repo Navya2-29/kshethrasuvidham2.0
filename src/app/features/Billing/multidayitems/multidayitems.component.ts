@@ -106,8 +106,11 @@ export class MultidayitemsComponent implements OnInit {
     private notification: NotificationService,
     public dialogRef: MatDialogRef<MultidayitemsComponent>,
     private datePipe: DatePipe,
-    private ts: TranslateService
+    private ts: TranslateService,
+    @Inject(MAT_DIALOG_DATA) public data: { Name: string,Star:string ,MID:string}[],
+
   ) {
+    console.log(data,"multiday devoteee master checking")
     this.lang = localStorage.getItem('Language');
     const userLang = navigator.language || 'en';
     const languageCode = userLang.split('-')[0];
@@ -276,7 +279,32 @@ export class MultidayitemsComponent implements OnInit {
     this.form.get('NoOfDays')?.valueChanges.subscribe((value) => {
       this.getmultidayfilterData();
     });
+
+    if (this.data) {
+      this.populateDevotees(this.data);
+    }
+
   }
+
+
+  populateDevotees(data: { Name: string; Star: string; MID: string }[]) {
+    this.devotees.clear(); // Clear previous entries if any
+  
+    data.forEach(devotee => {
+      this.devotees.push(this.fb.group({
+        Name: [devotee.Name || '', [Validators.required]],
+        Star: [devotee.Star || '', [Validators.required]],
+        Name2: [''], // Optional fields
+        Star2: [''],
+      }));
+    });
+  
+    // If MID needs to be stored separately, assuming all have same MID:
+    // if (data.length > 0) {
+    //   this.form.patchValue({ PMid: data[0].MID });
+    // }
+  }
+
 
   getThithiList() {
     const payLoad = { Type: 'Thithi', code: '' };

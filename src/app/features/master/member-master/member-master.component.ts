@@ -245,5 +245,8 @@ resetForm() {
     this.router.navigate(['/dashboard']);
   } 
 
+  printMemberslist(){
+    this.router.navigate(["members-list"])
+  }
 
 }

@@ -105,8 +105,12 @@ console.log(this.dataSource,"data mobile")
     this.dialogRef.close(null); // Close dialog without data
   }
 
-  onSubmit() {
-    console.log(Array.from(this.selectedRows))
-    this.dialogRef.close(Array.from(this.selectedRows)); // Pass selected rows to parent
+  onSubmit(SmFlag:boolean) {
+    const selectedData = Array.from(this.selectedRows); // Convert Set to an array
+
+  console.log({ selectedData, SmFlag }, "checking the data in billing via mobile number");
+
+  this.dialogRef.close({ selectedData, SmFlag });
   }
+  
 }

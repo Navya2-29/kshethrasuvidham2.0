@@ -112,6 +112,7 @@ export class AreareceiptComponent implements OnInit {
   CounterId: string | null;
   cancelFlag:boolean=false;
   nameStarArray:any[];
+  singleorMultiDay:boolean;
   input1 = '';
   input2 = '';
   input3 = '';
@@ -1694,16 +1695,29 @@ openBillingDialog(mobileNumber:any) {
   // Handle dialog result
   dialogRef.afterClosed().subscribe(result => {
     console.log('Selected Rows:', result);
-    this.nameStarArray=result
+    this.nameStarArray=result.selectedData;
+    this.singleorMultiDay=result.SmFlag
+console.log(this.singleorMultiDay)
     if (result) {
        let index=this.vazhipadinfo.length-1;
 console.log(index,"firsrt index check")
+
+if(this.singleorMultiDay){
+if(index==0){
+  this.openDevoteeMasterMultiDayDialog(index,this.nameStarArray)
+
+}else{
+  this.openDevoteeMasterMultiDayDialog(index+1,this.nameStarArray)
+
+}
+
+}else{
       // Add multiple rows based on the array of Name and Star pairs
-      result.forEach((item: { Name: string, Star: string }) => {
+      this.nameStarArray.forEach((item: { Name: string, Star: string }) => {
         this.addRowsFromNameStarArray(item.Name, item.Star,index);
         index++
       });
-      
+     }
     }
   });
 }
@@ -1791,6 +1805,30 @@ getStarbyIName(Name:string){
   // console.log(star,"sssssssssssssssss")
   
 }
+
+ // opne multiday open dialog box
+ openDevoteeMasterMultiDayDialog(rowIndex: number,data:any): void {
+  console.log(rowIndex,"multiday index check");
+  console.log(data,"multiday ")
+  const dialogRef = this.dialog.open(MultidayitemsComponent, {
+    height: '80vh', // Adjust height as needed
+    width: '85vw', // Fullscreen width
+    maxWidth: '100vw', // Prevent dialog from being constrained
+    panelClass: 'full-screen-dialog',
+    disableClose: true,
+    data:data
+  });
+
+  dialogRef.afterClosed().subscribe((result) => {
+    if (result) {
+      // this.handleDialogData(result);
+      const { finalArray, VM_MaxNo } = result;
+      this.handleMultiDayBookingResult(finalArray, rowIndex,VM_MaxNo);
+    }
+  });
+}
+
+
 
 
 }

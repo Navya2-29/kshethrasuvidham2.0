@@ -317,6 +317,10 @@ this.ts.use(this.lang || 'en');
         <title>Print</title>
         <style>
           /* Add custom styles for printing if needed */
+          h3,h4,h5{
+          line-height:1;
+          margin-top:0;
+          }
           table {
             width: 100%;
             border-collapse: collapse;

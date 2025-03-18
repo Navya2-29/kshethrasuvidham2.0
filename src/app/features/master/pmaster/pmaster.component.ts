@@ -65,6 +65,7 @@ export class PmasterComponent implements OnInit {
   errorMessage: string = '';
   Id: string = '';
   code: string;
+  checkVazhipadData:number=0;
   sortAscending: boolean = true;
   private masterService = inject(MasterService);
   private formBuilder = inject(FormBuilder);
@@ -400,6 +401,35 @@ export class PmasterComponent implements OnInit {
       }
       return null;
     }
+  }
+  onDeleteCheck(id: any){
+    this.checkVazhipadDelete(id);
+    
+    
+  }
+
+
+  checkVazhipadDelete(id:any){
+
+    const payLoad={
+      Type:"CheckPMID",
+      Code:id
+    }
+    this.masterService.getMaster(payLoad).subscribe({
+      next:(data)=>{
+        console.log(data,"check vazhipad")
+        this.checkVazhipadData=data.length;
+        if(this.checkVazhipadData!=0){
+          // this.checkBillingVazjipad=true;
+          this.notification.showError("You cant able to delete this Prathista. its aready billed ")
+        }else{
+          this.onDelete(id)
+        }
+      },error:(err)=>{
+        console.log(err,"check vazhipad") 
+      }
+    })
+
   }
 
 

@@ -844,8 +844,6 @@ getTransactionType(transmode: string): string {
     return `${year}-${month}-${day}`;
   }
 
-
-
   getTodayCollection() {
     const fromDate = this.formatDate(new Date());
     const payLoad={

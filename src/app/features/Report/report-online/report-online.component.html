@@ -84,7 +84,7 @@
    --> 
   
    
-   <div   class="a4-sheet" >
+   <div style="margin-left: 30px;margin-right: 30px;" >
     <hr style="padding-top: 0;"/>
      <table>
        <thead>
@@ -110,18 +110,14 @@
            <td>{{ item.Qty  }}</td>
            <td style="text-align: right;">{{ item.Rate | number: '1.2-2' }}</td>
            <td style="text-align: right;" >{{ item.Amount | number: '1.2-2'}}</td>
-           
       
-       
-          
-           
            <!-- <td>{{ item.Remarks }}</td> -->
          </tr>
          <tr *ngIf="data.length<=0">No data found</tr>
        </tbody>
        <tfoot>
          <tr>
-           <td colspan="6" style="text-align: right;"><strong>Grand Total:</strong></td>
+           <td colspan="7" style="text-align: right;"><strong>Grand Total:</strong></td>
            <td style="font-weight: bold;text-align: right;">{{ getTotalAmount() | number: '1.2-2' }}</td>
            <!-- <td colspan="2"></td> -->
          </tr>

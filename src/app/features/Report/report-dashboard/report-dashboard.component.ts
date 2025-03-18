@@ -208,6 +208,18 @@ if(prathista || vazhipad){
     else if (reportType === 'salesitem') {
       this.newTab = window.open(`#/report-salesitem${queryString}`, '_blank');
     }
+    else if (reportType === 'donation') {
+      this.newTab = window.open(`#/report-donation${queryString}`, '_blank');
+    }
+    else if (reportType === 'devotee-creditcollection') {
+      this.newTab = window.open(`#/report-devotee-creditcollection${queryString}`, '_blank');
+    }
+    else if (reportType === 'members-pending-report') {
+      this.newTab = window.open(`#/members-pending-report${queryString}`, '_blank');
+    }
+    else if (reportType === 'non-members-pending-report') {
+      this.newTab = window.open(`#/non-members-pending-report${queryString}`, '_blank');
+    }
   }
 
     if (this.newTab) {

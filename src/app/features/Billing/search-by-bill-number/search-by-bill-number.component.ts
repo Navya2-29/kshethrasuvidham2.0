@@ -136,6 +136,7 @@ export class SearchByBillNumberComponent {
   ) {
     this.lastBillNo = data[0].BillNo;
     this.billDate=this.convertDateFormat(data[0].BillDate);
+    console.log(this.billDate,"checking bill date")
     this.TrnStatus = data[0].TrnStatus;
     this.displayTrnsmode = data[0].TrnsMode;
     this.duplicatebilldata = data;
@@ -846,6 +847,7 @@ return formattedDate
     const day = String(date.getDate()).padStart(2, '0'); // Get the day and pad with 0
     const month = String(date.getMonth() + 1).padStart(2, '0'); // Get the month and pad with 0
     const year = date.getFullYear(); // Get the year
+    console.log()
     return `${day}-${month}-${year}`; // Format as dd-mm-yyyy
   }
 
@@ -1035,12 +1037,18 @@ if(this.displayTrnsmode!=editedTransmodeValue){
                 line-height: 1.5;
                 margin: 0;
                 padding: 0;
+                height:100px;
               }
   
               /* Hide Header on First Page */
               .header:first-of-type {
                 display: none;
               }
+                 img {
+              display: block !important;
+              max-width: 100% !important;
+              height: auto;
+            }
   
               /* Prathista & Vazhipad Title */
               .prathista-title {
@@ -1070,8 +1078,14 @@ if(this.displayTrnsmode!=editedTransmodeValue){
               tbody tr:nth-child(even) {
                 background-color: #f9f9f9;
               }
-  
-              /* Page Break for Each Prathista & Vazhipad */
+  table.table1 {
+              border: none !important;
+            }
+
+            table.table1 th, 
+            table.table1 td {
+              border: none !important;
+            }         /* Page Break for Each Prathista & Vazhipad */
               .group-container {
                 page-break-before: always; /* Ensures new page per section */
                 padding-left: 20mm;
