@@ -14,6 +14,7 @@ import { MatInputModule } from '@angular/material/input';
 import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MasterService } from '../../../services/master/master.service';
+import { forkJoin } from 'rxjs';
 @Component({
   selector: 'app-members-list',
   standalone: true,
@@ -39,7 +40,7 @@ export class MembersListComponent {
   lang:string|null;
   templeName:string|null;
   templeAddress:string|null;
-
+  nakshatham: any[];
   constructor(
     private route: ActivatedRoute,
     private service: ReportService,
@@ -60,6 +61,7 @@ this.ts.use(this.lang || 'en');
 
   ngOnInit(): void { 
       this.fetchReportData();
+     this. loadStarData()
   }
   
   // Call your API service to get the report data
@@ -72,7 +74,7 @@ this.ts.use(this.lang || 'en');
       next: (data) => {
         console.log('Fetched report data:', data);
         this.data = data;
-       
+        this.fetchAdditionalData();
        
       },
       error: (error) => {
@@ -80,6 +82,34 @@ this.ts.use(this.lang || 'en');
       },
     });
   }
+
+
+  fetchAdditionalData(): void {
+    if (!this.data || this.data.length === 0) return;
+  
+    // Create an array of API calls for each 'mid'
+    const apiCalls = this.data.map((item) =>
+      this.masterService.getMaster({ Type:"EditDevoteeMaster",Code: item.MID }) // Adjust payload as needed
+    );
+  
+    forkJoin(apiCalls).subscribe({
+      next: (responses) => {
+        // Merge additional data into the existing dataset
+        this.data = this.data.map((item, index) => ({
+          ...item,
+          additionalData: responses[index] || [], // Ensuring it's always an array
+        }));
+  
+        console.log('Merged Data:', this.data);
+      },
+      error: (error) => {
+        console.error('Error fetching additional data:', error);
+      },
+    });
+  }
+
+
+
 
   formatDateToDDMMYYYY(date: string): string {
     const [year, month, day] = date.split('-');
@@ -132,6 +162,30 @@ this.ts.use(this.lang || 'en');
     }
   }
 
+  
+  loadStarData(): void {
+    const payLoad = { Type: 'ListStar', Code: '' };
+    this.masterService.getStarData(payLoad).subscribe({
+      next: (data: any[]) => {
+        console.log(data);
+        this.nakshatham = data; 
+
+      },
+      error: (err) => {
+        console.error('Error loading star data:', err);
+      },
+    });
+  }
+  getStarbyId(id: string) {
+    console.log(id, 'star id');
+    if (this.lang == 'en') {
+      const star = this.nakshatham.find((item) => item.id == id);
+      return star ? star.SM_NameEng : '';
+    } else if (this.lang == 'ml') {
+      const star = this.nakshatham.find((item) => item.id == id);
+      return star ? star.SM_Name : '';
+    }
+  }
  
 
 

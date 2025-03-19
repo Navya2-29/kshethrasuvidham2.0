@@ -224,3 +224,32 @@
   .mat-column-Amount {
     text-align: right; /* Align text horizontally */
   }
+
+
+
+  .sub-member-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 5px 0;
+  }
+  
+  .sub-member-header {
+    display: flex;
+    font-weight: bold;
+    color: #333;
+    background-color: #f4f4f4;
+    padding: 5px;
+  }
+  
+  .sub-member-row {
+    display: flex;
+    /* border-bottom: 1px solid #ccc; */
+    padding: 5px;
+  }
+  
+  .sub-header, .sub-value {
+    flex: 1;
+    text-align: center;
+    padding: 3px;
+  }

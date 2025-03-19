@@ -36,6 +36,7 @@
                 <th>{{"Address" | translate }}</th>
                 <th>Mobile</th>
                 <th>Email</th>
+                <th>Relative Details</th>
               </tr>
             </thead>
             <tbody>
@@ -46,8 +47,22 @@
                 <td >{{memeber.Address}}</td>
                 <td >{{memeber.mobile}}</td>
                 <td>{{memeber.email}}</td>
+                <td>
+                  <div class="sub-member-container">
+                    <div class="sub-member-header">
+                      <span class="sub-header">ID</span>
+                      <span class="sub-header">Name</span>
+                      <span class="sub-header">Star</span>
+                    </div>
+                    <div *ngFor="let subMember of memeber.additionalData" class="sub-member-row">
+                      <span class="sub-value">{{ subMember.Id }}</span>
+                      <span class="sub-value">{{ subMember.Name }}</span>
+                      <span class="sub-value">{{ getStarbyId(subMember.Star) }}</span>
+                    </div>
+                  </div>
+                </td>
               </tr>
-            
+              
             
             </tbody>
           </table>

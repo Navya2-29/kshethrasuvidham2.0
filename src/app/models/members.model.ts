@@ -1,3 +1,11 @@
+export interface AdditionalDetails {
+  Name: string;
+  Star:string;
+  Id:number;
+  MID:number;
+}
+
+
 export interface MembersReport {
     MID:number;
     Name: string;
@@ -6,15 +14,14 @@ export interface MembersReport {
     email:string;
     mobile:string;
     Vazhipad?:String;
-    Star?:string;
-    
+    Star?:string; 
     BillDate?:string;
     BillNo?:string;
     VazhiDate?:string;
-   
     Amount?:number;
     CounterId?:number;
     MobileNo?:string;
     Rate?:number;
     TrnMode?:string;
+    additionalData?: AdditionalDetails[];
   }
