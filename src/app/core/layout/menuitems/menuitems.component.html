@@ -47,7 +47,7 @@
                       <ul class="list-group list-group-flush">  
                         <a routerLink="/dashboard" [mat-dialog-close]="true"><li class="list-group-item">Billing </li></a>
 
-                        <a routerLink="/mattinagal" [mat-dialog-close]="true"><li class="list-group-item">Nadavaravu/Credit</li></a>
+                        <a routerLink="/mattinagal" [mat-dialog-close]="true"><li class="list-group-item">Miscellaneous Billing</li></a>
                        
                         <a  *ngIf="role === 'admin' || role === 'super' " routerLink="/userSignup" [mat-dialog-close]="true"><li class="list-group-item">Signup</li></a>
                         <a  *ngIf="role === 'super' "  routerLink="/settings" [mat-dialog-close]="true"><li class="list-group-item">Settings</li></a>

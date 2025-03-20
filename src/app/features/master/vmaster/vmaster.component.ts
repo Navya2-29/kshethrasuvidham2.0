@@ -693,7 +693,7 @@ export class VmasterComponent implements OnInit {
         this.checkVazhipadData=data.length;
         if(this.checkVazhipadData!=0){
           this.checkBillingVazjipad=true;
-          this.notification.showError("You cant able to delete this vazhipad.its aready billed ")
+          this.notification.showError("This item has already been billed.","Deletion not allowed")
         }else{
           this.onDelete(id)
         }

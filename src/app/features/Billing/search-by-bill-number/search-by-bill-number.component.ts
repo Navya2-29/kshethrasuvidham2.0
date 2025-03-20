@@ -1029,7 +1029,11 @@ if(this.displayTrnsmode!=editedTransmodeValue){
             <style>
               @page { 
                 size: A4 portrait; 
-                margin: 20mm; /* Ensures left & right margins on all pages */
+                margin-bottom: 20mm; /* Ensures left & right margins on all pages */
+                margin-top: 15mm;
+                margin-left: 0mm;
+                margin-right: 0mm;
+                
               }
               body { 
                 font-family: 'Arial', sans-serif; 
@@ -1037,7 +1041,6 @@ if(this.displayTrnsmode!=editedTransmodeValue){
                 line-height: 1.5;
                 margin: 0;
                 padding: 0;
-                height:100px;
               }
   
               /* Hide Header on First Page */
@@ -1088,8 +1091,12 @@ if(this.displayTrnsmode!=editedTransmodeValue){
             }         /* Page Break for Each Prathista & Vazhipad */
               .group-container {
                 page-break-before: always; /* Ensures new page per section */
-                padding-left: 20mm;
-                padding-right: 20mm;
+                padding-left: 15mm;
+                padding-right: 15mm;
+                padding-top:0mm;
+                padding-bottom:100mm;
+               
+               
               }
             </style>
           </head>

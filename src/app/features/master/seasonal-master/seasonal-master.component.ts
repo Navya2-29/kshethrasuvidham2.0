@@ -27,7 +27,7 @@ import { Router } from '@angular/router';
     SpinnerComponent,
     MatInputModule,
     CommonModule,
-    AsyncPipe,
+   
     MatIconModule,
     MatButtonModule,
     FormsModule,

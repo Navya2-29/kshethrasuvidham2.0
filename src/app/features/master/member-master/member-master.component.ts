@@ -1,3 +1,4 @@
+import { vazhipad } from './../../../othervazhipad/othervazhipad.component';
 import { Component, OnInit, inject } from '@angular/core';
 import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
@@ -27,6 +28,7 @@ export class MemberMasterComponent implements OnInit {
   memberId:string;
   memberDetails:any[];
   templeName:string | null;
+  vmActivelist: any[] = [];
   private formBuilder = inject(FormBuilder);
   private masterservice = inject(MasterService);
   // constructor
@@ -41,6 +43,7 @@ export class MemberMasterComponent implements OnInit {
   ngOnInit(): void {
     this.getNakshthram();
     this.getDevoteeMaster()
+    this.getAllActivevazhipad()
     this.memeberForm = this.formBuilder.group({
       name: ['',Validators.required],
       address1: ['',Validators.required],
@@ -173,7 +176,7 @@ this.masterservice.getMaster(payLoad).subscribe({
       this.memberDetails = data;
       this.relativesDetails.clear(); // Clear previous relatives before adding new ones
 
-      // Debugging Log
+     
       console.log("Loaded member details:", this.memberDetails);
 
       // Add relatives dynamically
@@ -247,6 +250,21 @@ resetForm() {
 
   printMemberslist(){
     this.router.navigate(["members-list"])
+  }
+
+
+  getAllActivevazhipad(){
+
+   
+      this.masterservice.getAllActiveVazhipad().subscribe((data) => {
+        this.vmActivelist = data.map((item) => ({
+          VM_Id: item.VM_Id,
+          VM_Name: item.VM_Name,
+          VM_Code: item.VM_Code,
+          VM_RName: item.VM_RName,
+        }));
+        console.log(this.vmActivelist);
+      });
   }
 
 }

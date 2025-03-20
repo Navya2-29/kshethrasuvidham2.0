@@ -29,29 +29,29 @@
               <tr>
                 <th>BillDate</th>
                 <th>BillNo</th>
-                <th>VazhiDate</th>
-                <th>{{ "VAZHIPAD" | translate }}</th>
+                <!-- <th>VazhiDate</th> -->
+                <!-- <th>{{ "VAZHIPAD" | translate }}</th> -->
                 <th>Name</th>
-                <th>Star</th>
+                <th>MobileNo</th>
                 
-                <th>{{ "QUANTITY" | translate }}</th>
-                <th>{{ "RATE" | translate }}</th>
+                <!-- <th>{{ "QUANTITY" | translate }}</th>
+                <th>{{ "RATE" | translate }}</th> -->
                 <th>{{ "AMOUNT" | translate }}</th>
-                <th>TrnMode</th>
+                <!-- <th>TrnMode</th> -->
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let member of data">
-                <td>{{member.BillDate}}</td>
+                <td>{{member.BillDate | date:"dd-MM-yyyy"}}</td>
                 <td>{{member.BillNo}}</td>
-                <td>{{member.VazhiDate}}</td>
-                <td>{{member.Vazhipad}}</td>
+                <!-- <td>{{member.VazhiDate}}</td>
+                <td>{{member.Vazhipad}}</td> -->
                 <td>{{member.Name}}</td>
-                <td>{{member.Star}}</td>
-                <td>{{member.Qty}}</td>
-                <td style="text-align: right;">{{member.Rate}}</td>
+                <td>{{member.MobileNo}}</td>
+                <!-- <td>{{member.Qty}}</td>
+                <td style="text-align: right;">{{member.Rate}}</td> -->
                 <td style="text-align: right;">{{member.Amount}}</td>
-                <td>{{member.TrnMode}}</td>
+                <!-- <td>{{member.TrnMode}}</td> -->
               </tr>
             </tbody>
           </table>

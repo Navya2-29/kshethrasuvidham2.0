@@ -190,72 +190,7 @@
 </form>
 
 
-<div id="print-section" style="display:none">
-  <div *ngFor="let prathista of getKeys(gropedData)">
-    <div *ngFor="let vazhipad of getKeys(gropedData[prathista])" class="group-container">
-      <img src="/assets/images/panchiyamma_header_banner.png" width="800px" height="200px" alt="Panchiyamma Header Banner">
 
-      <!-- <div><div>Bill No:{{lastBillNo}}</div><div>BillDate:{{billDate | date:'dd-MM-yyyy' }}</div></div> -->
-<div><table style="border: none;" width="50%" class="table1">
-  <tr>
-    <td>
-Prathista:<span style="font-weight: bold;">{{ prathista }}</span>
-  </td>
-  <td style="text-align: right;">
-    Bill No:{{lastBillNo}}
-  </td>
-</tr>
-<tr>
-  <td >
-    Vazhipad:<span style="font-weight: bold;">{{ vazhipad }}</span>
-  </td>
-  <td style="text-align: right;">
-    BillDate:<span >{{billDate  }}</span>
-  </td>
-</tr>
-</table></div>
-      <!-- <h2>{{ prathista }} - {{ vazhipad }}</h2> -->
-      <table border="1" width="50%">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Star</th>
-            <th>Rate</th>
-            <th>Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let entry of gropedData[prathista][vazhipad]">
-            <td>{{ entry.Name }}</td>
-            <td>{{this.getStarbyId( entry.Star) }}</td>
-            <!-- <td>{{entry.fromDate }}</td> -->
-            <td>{{ entry.Rate }}</td>
-            <td>{{ entry.Amount }}</td>
-          </tr>
-          <!-- Total Row -->
-          <tr>
-            <td colspan="3" style="text-align: right;"><b>Total:</b></td>
-            <td><b>{{ calculateTotalAmount(gropedData[prathista][vazhipad]) }}</b></td>
-          </tr>
-        </tbody>
-      </table>
-      <table class="table1">
-        <tr>
-          <td>
-            User id:{{this.name}}
-          </td>
-          <td>
-Counter:{{counterId}}
-          </td>
-          <td>
-Payment:{{displayTrnsmode=='CR'?"Not Paid":displayTrnsmode}}
-          </td>
-        </tr>
-      </table>
-      <br />
-    </div>
-  </div>
-</div>
 
 
 
@@ -286,3 +221,119 @@ class="proceed"
     Duplicate Bill
   </button>
 </mat-dialog-actions>
+
+
+<div id="print-section" style="display:none">
+  <div *ngFor="let prathista of getKeys(gropedData)">
+    <div *ngFor="let vazhipad of getKeys(gropedData[prathista])" class="group-container">
+      <img src="/assets/images/panchiyamma_header_banner.png" alt="Panchiyamma Header Banner" style="width:100%;height:100px;">
+      
+
+      <!-- <div><div>Bill No:{{lastBillNo}}</div><div>BillDate:{{billDate | date:'dd-MM-yyyy' }}</div></div> -->
+<div style="margin-bottom:25px;">
+    <table style="width:100%;padding:0px;" class="table1">
+    <tr>
+      <td style="padding:0px;width:80px;font-size:10pt;">
+  Prathista
+    </td>
+    <td style="padding:0px;width:750px;">
+      <span style="font-weight: bold;padding:0px;font-size:10pt;">{{ prathista }}</span>
+    </td>
+    
+    <td style="text-align:right;padding:0px;width:200px;font-size:10pt;">
+      Bill No
+    </td>
+    <td style="padding:0px;width:110px;text-align:right;">
+      <span style="font-weight:bold;font-size:10pt;font-size:10pt;">{{lastBillNo}}</span>
+    </td>
+  </tr>
+  <tr>
+    <td style="padding:0px;font-size:10pt;">
+      Vazhipad
+    </td>
+    <td style="padding:0px;">
+      <span style="font-weight: bold;padding:0px;font-size:10pt;font-size:10pt;">{{ vazhipad }}</span>
+    </td>
+    <td style="text-align: right;padding:0px;font-size:10pt;">
+      BillDate
+    </td>
+    <td style="padding:0px;text-align:right;">
+      <span style="font-weight:bold;padding:0px;font-size:10pt;">{{billDate  }}</span>
+    </td>
+  </tr>
+  </table>
+</div>
+<div class="filter" style="margin-top:9px;display:flex;justify-content: space-between;border:1px solid silver;padding:9px;">
+  <div style="text-align:center;">
+    <span style="font-size:8pt;">Starwise: </span> <br><span style="font-size:11;text-transform: capitalize;font-weight:bold">Rohini</span>
+  </div>
+  <div style="text-align:center;">
+    <span style="font-size:8pt;">Malayalam Monthwise: </span> <br><span style="font-size:11;text-transform: capitalize;font-weight:bold">Chingam</span>
+  </div>
+  <div style="text-align:center;">
+    <span style="font-size:8pt;">Daywise: </span><br><span style="font-size:11;text-transform: capitalize;font-weight:bold">Sunday</span>
+  </div>
+  <div style="text-align:center;">
+    <span style="font-size:8pt;">Malayalam Datewise: </span><br><span style="font-size:11;text-transform: capitalize;font-weight:bold">15</span>
+  </div>
+  <div style="text-align:center;">
+    <span style="font-size:8pt;">English Datewise: </span><br><span style="font-size:11;text-transform: capitalize;font-weight:bold">27</span>
+  </div>
+  <div style="text-align:center;">
+    <span style="font-size:8pt;">Thithi: </span><br><span style="font-size:11;text-transform: capitalize;font-weight:bold">Panchami</span>
+  </div>
+</div>
+  
+      <!-- <h2>{{ prathista }} - {{ vazhipad }}</h2> -->
+      <table style="width:100%;" class="table1">
+       
+          <tr style="border-bottom:1px solid brown;">
+            <th style="font-size:10pt;width:100px;">Date</th>
+            <th style="font-size:10pt;width:300px;">Name</th>
+            <th style="font-size:10pt;">Star</th>
+            <th style="font-size:10pt;">Qty</th>
+            <th style="font-size:10pt;">Rate</th>
+            <th style="font-size:10pt;">Amount</th>
+          </tr>
+        
+        <tbody>
+          <tr *ngFor="let entry of gropedData[prathista][vazhipad]" style="border-bottom:.25px solid silver;">
+            <td style="font-size:10pt;vertical-align:middle;">15-02-2025</td>
+            <td style="font-size:10pt;vertical-align:middle;">{{ entry.Name }}</td>
+            <td style="font-size:10pt;vertical-align:middle;">{{this.getStarbyId( entry.Star) }}</td>
+            <td style="font-size:10pt;text-align:center;vertical-align:middle;">15</td>
+            <td style="font-size:10pt;text-align:right;vertical-align:middle;">{{ entry.Rate }}</td>
+            <td style="font-size:10pt;text-align:right;vertical-align:middle;">{{ entry.Amount }}</td>
+          </tr>
+          <!-- Total Row -->
+          <tr style="border-top:1px solid gray;border-bottom:1px solid gray">
+            <td colspan="5" style="text-align: left;font-size:10pt;color:maroon;"><b>Total</b></td>
+            <td style="font-size:11pt;text-align:right;color:maroon"><b>{{ calculateTotalAmount(gropedData[prathista][vazhipad]) }}</b></td>
+          </tr>
+        </tbody>
+      </table>
+      
+        <div class="billbottom" style="margin-top:9px;display:flex;justify-content: space-between;">
+          <div>
+            <span style="font-size:9pt;">User Name: </span><span style="font-size:9pt;text-transform: capitalize;">{{this.name}}</span>
+          </div>
+          <div>
+            <span style="font-size:9pt;">Counter ID: </span> <span style="font-size:9pt;text-transform: capitalize;">{{counterId}}</span>
+          </div>
+          <div>
+            <span style="font-size:9pt;">Payment: </span><span style="font-size:9pt;text-transform: capitalize;">{{displayTrnsmode=='CR'?"Not Paid":displayTrnsmode}}</span>
+          </div>
+        </div>
+      
+      
+      <br />
+        <div style="display:flex;justify-content: space-between;border-top:1px dotted silver;padding-top:15px;">
+          <img src="/assets/images/logo.jpg" style="width:150px;height:50px;">
+          <p>www.kshethrasuvidham.com</p>
+        </div>
+        
+      
+      
+    </div>
+  </div>
+</div>

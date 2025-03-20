@@ -1,98 +1,102 @@
 table {
-    width: 100%;
-  }
+  width: 100%;
+}
 
-  .menuend {
-    background: #223d61;
-    display:flex;
-    align-content:center;
-    justify-content: center;
-    justify-content: space-between;
-    
-  }
-
-  .close {
-    background:white;
-    color:#6206ca;
-  }
-
-  .proceed {
-    background: #046ef8;;
-    color:white;
-    letter-spacing:0pt;
-    border: none;
-    box-shadow: none; 
-    letter-spacing:0pt;
-  }
-  .cancel{
-    width: 100px;
-    margin-right: 10px;
-    /* margin-right: 3%; */
-    border: none;
-    background: #046ef8;;
-    color:white;
-    letter-spacing:0pt;
-    box-shadow: none;
-  }
-  .status{
-    margin-left: 3%; 
-  }
-  .cancel-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center; /* Optional: vertically centers the buttons */
-    width: 100%;  
-  }
-
-  .status.success {
-    color: green;
-  }
+.menuend {
+  background: #223d61;
+  display:flex;
+  align-content:center;
+  justify-content: center;
+  justify-content: space-between;
   
-  .status.cancelled {
-    color: red;
-  }
+}
+
+.close {
+  background:white;
+  color:#6206ca;
+}
+
+.proceed {
+  background: #046ef8;;
+  color:white;
+  letter-spacing:0pt;
+  border: none;
+  box-shadow: none; 
+  letter-spacing:0pt;
+}
+.cancel{
+  width: 100px;
+  margin-right: 10px;
+  /* margin-right: 3%; */
+  border: none;
+  background: #046ef8;;
+  color:white;
+  letter-spacing:0pt;
+  box-shadow: none;
+}
+.status{
+  margin-left: 3%; 
+}
+.cancel-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; 
+  width: 100%;  
+}
+
+.status.success {
+  color: green;
+}
+
+.status.cancelled {
+  color: red;
+}
+.input-section {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: row; 
+  align-items: center; 
+  gap: 10px; 
+  flex-wrap: nowrap; 
+}
+
+.input-section .form-control {
+  flex: 1 1 auto; 
+  min-width: 120px; 
+}
+
+.input-section select {
+  flex: 1 1 auto; 
+  min-width: 120px; 
+}
+
+.input-section button {
+  margin-left: 10px; 
+  white-space: nowrap; 
+}
+
+
+@media (max-width: 768px) {
   .input-section {
-    margin-top: 20px;
-    display: flex; /* Flexbox for horizontal alignment */
-    flex-direction: row; /* Ensure items are in one row */
-    align-items: center; /* Vertically center the items */
-    gap: 10px; /* Space between the items */
-    flex-wrap: nowrap; /* Prevent wrapping to the next line */
+    flex-direction: row; 
+    align-items: center; 
   }
-  
-  .input-section .form-control {
-    flex: 1 1 auto; /* Let inputs take available space but don't stretch them too much */
-    min-width: 120px; /* Set a minimum width to prevent inputs from becoming too small */
-  }
-  
+
+  .input-section .form-control,
   .input-section select {
-    flex: 1 1 auto; /* Let the select dropdown take available space */
-    min-width: 120px; /* Set a minimum width to prevent the dropdown from becoming too small */
+    width: 150px; 
   }
-  
+
   .input-section button {
-    margin-left: 10px; /* Adds space between the last input and the button */
-    white-space: nowrap; /* Prevent text from wrapping in the button */
+    margin-left: 10px; 
   }
-  
-  
-  @media (max-width: 768px) {
-    .input-section {
-      flex-direction: row; /* Keep items in a row even on small screens */
-      align-items: center; /* Vertically center the items */
-    }
-  
-    .input-section .form-control,
-    .input-section select {
-      width: 150px; /* Optional: Set a fixed width for inputs/select for better layout */
-    }
-  
-    .input-section button {
-      margin-left: 10px; /* Space between the button and other form elements */
-    }
-  }
-  
-  .is-invalid {
-    border: 2px solid red !important; /* !important ensures it overrides other styles */
-    border-radius: 4px;
-  }
+}
+
+.is-invalid {
+  border: 2px solid red !important;
+  border-radius: 4px;
+}
+
+.billbottom{
+  display:flex;
+}

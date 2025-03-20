@@ -42,7 +42,7 @@
             </thead>
             <tbody>
               <tr *ngFor="let member of data">
-                <td>{{member.BillDate}}</td>
+                <td>{{member.BillDate | date:"dd-MM-yyyy"}}</td>
                 <td>{{member.BillNo}}</td>
                 <td>{{member.VazhiDate}}</td>
                 <td>{{member.Vazhipad}}</td>

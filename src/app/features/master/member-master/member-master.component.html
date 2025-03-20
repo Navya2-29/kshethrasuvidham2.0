@@ -9,7 +9,7 @@
         <h1 class="tname">{{templeName}}</h1>
       </div>
       <div class="master">
-        <div class="col-md-9" style="background:rgba(98, 6, 202, .1); border-radius: 15px; height: 70vh;" >
+        <div class="col-md-7" style="background:rgba(98, 6, 202, .1); border-radius: 15px; height: 70vh;" >
           <!-- [ngStyle]="{'overflow-y': dynamicRows.length > 5 ? 'scroll' : 'hidden'}" -->
           <h1 style="font-weight:500;">Devotee Master</h1>
           <form [formGroup]="memeberForm">
@@ -17,11 +17,9 @@
             <div class="col-md-4">
               <table class="table">
                 <tr>
-                  <td> Name<input formControlName="name" type="text" class="form-control sps" placeholder="Enter Code"> </td>
-
+                  <td>Name<input formControlName="name" type="text" class="form-control sps" placeholder="Enter Code"> </td>
                   <td></td>
                 </tr>
-
                 <tr>
                   <td colspan="3"> Address <input formControlName="address1" type="text" class="form-control" placeholder="Enter Name"> </td>
                 </tr>
@@ -33,6 +31,24 @@
                 </tr>
                 <tr>
                   <td colspan="3"> Email<input type="email" formControlName="email" class="form-control" placeholder="Enter Name"> </td>
+                </tr>
+              </table>
+              <table>
+                <tr>
+                  <td>
+                    <input type="checkbox" class=""/>&nbsp;Endowment
+                  </td>
+                </tr>
+                <tr>
+                  <td><input type="text" name="" id="" placeholder="Enter Amount" class="form-control sps" width="100%"></td>
+                </tr>
+                <tr>
+                  <td>
+                    <select name="" id="" class="form-control sps" style="width: 100%;">
+                      <option value="">Select Vazhipad</option>
+                      <option *ngFor="let vazhipad of vmActivelist">{{vazhipad.VM_Name}}</option>
+                    </select>
+                  </td>
                 </tr>
               </table>
             </div>
@@ -47,13 +63,12 @@
                             <option>Select Star</option>
                             <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_NameEng}}</option>
                           </select>
-                        </td>
-                      
+                        </td>  
                         <td style="vertical-align:center;" >
                           <mat-icon class="icons" (click)="addRelativeDetails()" style="color: blue;">add_comment</mat-icon>
                         </td>
-                      </tr>
-                    </div>
+                      </tr> 
+                    </div>        
               </table>
               <table style="border: none;">
                 <tr>
@@ -70,10 +85,8 @@
             </div>
           </div>
         </form>
-          
         </div>
-        <div class="col-md-3 search">
-
+        <div class="col-md-5 search">
           <div class="fixitems prathishta">
             <div>
               <div>
