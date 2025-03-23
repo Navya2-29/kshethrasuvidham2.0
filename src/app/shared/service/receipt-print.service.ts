@@ -41,6 +41,12 @@ export class ReceiptPrintService {
     this.memberIdSource.next(id);
   }
 
+  private refreshDataSubject = new Subject<void>(); // Emits an event when refresh is needed
 
+  refreshData$ = this.refreshDataSubject.asObservable(); // Observable to listen for refresh events
+
+  triggerRefresh() {
+    this.refreshDataSubject.next(); // Trigger refresh event
+  }
   
  }

@@ -25,7 +25,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
       HeaderComponent,
       MatTooltipModule,MatFormFieldModule, MatInputModule,TranslateModule],
   templateUrl: './report-counter-self.component.html',
-  styleUrl: './report-counter-self.component.css'
+  styleUrls: ['./report-counter-self.component.css','/src/assets/styles/report.style.css']
 })
 export class ReportCounterSelfComponent {
   displayedColumns: string[] = [
@@ -187,7 +187,10 @@ export class ReportCounterSelfComponent {
     this.pageSize = event.pageSize;
   }
 
+  getGrandTotal(){
+    return this.filteredData.reduce((sum, item) => sum + item.Amount, 0);
 
+  }
   goBack(): void {
     console.log('Going back...'); // Log to verify method execution
     this.router.navigate(['/getReport']);
@@ -279,19 +282,99 @@ export class ReportCounterSelfComponent {
         <head>
           <title>Print</title>
           <style>
-            /* Add custom styles for printing if needed */
-            table {
-              width: 100%;
-              border-collapse: collapse;
+         
+          body {
+    font-size: 16px;
+    font-family: "Times New Roman", serif;
+  }
+    
+          p,h4,h2{
+          line-height:1;
+          margin-top:0;
+          text-align:center;
+          }
+          .templename{
+           line-height:1;
+          margin-top:0;
+          text-align:center;
+          }
+          hr{
+          height:2px;
+          background-color:gray;
+          }
+          .tabble-heading h3{
+  font-family: 'Times New Roman', Times, serif;
+  font-weight: bold;
+  font-size: 16px;
+  margin: 8px 0 0 0;
+}
+          table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+          table, th, td {
+            border: 1px solid black;
+            text-transform: uppercase;
+
+          }
+            p.counter{
+text-align: left !important;
+font-family: 'Times New Roman', Times, serif;
+margin-top: 10px;
+font-size: large;
+text-transform: uppercase;
+margin:0;
+}
+p.user{
+  text-align: left !important;
+  font-family: 'Times New Roman', Times, serif; 
+  font-size: larger;
+  color: maroon;
+  text-transform: uppercase;
+  margin:0;
+}
+p.transaction{
+  text-align: left !important;
+  font-family: 'Times New Roman', Times, serif; 
+  font-size: medium;
+  text-transform: uppercase;
+  margin:0;
+
+}
+.counterTable{
+  margin: 5px 0;
+
+}
+h5#totalamount{
+font-family: 'Times New Roman', Times, serif;
+font-weight: bolder;
+font-size: 20px;
+margin: 0px;
+
+}
+h5.totalcounter{
+  font-family: 'Times New Roman', Times, serif;
+font-weight: bolder;
+font-size: 20px;
+margin: 0px;
+}
+.templename{
+text-align:center;
+}
+.grandtotal{
+text-align:right;
+}
+            .number,.total{
+            text-align:right;
             }
-            table, th, td {
-              border: 1px solid black;
-            }
-            th, td {
-              padding: 5px;
-              text-align: left;
-            }
-          </style>
+          th, td {
+           padding-left:5px;
+            text-align: left;
+          }
+            #print-section{
+padding-bottom: 100px;
+  }
+        </style>
         </head>
         <body>${printContent.innerHTML}</body>
       </html>

@@ -8,7 +8,7 @@ import {
   MatPaginatorModule,
   PageEvent,
 } from '@angular/material/paginator';
-import { jsPDF } from 'jspdf';
+// import { jsPDF } from 'jspdf';
 import { ReportData } from '../../../models/poornam-report';
 import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -19,7 +19,8 @@ import { MatInputModule } from '@angular/material/input';
 import { HttpClient } from '@angular/common/http';
 import { MasterService } from '../../../services/master/master.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 @Component({
   selector: 'app-report-dailystmt',
   standalone: true,
@@ -34,7 +35,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     MatInputModule,
   ],
   templateUrl: './report-dailystmt.component.html',
-  styleUrl: './report-dailystmt.component.css',
+  styleUrls: ['./report-dailystmt.component.css','/src/assets/styles/report.style.css'],
 })
 export class ReportDailystmtComponent {
   displayedColumns: string[] = [
@@ -196,6 +197,28 @@ export class ReportDailystmtComponent {
     }
   }
 
+
+  generatePDFs() {
+    const element = document.getElementById('print-section'); 
+  
+    if (!element) {
+      console.error("Element not found");
+      return;
+    }
+  
+    html2canvas(element, { scale: 2 }).then(canvas => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+  
+      const imgWidth = 210; 
+      const imgHeight = (canvas.height * imgWidth) / canvas.width; 
+  
+      pdf.addImage(imgData, 'PNG', 0, 10, imgWidth, imgHeight);
+      pdf.save('Poornam_Report.pdf'); 
+    }).catch(error => {
+      console.error("Error generating PDF:", error);
+    });
+  }
   getStarbyId(id: string) {
     console.log(id, 'star id');
     if (this.lang == 'en') {

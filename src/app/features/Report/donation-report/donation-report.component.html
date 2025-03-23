@@ -1,58 +1,87 @@
-
 <app-header></app-header>
-
-<div class="icon-container">
-  <button mat-icon-button matTooltip="Back to previous page" (click)="goBack()">
-    <span class="material-icons">arrow_back</span>
-</button>
-    <button mat-icon-button matTooltip="Make PDF" (click)="generatePDF()" >
-        <span class="material-icons" >print</span>
-    </button> 
-    <!-- <button mat-icon-button matTooltip="Export to Spreadsheet" >
-        <span class="material-icons">grid_view</span>
-    </button> -->
- </div>
- <div id="">
+<div class="report-container">
+  <div class="icon-container">
+    <button
+      mat-icon-button
+      matTooltip="Back to previous page"
+      (click)="goBack()"
+    >
+      <span class="material-icons">arrow_back</span>
+    </button>
+    <button mat-icon-button matTooltip="Make PDF" (click)="generatePDF()">
+      <span class="material-icons">print</span>
+    </button>
+  </div>
   <div id="print-section">
-
-<div>
-  <h3 style="align-items: center;text-align:center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;" >{{templeName}}</h3>
-  <h4 style="align-items: center;text-align:center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;" >{{templeAddress}}</h4>
-  <h5 style="align-items: center;text-align: center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;">{{"Report Name.DAILY TEMPLE COLLECTION (COUNTER)" |translate}}
-</h5>
-<p style="align-items: center;text-align: center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;">{{formatDateToDDMMYYYY(fromDate)}} to {{formatDateToDDMMYYYY(toDate)}}</p></div>
-<div style="margin-left: 30px;margin-right: 30px;">
-          <table border="1">
-            <thead>
-              <tr>
-                <th>BillDate</th>
-                <th>BillNo</th>
-                <th>{{ "VAZHIPAD" | translate }}</th>
-                <th>Prathista</th>
-                <th>VazhiDate</th>
-                <th>Name</th>
-                <th>Star</th>
-                <th>{{ "QUANTITY" | translate }}</th>
-                <th>{{ "RATE" | translate }}</th>
-                <th>{{ "AMOUNT" | translate }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let data of data">
-                <td>{{data.BillDate}}</td>
-                <td>{{data.BillNo}}</td>
-                <td>{{data.Vazhipad}}</td>
-                <td>{{data.Prathista}}</td>
-                <td>{{data.VazhiDate}}</td>
-                <td>{{data.Name}}</td>
-                <td>{{data.Star}}</td>
-                <td>{{data.Rate}}</td>
-                <td>{{data.Qty}}</td>
-                <td style="text-align: right;">{{data.Amount}}</td>
-              </tr>
-            </tbody>
-          </table>
-    </div> 
-  
+    <div class="header-print">
+      <div>
+        <h3
+          
+        >
+          {{ templeName }}
+        </h3>
+        <h4
+         
+        >
+          {{ templeAddress }}
+        </h4>
+        <h2>
+          {{ "Report Name.DONATION REPORT" | translate }}
+        </h2>
+        <p
+         class="date"
+        >
+          {{ formatDateToDDMMYYYY(fromDate) }} to
+          {{ formatDateToDDMMYYYY(toDate) }}
+        </p>
+        <hr/>
+      </div>
+      <div class="body-print" >
+        <div id="pdf-content" *ngIf="data.length > 0">
+        <table >
+          <thead>
+            <tr>
+              <th>BillDate</th>
+              <th>BillNo</th>
+              <th>VazhiDate</th>
+              <th>{{ "VAZHIPAD" | translate }}</th>
+              <th>Prathista</th>
+             
+              <th>Name</th>
+              <th>Star</th>
+              <th>{{ "QUANTITY" | translate }}</th>
+              <th>{{ "RATE" | translate }}</th>
+              <th>{{ "AMOUNT" | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let data of data">
+              <td>{{ data.BillDate }}</td>
+              <td>{{ data.BillNo }}</td>
+              <td>{{ data.VazhiDate }}</td>
+              <td>{{ data.Vazhipad }}</td>
+              <td>{{ data.Prathista }}</td>
+             
+              <td>{{ data.Name }}</td>
+              <td>{{ data.Star }}</td>
+              <td>{{ data.Rate }}</td>
+              <td class="qty">{{ data.Qty }}</td>
+              <td class="number">{{ data.Amount | number : "1.2-2" }}</td>
+            </tr>
+            <tr>
+              <td class="total">Total</td>
+              <td class="total">{{getTotalAmount() | number : "1.2-2" }}</td>
+            </tr>
+          </tbody>
+        </table>
+       
+      </div>
+      
+      </div>
+      <div *ngIf="data.length===0 " class="nodataFound">
+        <h2> </h2>
+        </div>
+        <hr/>
     </div>
-    </div>
+  </div>
+</div>

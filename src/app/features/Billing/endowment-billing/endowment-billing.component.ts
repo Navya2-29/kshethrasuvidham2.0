@@ -107,10 +107,10 @@ form: FormGroup;
     public dialogRef: MatDialogRef<EndowmentBillingComponent>,
     private datePipe: DatePipe,
     private ts: TranslateService,
-    @Inject(MAT_DIALOG_DATA) public data: { Name: string,Star:string ,MID:string}[],
+  //  / @Inject(MAT_DIALOG_DATA) public data: { Name: string,Star:string ,MID:string}[],
 
   ) {
-    console.log(data,"multiday devoteee master checking")
+    // console.log(data,"multiday devoteee master checking")
     this.lang = localStorage.getItem('Language');
     const userLang = navigator.language || 'en';
     const languageCode = userLang.split('-')[0];
@@ -280,9 +280,9 @@ form: FormGroup;
       this.getmultidayfilterData();
     });
 
-    if (this.data) {
-      this.populateDevotees(this.data);
-    }
+    // if (this.data) {
+    //   this.populateDevotees(this.data);
+    // }
 
   }
 

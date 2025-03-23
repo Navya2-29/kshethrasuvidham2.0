@@ -26,7 +26,7 @@ import { forkJoin } from 'rxjs';
     MatTooltipModule,MatFormFieldModule,TranslateModule, MatInputModule,
   ],
   templateUrl: './members-list.component.html',
-  styleUrl: './members-list.component.css'
+  styleUrls: ['./members-list.component.css','/src/assets/styles/report.style.css'],
 })
 export class MembersListComponent {
  

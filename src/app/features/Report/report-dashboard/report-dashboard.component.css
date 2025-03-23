@@ -1,207 +1,162 @@
-/* Main container styling */
-.dashboard-container {
-  display: flex;
-  gap: 30px; /* Space between sections */
-  padding: 20px;
-  align-items: flex-start;
-}
-
-/* Left menu for radio buttons */
-.left-menu {
-  margin-right: 20px; /* Space to the right of the left menu */
-}
-
-.left-menu .radio-group {
+.main-container {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* Two equal-width columns */
-  gap: 10px; /* Space between radio buttons */
+  grid-template-columns: 2fr 1fr; 
+  gap: 20px;
+  margin: 20px 50px;
+  
+}
+
+.first-column {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 20px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.second-column {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 20px;
+}
+
+.box {
+  background: white;
+  padding-left: 12px;
+  padding-top: 5px;
+  padding-bottom: 0px;
+  display: flex;
+  flex-direction: column; 
+  align-items: flex-start; 
+  justify-content: center;
+  font-size: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  font-family: 'Times New Roman', Times, serif;
+  margin-bottom: 5px;
+  /* width: 300px; */
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: column; 
+  gap: 5px; 
 }
 
 .radio-group label {
   display: flex;
   align-items: center;
-  font-weight: bold;
+  gap: 8px; 
+  font-size: 14px;
   cursor: pointer;
-  gap: 8px; /* Space between radio button and label text */
-  font-size: 12px;
 }
 
-/* Styling for the date section */
-.date-section {
-  margin: 20px 20px; /* Space on both sides */
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.radio-group input[type="radio"] {
+  accent-color: rgb(32, 59, 94); 
+  transform: scale(0.8); 
 }
-
-/* Date card styling */
-.date-card {
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 10px;
+input[type="checkbox"] {
+  accent-color: rgb(32, 59, 94); 
+ 
+}
+.form-box {
+  background: #ffffff;
   padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  max-width: 300px;
-  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  width: 320px;
+  margin: auto;
+}
+.form-box label{
+  font-family: 'Times New Roman', Times, serif;
+  font-weight: bold;
+  color: rgb(131, 129, 129);
+  margin-bottom: 0;
+
+}
+.date-box {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  width: 320px;
+  margin: auto;
+  text-align: left;
+  font-family: 'Arial', sans-serif;
 }
 
-/* Date form styling */
-.date-form {
+.form-group {
   display: flex;
-  flex-direction: column;
-  gap: 15px; /* Space between date inputs */
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
 }
 
-/* Right buttons styling */
-.right-buttons {
-  margin-left: 20px; /* Space to the left of the right buttons */
-  display: flex;
-  flex-direction: column;
-  gap: 10px; /* Space between buttons */
-  width: 300px;
-  margin-left: 45%;
+.form-group label {
+  font-size: 14px;
+  font-weight: 800;
+   color: rgb(131, 129, 129);
+  flex: 1; 
+  text-align: left;
+  font-family: 'Times New Roman', Times, serif;
 }
 
-/* Action button styling */
-.action-button {
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  text-align: center;
-  width: 160px;
-}
-
-.action-button:hover {
-  background-color: #0056b3; /* Hover effect */
-}
-
-/* Input field styling */
-.form-group input[type="date"] {
+.form-group input {
+  flex: 1; 
+  text-align: right;
+  max-width: 150px; 
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 14px;
   outline: none;
-  transition: border-color 0.3s ease;
+  transition: all 0.3s ease;
 }
-
-.form-group input[type="date"]:focus {
-  border-color: #007bff; /* Focus effect */
-}
-
-/* Other styles for table and messages */
-.data-display-section {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-}
-
-.data-table-container {
-  margin-top: 20px;
-  overflow-x: auto;
-}
-
-/* Table styling */
-th.mat-header-cell, td.mat-cell {
-  padding: 12px 16px;
-  text-align: left;
-}
-
-th.mat-header-cell {
-  background-color: #386799; /* Change to your desired color */
-  color: white; /* Optional: Change text color for contrast */
-}
-
-tr.mat-row:nth-child(even) {
-  background-color: #f9f9f9; /* Even row color */
-}
-
-.no-data-message {
+.button-group{
   text-align: center;
-  font-style: italic;
-  color: #999;
-  margin-top: 20px;
 }
-
-.table-header h2,
-.table-header h3 {
-  text-align: center;
-  font-size: 12px;
-  font-family: 'Times New Roman', Times, serif;
-}
-
-.table-header > h2 {
-  margin-bottom: 5px;
-}
-
-.table-header > h4 {
-  margin-bottom: 3px;
-}
-
-.table-header > h3 {
-  margin-bottom: 1px;
-  margin-top: 2px;
-  font-weight: bold;
-}
-.right-buttons {
-  display: flex;
-  justify-content: center; /* Centers horizontally */
-  margin-top: 15px; /* Optional: adds space above the button */
-}
-
-/* Styling for action button */
-.action-button {
-  padding: 10px 20px;
-  background-color: #007bff;
+.submit-btn{
+  background-color: rgb(32, 59, 94);
   color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  text-align: center;
-  width: auto; /* Change this to auto to fit the text or specify a width */
+  margin-right: 3px;
 }
 
-.action-button:hover {
-  background-color: #0056b3; /* Hover effect */
+.form-group input:focus {
+  border-color: rgb(32, 59, 94);
+  box-shadow: 0 0 5px rgba(5, 28, 53, 0.5);
 }
-
-
-
-
-.pdf-content {
-  margin: 20px;
+select:focus{
+  border-color: rgb(32, 59, 94);
+  box-shadow: 0 0 5px rgba(5, 28, 53, 0.5);
 }
-
-.page {
-  page-break-after: always;
-  margin-bottom: 20px;
+select:focus option:checked {
+  background-color:rgb(32, 59, 94);
+  color: white;
 }
-
-.header {
-  text-align: center;
-  margin-bottom: 20px;
+select option:hover {
+  background-color: rgb(32, 59, 94) !important; 
+  color: white;
 }
+/* select:focus option {
+  background-color: rgb(32, 59, 94);
+  color: white;
+} */
 
-.footer {
-  text-align: center;
-  margin-top: 20px;
-  position: fixed;
-  bottom: 10px;
-  width: 100%;
-}
+@media (max-width: 768px) {
+  .main-container {
+      grid-template-columns: 1fr; 
+  }
 
-.pdf-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
+  .first-column,
+  .second-column {
+      grid-template-rows: auto;
+  }
 
-.pdf-table th, .pdf-table td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: left;
+  .row {
+      grid-template-columns: 1fr; /
+  }
 }

@@ -2,9 +2,9 @@
 <app-header></app-header>
 
 <div class="icon-container">
-  <button mat-icon-button matTooltip="Back to previous page" (click)="goBack()">
+ <button mat-icon-button matTooltip="Back to previous page" (click)="goBack()">
     <span class="material-icons">arrow_back</span>
-</button>
+ </button>
     <button mat-icon-button matTooltip="Make PDF" (click)="generatePDF()" >
         <span class="material-icons" >print</span>
     </button> 
@@ -32,44 +32,32 @@
               <tr>
                 <th>{{"SI No"| translate}}</th>
                 <th>{{"Member Id"| translate }}</th>
-                <th>{{"Name"| translate}}</th>
-                <th>{{"Address" | translate }}</th>
-                <th>Mobile</th>
-                <th>Email</th>
-                <th>Relative Details</th>
+                <th>{{"Name"| translate}} & {{"Address" | translate }}</th>
+                <th rowspan="2">Relative Details Name and Star</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let memeber of data;let i=index" >
                 <td>{{i+1}}</td>
-                <td>{{memeber.MID}}</td>
-                <td >{{memeber.Name}}</td>
-                <td >{{memeber.Address}}</td>
-                <td >{{memeber.mobile}}</td>
-                <td>{{memeber.email}}</td>
                 <td>
-                  <div class="sub-member-container">
-                    <div class="sub-member-header">
-                      <span class="sub-header">ID</span>
-                      <span class="sub-header">Name</span>
-                      <span class="sub-header">Star</span>
-                    </div>
+                  {{memeber.MID}}</td>
+                <td >
+                 <h4>{{memeber.Name}}</h4>
+                 <p>{{memeber.Address}}</p> 
+                <p>{{memeber.mobile}}</p>
+                <p>{{memeber.email}}</p>
+                </td>
+                <td>
+                  <div class="sub-member-container"> 
                     <div *ngFor="let subMember of memeber.additionalData" class="sub-member-row">
-                      <span class="sub-value">{{ subMember.Id }}</span>
                       <span class="sub-value">{{ subMember.Name }}</span>
                       <span class="sub-value">{{ getStarbyId(subMember.Star) }}</span>
                     </div>
                   </div>
                 </td>
               </tr>
-              
-            
             </tbody>
           </table>
-       
-    
-     
     </div> 
-  
     </div>
     </div>

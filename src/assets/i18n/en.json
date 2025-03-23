@@ -90,7 +90,7 @@
     "Daily Statement (Counter)": "Daily Statement (Counter)",
     "All Counter": "All Counter",
     "Online Report": "Online Transaction Report",
-    "Cancel Report": "Reciept Cancellation Report",
+    "Cancel Report": "Receipt Cancellation Report",
     "Nadavaravu Cancel": "Nadavaravu Cancel Report",
     "Debit/Credit Card": "Debit/Credit Card Statement",
     "Money Order": "Money Order Statement",
@@ -120,6 +120,7 @@
     "MONEY ORDER REPORT": "MONEY ORDER STATEMENT",
     "CHEQUE STATEMENT": "CHEQUE STATEMENT",
     "CREDIT REPORT": "CREDIT REPORT",
+    "DEVOTEE CREDIT COLLECTION REPORT":"DEVOTEE CREDIT COLLECTION REPORT",
     "UPI REPORT": "UPI REPORT",
     "OFFERING REPORT": "OFFERING REPORT",
     "NADAVARAVU BOOKING REPORT": "NADAVARAVU BOOKING REPORT",
@@ -129,6 +130,7 @@
     "VAZHIPAD WISE REPORT":"VAZHIPADWISE REPORT",
     "All MEMEBERS LIST":"ALL MEMEBERS LIST",
     "SINO": "SINO",
+    "DONATION REPORT":"DONATION REPORT",
     "Vazhipad Name": "Name",
     "Vazhipad Code": "Code",
     "Amount": "Amount",
@@ -150,7 +152,8 @@
    "Select prathista":"Select Prathishta",
    "Credit Collection":"Credit Collection",
    "report-duplicate":"Duplicate Report",
-   "Count":"Count"
+   "Count":"Count",
+   "Mobile No.":"Mobile No"
   },
   "Day":{
     "SUNDAY":"SUNDAY",

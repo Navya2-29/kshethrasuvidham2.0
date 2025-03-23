@@ -4,8 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { jsPDF } from 'jspdf'; 
-import {ReportData} from '../../../models/poornam-report'
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';import {ReportData} from '../../../models/poornam-report'
 import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -22,7 +22,7 @@ interface ConsolidatedData {
   standalone: true,
   imports: [CommonModule, MatTableModule,TranslateModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule],
   templateUrl: './report-offering.component.html',
-  styleUrl: './report-offering.component.css'
+  styleUrls: ['./report-offering.component.css','/src/assets/styles/report.style.css'],
 })
 export class ReportOfferingComponent {
   displayedColumns: string[] = ['SINo','VAZHIPAD',  'QUANTITY', ];
@@ -166,7 +166,73 @@ generatePDF(){
     <html>
       <head>
         <title>Print</title>
-       
+         <style>
+          .header-print h2 h3 h4 {
+          margin:0;
+          padding:0;
+           }  
+          h3,h4,h2{
+          margin-top:0px;
+          margin-botton:0px;
+          text-align:center;
+
+          }
+        .tabble-heading{
+  margin-top: 10px;
+  margin-bottom: 0;
+  text-transform: uppercase;
+  font-family: 'Times New Roman', Times, serif;
+  font-weight: bold;
+  text-align: left;
+
+}
+  .date{
+   line-height:1;
+          margin-top:0;
+  text-align:center;
+  }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+          table, th, td {
+            border: 1px solid black;
+            text-transform: uppercase;
+
+          }
+          th, td {
+           padding-left:5px;
+            text-align: left;
+          }
+            #print-section{
+padding-bottom: 100px;
+  }
+
+
+.number{
+    text-align: right;
+    /* font-weight: bold; */
+}
+.total{
+
+    text-align: right;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.grandtotal{
+    text-align: right;
+    font-family: 'Times New Roman', Times, serif;
+    font-weight:bolder;
+    color: red;
+    font-size: 20px;
+    margin: 10px 0;
+
+
+}
+
+
+        </style>
       </head>
       <body>${printContent.innerHTML}</body>
     </html>
@@ -380,6 +446,26 @@ generatePDF(){
 
 //   }
   
-  
+generatePDFs() {
+  const element = document.getElementById('print-section'); 
+
+  if (!element) {
+    console.error("Element not found");
+    return;
+  }
+
+  html2canvas(element, { scale: 2 }).then(canvas => {
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF('p', 'mm', 'a4');
+
+    const imgWidth = 210; 
+    const imgHeight = (canvas.height * imgWidth) / canvas.width; 
+
+    pdf.addImage(imgData, 'PNG', 0, 10, imgWidth, imgHeight);
+    pdf.save('Poornam_Report.pdf'); 
+  }).catch(error => {
+    console.error("Error generating PDF:", error);
+  });
+}
 
 }

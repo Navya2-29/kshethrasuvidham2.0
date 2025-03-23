@@ -29,7 +29,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
   ],
   templateUrl: './donation-report.component.html',
-  styleUrl: './donation-report.component.css'
+  styleUrls: ['./donation-report.component.css','/src/assets/styles/report.style.css'],
 })
 export class DonationReportComponent {
 
@@ -191,18 +191,54 @@ this.ts.use(this.lang || 'en');
         <head>
           <title>Print</title>
           <style>
-            /* Add custom styles for printing if needed */
-            table {
-              width: 100%;
-              border-collapse: collapse;
+         
+          body {
+    font-size: 16px;
+    font-family: "Times New Roman", serif;
+  }
+          h3,p,h4,h2{
+          line-height:1;
+          margin-top:0;
+          text-align:center;
+          }
+          .templename{
+           line-height:1;
+          margin-top:0;
+          text-align:center;
+          }
+          hr{
+          height:2px;
+          }
+          .tabble-heading h3{
+  font-family: 'Times New Roman', Times, serif;
+  font-weight: bold;
+  font-size: 16px;
+  margin: 8px 0 0 0;
+}
+          table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+          table, th, td {
+            border: 1px solid black;
+            text-transform: uppercase;
+
+          }
+            .total,number{
+            text-align:right;
             }
-            table, th, td {
-              border: 1px solid black;
-            }
-            th, td {
-              padding: 5px;
-              text-align: left;
-            }
+          th, td {
+           padding-left:5px;
+            text-align: left;
+          }
+            #print-section{
+padding-bottom: 100px;
+  }
+       
+    
+    .page-break {
+      page-break-before: always;
+    }
           </style>
         </head>
         <body>${printContent.innerHTML}</body>

@@ -8,6 +8,8 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MasterService } from '../../../services/master/master.service';
 import { TranslateService } from '@ngx-translate/core';
 import { TranslateModule } from '@ngx-translate/core';
+import { MatRadioModule } from '@angular/material/radio';
+
 interface Transaction {
   Vazhipad: string;
   Qty: string;
@@ -33,7 +35,8 @@ interface DataItem {
     CommonModule,
     SpinnerComponent,
     ReactiveFormsModule,
-    TranslateModule
+    TranslateModule,
+    MatRadioModule,
   ],
   templateUrl: './report-dashboard.component.html',
   styleUrl: './report-dashboard.component.css',

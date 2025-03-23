@@ -79,6 +79,8 @@ export class FixedbottomComponent implements OnInit {
   nakshatham:any[];
   receivedBooleanValue: boolean;
   memberId:string | null;
+  private refreshSubscription!: Subscription;
+
   @ViewChild('phone') phoneInput!: ElementRef<HTMLInputElement>;
   @ViewChild('paymentDropdown', { static: true }) paymentDropdown!: ElementRef<HTMLSelectElement>;
   @ViewChild('address1Input', { static: true }) address1Input!: ElementRef;
@@ -152,6 +154,10 @@ export class FixedbottomComponent implements OnInit {
     this.totalService.totalAmount$.subscribe((amount) => {
       this.totalAmount = amount;
     });
+
+    this.refreshSubscription = this.receiptPrinrservice.refreshData$.subscribe(() => {
+      this.refreshData();
+    });
     this.receiptPrinrservice.memberId$.subscribe(id => {
       this.memberId = id;
       if(Number(this.memberId)>0){
@@ -178,6 +184,16 @@ export class FixedbottomComponent implements OnInit {
     // this.resetForm();
     this.cancelPrintRecipt()
    
+  }
+
+  refreshData() {
+    this.customerdetailsForBillingForm.patchValue({
+      Mobile:"",
+
+    })
+    this.mobileNumber="";
+    this.memberDevoteeCheck=false;
+    // Call your API or update logic here
   }
 
   cancelPrintRecipt(){
@@ -1413,6 +1429,9 @@ getNameAndStarByMobilenumber(){
 console.log(this.memberDevoteeCheck,"dsssssssssssssss");
  if(this.mobileNumber){
   // this.masterService.getMaster
+  this.customerdetailsForBillingForm.patchValue({
+    Mobile:this.mobileNumber
+  })
   const data={
     mobile:this.mobileNumber,
     member:this.memberDevoteeCheck

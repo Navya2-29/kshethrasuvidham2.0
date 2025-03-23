@@ -37,7 +37,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     TranslateModule,
   ],
   templateUrl: './report-dailystmnt-transaction.component.html',
-  styleUrl: './report-dailystmnt-transaction.component.css',
+  styleUrls: ['./report-dailystmnt-transaction.component.css','/src/assets/styles/report.style.css']
 })
 export class ReportDailystmntTransactionComponent {
   displayedColumns: string[] = [
@@ -56,6 +56,7 @@ export class ReportDailystmntTransactionComponent {
   data: ReportDailyStmt[] = [];
   fromDate: string;
   toDate: string;
+  creditTransactionArray:any[];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   groupedData: { 
     [trnsMode: string]: { 
@@ -105,7 +106,40 @@ export class ReportDailystmntTransactionComponent {
       this.fromDate = params['fromDate'];
       this.toDate = params['toDate'];
       this.fetchReportData(type, this.fromDate, this.toDate);
+      this.getCreditReport(this.fromDate, this.toDate);
     });
+
+    
+  }
+
+
+  getCreditReport(fromdate:string,toDate:string){
+    const nonmemberpayload = {
+      Type: "pendingCreditCollect",
+      FromDate: fromdate,
+      ToDate: toDate,
+    };
+    const meberpayLoad ={
+      Type: "DevottePendingCreditCollect",
+      FromDate: fromdate,
+      ToDate: toDate,
+    }
+
+    this.service.getReport(nonmemberpayload).subscribe(data1 => {
+      this.service.getReport(meberpayLoad).subscribe(data2 => {
+        this.creditTransactionArray = [...data1, ...data2];
+        console.log(this.creditTransactionArray,"crediiiii");
+      });
+    });
+
+  }
+
+  getCrediTransactionTotal(){
+    if(this.creditTransactionArray.length>0){
+      return this.creditTransactionArray.reduce((sum, item) => sum + item.Amount, 0);
+
+    }
+ 
   }
 
   // Call your API service to get the report data
@@ -248,18 +282,94 @@ export class ReportDailystmntTransactionComponent {
       <head>
         <title>Print</title>
         <style>
-          /* Add custom styles for printing if needed */
+          .header-print h2 h3 h4 {
+          margin:0;
+          padding:0;
+           }  
+          h3,h4,h2{
+          margin-top:0px;
+          margin-botton:0px;
+          text-align:center;
+
+          }
+          .tabble-heading h3{
+  font-family: 'Times New Roman', Times, serif;
+  font-weight: bold;
+  font-size: 16px;
+  margin: 8px 0 0 0;
+}
+  .date{
+   line-height:1;
+          margin-top:0;
+  text-align:center;
+  }
           table {
             width: 100%;
             border-collapse: collapse;
           }
           table, th, td {
             border: 1px solid black;
+            text-transform: uppercase;
+
           }
           th, td {
-            padding: 5px;
+           padding-left:5px;
             text-align: left;
           }
+            #print-section{
+padding-bottom: 100px;
+  }
+p.transaction{
+    margin: 10px 0 0 0;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 18px;
+    text-decoration: underline;
+    font-weight: bold;
+    /* text-align: center; */
+
+}
+p.category{
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 16px;
+    margin:0;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+.transactionTable{
+    margin-bottom: 10px;
+    margin-bottom: 10px;
+}
+.number{
+    text-align: right;
+    /* font-weight: bold; */
+}
+.total{
+
+    text-align: right;
+    font-weight: bold;
+    font-size: 14px;
+}
+.transactionTotal{
+  font-family: 'Times New Roman', Times, serif; 
+  font-weight: bold;
+  margin-top: 10px;
+  text-align: right;
+  margin-bottom: 5px;
+  font-size: 18px;
+
+}
+.grandtotal{
+    text-align: right;
+    font-family: 'Times New Roman', Times, serif;
+    font-weight:bolder;
+    color: red;
+    font-size: 20px;
+    margin: 10px 0;
+
+
+}
+
+
         </style>
       </head>
       <body>${printContent.innerHTML}</body>

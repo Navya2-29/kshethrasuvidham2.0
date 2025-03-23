@@ -19,7 +19,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
   standalone: true,
   imports: [CommonModule,TranslateModule,MatTableModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
   templateUrl: './report-credit-collection.component.html',
-  styleUrl: './report-credit-collection.component.css'
+  styleUrls: ['./report-credit-collection.component.css','/src/assets/styles/report.style.css'],
 })
 export class ReportCreditCollectionComponent {
 

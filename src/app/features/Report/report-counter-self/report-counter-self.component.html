@@ -1,209 +1,123 @@
-
-
 <app-header></app-header>
-
-<div class="icon-container">
-  <button mat-icon-button matTooltip="Back to previous page" (click)="goBack()">
-    <span class="material-icons">arrow_back</span>
-</button>
-    <button mat-icon-button matTooltip="Make PDF" (click)="generatePDF()">
-        <span class="material-icons">print</span>
+<div report-container>
+  <div class="icon-container">
+    <button
+      mat-icon-button
+      matTooltip="Back to previous page"
+      (click)="goBack()"
+    >
+      <span class="material-icons">arrow_back</span>
     </button>
-    <!-- <button mat-icon-button matTooltip="Export to Spreadsheet" >
-        <span class="material-icons">grid_view</span>
-    </button> -->
-</div>
-<div id="print-section">
-<div>
-  <h3 style="align-items: center;text-align:center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;" >{{templeName}}</h3>
-  <h4 style="align-items: center;text-align:center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;" >{{templeAddress}}</h4>
-  <h5 style="align-items: center;text-align: center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;">{{"Report Name.DAILY TEMPLE COLLECTION (COUNTER)" |translate}}:{{counterId}} 
-</h5>
-<p style="align-items: center;text-align: center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;">{{formatDateToDDMMYYYY(fromDate)}} to {{formatDateToDDMMYYYY(toDate)}}</p>  </div>
-<!-- 
-<div class="report-table">
-  <mat-form-field>
-    <mat-label>Filter</mat-label>
-    <input matInput (keyup)="applyFilter($event)" placeholder="Search data" #input>
-  </mat-form-field>
-    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-      <ng-container matColumnDef="BillNo">
-        <th mat-header-cell *matHeaderCellDef> RECEIPT NO. </th>
-        <td mat-cell *matCellDef="let element"> {{ element.BillNo }} </td>
-      </ng-container>
-      <ng-container matColumnDef="Counter">
-        <th mat-header-cell *matHeaderCellDef> COUNTER </th>
-        <td mat-cell *matCellDef="let element"> {{ element.CounterId }} </td>
-      </ng-container>
-
-      <ng-container matColumnDef="BillDate">
-        <th mat-header-cell *matHeaderCellDef> BILL DATE </th>
-        <td mat-cell *matCellDef="let element"> {{ element.BillDate }} </td>
-      </ng-container>
-      <ng-container matColumnDef="Vazhipad">
-        <th mat-header-cell *matHeaderCellDef> VAZHIPAD </th>
-        <td mat-cell *matCellDef="let element"> {{ element.Vazhipad }} </td>
-      </ng-container>
-  
-      <ng-container matColumnDef="Name">
-        <th mat-header-cell *matHeaderCellDef> NAME </th>
-        <td mat-cell *matCellDef="let element"> {{ element.Name }} </td>
-      </ng-container>
-  
-      <ng-container matColumnDef="Star">
-        <th mat-header-cell *matHeaderCellDef> STAR </th>
-        <td mat-cell *matCellDef="let element"> {{ element.Star }} </td>
-      </ng-container>
-  
-      <ng-container matColumnDef="Qty">
-        <th mat-header-cell *matHeaderCellDef> QTY </th>
-        <td mat-cell *matCellDef="let element"> {{ element.Qty }} </td>
-      </ng-container>
-  
-      <ng-container matColumnDef="Rate">
-        <th mat-header-cell *matHeaderCellDef> RATE </th>
-        <td mat-cell *matCellDef="let element"> {{ element.Rate | number: '1.2-2' }} </td>
-      </ng-container>
-  
-      <ng-container matColumnDef="Amount">
-        <th mat-header-cell *matHeaderCellDef> AMOUNT </th>
-        <td mat-cell *matCellDef="let element"> {{ element.Amount | number: '1.2-2'}} </td>
-      </ng-container>
-  
-      <ng-container matColumnDef="VazhiDate">
-        <th mat-header-cell *matHeaderCellDef> VAZHIPAD-DATE </th>
-        <td mat-cell *matCellDef="let element"> {{ element.VazhiDate }} </td>
-      </ng-container>
-      <ng-container matColumnDef="TrnsMode">
-        <th mat-header-cell *matHeaderCellDef> TRANS-MODE </th>
-        <td mat-cell *matCellDef="let element"> {{ getTransactionType(element.TrnsMode )}} </td>
-      </ng-container>
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-  
-    <mat-paginator
-      [length]="length"
-      [pageSize]="pageSize"
-      [pageSizeOptions]="pageSizeOptions"
-      (page)="onPageChange($event)">
-    </mat-paginator>
+    <button mat-icon-button matTooltip="Make PDF" (click)="generatePDF()">
+      <span class="material-icons">print</span>
+    </button>
   </div>
- Table with Header, Grouped Data, and Footer -->
-<!-- <table border="1" id="pdf-content" style="display: none;" > -->
-  <!-- Table Header (for the whole table) -->
-
-
-  <!-- Table Body with Grouped Data -->
-  <!-- <tbody>
-    <ng-container *ngFor="let group of groupedData | keyvalue"> -->
-      <!-- Group name (Transaction Mode) displayed as a row header -->
-      <!-- <tr> -->
-        <!-- <td colspan="7" style="font-weight: bold; background-color: #f2f2f2;"> -->
-          <!-- Display the human-readable transaction type -->
-        <!-- TRANSACTION  :   {{ getTransactionType(group.key) }}  Dynamic transaction type -->
-        <!-- </td> -->
-      <!-- </tr> -->
-
-      <!-- Table header for each group -->
-      <!-- <tr>
-        <th>Bill No</th>
-        <th>Vazhipad</th>
-        <th>Name</th>
-        <th>Star</th>
-
-
-        <th>Quantity</th>
-        <th>Rate</th>
-        <th>Vazhipad Date</th>
-      </tr> -->
-
-      <!-- Loop through items in the group -->
-      <!-- <tr *ngFor="let item of group.value">
-        <td>{{ item.BillNo }}</td>
-        <td>{{ item.Vazhipad }}</td>
-        <td>{{ item.Name }}</td>
-        <td>{{ item.Star }}</td>
-        <td>{{ item.Qty }}</td>
-        <td>{{ item.Rate }}</td>
-        <td>{{ item.VazhiDate }}</td>
-      </tr>
-    </ng-container>
-  </tbody> -->
-
-  <!-- Table Footer with Page Number -->
-  <!-- <tfoot>
-    <tr>
-      <td colspan="7" style="text-align: center;">
-        Page {{ currentPage }}
-      </td>
-    </tr>
-  </tfoot>
-</table>  -->
-
-<div style="margin-left: 30px;margin-right: 30px;">
-<div *ngFor="let counter of groupedData | keyvalue">
-  <span style="font-weight: bold;"><u>Counter: {{ counter.key }}</u></span>
-
-  <div *ngFor="let user of counter.value | keyvalue">
-    <span style="font-weight: bold;">User: {{ user.key }}</span>
-
-    <div *ngFor="let mode of user.value | keyvalue">
-      <span style="font-weight: bold;"> {{ getTransactionType(mode.key) }}</span>
-
-      <table border="1">
-        <thead>
-          <tr>
-            <th>{{ "VAZHIPAD" | translate }}</th>
-            <th>{{ "QUANTITY" | translate }}</th>
-            <th>{{ "RATE" | translate }}</th>
-            <th>{{ "AMOUNT" | translate }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of mode.value">
-            <td>{{ item.vazhipad }}</td>
-            <td>{{ item.Qty }}</td>
-            <td style="text-align: right;">{{ item.Rate | number: '1.2-2' }}</td>
-            <td style="text-align: right;">{{ item.Amount | number: '1.2-2' }}</td>
-          </tr>
-          <!-- Transaction Mode Total -->
-          <tr *ngIf="mode.value.length > 0">
-            <td colspan="3" style="text-align: right;">Total for {{ getTransactionType( mode.key) }}</td>
-            <td style="text-align: right; font-weight: bold;">
-              {{ getTotalForCuserTrnsMode(counter.key, user.key, mode.key) | number: '1.2-2' }}
-            </td>
-          </tr>
-        
-        </tbody>
-      </table>
-      <br />
-
-    
+  <div id="print-section">
+    <div class="header-print">
+      <div>
+      <h3 class="templename">
+        {{ templeName }}
+      </h3>
+      <h4>
+        {{ templeAddress }}
+      </h4>
+      <h2>
+        {{ "Report Name.DAILY TEMPLE COLLECTION (COUNTER)" | translate }}:{{
+          counterId
+        }}
+      </h2>
+      <p>
+        {{ formatDateToDDMMYYYY(fromDate) }} to
+        {{ formatDateToDDMMYYYY(toDate) }}
+      </p>
+      <hr />
     </div>
+   
 
-    <!-- Cuser-wise Total -->
-    
-  
-  
-    <div style="text-align: right; font-weight: bold; font-size: 18px;">
-      Total for {{ user.key }}: 
-      {{ getTotalForCuser(counter.key, user.key) | number: '1.2-2' }}
+    <div class="body-print">
+      <div id="pdf-content" *ngIf="data.length > 0">
+        <div *ngFor="let counter of groupedData | keyvalue">
+          <p class="counter">Counter: {{ counter.key }}</p>
+
+          <div *ngFor="let user of counter.value | keyvalue">
+            <p class="user">User: {{ user.key }}</p>
+            <p></p>
+
+            <div *ngFor="let mode of user.value | keyvalue">
+              <p class="transaction">
+                {{ getTransactionType(mode.key) }}
+              </p>
+
+              <table class="counterTable">
+                <thead>
+                  <tr>
+                    <th>{{ "VAZHIPAD" | translate }}</th>
+                    <th>{{ "QUANTITY" | translate }}</th>
+                    <th>{{ "RATE" | translate }}</th>
+                    <th>{{ "AMOUNT" | translate }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of mode.value">
+                    <td>{{ item.vazhipad }}</td>
+                    <td>{{ item.Qty }}</td>
+                    <td class="number">
+                      {{ item.Rate | number : "1.2-2" }}
+                    </td>
+                    <td class="number">
+                      {{ item.Amount | number : "1.2-2" }}
+                    </td>
+                  </tr>
+                  <!-- Transaction Mode Total -->
+                  <tr *ngIf="mode.value.length > 0">
+                    <td colspan="3" class="total">
+                      Total for {{ getTransactionType(mode.key) }}
+                    </td>
+                    <td class="total">
+                      {{
+                        getTotalForCuserTrnsMode(
+                          counter.key,
+                          user.key,
+                          mode.key
+                        ) | number : "1.2-2"
+                      }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Cuser-wise Total -->
+
+            <div class="total">
+              <h5 id="totalamount">
+                Total for {{ user.key }}:
+                {{ getTotalForCuser(counter.key, user.key) | number : "1.2-2" }}
+              </h5>
+            </div>
+          </div>
+
+          <!-- Counter-wise Total -->
+          <div class="total">
+            <h5 class="totalcounter">
+              Total for Counter {{ counter.key }}:
+              {{ getTotalForCounter(counter.key) | number : "1.2-2" }}
+            </h5>
+          </div>
+          <br />
+        </div>
+      </div>
+      <div class="grandtotal" *ngIf="data.length > 0">
+        <h1>GrandTotal: {{ "" + getGrandTotal() | number : "1.2-2" }}</h1>
+      </div>
 
       
     </div>
-  
-  
-  
-  
-  
-  
-  </div>
+    <div class="nodataFound" *ngIf="data.length === 0">
+      <h2></h2>
+    </div>
 
-<!-- Counter-wise Total -->
-  <div style="font-weight: bold; font-size: 18px;text-align: right;">
-    Grand Total for Counter {{ counter.key }}: {{ getTotalForCounter(counter.key) | number: '1.2-2' }}
+    <hr />
   </div>
-  <br />
-</div> 
+</div>
 </div>

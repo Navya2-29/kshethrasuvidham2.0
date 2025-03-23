@@ -83,7 +83,7 @@ export class DayMasterComponent implements OnInit {
     },
     {
       id: 7,
-      name: 'Satursday',
+      name: 'Saturday',
     },
   ];
   // myControl = new FormControl('');

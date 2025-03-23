@@ -14,12 +14,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { MembersReport } from '../../../models/members.model';
 @Component({
   selector: 'app-report-credit',
   standalone: true,
   imports: [CommonModule,TranslateModule,MatTableModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
   templateUrl: './report-credit.component.html',
-  styleUrl: './report-credit.component.css'
+  styleUrls: ['./report-credit.component.css','/src/assets/styles/report.style.css'],
 })
 export class ReportCreditComponent {
 
@@ -38,6 +39,8 @@ export class ReportCreditComponent {
   lang:string|null;
   templeName:string|null;
   templeAddress:string|null;
+   nonmembercreditdata: MembersReport[] = [];
+   membercreditdata: MembersReport[] = [];
   constructor(private route: ActivatedRoute, private ts: TranslateService, private service: ReportService,private router: Router, private http:HttpClient) {
     this.lang=localStorage.getItem('Language');
     this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
@@ -53,6 +56,8 @@ export class ReportCreditComponent {
       const type = params['type'];
       this. fromDate = params['fromDate'];
       this. toDate = params['toDate'];
+      this.fetchmembercreitReportData(type, this.fromDate, this.toDate);
+      this.fetchnonmembercreditReportData(type, this.fromDate, this.toDate);
       this.fetchReportData(type, this.fromDate, this.toDate);
     });
   }
@@ -68,7 +73,7 @@ export class ReportCreditComponent {
     };
     this.service.getReport(payLoad).subscribe({
       next: (data) => {
-        console.log('Fetched report data:', data);
+        console.log('Fetched report data:all', data);
         this.data=data;
          this.filteredData = this.data.filter(item => item.TrnsMode === 'CR');   
         //  this.filteredData = this.filteredData.sort((a:any, b:any) => {
@@ -84,6 +89,49 @@ export class ReportCreditComponent {
         console.log( this.dataSource.data)
         this.length =this.data .length; 
         this.dataSource.paginator = this.paginator;
+       
+      },
+      error: (error) => {
+        console.error('Error fetching report data:', error);
+      },
+    });
+  }
+
+
+
+  fetchnonmembercreditReportData(type: string, fromDate: string, toDate: string): void {
+    const payLoad = {
+      Type: "PendingCreditCollect",
+      FromDate: fromDate,
+      ToDate: toDate,
+    };
+    this.service.getReport(payLoad).subscribe({
+      next: (data) => {
+        console.log('Fetched report data:non member', data);
+        this.nonmembercreditdata = data;
+       
+        this.length = data.length;
+       
+      },
+      error: (error) => {
+        console.error('Error fetching report data:', error);
+      },
+    });
+  }
+
+
+  fetchmembercreitReportData(type: string, fromDate: string, toDate: string): void {
+    const payLoad = {
+      Type: "DevottePendingCreditCollect",
+      FromDate: fromDate,
+      ToDate: toDate,
+    };
+    this.service.getReport(payLoad).subscribe({
+      next: (data) => {
+        console.log('Fetched report data: member', data);
+        this.membercreditdata = data;
+       
+        this.length = data.length;
        
       },
       error: (error) => {
@@ -367,7 +415,59 @@ generatePDF(){
     <html>
       <head>
         <title>Print</title>
+        <style>
+         
+          body {
+    font-size: 16px;
+    font-family: "Times New Roman", serif;
+  }
+          h3,p,h4,h2{
+          line-height:1;
+          margin-top:0;
+          text-align:center;
+          }
+          .templename{
+           line-height:1;
+          margin-top:0;
+          text-align:center;
+          }
+          hr{
+          height:2px;
+          }
+          .tabble-heading h3{
+  font-family: 'Times New Roman', Times, serif;
+  font-weight: bold;
+  font-size: 16px;
+  margin: 8px 0 0 0;
+}
+          table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+          table, th, td {
+            border: 1px solid black;
+            text-transform: uppercase;
+
+          }
+            .total,number{
+            text-align:right;
+            }
+          th, td {
+           padding-left:5px;
+            text-align: left;
+          }
+            .grandtotal{
+            text-align:right;
+            }
+            #print-section{
+         padding-bottom: 100px;
+  }
        
+    
+    .page-break {
+      page-break-before: always;
+    }
+          </style>
       </head>
       <body>${printContent.innerHTML}</body>
     </html>
@@ -390,7 +490,13 @@ generatePDF(){
 getTotalAmount(): number {
   return this.data.reduce((sum, item) => sum + item.Amount, 0);
 }
+getmemberTotalAmount(): number {
+  return this.membercreditdata.reduce((sum, item) => sum +Number(item.Amount) , 0);
+}
 
+getnonmemberTotalAmount(): number {
+  return this.nonmembercreditdata.reduce((sum, item) => sum +Number(item.Amount) , 0);
+}
   getTransactionType(transmode: string): string {
     switch (transmode) {
       case 'ON':

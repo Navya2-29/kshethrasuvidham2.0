@@ -18,7 +18,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
   standalone: true,
   imports: [CommonModule,MatTableModule,TranslateModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
   templateUrl: './report-nadavaravu-cancel.component.html',
-  styleUrl: './report-nadavaravu-cancel.component.css'
+  styleUrls: ['./report-nadavaravu-cancel.component.css','/src/assets/styles/report.style.css'],
 })
 
 export class ReportNadavaravuCancelComponent {

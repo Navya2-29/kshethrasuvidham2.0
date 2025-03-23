@@ -5,7 +5,7 @@ export const Constant = {
   // BASE_URL:'https://api.lacsindore.in/api/KshetramAPI/',
 
   // BASE_URL: 'https://panchiyammaapi.suvidham.in/api/KshetramAPI/',
-// urlForIp: 'http://ip-api.com/json',
+
   METHODS: {
     // master view
     GET_MASTER: 'ViewMasters',

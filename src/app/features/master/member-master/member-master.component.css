@@ -30,7 +30,7 @@
 }
 
 .fixitems {
-    height:450px;
+    height:455px;
   overflow-y:scroll;
   overflow-x:auto;
 }
@@ -44,10 +44,23 @@
 }
 
 .fixitems::-webkit-scrollbar-thumb {
-  background: #5d85b9; /* Color of the thumb */
+  background: rgb(32, 59, 94); /* Color of the thumb */
   border-radius: 5px; /* Radius of the thumb */
+}.tablescroll{
+  height: 300px;
+  overflow-y:scroll;
+}
+.tablescroll::-webkit-scrollbar {
+  width: 5px; /* Width of the scrollbar */
 }
 
+.tablescroll::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Color of the track */
+}
+.tablescroll::-webkit-scrollbar-thumb {
+  background: rgb(32, 59, 94); /* Color of the thumb */
+  border-radius: 5px; /* Radius of the thumb */
+}
 table {
     width: 100%;
   }
@@ -378,12 +391,17 @@ mat-option {
   padding:2pt;
 }
 
-.search table tr td {
+.search  {
     text-align:center;
     vertical-align: middle;
 }
 
-
+.search-container {
+  position: relative;
+}
+.search-input {
+  padding-right: 30px; /* Adjust the padding to make space for the icon */
+}
 .btn {
     padding:4px;
     font-size:10pt;
@@ -455,4 +473,22 @@ mat-option {
 
   button{
     width:100px;
+
+  
+  }
+  .buttonColor{
+   background-color: rgb(32, 59, 94);
+color:white;
+  }
+ .tablehead{
+    color: white;
+   
+  }
+  .search-icon {
+    position: absolute;
+    top: 50%;
+    right: 65%; /* Adjust the position of the icon */
+    transform: translateY(-50%);
+    color: #888; /* Adjust the color of the icon */
+    cursor: pointer;
   }

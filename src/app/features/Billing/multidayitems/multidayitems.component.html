@@ -3,9 +3,46 @@
 </h2>
 <mat-dialog-content class="high" style="width: 100%">
   
+
+  <div style="margin-left: 30px;margin-top: 10px;">
+    <input
+      type="text"
+      [placeholder]="'PLACEHOLDER.MOBILENUMBER' | translate"
+      [(ngModel)]="mobileNumber"
+      style="width: 150px"
+      class="phone "
+    />
+    <!-- <button -->
+      <!-- class="btn btn-secondary"
+      (click)="onFind()"
+      style="padding: 5px; font-size: 9pt; background-color: #223d61"
+    >
+      Find
+    </button> -->
+    <div style="margin-top:10px;margin-bottom: 10px;">
+      <input type="checkbox" [(ngModel)]="memberDevoteeCheck" style="margin-top: 5px;" ><span style="color:black;margin-left: 5px;">Member</span> 
+      <button
+      class="btn btn-secondary"
+      (click)="getNameAndStarByMobilenumber()"
+      style=" font-size: 9pt; background-color: #223d61;padding-left: 10px;margin-left: 50px;"
+    >
+      Search for Devotee
+    </button>
+    </div>
+  </div>
+
   <div class="container" >
+
+   
+
+
+
     <div class="row">
       <div class="vazhipad-details" class="col-md-6">
+
+       
+
+
         <form [formGroup]="form">
           <div class="col-md-6">
          

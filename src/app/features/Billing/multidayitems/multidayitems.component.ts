@@ -31,13 +31,14 @@ import {
   MatAutocompleteModule,
   MatAutocompleteSelectedEvent,
 } from '@angular/material/autocomplete';
-import { map, Observable, of, startWith } from 'rxjs';
+import { lastValueFrom, map, Observable, of, startWith } from 'rxjs';
 import { MatInputModule } from '@angular/material/input';
 import { MasterService } from '../../../services/master/master.service';
 import { NotificationService } from '../../../services/notification/notification.service';
 import { multiDayFilter } from '../../../models/multidayFilter.model';
 import { TranslateService } from '@ngx-translate/core';
 import { UpperCaseDirective } from '../../../shared/directives/upper-case.directive';
+import { BillingViaMobilenumberComponent } from '../billing-via-mobilenumber/billing-via-mobilenumber.component';
 
 @Component({
   selector: 'app-multidayitems',
@@ -68,7 +69,7 @@ export class MultidayitemsComponent implements OnInit {
   starData: Observable<any[]>;
   VMList: any[] = [];
   nakshatham: any[];
-
+  mobileNumber: string = '';
   thithiList: any[] = [];
   prathishtaOptions: any[] = [];
   totalAmount: number = 0;
@@ -89,6 +90,7 @@ export class MultidayitemsComponent implements OnInit {
   formattedDates:any[];
   blockingArray:any[];
   VM_MaxNo:number;
+  nameStarArray: any[];
   MlayalamDays = [
     '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32',
   ];
@@ -99,9 +101,10 @@ export class MultidayitemsComponent implements OnInit {
   multidayFilterForm: FormGroup;
   multiDayList: multiDayFilter[] = [];
   updatedmultiDayList: multiDayFilter[] = [];
-
+  memberDevoteeCheck:boolean=false;
   private readonly masterservice = inject(MasterService);
   constructor(
+    public dialog: MatDialog,
     private fb: FormBuilder,
     private notification: NotificationService,
     public dialogRef: MatDialogRef<MultidayitemsComponent>,
@@ -280,9 +283,7 @@ export class MultidayitemsComponent implements OnInit {
       this.getmultidayfilterData();
     });
 
-    if (this.data) {
-      this.populateDevotees(this.data);
-    }
+   
 
   }
 
@@ -293,7 +294,7 @@ export class MultidayitemsComponent implements OnInit {
     data.forEach(devotee => {
       this.devotees.push(this.fb.group({
         Name: [devotee.Name || '', [Validators.required]],
-        Star: [devotee.Star || '', [Validators.required]],
+        Star: [this.getStarIdByName(devotee.Star) || '', [Validators.required]],
         Name2: [''], // Optional fields
         Star2: [''],
       }));
@@ -305,7 +306,29 @@ export class MultidayitemsComponent implements OnInit {
     // }
   }
 
-
+  async getStarIdByName(starName: string): Promise<any> {
+    console.log(starName, "star nameeeee");
+  
+    const payLoad = { Type: 'ListStar', Code: '' };
+  
+    try {
+      this.nakshatham = await lastValueFrom(this.masterservice.getStarData(payLoad));
+      console.log(this.nakshatham, "Nakshathram data loaded");
+  
+      if (!this.nakshatham || !Array.isArray(this.nakshatham)) {
+        console.error("Nakshatham data is undefined or not an array");
+        return null;
+      }
+  
+      const foundStar = this.nakshatham.find(star => star.SM_NameEng === starName);
+      console.log(foundStar, "data checking star");
+  console.log(foundStar.id,"ccccccccccccccccccc");
+      return foundStar ? foundStar.Id : null;
+    } catch (error) {
+      console.error("Error fetching Nakshathram data:", error);
+      return null;
+    }
+  }
   getThithiList() {
     const payLoad = { Type: 'Thithi', code: '' };
     this.masterservice.getThithilist(payLoad).subscribe((res: any) => {
@@ -1121,4 +1144,66 @@ this.validateVazhipadDate()
       })
   }
 
+
+  
+
+
+
+  getNameAndStarByMobilenumber(){
+
+    console.log(this.mobileNumber,"mobile number data");
+   
+   console.log(this.memberDevoteeCheck,"dsssssssssssssss");
+    if(this.mobileNumber){
+     // this.masterService.getMaster
+    //  this.customerdetailsForBillingForm.patchValue({
+    //    Mobile:this.mobileNumber
+    //  })
+     const data={
+       mobile:this.mobileNumber,
+       member:this.memberDevoteeCheck
+     }
+    //  this.receiptPrinrservice.setMobileNumber(data);
+     console.log('Mobile number sent:', this.mobileNumber);
+     this.openBillingDialog(this.mobileNumber)
+    }else{
+     this.notification.showError("Please enter the valid mobile number and try again");
+   }
+   
+   }
+   
+openBillingDialog(mobileNumber: any) {
+  const data={
+    mobile: mobileNumber, member: this.memberDevoteeCheck 
+  }
+    const dialogRef = this.dialog.open(BillingViaMobilenumberComponent, {
+      width: '600px',
+      data: data, 
+    });
+
+    // Handle dialog result
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log('Selected Rows:', result);
+      this.nameStarArray = result.selectedData;
+      if (result) {
+       console.log(this.nameStarArray,"checking name star data")
+       this.devotees.clear();
+       this.nameStarArray.forEach((devotee:any) => {
+        this.devotees.push(this.fb.group({
+          Name: [devotee.Name || '', [Validators.required]],
+          Star: [this.getStarIdByNames(devotee.Star) || '', [Validators.required]],
+          Name2: [''], // Optional fields
+          Star2: [''],
+        }));
+      });
+      }
+    });
+  }
+
+
+
+  getStarIdByNames(starName: string): number | null {
+    const star = this.nakshatham.find(n => n.SM_NameEng === starName);
+    return star ? star.id : null; // Return ID if found, otherwise return null
+  }
 }

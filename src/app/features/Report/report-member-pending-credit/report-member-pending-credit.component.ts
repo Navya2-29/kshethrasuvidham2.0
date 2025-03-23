@@ -29,7 +29,7 @@ import { MembersReport } from '../../../models/members.model';
     MatTooltipModule,MatFormFieldModule,TranslateModule, MatInputModule,
   ],
   templateUrl: './report-member-pending-credit.component.html',
-  styleUrl: './report-member-pending-credit.component.css'
+  styleUrls: ['./report-member-pending-credit.component.css','/src/assets/styles/report.style.css'],
 })
 export class ReportMemberPendingCreditComponent {
 

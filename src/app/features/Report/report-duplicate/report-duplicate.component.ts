@@ -19,7 +19,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
   standalone: true,
   imports: [CommonModule,TranslateModule,MatTableModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
   templateUrl: './report-duplicate.component.html',
-  styleUrl: './report-duplicate.component.css'
+  styleUrls: ['./report-duplicate.component.css','/src/assets/styles/report.style.css'],
 })
 export class ReportDuplicateComponent {
 
@@ -126,18 +126,59 @@ generatePDF() {
     <html>
       <head>
         <title>Print</title>
-        <style>
-          /* Apply your print-specific styles here */
-          @media print {
-            body {
-              font-size: 10px; /* Adjust font size for printing */
-            }
-            #print-section {
-              font-size: 10px;
-            }
-            /* Other print-specific styling adjustments */
+         <style>
+         
+          body {
+    font-size: 16px;
+    font-family: "Times New Roman", serif;
+  }
+          h3,p,h4,h2{
+          line-height:1;
+          margin-top:0;
+          text-align:center;
           }
-        </style>
+          .templename{
+           line-height:1;
+          margin-top:0;
+          text-align:center;
+          }
+          hr{
+          height:2px;
+          }
+          .number,.total{
+            text-align:right;
+            }
+          .tabble-heading h3{
+  font-family: 'Times New Roman', Times, serif;
+  font-weight: bold;
+  font-size: 16px;
+  margin: 8px 0 0 0;
+}
+          table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+          table, th, td {
+            border: 1px solid black;
+            text-transform: uppercase;
+
+          }
+            .total,number{
+            text-align:right;
+            }
+          th, td {
+           padding-left:5px;
+            text-align: left;
+          }
+            #print-section{
+padding-bottom: 100px;
+  }
+       
+    
+    .page-break {
+      page-break-before: always;
+    }
+          </style>
       </head>
       <body>
         ${printContent.innerHTML}

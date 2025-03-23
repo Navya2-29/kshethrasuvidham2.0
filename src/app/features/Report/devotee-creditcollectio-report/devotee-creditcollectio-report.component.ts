@@ -29,7 +29,7 @@ import { MembersReport } from '../../../models/members.model';
     MatTooltipModule,MatFormFieldModule,TranslateModule, MatInputModule,
   ],
   templateUrl: './devotee-creditcollectio-report.component.html',
-  styleUrl: './devotee-creditcollectio-report.component.css'
+  styleUrls: ['./devotee-creditcollectio-report.component.css','/src/assets/styles/report.style.css'],
 })
 export class DevoteeCreditcollectioReportComponent {
 
@@ -56,7 +56,7 @@ export class DevoteeCreditcollectioReportComponent {
   toDate:string;
 
   currentDate: string = '';
-
+  allCreditdata:ReportData[]=[];
   counterId:string | null;
   lang:string|null;
   templeName:string|null;
@@ -77,6 +77,7 @@ const userLang = navigator.language || 'en';
 const languageCode = userLang.split('-')[0];
 this.ts.setDefaultLang(languageCode);
 this.ts.use(this.lang || 'en');
+
   }
 
   ngOnInit(): void {
@@ -84,6 +85,8 @@ this.ts.use(this.lang || 'en');
       const type = params['type'];
        this.fromDate = params['fromDate'];
        this.toDate = params['toDate'];
+       this.fetchAllCreditReportData( this.fromDate, this.toDate);
+
       this.fetchReportData(type, this.fromDate, this.toDate);
     });
   }
@@ -112,9 +115,59 @@ this.ts.use(this.lang || 'en');
   }
 
 
+  fetchAllCreditReportData( fromDate: string, toDate: string): void {
+    const payLoad = {
+      Type: 'CreditCollect',
+      FromDate: fromDate,
+      ToDate: toDate,
+    };
+    this.service.getReport(payLoad).subscribe({
+      next: (data) => {
+        console.log('Fetched report data:', data);
+        this.allCreditdata=data;
+        //  this.filteredData = this.filteredData.sort((a:any, b:any) => {
+        //   const [numA, denomA] = a.BillNo.split('/').map(Number);
+        //   const [numB, denomB] = b.BillNo.split('/').map(Number);
+          
+        //   // Compare the two parts: first compare the numerator, then the denominator
+        //   return numA - numB || denomA - denomB;
+      // });
+      
+
+        
+       
+      },
+      error: (error) => {
+        console.error('Error fetching report data:', error);
+      },
+    });
+  }
 
 
+  fetchmembercreitReportData(type: string, fromDate: string, toDate: string): void {
+    const payLoad = {
+      Type: "DevottePendingCreditCollect",
+      FromDate: fromDate,
+      ToDate: toDate,
+    };
+    this.service.getReport(payLoad).subscribe({
+      next: (data) => {
+        console.log('Fetched report data:', data);
+        this.data = data;
+       
+        this.length = data.length;
+       
+      },
+      error: (error) => {
+        console.error('Error fetching report data:', error);
+      },
+    });
+  }
 
+
+  getTotalAmount(): number {
+    return this.allCreditdata.reduce((sum, item) => sum + item.Amount, 0);
+  }
   
 
   goBack(): void {
@@ -137,10 +190,10 @@ this.ts.use(this.lang || 'en');
 
   
 
-  getTransactionType(transmode: string): string {
+  getTransactionType(transmode: any): string {
     switch (transmode) {
       case 'ON':
-        return 'Bank';
+        return 'ONLINE';
       case 'CS':
         return 'CASH';
       case 'MO':
@@ -159,9 +212,9 @@ this.ts.use(this.lang || 'en');
     }
   }
 
-  // getGrandTotal(): number {
-  //   return this.data.reduce((sum, item) => sum + item.Amount, 0);
-  // }
+  getGrandTotal(): number {
+    return this.data.reduce((sum, item) => sum + Number(item.Amount), 0);
+  }
 
 
 
@@ -185,19 +238,58 @@ this.ts.use(this.lang || 'en');
       <html>
         <head>
           <title>Print</title>
-          <style>
-            /* Add custom styles for printing if needed */
-            table {
-              width: 100%;
-              border-collapse: collapse;
+         <style>
+         
+          body {
+    font-size: 16px;
+    font-family: "Times New Roman", serif;
+  }
+          h3,p,h4,h2{
+          line-height:1;
+          margin-top:0;
+          text-align:center;
+          }
+          .templename{
+           line-height:1;
+          margin-top:0;
+          text-align:center;
+          }
+          hr{
+          height:2px;
+          }
+          .tabble-heading h3{
+  font-family: 'Times New Roman', Times, serif;
+  font-weight: bold;
+  font-size: 16px;
+  margin: 8px 0 0 0;
+}
+          table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+          table, th, td {
+            border: 1px solid black;
+            text-transform: uppercase;
+
+          }
+            .total,number{
+            text-align:right;
             }
-            table, th, td {
-              border: 1px solid black;
+          th, td {
+           padding-left:5px;
+            text-align: left;
+          }
+            .grandtotal{
+            text-align:right;
             }
-            th, td {
-              padding: 5px;
-              text-align: left;
-            }
+            #print-section{
+         padding-bottom: 100px;
+  }
+       
+    
+    .page-break {
+      page-break-before: always;
+    }
           </style>
         </head>
         <body>${printContent.innerHTML}</body>
@@ -207,7 +299,6 @@ this.ts.use(this.lang || 'en');
     WindowPrt.document.close();
     WindowPrt.focus();
   
-    // Make sure that the window is still valid before calling print and close
     if (WindowPrt) {
       WindowPrt.print();
       WindowPrt.close();

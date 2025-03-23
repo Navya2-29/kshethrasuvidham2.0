@@ -22,6 +22,7 @@ export class MemberMasterComponent implements OnInit {
   memeberForm: FormGroup;
   loading: boolean = false
   nakshatham: any[];
+  searchQuery: string = '';
   userId: string | null;
   memberList: any[];
   editFlag:boolean=false;
@@ -29,6 +30,7 @@ export class MemberMasterComponent implements OnInit {
   memberDetails:any[];
   templeName:string | null;
   vmActivelist: any[] = [];
+  filteredPmaster: any[] = [];
   private formBuilder = inject(FormBuilder);
   private masterservice = inject(MasterService);
   // constructor
@@ -48,12 +50,35 @@ export class MemberMasterComponent implements OnInit {
       name: ['',Validators.required],
       address1: ['',Validators.required],
       address2: [''],
-      mobile: ['',Validators.required],
+      mobile: ['',[Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
       email: [''],
+      Amount:[''],
+      VazhId:[''],
+      endowment:[false],
       relativesDetails: this.formBuilder.array([])
     })
     this.addRelativeDetails();
+    this.memeberForm.get('endowment')?.valueChanges.subscribe((checked) => {
+      this.toggleEndowmentValidators(checked);
+    });
   }
+
+  private toggleEndowmentValidators(isChecked: boolean) {
+    if (isChecked) {
+      this.memeberForm.get('Amount')?.setValidators([Validators.required]);
+      this.memeberForm.get('VazhId')?.setValidators([Validators.required]);
+    } else {
+      this.memeberForm.get('Amount')?.clearValidators();
+      this.memeberForm.get('VazhId')?.clearValidators();
+    }
+
+    // Update validity state
+    this.memeberForm.get('Amount')?.updateValueAndValidity();
+    this.memeberForm.get('VazhId')?.updateValueAndValidity();
+  }
+
+
+
 
   removeDevotee(index: number) {
     if (this.relativesDetails.length === 1) {
@@ -108,6 +133,8 @@ export class MemberMasterComponent implements OnInit {
       Cuser: this.userId,
       Address: data.address1,
       Type: "INSERT",
+      Amount:data.Amount?data.Amount:"0",
+      VazhId:data.VazhId?data.VazhId:"0",
       DevoteeDetails: data.relativesDetails.map((relative: any) => ({
         ...relative,
         MID: "" // Assigning MID to each relative dynamically
@@ -137,6 +164,7 @@ export class MemberMasterComponent implements OnInit {
       next: (data) => {
         console.log(data, "get member details");
         this.memberList=data;
+        this.filteredPmaster=data;
       }
     })
   }
@@ -200,6 +228,7 @@ this.masterservice.getMaster(payLoad).subscribe({
 
 
 onUpdate(data:any){
+  this.editFlag=false
   if(data){
     const deletePayLoad={
       Type:"DevoteeDetails",
@@ -216,7 +245,10 @@ onUpdate(data:any){
     MID: this.memberId,
     Cuser: this.userId,
     Address: data.address1,
+    Amount:data.Amount,
+    VazhId:data.VazhId,
     Type: "UPDATE",
+    
     DevoteeDetails: data.relativesDetails.map((relative: any) => ({
       ...relative,
       MID: this.memberId // Assigning MID to each relative dynamically
@@ -254,8 +286,6 @@ resetForm() {
 
 
   getAllActivevazhipad(){
-
-   
       this.masterservice.getAllActiveVazhipad().subscribe((data) => {
         this.vmActivelist = data.map((item) => ({
           VM_Id: item.VM_Id,
@@ -265,6 +295,33 @@ resetForm() {
         }));
         console.log(this.vmActivelist);
       });
+  }
+  onEndowmentChange() {
+    this.toggleEndowmentFields();
+  }
+
+
+  
+  private toggleEndowmentFields() {
+    const endowmentChecked = this.memeberForm.get('endowment')?.value;
+    if (!endowmentChecked) {
+      this.memeberForm.get('Amount')?.reset();
+      this.memeberForm.get('VazhId')?.reset();
+    }
+  }
+
+  onSearch() {
+    if (!this.searchQuery.trim()) {
+      this.filteredPmaster = this.memberList;
+    } else {
+      this.filteredPmaster = this.memberList.filter((data) => {
+        console.log(data);
+        return (
+          data.Name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+          data.mobile.toLowerCase().includes(this.searchQuery.toLowerCase())
+        );
+      });
+    }
   }
 
 }

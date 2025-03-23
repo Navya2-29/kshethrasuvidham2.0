@@ -20,7 +20,7 @@ import { TranslateModule } from '@ngx-translate/core';
   standalone: true,
   imports: [CommonModule,MatTableModule,MatPaginatorModule,TranslateModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
   templateUrl: './report-advancedbooking.component.html',
-  styleUrl: './report-advancedbooking.component.css'
+  styleUrls: ['./report-advancedbooking.component.css','/src/assets/styles/report.style.css'],
 })
 export class ReportAdvancedbookingComponent {
   displayedColumns: string[] = ['BillNo','BillDate','Vazhipad', 'Name', 'Star', 'Qty', 'Rate', 'Amount',  'VazhipadDate' ];
@@ -356,19 +356,57 @@ generatePDF(){
       <head>
         <title>Print</title>
         <style>
-          /* Add custom styles for printing if needed */
+         
+          body {
+    font-size: 16px;
+    font-family: "Times New Roman", serif;
+  }
+          h3,p,h4,h2{
+          line-height:1;
+          margin-top:0;
+          text-align:center;
+          }
+          .templename{
+           line-height:1;
+          margin-top:0;
+          text-align:center;
+          }
+          hr{
+          height:2px;
+          }
+          .tabble-heading h3{
+  font-family: 'Times New Roman', Times, serif;
+  font-weight: bold;
+  font-size: 16px;
+  margin: 8px 0 0 0;
+}
           table {
             width: 100%;
             border-collapse: collapse;
           }
           table, th, td {
             border: 1px solid black;
+            text-transform: uppercase;
+
           }
+            .total,.number{
+            text-align:right;
+            }
           th, td {
-            padding: 5px;
+           padding-left:5px;
             text-align: left;
           }
-        </style>
+            #print-section{
+padding-bottom: 100px;
+  }
+      .qty{
+      text-align:center;
+      } 
+    
+    .page-break {
+      page-break-before: always;
+    }
+          </style>
       </head>
       <body>${printContent.innerHTML}</body>
     </html>

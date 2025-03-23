@@ -4,21 +4,22 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { jsPDF } from 'jspdf'; 
+// import { jsPDF } from 'jspdf'; 
 import {ReportData} from '../../../models/poornam-report'
 import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { HttpClient } from '@angular/common/http';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import html2pdf from 'html2pdf.js';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-report-view',
   standalone: true,
   imports: [CommonModule,MatTableModule,MatPaginatorModule,TranslateModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
   templateUrl: './report-view.component.html',
-  styleUrl: './report-view.component.css',
+  styleUrls: ['./report-view.component.css','/src/assets/styles/report.style.css'],
 })
 export class ReportViewComponent implements OnInit {
   
@@ -38,7 +39,7 @@ templeName:string|null;
 templeAddress:string|null;
   constructor(private route: ActivatedRoute, private ts: TranslateService, private service: ReportService,private router: Router,private http: HttpClient ) {
 
-    this.lang=localStorage.getItem('Language');
+this.lang=localStorage.getItem('Language');
 this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
 this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
 const userLang = navigator.language || 'en';
@@ -292,7 +293,7 @@ this.ts.use(this.lang || 'en');
     if (window.history.length > 1) {
       window.history.back(); // Goes back to the previous page in history
     } else {
-      window.close(); // Closes the tab if it's the only page open
+      window.close(); 
     }
   }
 
@@ -305,7 +306,6 @@ this.ts.use(this.lang || 'en');
 
   const WindowPrt = window.open('', '', 'width=800,height=600');
   
-  // Check if the print window was successfully opened
   if (!WindowPrt) {
     console.error('Unable to open print window. Please check pop-up blockers.');
     return;
@@ -316,22 +316,51 @@ this.ts.use(this.lang || 'en');
       <head>
         <title>Print</title>
         <style>
-          /* Add custom styles for printing if needed */
-          h3,h4,h5{
+         
+          body {
+    font-size: 16px;
+    font-family: "Times New Roman", serif;
+  }
+    
+          p,h4,h2{
           line-height:1;
           margin-top:0;
+          text-align:center;
           }
+          .templename{
+           line-height:1;
+          margin-top:0;
+          text-align:center;
+          }
+          hr{
+          height:2px;
+          background-color:gray;
+          }
+          .tabble-heading h3{
+  font-family: 'Times New Roman', Times, serif;
+  font-weight: bold;
+  font-size: 16px;
+  margin: 8px 0 0 0;
+}
           table {
             width: 100%;
             border-collapse: collapse;
           }
           table, th, td {
             border: 1px solid black;
+            text-transform: uppercase;
+
           }
+            .number,.total{
+            text-align:right;
+            }
           th, td {
-            padding: 5px;
+           padding-left:5px;
             text-align: left;
           }
+            #print-section{
+padding-bottom: 100px;
+  }
         </style>
       </head>
       <body>${printContent.innerHTML}</body>
@@ -341,7 +370,6 @@ this.ts.use(this.lang || 'en');
   WindowPrt.document.close();
   WindowPrt.focus();
 
-  // Make sure that the window is still valid before calling print and close
   if (WindowPrt) {
     WindowPrt.print();
     WindowPrt.close();
@@ -428,7 +456,27 @@ this.ts.use(this.lang || 'en');
   // }
 
 
+  generatePDF() {
+    const element = document.getElementById('print-section'); 
 
+    if (!element) {
+      console.error("Element not found");
+      return;
+    }
+
+    html2canvas(element, { scale: 2 }).then(canvas => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+
+      const imgWidth = 210; 
+      const imgHeight = (canvas.height * imgWidth) / canvas.width; 
+
+      pdf.addImage(imgData, 'PNG', 0, 10, imgWidth, imgHeight);
+      pdf.save('Poornam_Report.pdf'); 
+    }).catch(error => {
+      console.error("Error generating PDF:", error);
+    });
+  }
 
 
   }

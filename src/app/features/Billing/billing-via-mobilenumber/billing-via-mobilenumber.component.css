@@ -11,14 +11,17 @@ table {
   }
 
   .dialog-header {
-    background-color: navy;
+    background-color: rgb(0, 9, 38);
     color: white;
-    padding: 10px;
+    padding: 20px;
     font-size: 16px;
   }
-  
+  mat-checkbox :checked{
+    background-color: rgb(0, 9, 38);
+
+  }
   .dialog-footer {
-    background-color: navy;
+    background-color: rgb(0, 9, 38);
     color: white;
     padding: 10px;
     display: flex;
@@ -39,3 +42,11 @@ table {
     max-height: 400px; /* Adjust the height according to your needs */
     overflow-y: auto;  /* Enable vertical scrolling */
   }
+  .no-data-message {
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: red;
+    margin-top: 20px;
+  }
+ 

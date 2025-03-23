@@ -2,55 +2,62 @@
 <app-spinner *ngIf="loading"></app-spinner>
 <div class="amster">
   <div class="container">
-    <div class="card-body outlook" style="background:white;">
+    <div class="card-body outlook" style="background:white;height:70vh">
       <div class="posback">
         <a (click)="gotoDashBoard()" class="back">&nbsp;&nbsp;<mat-icon title="Edit"
             style="color:white;" routerLink="/dashboard" >arrow_back_ios</mat-icon></a>
         <h1 class="tname">{{templeName}}</h1>
       </div>
       <div class="master">
-        <div class="col-md-7" style="background:rgba(98, 6, 202, .1); border-radius: 15px; height: 70vh;" >
+        <div class="col-md-7 fixitems" style="background:rgba(98, 6, 202, .1);height: 60vh;">
           <!-- [ngStyle]="{'overflow-y': dynamicRows.length > 5 ? 'scroll' : 'hidden'}" -->
-          <h1 style="font-weight:500;">Devotee Master</h1>
+          <h1 style="font-weight:500;padding-top: 5px;">Devotee Master</h1>
           <form [formGroup]="memeberForm">
           <div class="row">
             <div class="col-md-4">
               <table class="table">
                 <tr>
-                  <td>Name<input formControlName="name" type="text" class="form-control sps" placeholder="Enter Code"> </td>
+                  <td>Name<input formControlName="name" type="text" class="form-control sps" placeholder="Enter Name"> </td>
                   <td></td>
                 </tr>
                 <tr>
-                  <td colspan="3"> Address <input formControlName="address1" type="text" class="form-control" placeholder="Enter Name"> </td>
+                  <td colspan="3"> Address <input formControlName="address1" type="text" class="form-control" placeholder="Enter Address"> </td>
                 </tr>
                 <!-- <tr>
                   <td colspan="3"> Address 2<input type="text" formControlName="address2" class="form-control" placeholder="Enter Name"> </td>
                 </tr> -->
                 <tr>
-                  <td colspan="3"> Mobile<input type="text" formControlName="mobile" class="form-control" placeholder="Enter Name"> </td>
+                  <td colspan="3"> Mobile<input type="text" formControlName="mobile" class="form-control" placeholder="Enter Mobile"> </td>
+               
+                  <div *ngIf="memeberForm.get('mobile')?.invalid && memeberForm.get('mobile')?.touched" class="text-danger">
+                    <span *ngIf="memeberForm.get('mobile')?.errors?.['required']">Mobile number is required</span>
+                    <span *ngIf="memeberForm.get('mobile')?.errors?.['pattern']">Enter a valid 10-digit number</span>
+                  </div>
+               
                 </tr>
                 <tr>
-                  <td colspan="3"> Email<input type="email" formControlName="email" class="form-control" placeholder="Enter Name"> </td>
+                  <td colspan="3"> Email<input type="email" formControlName="email" class="form-control" placeholder="Enter Email"> </td>
                 </tr>
+              
               </table>
-              <table>
+              <div>  <table>
                 <tr>
                   <td>
-                    <input type="checkbox" class=""/>&nbsp;Endowment
+                    <input type="checkbox" class=""  formControlName="endowment" (change)="onEndowmentChange()" />&nbsp;Endowment
                   </td>
                 </tr>
-                <tr>
-                  <td><input type="text" name="" id="" placeholder="Enter Amount" class="form-control sps" width="100%"></td>
+                <tr *ngIf="memeberForm.get('endowment')?.value">
+                  <td><input type="text" name="" id="" placeholder="Enter Amount" formControlName="Amount" class="form-control sps" width="100%"></td>
                 </tr>
-                <tr>
+                <tr *ngIf="memeberForm.get('endowment')?.value">
                   <td>
-                    <select name="" id="" class="form-control sps" style="width: 100%;">
+                    <select name="" id="" class="form-control sps" style="width: 100%;" formControlName="VazhId">
                       <option value="">Select Vazhipad</option>
-                      <option *ngFor="let vazhipad of vmActivelist">{{vazhipad.VM_Name}}</option>
+                      <option *ngFor="let vazhipad of vmActivelist" [value]="vazhipad.VM_Id">{{vazhipad.VM_Name}}</option>
                     </select>
                   </td>
                 </tr>
-              </table>
+              </table> </div>
             </div>
             <div class="col-md-8">
               <table class="table">
@@ -60,25 +67,23 @@
                         <td><input  formControlName="Name" type="text" placeholder="Enter Name" style="border:none;"></td>
                         <td>
                           <select class="form-control" formControlName="Star" style="width:100%;height:30.6px;">
-                            <option>Select Star</option>
-                            <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_NameEng}}</option>
+                            <option value="">Select Star</option>
+                            <option *ngFor="let nakshtra of nakshatham" [value]="nakshtra.id"> {{nakshtra.SM_NameEng}}</option>
                           </select>
                         </td>  
                         <td style="vertical-align:center;" >
-                          <mat-icon class="icons" (click)="addRelativeDetails()" style="color: blue;">add_comment</mat-icon>
+                          <mat-icon class="icons " (click)="addRelativeDetails()" style="color: rgb(32, 59, 94);" >add_comment</mat-icon>
                         </td>
                       </tr> 
                     </div>        
               </table>
-              <table style="border: none;">
+              <table style="border: none; ">
                 <tr>
                   <td></td>
-                  <td colspan="3"><button class="btn btn-success mt-8" (click)="onSubmit(memeberForm.value)">save</button>
-                    <!-- <button class="btn btn-primary" 
-                  >update</button> -->
-                    <button class="btn btn-danger ml-4" (click)="resetForm()" >cancel</button>
-                    <!-- <button class="btn btn-primary ml-4">Edit</button> -->
-                    <button class="btn btn-danger ml-4" (click)="onUpdate(memeberForm.value)">Update</button>
+                  <td colspan="3"><button class="btn buttonColor mt-8" *ngIf="!this.editFlag" (click)="onSubmit(memeberForm.value)">Save</button>
+                    <button class="btn buttonColor  ml-4" *ngIf="this.editFlag" (click)="onUpdate(memeberForm.value)">Update</button>
+
+                    <button class="btn btn-secondary ml-4"   (click)="resetForm()" >Cancel</button>
                   </td>
                 </tr>
               </table>
@@ -87,23 +92,36 @@
         </form>
         </div>
         <div class="col-md-5 search">
-          <div class="fixitems prathishta">
+          <div style="display:flex;" class="search-container mt-3">
+         
+            <input type="text" class="form-control sps search-input" (input)="onSearch()"
+            
+              placeholder="search by Mob or Name" style="width:36%;" [(ngModel)]="searchQuery">
+            <mat-icon class="search-icon" (click)="onSearch()">search</mat-icon>
             <div>
-              <div>
-                <button class="btn btn-info" (click)="printMemberslist()">Memers list</button>
-              </div>
-              <div style="padding:0px;margin-bottom:18px; margin-top: 20px;">
+              &nbsp;<button class="btn buttonColor" (click)="printMemberslist()">Members list</button>
+            </div>
+          </div>
+          <div class=" prathishta">
+            <div>
+             
+              
+              <div style="padding:0px;margin-bottom:18px; margin-top: 20px;" class="tablescroll">
                 <table class="table">
-                  <tr>
-                    <th>Code</th>
-                    <th>Name</th>
-                    <th>Mobile</th>
-                    <th>
-                    </th>
-                  </tr>
-                  <tr *ngFor="let member of memberList">
+                  <thead   style="border-bottom: 2px solid #223d61; background-color:#223d61 ;color: white;">
+                    <tr>
+                      <th style="color:antiquewhite">Code</th>
+                      <th style="color:antiquewhite">Name</th>
+                      <th style="color:antiquewhite">Mobile</th>
+                      <th>
+                      </th>
+                    </tr>
+                  </thead>
+                 
+                 
+                  <tr *ngFor="let member of filteredPmaster">
                     <td>{{member.MID}}</td>
-                    <td>{{member.Name}}</td>
+                    <td style="text-align: left;" >{{member.Name}}</td>
                     <td>{{member.mobile}}</td>
                     <td> 
                       <!-- <a href="#" color="accent"><mat-icon class="icons">add_comment</mat-icon></a><br/> -->
@@ -114,6 +132,7 @@
                   </td>
                     
                   </tr>
+                  <tr *ngIf="memberList.length==0"><td colspan="5"> No Data Found</td></tr>
                 </table>
               </div>
               <div>

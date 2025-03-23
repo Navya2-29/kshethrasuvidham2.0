@@ -22,7 +22,7 @@ import { TranslateService } from '@ngx-translate/core';
   standalone: true,
   imports: [CommonModule,MatTableModule,TranslateModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
   templateUrl: './report-cancel.component.html',
-  styleUrl: './report-cancel.component.css'
+  styleUrls: ['./report-cancel.component.css','/src/assets/styles/report.style.css' ]
 })
 export class ReportCancelComponent {
   displayedColumns: string[] = ['BillNo','BillDate','CounterId', 'VazhiDate', 'Vazhipad',  'Name','Star','Qty','Rate','Amount','Canceldt','Remarks'];
@@ -32,6 +32,7 @@ export class ReportCancelComponent {
   pageSizeOptions: number[] = [10,50,100,200,300,500,1000];
   pageIndex = 0;
   data:ReportData[]=[];
+  nadavaravuDatat:ReportData[]=[];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   groupedData: { [key: string]: ReportData[] } = {};
   filteredData:ReportData[]=[];
@@ -58,6 +59,7 @@ ngOnInit() {
     this. fromDate = params['fromDate'];
     this. toDate = params['toDate'];
     this.fetchReportData(type, this.fromDate, this.toDate);
+    this.fetchNadavaravuCancelReportData(this.fromDate, this.toDate);
   });
 }
 
@@ -97,6 +99,44 @@ ngOnInit() {
       },
     });
   }
+
+
+
+  fetchNadavaravuCancelReportData( fromDate: string, toDate: string): void {
+    const payLoad = {
+      Type: 'CancelRptNadavaravu',
+      FromDate: fromDate,
+      ToDate: toDate,
+    };
+    this.service.getReport(payLoad).subscribe({
+      next: (data) => {
+        console.log('Fetched report data:', data);
+        this.nadavaravuDatat=data;
+            
+      //    this.data = this.data.sort((a:any, b:any) => {
+      //     const [numA, denomA] = a.BillNo.split('/').map(Number);
+      //     const [numB, denomB] = b.BillNo.split('/').map(Number);
+          
+      //     // Compare the two parts: first compare the numerator, then the denominator
+      //     return numA - numB || denomA - denomB;
+      // });
+      console.log(this.filteredData,"aaaaaaaaaaaaaaaaaaa")  
+
+        this.dataSource.data = this.data
+        console.log( this.dataSource.data)
+        this.length =this.filteredData .length; 
+        this.dataSource.paginator = this.paginator;
+        
+        console.log(this.data);
+      },
+      error: (error) => {
+        console.error('Error fetching report data:', error);
+      },
+    });
+  }
+
+
+
 
   onPageChange(event: PageEvent) {
     this.pageIndex = event.pageIndex;
@@ -386,7 +426,59 @@ generatePDF(){
     <html>
       <head>
         <title>Print</title>
+        <style>
+         
+          body {
+    font-size: 16px;
+    font-family: "Times New Roman", serif;
+  }
+          h3,p,h4,h2{
+          line-height:1;
+          margin-top:0;
+          text-align:center;
+          }
+          .templename{
+           line-height:1;
+          margin-top:0;
+          text-align:center;
+          }
+          hr{
+          height:2px;
+          }
+          .tabble-heading{
+  margin-top: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  font-family: 'Times New Roman', Times, serif;
+  text-transform: uppercase;
+  color: rgb(8, 8, 49);
+  text-align:left;
+}
+          table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+          table, th, td {
+            border: 1px solid black;
+            text-transform: uppercase;
+
+          }
+            .total,number{
+            text-align:right;
+            }
+          th, td {
+           padding-left:5px;
+            text-align: left;
+          }
+            #print-section{
+padding-bottom: 100px;
+  }
        
+    
+    .page-break {
+      page-break-before: always;
+    }
+          </style>
       </head>
       <body>${printContent.innerHTML}</body>
     </html>

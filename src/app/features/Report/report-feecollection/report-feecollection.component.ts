@@ -27,7 +27,7 @@ import { FeeCollection } from '../../../models/feecollection.model';
       MatTooltipModule,MatFormFieldModule, MatInputModule,TranslateModule
   ],
   templateUrl: './report-feecollection.component.html',
-  styleUrl: './report-feecollection.component.css'
+  styleUrls: ['./report-feecollection.component.css','/src/assets/styles/report.style.css'],
 })
 export class ReportFeecollectionComponent {
   
@@ -84,20 +84,73 @@ export class ReportFeecollectionComponent {
       <html>
         <head>
           <title>Print</title>
-          <style>
-            /* Add custom styles for printing if needed */
-            table {
-              width: 100%;
-              border-collapse: collapse;
-            }
-            table, th, td {
-              border: 1px solid black;
-            }
-            th, td {
-              padding: 5px;
-              text-align: left;
-            }
-          </style>
+           <style>
+          .header-print h2 h3 h4 {
+          margin:0;
+          padding:0;
+           }  
+          h3,h4,h2{
+          margin-top:0px;
+          margin-botton:0px;
+          text-align:center;
+
+          }
+        .tabble-heading{
+  margin-top: 10px;
+  margin-bottom: 0;
+  text-transform: uppercase;
+  font-family: 'Times New Roman', Times, serif;
+  font-weight: bold;
+  text-align: left;
+
+}
+  .date{
+   line-height:1;
+          margin-top:0;
+  text-align:center;
+  }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+          table, th, td {
+            border: 1px solid black;
+            text-transform: uppercase;
+
+          }
+          th, td {
+           padding-left:5px;
+            text-align: left;
+          }
+            #print-section{
+padding-bottom: 100px;
+  }
+
+
+.number{
+    text-align: right;
+    /* font-weight: bold; */
+}
+.total{
+
+    text-align: right;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.grandtotal{
+    text-align: right;
+    font-family: 'Times New Roman', Times, serif;
+    font-weight:bolder;
+    color: red;
+    font-size: 20px;
+    margin: 10px 0;
+
+
+}
+
+
+        </style>
         </head>
         <body>${printContent.innerHTML}</body>
       </html>
@@ -199,20 +252,73 @@ export class ReportFeecollectionComponent {
         <html>
           <head>
             <title>Print</title>
-            <style>
-              /* Add custom styles for printing if needed */
-              table {
-                width: 100%;
-                border-collapse: collapse;
-              }
-              table, th, td {
-                border: 1px solid black;
-              }
-              th, td {
-                padding: 5px;
-                text-align: left;
-              }
-            </style>
+             <style>
+          .header-print h2 h3 h4 {
+          margin:0;
+          padding:0;
+           }  
+          h3,h4,h2{
+          margin-top:0px;
+          margin-botton:0px;
+          text-align:center;
+
+          }
+        .tabble-heading{
+  margin-top: 10px;
+  margin-bottom: 0;
+  text-transform: uppercase;
+  font-family: 'Times New Roman', Times, serif;
+  font-weight: bold;
+  text-align: left;
+
+}
+  .date{
+   line-height:1;
+          margin-top:0;
+  text-align:center;
+  }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+          table, th, td {
+            border: 1px solid black;
+            text-transform: uppercase;
+
+          }
+          th, td {
+           padding-left:5px;
+            text-align: left;
+          }
+            #print-section{
+padding-bottom: 100px;
+  }
+
+
+.number{
+    text-align: right;
+    /* font-weight: bold; */
+}
+.total{
+
+    text-align: right;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.grandtotal{
+    text-align: right;
+    font-family: 'Times New Roman', Times, serif;
+    font-weight:bolder;
+    color: red;
+    font-size: 20px;
+    margin: 10px 0;
+
+
+}
+
+
+        </style>
           </head>
           <body>${printContent.innerHTML}</body>
         </html>

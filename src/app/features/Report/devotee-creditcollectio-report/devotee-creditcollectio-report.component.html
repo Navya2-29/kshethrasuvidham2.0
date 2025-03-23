@@ -1,58 +1,144 @@
-
 <app-header></app-header>
+<div class="report-container">
+  <div class="icon-container">
+    <button
+      mat-icon-button
+      matTooltip="Back to previous page"
+      (click)="goBack()"
+    >
+      <span class="material-icons">arrow_back</span>
+    </button>
+    <button mat-icon-button matTooltip="Make PDF" (click)="generatePDF()">
+      <span class="material-icons">print</span>
+    </button>
+  </div>
 
-<div class="icon-container">
-  <button mat-icon-button matTooltip="Back to previous page" (click)="goBack()">
-    <span class="material-icons">arrow_back</span>
-</button>
-    <button mat-icon-button matTooltip="Make PDF" (click)="generatePDF()" >
-        <span class="material-icons" >print</span>
-    </button> 
-    <!-- <button mat-icon-button matTooltip="Export to Spreadsheet" >
-        <span class="material-icons">grid_view</span>
-    </button> -->
- </div>
- <div id="">
   <div id="print-section">
+    <div class="header-print">
+      <h3>
+        {{ templeName }}
+      </h3>
+      <h4>
+        {{ templeAddress }}
+      </h4>
+      <h2>
+        {{ "Report.Credit Collection"  | translate }}
+      </h2>
+      <p class="date">
+        {{ formatDateToDDMMYYYY(fromDate) }} to
+        {{ formatDateToDDMMYYYY(toDate) }}
+      </p>
+      <hr />
+    </div>
+
+    <div class="body-print">
+      <div id="pdf-content" >
+
+        <div class="devoteecreditdata" *ngIf="data.length > 0">
+          <h4 class="tabble-heading" > Devotee Credit Collection </h4>
+      <table>
+        <thead>
+          <tr>
+            <th>{{"BILLDATE" | translate}}</th>
+        <th>{{"BILL NO" | translate}}</th>
+       <th>Vazhipad date</th>
+        <th>{{"VAZHIPAD" | translate }}</th>
+        <th>{{"NAME"| translate }}</th>
+        <th>{{"Report Name.Mobile No." | translate}}</th>
+        <!-- <th>{{"QUANTITY" | translate }}</th>
+        <th>{{"RATE" | translate }}</th> -->
+        <th>{{"AMOUNT" | translate }}</th>
+            
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let member of data">
+            <td>{{ member.BillDate }}</td>
+            <td>{{ member.BillNo }}</td>
+            <td>{{ member.VazhiDate }}</td>
+            <td>{{ member.Vazhipad }}</td>
+            <td>{{ member.Name }}</td>
+            
+            <td>{{ member.MobileNo }}</td>
+            <!-- <td class="number">{{ member.Rate  | number : "1.2-2" }}</td> -->
+            <td class="number">{{ member.Amount  | number : "1.2-2" }}</td>
+            <!-- <td >{{ getTransactionType(member.TrnMode) }}</td> -->
+          </tr>
+          <tr>
+            <td class="total" colspan="6">
+              Total Amount:
+            </td>
+            <td class="total">{{ getGrandTotal() | number : "1.2-2" }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="page-break"></div>
+<div class="allcreditdata" *ngIf="allCreditdata.length > 0" >
+  <h4 class="tabble-heading" > All Credit Collection </h4>
+
+
+
+  <table>
+    <thead>
+      <tr>
+        <th>{{"BILLDATE" | translate}}</th>
+        <th>{{"BILL NO" | translate}}</th>
+       <th>Vazhipad date</th>
+        <th>{{"VAZHIPAD" | translate }}</th>
+        <th>{{"NAME"| translate }}</th>
+        <th>{{"Report Name.Mobile No." | translate}}</th>
+        <!-- <th>{{"QUANTITY" | translate }}</th>
+        <th>{{"RATE" | translate }}</th> -->
+        <th>{{"AMOUNT" | translate }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of allCreditdata">
+        
+        <td>{{ item.BillDate }}</td>
+        <td>{{ item.BillNo }}</td>
+        <td>{{item.VazhiDate}}</td>
+        <td>{{item.Vazhipad}}</td>
+        <td>{{item.Name}}</td>
+        <td>{{item.MobileNo}}</td>
+       
+        <td class="number" >{{ item.Amount | number: '1.2-2'}}</td>
+        
+   
+    
+       
+        
+        <!-- <td>{{ item.Remarks }}</td> -->
+      </tr>
+      <tr>
+        <td colspan="6" class="total"><strong> Total:</strong></td>
+        <td class="total">{{ getTotalAmount() | number: '1.2-2' }}</td>
+        <!-- <td colspan="2"></td> -->
+      </tr>
+
+    </tbody>
+   
+  </table>
 
 <div>
-  <h3 style="align-items: center;text-align:center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;" >{{templeName}}</h3>
-  <h4 style="align-items: center;text-align:center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;" >{{templeAddress}}</h4>
-  <h5 style="align-items: center;text-align: center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;">{{"Report Name.DAILY TEMPLE COLLECTION (COUNTER)" |translate}}
-</h5>
-<p style="align-items: center;text-align: center;margin-left: 0;padding-top: 0;padding-bottom: 0;margin-bottom: 0; font-family: 'Times New Roman', Times, serif;font-weight:bold;">{{formatDateToDDMMYYYY(fromDate)}} to {{formatDateToDDMMYYYY(toDate)}}</p></div>
-<div style="margin-left: 30px;margin-right: 30px;">
+  <p class="grandtotal" >Total Credit Collection:{{ getTotalAmount() | number: '1.2-2' }}</p>
+</div>
+</div>
 
-          <table border="1">
-            <thead>
-              <tr>
-                <th>BillDate</th>
-                <th>BillNo</th>
-                <th>VazhiDate</th>
-                <th>{{ "VAZHIPAD" | translate }}</th>
-                <th>Name</th>
-                <th>Star</th>
-                <th>{{ "QUANTITY" | translate }}</th>
-                <th>{{ "RATE" | translate }}</th>
-                <th>{{ "AMOUNT" | translate }}</th>
-                <th>TrnMode</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let member of data">
-                <td>{{member.BillDate}}</td>
-                <td>{{member.BillNo}}</td>
-                <td>{{member.VazhiDate}}</td>
-                <td>{{member.Vazhipad}}</td>
-                <td>{{member.Name}}</td>
-                <td>{{member.Star}}</td>
-                <td>{{member.Qty}}</td>
-                <td style="text-align: right;">{{member.Rate}}</td>
-                <td style="text-align: right;">{{member.Amount}}</td>
-                <td>{{member.TrnMode}}</td>
-              </tr>
-            </tbody>
-          </table>
-    </div> 
+
     </div>
+    <div class="nodataFound" *ngIf="data.length === 0 && allCreditdata.length===0" >
+      <h2></h2>
     </div>
+    <hr />
+    </div>
+    <!-- <div class="grandtotal">
+      <p>
+        Total Amount:{{ getGrandTotal() | number : "1.2-2" }}
+      </p>
+    </div> -->
+    
+  </div>
+</div>
