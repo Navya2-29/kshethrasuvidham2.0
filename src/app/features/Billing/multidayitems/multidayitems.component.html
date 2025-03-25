@@ -4,14 +4,22 @@
 <mat-dialog-content class="high" style="width: 100%">
   
 
-  <div style="margin-left: 30px;margin-top: 10px;">
+  <div style="margin-left: 30px;" class="d-flex align-items-center ms-3">
     <input
       type="text"
       [placeholder]="'PLACEHOLDER.MOBILENUMBER' | translate"
       [(ngModel)]="mobileNumber"
-      style="width: 150px"
-      class="phone "
+      style="width: 150px ;margin-right:10px"
+      class="phone sps form-control"
     />
+    <input type="checkbox" [(ngModel)]="memberDevoteeCheck" style="margin: left 10px;" ><span style="color:black;margin-left: 5px;">Member</span> 
+    <button
+    class="btn btn-secondary"
+    (click)="getNameAndStarByMobilenumber()"
+    style=" font-size: 9pt; background-color: #223d61;padding-left: 5px;margin-left: 5px;"
+  >
+    Search for Devotee
+  </button>
     <!-- <button -->
       <!-- class="btn btn-secondary"
       (click)="onFind()"
@@ -19,7 +27,7 @@
     >
       Find
     </button> -->
-    <div style="margin-top:10px;margin-bottom: 10px;">
+    <!-- <div style="margin-top:10px;margin-bottom: 10px;">
       <input type="checkbox" [(ngModel)]="memberDevoteeCheck" style="margin-top: 5px;" ><span style="color:black;margin-left: 5px;">Member</span> 
       <button
       class="btn btn-secondary"
@@ -28,7 +36,7 @@
     >
       Search for Devotee
     </button>
-    </div>
+    </div> -->
   </div>
 
   <div class="container" >

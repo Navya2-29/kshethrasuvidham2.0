@@ -49,7 +49,15 @@
                     placeholder="Enter Name"
                   /></p> <p><input
                     matInput
-                    *ngIf=" row.isEditing ||row.Name2"
+                    *ngIf=" row.isEditing"
+                    class="form-control"
+                    [(ngModel)]="row.Name2"
+                    placeholder="Enter Name2"
+                    [readonly]="!row.isEditing" 
+                  /></p>
+                  <p><input
+                    matInput
+                    *ngIf="row.Name2 && !row.isEditing"
                     class="form-control"
                     [(ngModel)]="row.Name2"
                     placeholder="Enter Name2"
@@ -65,11 +73,20 @@
                 <th mat-header-cell *matHeaderCellDef>{{"STAR" | translate }}</th>
                 <td mat-cell *matCellDef="let row">
                   <ng-container *ngIf="row.isEditing; else viewStar">
-                   <p><select [(ngModel)]="row.Star" class="form-control">
-                    <option *ngFor="let star of nakshatham" [value]="star.id">
+                   <p>
+                    <select [(ngModel)]="row.Star" class="form-control">
+                    <!-- <option *ngFor="let star of nakshatham" [value]="star.id">
                       {{ star.SM_NameEng }}
-                    </option>
-                  </select></p> 
+                    </option> -->
+                    <ng-container *ngIf="lang=='en'"> <option *ngFor="let nakshtra of nakshatham" [value]="nakshtra.id" >{{nakshtra.SM_NameEng}}</option>
+                    </ng-container>
+                    <ng-container *ngIf="lang!='en'"> <option *ngFor="let nakshtra of nakshatham" [value]="nakshtra.id" >{{nakshtra.SM_Name}}</option>
+                    </ng-container>
+
+                  </select>
+                
+                
+                </p> 
                   <p *ngIf="row.Star2 && row.Star2 !='0'"> <select [(ngModel)]="row.Star2" class="form-control">
                     <option *ngFor="let star of nakshatham" [value]="star.id">
                       {{ star.SM_NameEng }}
@@ -234,14 +251,14 @@ class="proceed"
     <table style="width:100%;padding:0px;" class="table1">
     <tr>
       <td style="padding:0px;width:80px;font-size:10pt;">
-  Prathista
+  {{"PRATHISTA" | translate}}
     </td>
     <td style="padding:0px;width:750px;">
       <span style="font-weight: bold;padding:0px;font-size:10pt;">{{ prathista }}</span>
     </td>
     
     <td style="text-align:right;padding:0px;width:200px;font-size:10pt;">
-      Bill No
+      {{"BILL NO" | translate }}
     </td>
     <td style="padding:0px;width:110px;text-align:right;">
       <span style="font-weight:bold;font-size:10pt;font-size:10pt;">{{lastBillNo}}</span>
@@ -249,13 +266,13 @@ class="proceed"
   </tr>
   <tr>
     <td style="padding:0px;font-size:10pt;">
-      Vazhipad
+      {{"VAZHIPAD" | translate }}
     </td>
     <td style="padding:0px;">
       <span style="font-weight: bold;padding:0px;font-size:10pt;font-size:10pt;">{{ vazhipad }}</span>
     </td>
     <td style="text-align: right;padding:0px;font-size:10pt;">
-      BillDate
+      {{"BILLDATE" | translate}}
     </td>
     <td style="padding:0px;text-align:right;">
       <span style="font-weight:bold;padding:0px;font-size:10pt;">{{billDate  }}</span>
@@ -263,7 +280,7 @@ class="proceed"
   </tr>
   </table>
 </div>
-<div class="filter" style="margin-top:9px;display:flex;justify-content: space-between;border:1px solid silver;padding:9px;">
+<!-- <div class="filter" style="margin-top:9px;display:flex;justify-content: space-between;border:1px solid silver;padding:9px;">
   <div style="text-align:center;">
     <span style="font-size:8pt;">Starwise: </span> <br><span style="font-size:11;text-transform: capitalize;font-weight:bold">Rohini</span>
   </div>
@@ -282,23 +299,23 @@ class="proceed"
   <div style="text-align:center;">
     <span style="font-size:8pt;">Thithi: </span><br><span style="font-size:11;text-transform: capitalize;font-weight:bold">Panchami</span>
   </div>
-</div>
+</div> -->
   
       <!-- <h2>{{ prathista }} - {{ vazhipad }}</h2> -->
       <table style="width:100%;" class="table1">
        
           <tr style="border-bottom:1px solid brown;">
-            <th style="font-size:10pt;width:100px;">Date</th>
-            <th style="font-size:10pt;width:300px;">Name</th>
-            <th style="font-size:10pt;">Star</th>
-            <th style="font-size:10pt;">Qty</th>
-            <th style="font-size:10pt;">Rate</th>
-            <th style="font-size:10pt;">Amount</th>
+            <th style="font-size:10pt;width:100px;">{{"DATE"| translate }}</th>
+            <th style="font-size:10pt;width:300px;">{{"NAME" | translate}}</th>
+            <th style="font-size:10pt;">{{"STAR" | translate }}</th>
+            <th style="font-size:10pt;">{{"QUANTITY" | translate}}</th>
+            <th style="font-size:10pt;">{{"RATE" | translate}}</th>
+            <th style="font-size:10pt;">{{"AMOUNT" | translate }}</th>
           </tr>
         
         <tbody>
           <tr *ngFor="let entry of gropedData[prathista][vazhipad]" style="border-bottom:.25px solid silver;">
-            <td style="font-size:10pt;vertical-align:middle;">15-02-2025</td>
+            <td style="font-size:10pt;vertical-align:middle;">{{entry.VazhipadDate | date:"dd-MM-yyyy"}}</td>
             <td style="font-size:10pt;vertical-align:middle;">{{ entry.Name }}</td>
             <td style="font-size:10pt;vertical-align:middle;">{{this.getStarbyId( entry.Star) }}</td>
             <td style="font-size:10pt;text-align:center;vertical-align:middle;">15</td>
@@ -307,7 +324,7 @@ class="proceed"
           </tr>
           <!-- Total Row -->
           <tr style="border-top:1px solid gray;border-bottom:1px solid gray">
-            <td colspan="5" style="text-align: left;font-size:10pt;color:maroon;"><b>Total</b></td>
+            <td colspan="5" style="text-align: left;font-size:10pt;color:maroon;"><b>{{"Report Name.TOTAL" | translate }}</b></td>
             <td style="font-size:11pt;text-align:right;color:maroon"><b>{{ calculateTotalAmount(gropedData[prathista][vazhipad]) }}</b></td>
           </tr>
         </tbody>
@@ -315,13 +332,13 @@ class="proceed"
       
         <div class="billbottom" style="margin-top:9px;display:flex;justify-content: space-between;">
           <div>
-            <span style="font-size:9pt;">User Name: </span><span style="font-size:9pt;text-transform: capitalize;">{{this.name}}</span>
+            <span style="font-size:9pt;">{{"user" | translate}}: </span><span style="font-size:9pt;text-transform: capitalize;">{{this.name}}</span>
           </div>
           <div>
-            <span style="font-size:9pt;">Counter ID: </span> <span style="font-size:9pt;text-transform: capitalize;">{{counterId}}</span>
+            <span style="font-size:9pt;">{{"Counter" | translate}}: </span> <span style="font-size:9pt;text-transform: capitalize;">{{counterId}}</span>
           </div>
           <div>
-            <span style="font-size:9pt;">Payment: </span><span style="font-size:9pt;text-transform: capitalize;">{{displayTrnsmode=='CR'?"Not Paid":displayTrnsmode}}</span>
+            <span style="font-size:9pt;">{{"feecollection.Payment" | translate}}: </span><span style="font-size:9pt;text-transform: capitalize;">{{displayTrnsmode=='CR'?"Not Paid":getTransactionType(displayTrnsmode)}}</span>
           </div>
         </div>
       

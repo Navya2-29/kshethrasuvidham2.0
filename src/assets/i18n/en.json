@@ -7,7 +7,7 @@
   "RATE": "Rate",
   "DATE": "Date",
   "TIME": "Time",
-  "TODAYCOLLECTION": "Today Collection",
+  "TODAYCOLLECTION": "Cash Collection",
   "LastBillNo": "Last Bill No.",
   "Cash": "Cash",
   "Select": "Select",
@@ -48,9 +48,25 @@
   "TODATE":"To Date",
   "Select Diety":"Select Prathishta",
   "Select Vazhipad":"Select Vazhipad",
+  "Mode":"Payment Mode",
   "user":"User",
   "FeeCollection":"Fee Collection",
   "Thulabaram":"Thulabaram",
+"Quantity":"Qty",
+"Counter":"Counter",
+"Date":"Date",
+"Receipt No":"Receipt No",
+"Name":"Name",
+"Item":"Item",
+"Weight":"Weight",
+"Qty":"Qty",
+"Receipt Amount":"Receipt Amount",
+"Transaction Mode":"Transaction Mode",
+"select Unit":"Select Unit",
+"Item Value":"Item Value",
+"Sl No":"Sl No",
+"Enter weight":"Enter weight",
+
   "PLACEHOLDER": {
     "VAZHIPAD": "Select Vazhipad",
     "NAME": "Enter your Name",
@@ -74,7 +90,8 @@
     "BANKNAME": "Bank Name",
     "Description": "Description",
     "COUNTERID":"Counter Id",
-    "ITEM":"Item"
+    "ITEM":"Item",
+    "Endowment":"Endowment"
   },
   "OPTIONS": {
     "TIME1": "Any Time",
@@ -151,9 +168,24 @@
     "Vazhipad List":"Vazhipad List",
    "Select prathista":"Select Prathishta",
    "Credit Collection":"Credit Collection",
+   "Credit Collection Report":"Credit Collection Report",
+
    "report-duplicate":"Duplicate Report",
    "Count":"Count",
-   "Mobile No.":"Mobile No"
+   "Mobile No.":"Mobile No",
+   "TOTAL":"Total",
+   "Total for":"Total For",
+   "GrandTotal":"Grand Total",
+   "Bill Date":"Bill Date",
+   "CREDIT":"CREDIT",
+   "VAZHIPAD DATE":"Vazhipad Date",
+   "MOBILE NO":"Mobile No",
+   "Total Collection":"Total Collection",
+   "Devotee Credit Collection":"Devotee Credit Collection",
+   "Member Credit Collection":"Members Credit Collection",
+   "Member due/credit":"Member due/credit",
+   "Devotee due/credit":"Devotee due/credit",
+   "All Due/credit":"All Due/credit"
   },
   "Day":{
     "SUNDAY":"SUNDAY",
@@ -163,5 +195,41 @@
     "THURSDAY":"THURSDAY",
     "FRIDAY":"FRIDAY",
     "SATURDAY":"SATURDAY"
+  },
+  "Credits":{
+    "RefNo":"RefNo", 
+    "Name":"Name",
+    "Mobile Number":"Mobile Number", 
+    "Address":"Address",
+     "Total Amount":"Total Amount",
+    "Payment Method":"Payment Method",
+    "cash":"Cash", 
+    "UPI":"UPI",
+    "cheque":"Cheque",
+    "Money Order":"Money Order",
+     "Enter  Number Cheque / DD /Mo /UPI":"Enter  Number Cheque / DD /Mo /UPI",
+   "Save": "Save",
+    "Cancel":"cancel"
+
+
+  },
+  "feecollection":{
+   "Mobile Number": "Mobile Number" ,  
+"Member ID":"Member ID" ,
+"Bill No":"Bill No",
+
+"Item":"Item" ,
+"Select Item":"Select Item",
+"Month" :"Month", 
+"Select":"Select",
+"Year":"Year" , 
+"Select Year":"Select Year", 
+"Select Month":"Select Month",
+"Amount":"Amount" ,
+"Total Amount":"Total Amount",
+"UPI ID/ Cheque No":"UPI ID/ Cheque No" ,
+"UPI ID/ Cheque ID":"UPI ID/ Cheque ID", 
+"Payment":"Payment"
+   
   }
 }

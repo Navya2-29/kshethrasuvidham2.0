@@ -1,14 +1,14 @@
 <div class="card-body" style="background: white">
-  <button
+  <!-- <button
     class="btn btn-secondary rounded-circle back-btn"
     (click)="goBack()"
   
   >
     <mat-icon   (click)="goBack()" >arrow_back</mat-icon>
-  </button>
+  </button> -->
   <div class="row">
     <div class="col-md-5">
-      <h2 style="margin-left: 100px">{{"Nadavaravu"|translate }}</h2>
+      <h2 style="margin-left: 20px">{{"Nadavaravu"|translate }}</h2>
       <div [formGroup]="nadavaravForm">
         <table class="table">
           <tr>
@@ -102,7 +102,7 @@
               </ng-container>
               <ng-container  *ngIf="lang=='en'">  <option *ngFor="let item of itemMaster" [value]="item.NM_Id">
                   {{ item.NM_Name }}
-                </option>              </ng-container>
+                </option></ng-container>
 
               </select>
             </td>
@@ -110,7 +110,7 @@
           </tr>
           <tr>
             <td>
-                <label for="Qty">Quantity</label>
+                <label for="Qty">{{"Quantity"| translate}}</label>
                 <input 
                   type="text" 
                   id="Qty" 
@@ -121,11 +121,11 @@
                   class="form-control sps">
               </td>
             <td>
-                <label for="weight">Weight</label>
+                <label for="weight">{{"Weight" | translate}}</label>
               <input
                 type="text"
                 formControlName="weight"
-                placeholder="Enter weight"
+                [placeholder]="'Enter weight' | translate "
                 class="form-control sps"
                 [ngClass]="{
                   'is-invalid':
@@ -136,7 +136,7 @@
             </td>
 
             <td>
-                <label for="unit">select Unit</label>
+                <label for="unit">{{"select Unit" | translate }}</label>
               <select
                 class="form-control"
                 formControlName="unit"
@@ -147,7 +147,7 @@
                     nadavaravForm.get('unit')?.touched
                 }"
               >
-                <option value="">Select Unit</option>
+                <option value="">{{"select Unit" | translate }}</option>
                 <option value="KG">Kg</option>
                 <option value="GM">Gm</option>
                 <option value="MG">Mg</option>
@@ -170,7 +170,7 @@
             <!-- <input type="text" formControlName="ItemValue" placeholder="Item Value" class="form-control sps"> -->
             <!-- </td> -->
             <td>
-              <label for="ItemValue">Item Value</label>
+              <label for="ItemValue">{{"Item Value" | translate }}</label>
               <input
                 type="text"
                 id="ItemValue"
@@ -180,12 +180,12 @@
               />
             </td>
             <td>
-                <label for="ReceiptAmount">Receipt Amount</label>
+                <label for="ReceiptAmount">{{"Receipt Amount" | translate}}</label>
                 <input 
                   type="text" 
                   id="ReceiptAmount" 
                   formControlName="ReceiptAmount" 
-                  placeholder="Receipt Amount" 
+                 [placeholder] ="'Rceipt Amount'| translate" 
                   class="form-control sps">
               </td>
 
@@ -236,21 +236,25 @@
           class="form-control sps"
           placeholder="search by Bill No."
           style="width: 25%"
+          (input)="onSearch()"
+         
         />
+        <!-- <mat-icon class="search-icon" (click)="onSearch()">search</mat-icon> -->
+
         <button class="btn btn-primary" (click)="onSearch()">Search</button>
       </div>
       <div class="fixitems">
         <table class="table">
-          <tr style="border-bottom: 2px solid #223d61">
-            <th>Sl No.</th>
-            <th>Date</th>
-            <th>Receipt No.</th>
-            <th>Name</th>
-            <th>Item</th>
-            <th>Weight</th>
-            <th>Qty</th>
-            <th>Receipt Amount</th>
-            <th>Transaction Mode</th>
+          <tr style="border-bottom: 2px solid #223d61;text-align:left">
+            <th>{{"Report Name.SINO" | translate }}.</th>
+            <th>{{"Date" | translate }}</th>
+            <th>{{"Receipt No" | translate }}.</th>
+            <th>{{"Name" | translate }}</th>
+            <th>{{"Item" | translate }}</th>
+            <th>{{"Weight" | translate }}</th>
+            <th>{{"Quantity" | translate }}</th>
+            <th>{{"Receipt Amount" | translate }}</th>
+            <th>{{"Transaction Mode" | translate }}</th>
             <th></th>
           </tr>
 

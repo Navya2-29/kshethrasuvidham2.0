@@ -269,7 +269,7 @@ export class FixedbottomComponent implements OnInit {
 
 // dotmetrix print function
 printReceiptsDotmetrix(data: any) {
-
+console.log(data,"dot metrix checkingkkkkkk")
   const { BillNo, Billdate, vazhipadinfo ,Trnsmode} = data;
   this.differentDateArray = [];
   vazhipadinfo.forEach((item:any) => {

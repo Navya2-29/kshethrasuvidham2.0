@@ -47,3 +47,9 @@ p.category{
 
 
 }
+td, th {
+    word-wrap: break-word; 
+    white-space: normal;   
+    overflow-wrap: break-word; 
+    max-width: 200px;
+}

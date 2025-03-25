@@ -68,7 +68,13 @@
                         <td>
                           <select class="form-control" formControlName="Star" style="width:100%;height:30.6px;">
                             <option value="">Select Star</option>
-                            <option *ngFor="let nakshtra of nakshatham" [value]="nakshtra.id"> {{nakshtra.SM_NameEng}}</option>
+
+                            <ng-container *ngIf="lang=='en'"> <option *ngFor="let nakshtra of nakshatham" [value]="nakshtra.id" >{{nakshtra.SM_NameEng}}</option>
+                            </ng-container>
+                            <ng-container *ngIf="lang=='ml'"> <option *ngFor="let nakshtra of nakshatham" [value]="nakshtra.id" >{{nakshtra.SM_Name}}</option>
+                            </ng-container>
+
+                            <!-- <option *ngFor="let nakshtra of nakshatham" [value]="nakshtra.id"> {{nakshtra.SM_NameEng}}</option> -->
                           </select>
                         </td>  
                         <td style="vertical-align:center;" >

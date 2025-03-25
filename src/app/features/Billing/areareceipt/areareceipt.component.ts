@@ -1872,7 +1872,7 @@ export class AreareceiptComponent implements OnInit {
       return star ? star.SM_Id : '';
     } else if (this.lang != 'en') {
       const star = this.nakshatham.find((item) => item.SM_RName == Name);
-      return star ? star.SM_RName : '';
+      return star ? star.SM_Id : '';
     }
   }
 

@@ -7,8 +7,8 @@
             <table class="table">
              
                 <tr>
-                    <td colspan="2"><input type="text" readonly placeholder="BillNo" formControlName="BillNo" class="form-control sps"></td>
-                    <td colspan="2"><input type="text" readonly placeholder="RefNo" formControlName="RefNo" class="form-control sps"></td>
+                    <td colspan="2"><input type="text" readonly [placeholder]="'Credits.BillNo' | translate" formControlName="BillNo" class="form-control sps"></td>
+                    <td colspan="2"><input type="text" readonly [placeholder]="'Credits.RefNo'| translate " formControlName="RefNo" class="form-control sps"></td>
 
                 </tr>
                 <tr>
@@ -26,15 +26,15 @@
                             <!-- </mat-option> -->
                           <!-- } -->
                         <!-- </mat-autocomplete> --> 
-                        <input type="text" placeholder="Name" readonly formControlName="Name" class="form-control sps">
+                        <input type="text" [placeholder]="'Credits.Name'| translate " readonly formControlName="Name" class="form-control sps">
                     </td>
                     <td>
-                        <input type="text" readonly placeholder="Mobile Number" formControlName="Mobile" class="form-control sps">
+                        <input type="text" readonly [placeholder]="'Credits.Mobile Number' |translate" formControlName="Mobile" class="form-control sps">
                     </td>
                 </tr>
                 <tr>
                     <td colspan="3">
-                        <input type="text" readonly placeholder="Address" formControlName="Address" class="form-control sps">
+                        <input type="text" readonly [placeholder]="'Credits.Address' | translate " formControlName="Address" class="form-control sps">
                     </td>
                     
                 </tr>
@@ -54,27 +54,24 @@
                         <h4 style="font-weight:700;">Rs. 2500</h4>
                     </td> -->
                     <td style="text-align:center; vertical-align: middle; border:2px solid silver;padding-top:3%;margin:25px;">
-                        <span >Total Amount</span>
+                        <span >{{"Credits.Total Amount" |translate }}</span>
                         <h4 style="font-weight:700;">{{totalAmount || '0.00'}} </h4>
                     </td>
                 </tr>
-                
-               
-                
                 <tr>
                     <td style="width:25%;">
-                        <input type="text" placeholder="Amount"  readonly formControlName="Amount" class="form-control sps">
+                        <input type="text" [placeholder]="'Report Name.Amount' | translate "  readonly formControlName="Amount" class="form-control sps">
                     </td>
                     <td colspan="2" style="border:1px solid gray;padding:6px;text-align:center;vertical-align:middle;">
-                        <span style="font-weight:700;">Payment Method: &nbsp;&nbsp; </span>
+                        <span style="font-weight:700;">{{"Credits.Payment Method" | translate }}: &nbsp;&nbsp; </span>
                         <select formControlName="TrnsMode">
-                             <option value="CS">Cash</option>
+                             <option value="CS">{{"Cash" |translate}}</option>
                              
-                             <option value="UP">UPI</option>
-                             <option value="CH">Cheque</option>
-                             <option Value="MO">Money Order</option>
+                             <option value="UP">{{"UPI"| translate }}</option>
+                             <option value="CH">{{"Cheque" | translate }}</option>
+                             <option Value="MO">{{"Credits.Money Order" | translate }}</option>
                         </select>
-                        <input type="text" placeholder="Remakrs" formControlName="Remarks" placeholder="Enter Number - Cheque/DD/MO/UPI" class="form-control sps"
+                        <input type="text" [placeholder]="'Credits.Remakrs' |translate" formControlName="Remarks" [placeholder]="'Credits.Enter  Number Cheque / DD /Mo /UPI'| translate" class="form-control sps"
                         [ngClass]="{
                             'is-invalid':
                               CreditForm.get('Remarks')?.invalid &&
@@ -105,12 +102,12 @@
             <div class="fixitems">
                 <table class="table credit">
                     <tr style="border-bottom: 2px solid #223d61;">
-                        <th>Sl No.</th>
-                        <th>Bill No.</th>
-                        <th>Bill Date</th>
-                        <th>Name</th>
-                        <th>Mobile </th>
-                        <th>Total</th>
+                        <th>{{"Report Name.SINO" | translate }}</th>
+                        <th>{{"BILL NO"| translate}}.</th>
+                        <th>{{"Report Name.Bill Date"| translate }}</th>
+                        <th>{{"Credits.Name" | translate}}</th>
+                        <th>{{"Credits.Mobile Number"|  translate }} </th>
+                        <th>{{"Report Name.TOTAL" | translate }}</th>
                         
                         <th></th>
                     </tr>

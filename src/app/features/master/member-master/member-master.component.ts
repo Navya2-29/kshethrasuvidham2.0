@@ -9,11 +9,13 @@ import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Va
 import { MasterService } from '../../../services/master/master.service';
 import { NotificationService } from '../../../services/notification/notification.service';
 import { Router } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { error } from 'pdf-lib';
 
 @Component({
   selector: 'app-member-master',
   standalone: true,
-  imports: [HeaderComponent, SpinnerComponent, MatIconModule, MatButtonModule, CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [HeaderComponent,TranslateModule, SpinnerComponent, MatIconModule, MatButtonModule, CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './member-master.component.html',
   styleUrl: './member-master.component.css'
 })
@@ -31,13 +33,21 @@ export class MemberMasterComponent implements OnInit {
   templeName:string | null;
   vmActivelist: any[] = [];
   filteredPmaster: any[] = [];
+  lang: string | null;
+
   private formBuilder = inject(FormBuilder);
   private masterservice = inject(MasterService);
   // constructor
-  constructor(private notification: NotificationService,
+  constructor(private notification: NotificationService,    private ts: TranslateService,
+  
     private router:Router
   ) {
     this.addRow();
+    this.lang = localStorage.getItem('Language');
+    const userLang = navigator.language || 'en';
+    const languageCode = userLang.split('-')[0];
+    this.ts.setDefaultLang(languageCode);
+    this.ts.use(this.lang || 'en');
     this.userId = localStorage.getItem("LoginId")
     this.templeName=localStorage.getItem('TempleName') 
   }
@@ -150,7 +160,14 @@ export class MemberMasterComponent implements OnInit {
           this.notification.showSuccess("Devotee details added successfully");
           this.resetForm();
           this.getDevoteeMaster()
+        }else{
+          this.notification.showError("Please try after some time");
+
         }
+      },
+      error:(err)=>{
+        this.notification.showError(err);
+
       }
     })
   }
@@ -216,10 +233,13 @@ this.masterservice.getMaster(payLoad).subscribe({
       });
     } else {
       console.error("Invalid data format received:", data);
+
     }
   },
   error: (err) => {
     console.error("Error fetching member details:", err);
+    this.notification.showError("Error fetching member details:", err);
+
   }
 });
 
@@ -234,9 +254,15 @@ onUpdate(data:any){
       Type:"DevoteeDetails",
       Id:this.memberId
     }
-    this.masterservice.deleteMaster(deletePayLoad).subscribe((data)=>{
-      console.log(data,"delete devotee star And name")
-    })
+    this.masterservice.deleteMaster(deletePayLoad).subscribe({
+      next:(data)=>{
+        console.log(data) ;
+      },
+    error:(err)=>{
+      console.log(err)
+    }
+    }
+  )
   }
   const payLoad = {
     DevoteeName: data.name,
@@ -245,8 +271,8 @@ onUpdate(data:any){
     MID: this.memberId,
     Cuser: this.userId,
     Address: data.address1,
-    Amount:data.Amount,
-    VazhId:data.VazhId,
+    Amount:data.Amount?data.Amount:"0",
+    VazhId:data.VazhId?data.VazhId:"0",
     Type: "UPDATE",
     
     DevoteeDetails: data.relativesDetails.map((relative: any) => ({
@@ -263,6 +289,8 @@ onUpdate(data:any){
         this.notification.showSuccess("Devotee details updated successfully")
         this.resetForm()
       }
+    },error:(err)=>{
+      console.log(err);
     }
   })
 

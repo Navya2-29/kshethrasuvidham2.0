@@ -49,11 +49,11 @@
         <tr>
           <th >{{ "BILL NO" | translate }}</th>
           <th >{{ "BILLDATE" | translate }}</th>
-          <th >{{ "ITEM" | translate }}</th>
+          <th >{{ "feecollection.Item" | translate }}</th>
           <!-- <th style="background-color: #ddd;">{{"NAME" |translate }}</th> -->
           <!-- <th style="background-color: #ddd;">{{"STAR" | translate }}</th> -->
           <th >
-            {{ "PAYMENTMODE" | translate }}
+            {{ "Credits.Payment Method" | translate }}
           </th>
           <th >{{ "AMOUNT" | translate }}</th>
           
@@ -90,7 +90,7 @@
   </div>
   <div *ngIf="data.length>0"  
     >
-      <p class="grandtotal">Grand Total : {{ getTotalAmount() | number : "1.2-2" }}</p>
+      <p class="grandtotal">{{"Report Name.GrandTotal" |translate }} : {{ getTotalAmount() | number : "1.2-2" }}</p>
     </div>
 </div>
  

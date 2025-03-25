@@ -43,6 +43,7 @@ interface Entry {
   Star: string;
   Rate: number;
   Amount: number;
+  VazhipadDate:string;
 }
 
 interface GroupedData {
@@ -104,6 +105,10 @@ export class SearchByBillNumberComponent {
   name:string | null;
   updateTransMode:FormGroup;
   gropedData: GroupedData = {};
+  multidayNal:string;
+  multidayMonth:string;
+  multidayDay:string;
+  multidaySearch:string;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   cancellationReason: string = '';
@@ -496,24 +501,51 @@ this.groupDataByPrathistaAndVazhipad()
 
 
   getTransactionType(transmode: string): string {
-    console.log(transmode);
     switch (transmode) {
       case 'ON':
-        return 'Bank';
+        if (this.lang == 'en') {
+          return 'ONLINE';
+        } else {
+          return 'ഓൺലൈൻ';
+        }
+
       case 'CS':
-        return 'CASH';
+        if (this.lang == 'en') {
+          return 'CASH';
+        } else {
+          return 'ക്യാഷ്';
+        }
       case 'MO':
-        return 'MONEY ORDER';
+        if (this.lang == 'en') {
+          return 'MONEY ORDER';
+        } else {
+          return 'മണി ഓർഡർ';
+        }
       case 'UP':
-        return 'UPI';
+        if (this.lang == 'en') {
+          return 'UPI';
+        } else {
+          return 'യുപിഐ';
+        }
+
       case 'CH':
-        return 'CHEQUE';
+        if (this.lang == 'en') {
+          return 'CHEQUE';
+        } else {
+          return 'ചെക്ക്';
+        }
       case 'CR':
-        return 'Cash not paid';
-
+        if (this.lang == 'en') {
+          return 'CREDIT';
+        } else {
+          return 'ക്രെഡിറ്റ്';
+        }
       case 'DE':
-        return 'DEBIT';
-
+        if (this.lang == 'en') {
+          return 'DEBIT';
+        } else {
+          return 'ഡെബിറ്റ്';
+        }
       default:
         return 'OTHERS';
     }
@@ -1111,8 +1143,6 @@ if(this.displayTrnsmode!=editedTransmodeValue){
     }
   }
   
-
-
   groupDataByPrathistaAndVazhipad(): void {
     this.gropedData = this.data.reduce((acc: GroupedData, item: any) => {
       const prathistaKey = item.Prathista;
@@ -1131,6 +1161,7 @@ if(this.displayTrnsmode!=editedTransmodeValue){
         Star: item.Star,
         Rate: item.Rate,
         Amount: item.Amount,
+        VazhipadDate:item.EvazDate
       });
   
       return acc;

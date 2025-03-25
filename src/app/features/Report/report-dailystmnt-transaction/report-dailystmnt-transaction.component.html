@@ -63,7 +63,7 @@
                   </td>
                 </tr>
                 <tr>
-                  <td colspan="3" class="total">Total</td>
+                  <td colspan="3" class="total">{{"Report Name.TOTAL" | translate }}</td>
                   <td class="total">
                     {{
                       getTotalForCategory(mode.key, category.key)
@@ -77,35 +77,35 @@
 
           <!-- Total for each transaction mode -->
           <div class="transactionTotal">
-            Total for {{ getTransactionType(mode.key) | translate }}:
+            {{"Report Name.Total for" | translate}} {{ getTransactionType(mode.key) | translate }}:
             {{ getTotalForTransactionMode(mode.key) | number : "1.2-2" }}
           </div>
         </div>
       </ng-container>
         <div class="creditCollection" *ngIf="creditTransactionArray.length > 0">
-          <p class="transaction">CREDIT</p>
+          <p class="transaction">{{"REport Name.CREDIT"| translate }}</p>
           <table>
             <thead>
               <tr>
                 <th>{{ "VAZHIPAD" | translate }}</th>
-                <th>{{ "QUANTITY" | translate }}</th>
-                <th>{{ "RATE" | translate }}</th>
-                <th>{{ "AMOUNT" | translate }}</th>
+                  <th>{{ "QUANTITY" | translate }}</th>
+                  <th>{{ "RATE" | translate }}</th>
+                  <th>{{ "AMOUNT" | translate }}</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let item of creditTransactionArray">
                 <td>
-                  {{ item.BillDate }}
+                  {{ item.Vazhipad  }}
                 </td>
-                <td>{{ item.BillNo }}</td>
-                <td>
-                  {{ item.Name }}
+                <td>{{ item.Qty }}</td>
+                <td class="number">
+                  {{ item.Rate | number : "1.2-2" }}
                 </td>
                 <td class="number">{{ item.Amount | number : "1.2-2" }}</td>
               </tr>
               <tr>
-                <td colspan="3" class="total">Total</td>
+                <td colspan="3" class="total">{{"Report Name.TOTAL"}}</td>
                 <td class="total">
                   {{ getCrediTransactionTotal() | number : "1.2-2" }}
                 </td>
@@ -115,7 +115,7 @@
         </div>
       </div>
       <div class="grandtotal" *ngIf="data.length>0">
-        Grand Total: {{ getGrandTotal() | number : "1.2-2" }}
+        {{"Report Name.GrandTotal" | translate }}: {{ getGrandTotal() | number : "1.2-2" }}
       </div>
       <div *ngIf="data.length===0 && creditTransactionArray.length===0" class="nodataFound">
       <h2> </h2>

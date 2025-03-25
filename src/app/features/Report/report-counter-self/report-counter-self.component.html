@@ -37,10 +37,10 @@
     <div class="body-print">
       <div id="pdf-content" *ngIf="data.length > 0">
         <div *ngFor="let counter of groupedData | keyvalue">
-          <p class="counter">Counter: {{ counter.key }}</p>
+          <p class="counter">{{"Counter"| translate }}: {{ counter.key }}</p>
 
           <div *ngFor="let user of counter.value | keyvalue">
-            <p class="user">User: {{ user.key }}</p>
+            <p class="user">{{"user"| translate }}: {{ user.key }}</p>
             <p></p>
 
             <div *ngFor="let mode of user.value | keyvalue">
@@ -71,7 +71,7 @@
                   <!-- Transaction Mode Total -->
                   <tr *ngIf="mode.value.length > 0">
                     <td colspan="3" class="total">
-                      Total for {{ getTransactionType(mode.key) }}
+                     {{"Report Name.Total for" |translate }} {{ getTransactionType(mode.key) }}
                     </td>
                     <td class="total">
                       {{
@@ -91,7 +91,7 @@
 
             <div class="total">
               <h5 id="totalamount">
-                Total for {{ user.key }}:
+                {{"Report Name.Total for"| translate }} {{ user.key }}:
                 {{ getTotalForCuser(counter.key, user.key) | number : "1.2-2" }}
               </h5>
             </div>
@@ -100,7 +100,7 @@
           <!-- Counter-wise Total -->
           <div class="total">
             <h5 class="totalcounter">
-              Total for Counter {{ counter.key }}:
+              {{"Report Name.Total for" |translate }} {{"Counter" |translate}} {{ counter.key }}:
               {{ getTotalForCounter(counter.key) | number : "1.2-2" }}
             </h5>
           </div>
@@ -108,7 +108,7 @@
         </div>
       </div>
       <div class="grandtotal" *ngIf="data.length > 0">
-        <h1>GrandTotal: {{ "" + getGrandTotal() | number : "1.2-2" }}</h1>
+        <h1>{{"Report Name.GrandTotal" | translate }}: {{ "" + getGrandTotal() | number : "1.2-2" }}</h1>
       </div>
 
       

@@ -218,20 +218,49 @@ getTotalForCuser(counterId: string, cuser: string): number {
   getTransactionType(transmode: string): string {
     switch (transmode) {
       case 'ON':
-        return 'Bank';
-      case 'CS':
-        return 'CASH';
-      case 'MO':
-        return 'MONEY ORDER';
-      case 'UP':
-        return 'UPI';
-      case 'CH':
-        return 'CHEQUE';
-      case 'CR':
-        return 'CREDIT';
-      case 'DE':
-        return 'DEBIT';
+        if (this.lang == 'en') {
+          return 'ONLINE';
+        } else {
+          return 'ഓൺലൈൻ';
+        }
 
+      case 'CS':
+        if (this.lang == 'en') {
+          return 'CASH';
+        } else {
+          return 'ക്യാഷ്';
+        }
+      case 'MO':
+        if (this.lang == 'en') {
+          return 'MONEY ORDER';
+        } else {
+          return 'മണി ഓർഡർ';
+        }
+      case 'UP':
+        if (this.lang == 'en') {
+          return 'UPI';
+        } else {
+          return 'യുപിഐ';
+        }
+
+      case 'CH':
+        if (this.lang == 'en') {
+          return 'CHEQUE';
+        } else {
+          return 'ചെക്ക്';
+        }
+      case 'CR':
+        if (this.lang == 'en') {
+          return 'CREDIT';
+        } else {
+          return 'ക്രെഡിറ്റ്';
+        }
+      case 'DE':
+        if (this.lang == 'en') {
+          return 'DEBIT';
+        } else {
+          return 'ഡെബിറ്റ്';
+        }
       default:
         return 'OTHERS';
     }

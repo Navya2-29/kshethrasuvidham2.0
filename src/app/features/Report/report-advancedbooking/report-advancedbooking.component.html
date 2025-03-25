@@ -46,11 +46,12 @@
       <thead>
         <tr >
           <th >
-            {{ "BillDate" | translate }}
+            {{ "Report Name.Bill Date" | translate }}
           </th>
           <th >
             {{ "BILL NO" | translate }}
           </th>
+          <th>{{"Report Name.VAZHIPAD DATE" | translate }}</th>
           <th >
             {{ "VAZHIPAD" | translate }}
           </th>
@@ -83,6 +84,7 @@
           <td >
             {{ item.BillNo }}
           </td>
+          <td>{{item.VazhiDate}}</td>
           <td >
             {{ item.Vazhipad }}
           </td>
@@ -98,10 +100,10 @@
         </tr>
         <tr >
           <td
-            colspan="7"
+            colspan="8"
            class="total"
           >
-            Grand Total
+            {{"Report Name.GrandTotal" | translate }}
           </td>
           <td class="total">
             {{ getGrandTotal() | number : "1.2-2" }}

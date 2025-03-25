@@ -49,6 +49,23 @@
   "Select Vazhipad":"സെലക്ട് വഴിപാട്",
    "Mode":"പെയ്മെന്റ് മോഡ്",
    "user":"യൂസർ",
+"FeeCollection":"ഫീ കളക്ഷൻ",
+"Quantity":"എണ്ണം",
+
+"Date":"തീയതി ",
+"Receipt No":"റെസിപ്റ് നോ",
+"Name":"നെയിം",
+"Item":"ഐറ്റം",
+"Weight":"തൂക്കം",
+"Qty":"",
+"Receipt Amount":"അമൌന്റ്റ് ",
+"Transaction Mode":"ട്രാൻസാക്ഷൻ  മോഡ്",
+"select Unit":" യൂണിറ്റ്",
+"Item Value":"ഐറ്റം  വാല്യൂ",
+"Sl No":"നമ്പർ",
+"Enter weight":"തൂക്കം",
+"Counter":"കൌണ്ടർ",
+
   "PLACEHOLDER": {
     "VAZHIPAD": "വഴിപാട്",
     "NAME": "പേര് ",
@@ -103,7 +120,8 @@
     "report-duplicate":"ഡ്യൂപ്ലിക്കേറ്റ്",
     "SALES ITEM REPORT":"സെയിൽസ് ഐറ്റംസ്",
     "MATTINAM REPORT":"മറ്റിനം",
-    "FEE COLLECTION REPORT":"ഫീ കളക്ഷൻ"
+    "FEE COLLECTION REPORT":"ഫീ കളക്ഷൻ",
+    "Vazhipad Cancel":"വഴിപാട് ക്യാൻസൽ"
   },
   "Report Name": {
     "ADVANCE BOOKING REPORT": "മുൻകൂർ ബുക്കുചെയ്യുന്നവ",
@@ -128,7 +146,8 @@
     "VAZHIPAD WISE REPORT":"വഴിപാട് വൈസ് റിപ്പോർട്ട്",
     "All MEMEBERS LIST":"ഓൾ മെംബേർസ് ലിസ്റ്റ്",
     "SINO": "നമ്പർ",
-    "DONATION REPORT":"DONATION REPORT",
+    
+    "DONATION REPORT":"ഡൊനേഷൻ റിപ്പോർട്ട്",
     "Vazhipad Name": "പേര്",
     "Vazhipad Code": "കോഡ്",
     "Prathishta":"പ്രതിഷ്ഠ",
@@ -150,7 +169,21 @@
    "Select prathista":"സെലക്ട് പ്രതിഷ്ട",
   "Credit Collection Report":"ക്രെഡിറ്റ് കളക്ഷൻ റിപ്പോർട്ട്",
   "report-duplicate":"ഡ്യൂപ്ലിക്കേറ്റ് റിപ്പോർട്ട്",
-  "Count":"കൌണ്ട്"
+  "Credit Collection":"ക്രെഡിറ്റ് കളക്ഷൻ ",
+  "Count":"കൌണ്ട്",
+  "TOTAL":"തുക",
+  "Total for":"ആകെയുള്ള",
+  "CREDIT":"ക്രെഡിറ്റ്",
+   "GrandTotal":"ആകെ തുക",
+   "VAZHIPAD DATE":" വഴിപാട്  തീയതി",
+   "MOBILE NO":"മൊബൈൽ",
+   "Total Collection":"ടോട്ടൽ  കളക്ഷൻ",
+   "Devotee Credit Collection":"ഭക്തരുടെ ക്രെഡിറ്റ് കളക്ഷൻ",
+   "Member Credit Collection":"മെമ്പേഴ്സിന്റെ ക്രെഡിറ്റ് കളക്ഷൻ",
+   "Bill Date":"ബിൽ തീയതി",
+   "Member due/credit":"മെമ്പർ ഡ്യൂ/ക്രെഡിറ്റ്",
+   "Devotee due/credit":"ഡെവോറ്റീ ഡ്യൂ/ക്രെഡിറ്റ്",
+   "All Due/credit":"ഓൾ ഡ്യൂ/ക്രെഡിറ്റ്"
   },
   "Day":{
     "SUNDAY":"ഞായർ",
@@ -160,5 +193,41 @@
     "THURSDAY":"വ്യാഴം",
     "FRIDAY":"വെള്ളി",
     "SATURDAY":"ശനി"
+  },
+  "Credits":{
+    "RefNo":"റെഫ് നോ", 
+    "Name":"പേര്",
+    "Mobile Number":"മൊബൈൽ നമ്പർ", 
+    "Address":"അഡ്രസ്",
+     "Total Amount":"ടോട്ടൽ എമൗണ്ട്",
+    "Payment Method":"പേയ്മെന്റ് മെത്തേഡ്",
+    "cash":"ക്യാഷ്", 
+    "UPI":"യുപി ഐ",
+    "cheque":"ചെക്ക്",
+    "Money Order":"മണി ഓർഡർ",
+     "Enter  Number Cheque / DD /Mo /UPI":"ഐഡി/ നമ്പർ  ചെക്ക് /ഡിഡി/എംഒ/യുപി ഐ",
+   "Save": "സേവ് ",
+    "cancel":"ക്യാൻസൽ"
+
+
+  },
+  "feecollection":{
+   "Mobile Number": "മൊബൈൽ നമ്പർ" ,  
+"Member ID":"മെമ്പർ ഐഡി" ,
+"Bill No":"ബിൽ നോ",
+
+"Item":"ഐറ്റം" ,
+"Select Item":"സെലക്ട് ഐറ്റം",
+"Month" :"മാസം", 
+"Select":"സെലക്ട്",
+"Year":"വർഷം" , 
+"Select Year":"സെലക്ട് വർഷം", 
+"Select Month":"സെലക്ട് മാസം",
+"Amount":"എമൗണ്ട്" ,
+"Total Amount":"ടോട്ടൽ എമൗണ്ട്",
+"UPI ID/ Cheque No":"യുപി ഐ ഐഡി / ചെക്ക് നോ" ,
+"UPI ID/ Cheque ID":"യുപി ഐ/ ചെക്ക് ഐഡി", 
+"Payment":"പേയ്മെന്റ്"
+   
   }
 }

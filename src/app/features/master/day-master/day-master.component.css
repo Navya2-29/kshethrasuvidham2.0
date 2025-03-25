@@ -449,7 +449,7 @@ mat-option {
   display: flex;
   align-items: center;
   justify-content: center;
-  position: fixed;
+  position: fixed;background-size: cover;
   background-image: url('/assets/images/bgadmin.jpg');
 }
 

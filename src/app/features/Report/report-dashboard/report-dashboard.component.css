@@ -117,7 +117,7 @@ input[type="checkbox"] {
   transition: all 0.3s ease;
 }
 .button-group{
-  text-align: center;
+  text-align: right;
 }
 .submit-btn{
   background-color: rgb(32, 59, 94);

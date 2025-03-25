@@ -41,15 +41,15 @@
         <table >
           <thead>
             <tr>
-              <th>BillDate</th>
-              <th>BillNo</th>
-              <th>VazhiDate</th>
+              <th>{{"BILLDATE" | translate }}</th>
+              <th>{{"BILL NO" | translate }}</th>
+              <th>{{"Report Name.VAZHIPAD DATE" |translate}}</th>
               <th>{{ "VAZHIPAD" | translate }}</th>
-              <th>Prathista</th>
+              <th>{{"PRATHISTA" | translate }}</th>
              
-              <th>Name</th>
-              <th>Star</th>
-              <th>{{ "QUANTITY" | translate }}</th>
+              <th>{{"NAME" | translate }}</th>
+              <!-- <th>{{"STAR" | translate }}</th> -->
+              <!-- <th>{{ "QUANTITY" | translate }}</th> -->
               <th>{{ "RATE" | translate }}</th>
               <th>{{ "AMOUNT" | translate }}</th>
             </tr>
@@ -63,10 +63,10 @@
               <td>{{ data.Prathista }}</td>
              
               <td>{{ data.Name }}</td>
-              <td>{{ data.Star }}</td>
+              <!-- <td>{{ data.Star }}</td> -->
               <td>{{ data.Rate }}</td>
-              <td class="qty">{{ data.Qty }}</td>
-              <td class="number">{{ data.Amount | number : "1.2-2" }}</td>
+              <!-- <td class="qty">{{ data.Qty }}</td> -->
+              <td colspan="7" class="number">{{ data.Amount | number : "1.2-2" }}</td>
             </tr>
             <tr>
               <td class="total">Total</td>

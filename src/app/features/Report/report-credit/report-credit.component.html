@@ -39,17 +39,18 @@
 
   <div class="body-print" >
     <div id="pdf-content" >
-      <div class="memberpending" *ngIf="data.length > 0">
-        <h4 class="tabble-heading" > Member  due/credit </h4>
+      <div class="memberpending" *ngIf="membercreditdata.length > 0">
+        <h4 class="tabble-heading" > {{"Report Name.Member due/credit" | translate }} </h4>
 
         <table >
           <thead>
             <tr>
-              <th>BillDate</th>
-              <th>BillNo</th>
-             
-              <th>Name</th>
-             <th>Mobile no</th>
+              <th>{{ "BILLDATE" | translate }}</th>
+              <th>{{ "BILL NO" | translate }}</th>
+              <th>{{ "VAZHIPAD" | translate }}</th>
+              <th>{{ "NAME" | translate }}</th>
+              <th>{{"Report Name.MOBILE NO" | translate}}</th>        <!-- <th>{{"QUANTITY" | translate }}</th>
+               <th>{{"RATE" | translate }}</th> -->
               <th>{{ "AMOUNT" | translate }}</th>
              
             </tr>
@@ -66,8 +67,8 @@
               <!-- <td>{{member.TrnMode}}</td> -->
             </tr>
             <tr>
-              <td colspan="4" class="total">
-                 Total:
+              <td colspan="5" class="total">
+                 {{"Report Name.TOTAL" | translate}}:
               </td>
               <td class="total">
                 {{ getmemberTotalAmount() | number : "1.2-2" }}
@@ -81,24 +82,20 @@
       </div>
       <div class="page-break"></div>
 
-<div class="non-memberpending" *ngIf="data.length > 0">
-  <h4 class="tabble-heading" > Non-member Due/credit </h4>
+<div class="non-memberpending" *ngIf="nonmembercreditdata.length > 0">
+  <h4 class="tabble-heading" >  {{"Report Name. Devotee due/credit" | translate}} </h4>
 
 
   <table >
     <thead>
       <tr>
-        <th>BillDate</th>
-        <th>BillNo</th>
-        <!-- <th>VazhiDate</th> -->
-        <!-- <th>{{ "VAZHIPAD" | translate }}</th> -->
-        <th>Name</th>
-        <th>Mobile No</th>
-        
-        <!-- <th>{{ "QUANTITY" | translate }}</th>
-        <th>{{ "RATE" | translate }}</th> -->
+        <th>{{ "BILLDATE" | translate }}</th>
+        <th>{{ "BILL NO" | translate }}</th>
+        <th>{{ "VAZHIPAD" | translate }}</th>
+        <th>{{ "NAME" | translate }}</th>
+        <th>{{"Report Name.MOBILE NO" | translate}}</th>        <!-- <th>{{"QUANTITY" | translate }}</th>
+         <th>{{"RATE" | translate }}</th> -->
         <th>{{ "AMOUNT" | translate }}</th>
-        <!-- <th>TrnMode</th> -->
       </tr>
     </thead>
     <tbody>
@@ -115,8 +112,8 @@
         <!-- <td>{{member.TrnMode}}</td> -->
       </tr>
       <tr>
-        <td colspan="4" class="total">
-           Total:
+        <td colspan="5" class="total">
+           {{"Report Name.TOTAL" | translate }}:
         </td>
         <td class="total">
           {{ getnonmemberTotalAmount() | number : "1.2-2" }}
@@ -134,7 +131,7 @@
 
 
 <div class="alldue" *ngIf="data.length > 0">
-  <h4 class="tabble-heading" > All Due/credit </h4>
+  <h4 class="tabble-heading" > {{"Report Name.All Due/credit" | translate}} </h4>
   <table>
     <thead>
       <tr>
@@ -143,7 +140,7 @@
         <th>{{ "BILL NO" | translate }}</th>
         <th>{{ "VAZHIPAD" | translate }}</th>
         <th>{{ "NAME" | translate }}</th>
-        <th>MobileNo</th>        <!-- <th>{{"QUANTITY" | translate }}</th>
+        <th>{{"Report Name.MOBILE NO" | translate}}</th>        <!-- <th>{{"QUANTITY" | translate }}</th>
          <th>{{"RATE" | translate }}</th> -->
         <th>{{ "AMOUNT" | translate }}</th>
       </tr>
@@ -164,7 +161,7 @@
       </tr>
       <tr>
         <td colspan="5" class="total">
-           Total:
+           {{"Report Name.TOTAL" | translate }}
         </td>
         <td class="total">
           {{ getTotalAmount() | number : "1.2-2" }}

@@ -37,12 +37,12 @@
         <table >
           <thead>
             <tr>
-              <th>Bill Date</th>
+              <th>{{"Report Name.Bill Date" | translate}}</th>
               <th>
                 {{ "BILL NO" | translate }}
               </th>
              
-              <th>Vazhipad Date</th>
+              <th>{{"Report Name.VAZHIPAD DATE" | translate }}</th>
               <th>
                 {{ "VAZHIPAD" | translate }}
               </th>
@@ -92,7 +92,7 @@
               </td>
             </tr>
             <tr>
-              <td colspan="8" class="total">Grand Total</td>
+              <td colspan="8" class="total">{{"Report Name.GrandTotal" | translate }}</td>
               <td class="total">
                 {{ getGrandTotal() | number : "1.2-2" }}
               </td>

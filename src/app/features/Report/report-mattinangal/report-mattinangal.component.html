@@ -51,7 +51,7 @@
           <th >{{ "NAME" | translate }}</th>
           <th >{{ "STAR" | translate }}</th>
           <!--  -->
-          <th >{{ "QTY" | translate }}</th>
+          <th >{{ "QUANTITY" | translate }}</th>
           <th >{{ "RATE" | translate }}</th>
           <!--  -->
           <th >{{ "AMOUNT" | translate }}</th>
@@ -76,7 +76,7 @@
         </tr>
         <tr>
           <td colspan="7" class="total">
-            Total
+            {{"Report Name.TOTAL" | translate }}
           </td>
           <td  class="total">
             {{ getTotalAmount() | number : "1.2-2" }}

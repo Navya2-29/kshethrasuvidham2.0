@@ -114,22 +114,21 @@ export class ReportDailystmntTransactionComponent {
 
 
   getCreditReport(fromdate:string,toDate:string){
-    const nonmemberpayload = {
-      Type: "pendingCreditCollect",
-      FromDate: fromdate,
-      ToDate: toDate,
-    };
+    // const nonmemberpayload = {
+    //   Type: "pendingCreditCollect",
+    //   FromDate: fromdate,
+    //   ToDate: toDate,
+    // };
     const meberpayLoad ={
-      Type: "DevottePendingCreditCollect",
+      Type: "CreditCollect",
       FromDate: fromdate,
       ToDate: toDate,
     }
 
-    this.service.getReport(nonmemberpayload).subscribe(data1 => {
-      this.service.getReport(meberpayLoad).subscribe(data2 => {
-        this.creditTransactionArray = [...data1, ...data2];
+    this.service.getReport(meberpayLoad).subscribe((data1:any) => {
+    this.creditTransactionArray=data1
         console.log(this.creditTransactionArray,"crediiiii");
-      });
+   
     });
 
   }
@@ -683,4 +682,35 @@ p.category{
   getTotalAmount(): number {
     return this.data.reduce((sum, item) => sum + item.Amount, 0);
   }
+
+
+
+  formatDate(date: any, format: string = 'dd-MM-yyyy'): string {
+    if (!date) return '';
+  
+    let newDate: Date;
+  
+    if (typeof date === 'string' && date.includes('T')) {
+      // Handle ISO format (e.g., 2025-03-20T00:00:00)
+      newDate = new Date(date);
+    } else if (typeof date === 'string' && date.includes('.')) {
+      // Handle dd.mm.yyyy format
+      const parts = date.split('.');
+      if (parts.length === 3) {
+        newDate = new Date(+parts[2], +parts[1] - 1, +parts[0]); // YYYY, MM, DD
+      } else {
+        return ''; // Invalid date
+      }
+    } else {
+      return ''; // Unknown format
+    }
+  
+    const day = ('0' + newDate.getDate()).slice(-2);
+    const month = ('0' + (newDate.getMonth() + 1)).slice(-2);
+    const year = newDate.getFullYear();
+  
+    return format === 'dd.MM.yyyy' ? `${day}.${month}.${year}` : `${day}-${month}-${year}`;
+  }
+  
+
 }

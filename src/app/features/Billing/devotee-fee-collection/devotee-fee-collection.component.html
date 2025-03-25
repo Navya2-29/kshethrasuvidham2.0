@@ -1,10 +1,10 @@
 <div class="card-body" style="background: white">
-    <button
+    <!-- <button
       class="btn btn-secondary rounded-circle back-btn"
       title="Go Back"
     >
       <mat-icon>arrow_back</mat-icon>
-    </button>
+    </button> -->
     <div class="row">
      
 
@@ -14,12 +14,12 @@
           <table class="table">
             <tr>
                 <td>
-                  <label for="ItemValue">Mobile NO.<span class="text-danger">*</span></label>
+                  <label for="ItemValue">{{"feecollection.Mobile Number" |translate }}.<span class="text-danger">*</span></label>
                   <div class="input-container">
                     <input
                       type="text"
                       id="mobile"
-                      placeholder="Mobile Number"
+                      [placeholder]="'feecollection.Mobile Number' | translate"
                       class="form-control"
                       formControlName="Mobile"
                       (keyup.enter)="search()"
@@ -29,11 +29,11 @@
                     </button>                  </div>
                 </td>
                 <td>
-                    <label for="ReceiptAmount">Member ID<span class="text-danger">*</span></label>
+                    <label for="ReceiptAmount">{{"feecollection.Member ID" | translate }}<span class="text-danger">*</span></label>
                     <input 
                       type="text" 
                       id="MemberId" 
-                      placeholder="Member id" 
+                      [placeholder]="'feecollection.Member ID'| translate" 
                       formControlName="MemberId"
                       readonly
                       class="form-control sps">
@@ -44,7 +44,7 @@
               </tr>
             <tr>
               <td >
-                <label for="ReceiptAmount">Bill No<span class="text-danger">*</span></label>
+                <label for="ReceiptAmount">{{"feecollection.Bill No" | translate}}<span class="text-danger">*</span></label>
                 <input
                   type="text"
                   [placeholder]="'PLACEHOLDER.BILLNUMBER' | translate"
@@ -54,14 +54,14 @@
                 />
               </td>
               <td>
-                <label>Item<span class="text-danger">*</span></label>
+                <label>{{"feecollection.Item" | translate}}<span class="text-danger">*</span></label>
                 <select
                   class="form-control"
                   style="width: 100%; height: 30.6px"
                   formControlName="ItemType"
                  
                 >
-                  <option selected value="">Select item<span class="text-danger">*</span></option>
+                  <option selected value="">{{"feecollection.Item" | translate}}<span class="text-danger">*</span></option>
                   <option [value]="item.NM_Id" *ngFor="let item of itemList">{{item.NM_Name}}</option>
                 </select>
               </td>
@@ -90,8 +90,8 @@
             </tr>
             <tr>
               <td>
-                <label>Month<span class="text-danger">*</span></label>
-                <mat-select [formControl]="toppings"   placeholder="Select Month" multiple  style="background-color: white" >
+                <label>{{"feecollection.Month"| translate }}<span class="text-danger">*</span></label>
+                <mat-select [formControl]="toppings"   [placeholder]="'feecollection.Select Month' | translate " multiple  style="background-color: white" >
                     @for (topping of toppingList; track topping) {
                       <mat-option [value]="topping">{{topping}}</mat-option>
                     }
@@ -99,20 +99,20 @@
               </td>
               <!-- <td><input type="checkbox">&nbsp;&nbsp;Kanikka</td> -->
               <td >
-                <label> Year<span class="text-danger">*</span><span class="text-danger">*</span> </label>
+                <label> {{"feecollection.Year"| translate }}<span class="text-danger">*</span> </label>
                 <select
                   class="form-control"
                 style="width: 100%;" 
                 formControlName="Year"
                 >
-                  <option value="">Select Year</option>
+                  <option value="">{{"feecollection.Select Year" | translate }}</option>
                   <option *ngFor="let year of yearList" [value]="year">{{ year }}</option>
                 </select>
               </td>
             </tr>
             <tr>
                 <td>
-                  <label> Amount<span class="text-danger">*</span></label>
+                  <label> {{"feecollection.Amount" |translate }}<span class="text-danger">*</span></label>
                     <input
                     type="text"
                     placeholder="Amount"
@@ -122,10 +122,10 @@
                   />
                 </td>
                 <td>
-                  <label> Total Amount<span class="text-danger">*</span></label>
+                  <label> {{"feecollection.Total Amount" |translate }}<span class="text-danger">*</span></label>
                     <input
                     type="text"
-                    placeholder="Total Amount"
+                    [placeholder]="'feecollection.Total Amount' | translate"
                     class="form-control sps"
                     formControlName="totalAmount"
                   />
@@ -133,15 +133,15 @@
             </tr>
             <tr>
               <td>
-                <label>Upi Id/Cheque no</label>
+                <label>{{"feecollection.Upi Id/Cheque no" |translate }}</label>
                 <input
                   type="text"
                   class="form-control sps"
-                  placeholder="Upi/cheque/debit ID"
+                  [placeholder]="'feecollection.Upi/cheque/debit ID' | translate"
                 />
               </td>
               <td>
-                <label>Payment</label>
+                <label>{{"feecollection.Payment" |translate }}</label>
                 <select
                   class="form-control"  
                   style="width: 100%; height: 30.6px"
@@ -161,7 +161,7 @@
             </tr>
             <tr *ngIf="feeCollctionForm.get('TransMode')?.value === 'CH'">
               <td>
-                <label>Cheque Date</label>
+                <label>{{"feecollection.Cheque Date" | translate }}</label>
                 <input
                   type="date"
                   class="form-control sps"
@@ -169,11 +169,11 @@
                 />
               </td>
               <td>
-                <label>Bank</label>
+                <label>{{"feecollection.Bank" |translate }}</label>
                 <input
                   type="text"
                   class="form-control sps"
-                  placeholder="Bank Name"
+                  [placeholder]="'feecollection.Bank Name'| translate "
                   formControlName="InstBank"
                 />
               </td>
