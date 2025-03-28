@@ -62,10 +62,13 @@
                  
                 >
                   <option selected value="">{{"feecollection.Item" | translate}}<span class="text-danger">*</span></option>
-                  <option [value]="item.NM_Id" *ngFor="let item of itemList">{{item.NM_Name}}</option>
+                  <ng-container *ngIf="lang=='en'"> <option [value]="item.NM_Id" *ngFor="let item of itemList">{{item.NM_Name}}</option></ng-container>
+                  <ng-container *ngIf="lang!='en'"> <option [value]="item.NM_Id" *ngFor="let item of itemList">{{item.NM_RName}}</option></ng-container>
+
                 </select>
               </td>
             </tr>
+
             <tr>
               <td colspan="2">
                 <input
@@ -115,7 +118,7 @@
                   <label> {{"feecollection.Amount" |translate }}<span class="text-danger">*</span></label>
                     <input
                     type="text"
-                    placeholder="Amount"
+                    [placeholder]="'Report Name.TOTAL' | translate"
                     class="form-control sps"
                     formControlName="Amount"
                     [readOnly]="feeCollctionForm.get('Amount')?.value>0"
@@ -132,12 +135,12 @@
                 </td>
             </tr>
             <tr>
-              <td>
-                <label>{{"feecollection.Upi Id/Cheque no" |translate }}</label>
+              <td *ngIf="feeCollctionForm.get('TransMode')?.value != 'CS'">
+                <label>{{"feecollection.UPI ID/ Cheque ID" |translate }}</label>
                 <input
                   type="text"
                   class="form-control sps"
-                  [placeholder]="'feecollection.Upi/cheque/debit ID' | translate"
+                  [placeholder]="'feecollection.UPI ID/ Cheque ID' | translate"
                 />
               </td>
               <td>
@@ -169,7 +172,7 @@
                 />
               </td>
               <td>
-                <label>{{"feecollection.Bank" |translate }}</label>
+                <label>{{"feecollection.Bank Name" |translate }}</label>
                 <input
                   type="text"
                   class="form-control sps"

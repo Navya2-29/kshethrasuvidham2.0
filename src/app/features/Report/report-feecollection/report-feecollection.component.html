@@ -63,7 +63,8 @@
         <tr *ngFor="let item of name.value">
           <td>{{ item.BillNo }}</td>
           <td>{{ item.BillDate }}</td>
-          <td>{{ item.NM_Name }}</td>
+          <td *ngIf="lang=='en'">{{ item.NM_Name }}</td>
+          <td *ngIf="lang!='en'"> {{item.NM_RName}}</td>
           <!-- <td>{{ item.Name }}</td> -->
           <!-- <td>{{ item.Star || 'N/A' }}</td> -->
 
@@ -78,7 +79,7 @@
       </tbody>
       <tfoot>
         <tr>
-          <td colspan="4" class="total">Total</td>
+          <td colspan="4" class="total">{{"Report Name.TOTAL" | translate}}</td>
           <td class="total">
             {{ getGrandTotalForTrnsMode(name.key) | number : "1.2-2" }}
           </td>

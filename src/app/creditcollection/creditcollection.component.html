@@ -67,11 +67,14 @@
                         <select formControlName="TrnsMode">
                              <option value="CS">{{"Cash" |translate}}</option>
                              
-                             <option value="UP">{{"UPI"| translate }}</option>
-                             <option value="CH">{{"Cheque" | translate }}</option>
-                             <option Value="MO">{{"Credits.Money Order" | translate }}</option>
+                             <option value="UP">{{"UPI"|translate}}</option>
+                  <option value="DE">{{"Debit" |translate}}</option>
+                  <!-- <option value="CR">{{"Credit" |translate}}</option> -->
+                  <!-- <option value="CH">{{"Cheque"| translate}}</option> -->
+                  <!-- <option value="MO">{{"Money order" |translate}}</option> -->
+                  <option value="ON">{{"Online" | translate}}</option>
                         </select>
-                        <input type="text" [placeholder]="'Credits.Remakrs' |translate" formControlName="Remarks" [placeholder]="'Credits.Enter  Number Cheque / DD /Mo /UPI'| translate" class="form-control sps"
+                        <input type="text" *ngIf="CreditForm.get('TrnsMode')?.value != 'CS'" [placeholder]="'Credits.Remakrs' |translate" formControlName="Remarks" [placeholder]="'Credits.Enter  Number Cheque / DD /Mo /UPI'| translate" class="form-control sps"
                         [ngClass]="{
                             'is-invalid':
                               CreditForm.get('Remarks')?.invalid &&
@@ -94,7 +97,7 @@
                 
                 <input  type="date" class="form-control formdate"  formControlName="searchBillDate" style="width:15%;display: none;">
                 <button class="btn btn-primary" style="margin-right:15px;display: none;" (click)="onSearchByBillDate()" >Search</button>
-                <input type="text" class="form-control sps" formControlName="searchBillNo" placeholder="search by bill Number" style="width:25%;">
+                <input type="text" class="form-control sps" formControlName="searchBillNo" [placeholder]="'Search by Bill number' | translate " style="width:25%;">
                 <button class="btn btn-primary" (click)="onSearchByBillNumber()">Search</button>
            
             </div>

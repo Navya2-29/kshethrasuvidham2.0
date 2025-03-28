@@ -1,6 +1,7 @@
 p.transaction{
     margin: 10px 0 0 0;
-    font-family: 'Times New Roman', Times, serif;
+    /* font-family: 'Times New Roman', Times, serif; */
+    font-family: Manjari;
     font-size: 18px;
     text-decoration: underline;
     font-weight: bold;
@@ -8,7 +9,9 @@ p.transaction{
 
 }
 p.category{
-    font-family: 'Times New Roman', Times, serif;
+    /* font-family: 'Times New Roman', Times, serif; */
+    font-family: Manjari;
+
     font-size: 16px;
     margin:0;
     font-weight: 800;
@@ -29,7 +32,9 @@ p.category{
     font-size: 14px;
 }
 .transactionTotal{
-  font-family: 'Times New Roman', Times, serif; 
+  /* font-family: 'Times New Roman', Times, serif;  */
+  font-family: Manjari;
+
   font-weight: bold;
   margin-top: 10px;
   text-align: right;
@@ -39,7 +44,9 @@ p.category{
 }
 .grandtotal{
     text-align: right;
-    font-family: 'Times New Roman', Times, serif;
+    /* font-family: 'Times New Roman', Times, serif; */
+    font-family: Manjari;
+
     font-weight:bolder;
     color: red;
     font-size: 20px;

@@ -11,7 +11,7 @@
       <div class="master">
         <div class="col-md-4">
           <h1 style="font-weight:500;">Special Day Master</h1>
-          <form [formGroup]="specialDayMasterForm">
+          <form [formGroup]="specialDayMasterForm" (keydown.enter)="$event.preventDefault()">
             <table class="table">
               <tr>
                 <!-- <td> Select Vazhipad<input formcontrolName="vazhipadName" type="text" class="form-control sps" placeholder="Enter Code"> </td> -->

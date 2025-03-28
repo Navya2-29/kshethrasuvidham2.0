@@ -38,8 +38,8 @@ export class UserComponent {
   staffList: any[] = [];
   searchQuery: string = '';
   updateFlag: boolean = false;
-    filteredUmaster: any[] = [];
-  
+  templeName:string | null;
+  filteredUmaster: any[] = [];
   id: string;
   code: number;
   private duplicateCheck = inject(DuplicatecheckService);
@@ -50,7 +50,7 @@ export class UserComponent {
     private router:Router
   ) {
     this.loginId = localStorage.getItem('LoginId');
-
+    this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
     this.userForm = this.fb.group({
       LoginId: [''],
       username: ['', [ Validators.required,

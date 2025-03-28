@@ -11,7 +11,7 @@
       <div class="master">
         <div class="col-md-4">
           <h1 style="font-weight:500;">Category Master</h1>
-          <form [formGroup]="cmasterForm">
+          <form [formGroup]="cmasterForm" (keydown.enter)="$event.preventDefault()">
             <table class="table">
               <tr>
                 <td> Category Code<span class="text-danger">*</span><input type="text" maxlength="3"
@@ -58,7 +58,7 @@
               </div>
               <tr>
                 <td> Category Name in regional<span class="text-danger">*</span><input type="text"
-                    formControlName="VC_RegName" matInput class="form-control" placeholder="Enter Name"> </td>
+                    formControlName="VC_RegName" matInput class="form-control" placeholder="In regional Language"> </td>
               </tr>
               <div
                 *ngIf="cmasterFormControl['VC_RegName'].invalid && (cmasterFormControl['VC_RegName'].dirty || cmasterFormControl['VC_RegName'].touched)"
@@ -82,9 +82,9 @@
               </div>
               <tr>
                 <td><button *ngIf="!updateFlag" class="btn btn-primary"
-                    (click)="onSubmit(cmasterForm.value)">Save</button>
+                    (click)="onSubmit(cmasterForm.value)"  >Save</button>
                   <button *ngIf="updateFlag" class="btn btn-primary"
-                    (click)="onUpdate(cmasterForm.value)">Update</button>
+                    (click)="onUpdate(cmasterForm.value)"  >Update</button>
                   <button class="btn btn-secondary ml-1" (click)="onReset()">Cancel</button>
                 </td>
               </tr>

@@ -11,7 +11,7 @@
             <div class="master">
                 <div class="col-md-4">
                     <h1 style="font-weight:500;">Day Master</h1>
-                    <form  [formGroup]="dayMasterForm">
+                    <form  [formGroup]="dayMasterForm" (keydown.enter)="$event.preventDefault()" >
                     <table class="table">
                         <tr>
                            <td colspan="3"> Select Offering

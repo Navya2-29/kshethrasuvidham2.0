@@ -2,6 +2,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  
 }
 .report-container {
   width: 100%;
@@ -11,8 +12,10 @@
   padding: 0;
   height: auto;
   /* max-height: aut; */
+  font-family:Manjari;
   padding-bottom: 100px;
   overflow-x: auto;
+  font-family: Manjari;
 }
 
 .icon-container button {
@@ -77,8 +80,10 @@
 
   padding-bottom: 0;
   margin-bottom: 0;
-  font-family: "Times New Roman", Times, serif;
+  /* font-family: "Times New Roman", Times, serif; */
+  font-family: Manjari;
   font-weight: bold;
+  font-size: 22pt;
 }
 .header-print h4 {
   align-items: center;
@@ -86,8 +91,10 @@
 
   padding-bottom: 0;
   margin-bottom: 0;
-  font-family: "Times New Roman", Times, serif;
-  font-weight: bold;
+  /* font-family: "Times New Roman", Times, serif; */
+  font-family:Manjari;
+
+  /* font-weight: bold; */
 }
 .header-print h2 {
   align-items: center;
@@ -96,8 +103,10 @@
   padding-bottom: 0;
   margin-bottom: 0;
   text-align: center;
-  font-family: "Times New Roman", Times, serif;
+  /* font-family: "Times New Roman", Times, serif; */
+  font-family: Manjari;
   font-weight: bold;
+  font-size: 20pt;
 }
 .header-print p {
   align-items: center;
@@ -105,7 +114,9 @@
   padding-top: 0;
   padding-bottom: 0;
   margin-bottom: 0;
-  font-family: "Times New Roman", Times, serif;
+  /* font-family: "Times New Roman", Times, serif; */
+  font-family:Manjari;
+
   font-weight: bold;
 }
 .header-print hr {
@@ -129,7 +140,9 @@
   text-align: left;
 }
 .tabble-heading h3 {
-  font-family: "Times New Roman", Times, serif;
+  /* font-family: "Times New Roman", Times, serif; */
+  font-family:Manjari;
+
   font-weight: bold;
   font-size: 16px;
   margin: 5px 0 0 0;
@@ -158,16 +171,20 @@ thead {
 
 thead th {
   padding: 10px;
-  font-size: 14px;
+  font-size: 18px;
   text-transform: uppercase;
   font-weight: bold;
-  font-family: "Times New Roman", Times, serif;
+  /* font-family: "Times New Roman", Times, serif; */
+  font-family:Manjari;
+
 }
 
 tbody tr {
   border-bottom: 1px solid #ddd;
   transition: background 0.3s ease-in-out;
-  font-family: "Times New Roman", Times, serif;
+  /* font-family: "Times New Roman", Times, serif; */
+  font-family:Manjari;
+
 }
 
 tbody tr:nth-child(odd) {
@@ -191,21 +208,26 @@ td {
 }
 .number{
   text-align: right;
+  padding-right: 10px;
   /* font-weight: bold; */
 }
 .total{
 
   text-align: right;
   font-weight: bold;
-  font-size: 14px;
-  font-family: 'Times New Roman', Times, serif;
+  font-size: 18px;
+  /* font-family: 'Times New Roman', Times, serif; */
+  font-family:Manjari;
+
 }
 .qty{
   text-align: center;
 }
 .grandtotal{
   text-align: right;
-  font-family: 'Times New Roman', Times, serif;
+  /* font-family: 'Times New Roman', Times, serif; */
+  font-family: Manjari;
+  font-family: Manjari;
   font-weight:bolder;
   color: red;
   font-size: 20px;

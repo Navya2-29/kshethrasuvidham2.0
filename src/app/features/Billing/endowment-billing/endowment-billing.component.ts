@@ -1,12 +1,11 @@
 // import { multiDayFilter } from './../../../models/multidayFilter.model';
 import { Component, inject, Inject, OnInit } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
-import {
-  MAT_DIALOG_DATA,
-  MatDialog,
-  MatDialogRef,
-} from '@angular/material/dialog';
-import { MatDialogModule } from '@angular/material/dialog';
+// import {
+//   MAT_DIALOG_DATA,
+//   MatDialog,
+//   MatDialogRef,
+// } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -44,7 +43,7 @@ import { UpperCaseDirective } from '../../../shared/directives/upper-case.direct
   standalone: true,
   imports: [
     MatButtonModule,
-    MatDialogModule,
+    
     MatTableModule,
     MatCheckboxModule,
     MatIconModule,
@@ -101,10 +100,11 @@ form: FormGroup;
   updatedmultiDayList: multiDayFilter[] = [];
 
   private readonly masterservice = inject(MasterService);
+  
   constructor(
     private fb: FormBuilder,
     private notification: NotificationService,
-    public dialogRef: MatDialogRef<EndowmentBillingComponent>,
+    // public dialogRef: MatDialogRef<EndowmentBillingComponent>,
     private datePipe: DatePipe,
     private ts: TranslateService,
   //  / @Inject(MAT_DIALOG_DATA) public data: { Name: string,Star:string ,MID:string}[],
@@ -645,7 +645,7 @@ form: FormGroup;
 
       console.log(finalArray, "data with additions added newly");
       const VM_MaxNo=this.VM_MaxNo
-      this.dialogRef.close({finalArray,VM_MaxNo});
+      // this.dialogRef.close({finalArray,VM_MaxNo});
     } else {
       this.showValidationErrors();
       this.form.markAllAsTouched();
@@ -697,7 +697,7 @@ form: FormGroup;
 
 
   cancel() {
-    this.dialogRef.close();
+    // this.dialogRef.close();
   }
 
 

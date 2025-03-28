@@ -66,10 +66,10 @@
               <!-- <td>{{ data.Star }}</td> -->
               <td>{{ data.Rate }}</td>
               <!-- <td class="qty">{{ data.Qty }}</td> -->
-              <td colspan="7" class="number">{{ data.Amount | number : "1.2-2" }}</td>
+              <td class="number">{{ data.Amount | number : "1.2-2" }}</td>
             </tr>
             <tr>
-              <td class="total">Total</td>
+              <td colspan="7" class="total">{{"Report Name.TOTAL" | translate }}</td>
               <td class="total">{{getTotalAmount() | number : "1.2-2" }}</td>
             </tr>
           </tbody>

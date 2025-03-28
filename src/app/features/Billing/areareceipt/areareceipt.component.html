@@ -167,19 +167,7 @@
                 </mat-autocomplete>
                 </td>
 
-
-
-
 <!-- for cahnging prathista -->
-
-
-
-
-
-
-              
-
-
                 <td>
                   <select
                   *ngIf="!multidayBooking[i]"
@@ -275,7 +263,7 @@
                     class="form-control"
                     style="width: 60px"
                     formControlName="Name2"
-                    placeholder="Name 2"
+                    [placeholder]="'Name2'|translate"
                     (keydown)="navigateToNext($event, i, 'Star2')" 
                   />
                 <!-- </td> -->
@@ -290,7 +278,7 @@
                 class="form-control"
                 style="width: 100%; height: 30.6px"
               >
-              <option value="">Select</option>
+              <option value="">{{"Select" | translate}}</option>
               <ng-container *ngIf="lang=='en'">
                 <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra. SM_Id"> {{nakshtra.SM_Name}}</option>
               </ng-container>
@@ -326,7 +314,7 @@
                 </td>
                 <td style="padding: 0px">
                   <a (click)="removeRow(i)">
-                    <mat-icon style="color:yellow;">delete</mat-icon>
+                    <mat-icon style="color:rgb(7, 4, 58);">delete</mat-icon>
                   </a>
                 </td>
               </tr>

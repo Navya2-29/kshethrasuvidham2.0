@@ -14,7 +14,7 @@
       <div class="master">
         <div class="col-md-5 fixitems" style="height: 80vh; overflow: scroll">
           <h1 style="font-weight: 500">Vazhipad Blocking Master</h1>
-          <form [formGroup]="vazhipadBlockingForm">
+          <form [formGroup]="vazhipadBlockingForm" (keydown.enter)="$event.preventDefault()">
             <table class="table">
               <tr>
                 <td>

@@ -462,3 +462,8 @@ input.sps:focus {
   background-color: rgb(163, 214, 243); /* Yellow background on focus */
   ; /* Light cyan color, you can adjust this */
 }
+table thead th{
+  font-family: Manjari;
+  font-size: large;
+  padding: 5px;
+}

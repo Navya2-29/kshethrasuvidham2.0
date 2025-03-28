@@ -11,7 +11,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { CouterPopupComponent } from '../../couter-popup/couter-popup.component';
 import { AuthService } from '../../auth/service/auth.service';
-
+import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 @Component({
   selector: 'app-front',
   standalone: true,
@@ -22,6 +23,7 @@ import { AuthService } from '../../auth/service/auth.service';
     MatButtonModule,
     RouterModule,
     CommonModule,
+    TranslateModule
   ],
   templateUrl: './front.component.html',
   styleUrl: './front.component.css',
@@ -43,6 +45,7 @@ export class FrontComponent implements AfterViewInit {
   ipAddress: string = '';
   currentIndex: number = 0;
   deviceName: string | undefined;
+  lang :string | null;
   constructor(
     private http: HttpClient,
     private dialog: MatDialog,
@@ -51,8 +54,14 @@ export class FrontComponent implements AfterViewInit {
     private renderer: Renderer2,
     private router: Router,
     private authService:AuthService,
-    private masterService:MasterService
+    private masterService:MasterService,
+    private ts: TranslateService
   ) {
+    this.lang = localStorage.getItem('Language');
+    const userLang = navigator.language || 'en';
+    const languageCode = userLang.split('-')[0];
+    this.ts.setDefaultLang(languageCode);
+    this.ts.use(this.lang || 'en');
     this.templeName = localStorage.getItem('TempleName');
     this.logo = localStorage.getItem('Logo');
     // this.Role = localStorage.getItem('Role');
@@ -60,7 +69,6 @@ export class FrontComponent implements AfterViewInit {
     this.Role = localStorage.getItem('Role');
     console.log(this.allowedContercount, 'ss');
     this.getcounterCount();
-
     console.log(this.countercount > this.allowedContercount, 'bbb');
   }
   ngOnInit(): void {
@@ -68,6 +76,7 @@ export class FrontComponent implements AfterViewInit {
     if (!storedCounterId) {
       this.openCounterIdDialog();
     }
+    
     // sessionStorage.setItem('isPageRefreshed', 'true');
 // this.getIdaddress();
 

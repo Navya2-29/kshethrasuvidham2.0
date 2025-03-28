@@ -13,7 +13,7 @@
       </div>
       <div class="master">
         <div class="col-md-8">
-          <form [formGroup]="vazhipadMasterForm">
+          <form [formGroup]="vazhipadMasterForm" (keydown.enter)="$event.preventDefault()">
             <div class="row">
               <div class="col-md-6 fixitems">
                 <h1 style="font-weight: 500">Vazhipad Master</h1>
@@ -220,7 +220,7 @@
 
                       <mat-select
                         [formControl]="toppings"
-                        placeholder="Select Prathista"
+                        placeholder="Select Prathishta"
                         multiple
                         style="background-color: white"
                         class="form-control sps"
@@ -247,7 +247,7 @@
                   </tr>
                   <div *ngIf="toppings.invalid && toppings.touched">
                     <div *ngIf="toppings.hasError('prathistaRequired')">
-                     <small style="color: red;">Please select at least one Prathista.</small> 
+                     <small style="color: red;">Please select at least one Prathishta.</small> 
                     </div>
                   </div>
                   <tr>
@@ -395,7 +395,7 @@
                       <input
                         type="checkbox"
                         formControlName="VM_Mattinam"
-                      />&nbsp;&nbsp; Mattinagal
+                      />&nbsp; Mattinangal
                     </td>
                     <td >
                       <input

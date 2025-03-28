@@ -9,7 +9,7 @@ import { PmasterComponent } from './features/master/pmaster/pmaster.component';
 import { CmasterComponent } from './features/master/cmaster/cmaster.component';
 import { VmasterComponent } from './features/master/vmaster/vmaster.component';
 import { PanjankamComponent } from './panjankam/panjankam.component';
-import { LocationStrategy, HashLocationStrategy } from '@angular/common';import { NgModule } from '@angular/core';
+import { LocationStrategy, HashLocationStrategy } from '@angular/common';import { Component, NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { VazhipadBlockingComponent } from './features/master/vazhipad-blocking/vazhipad-blocking.component';
 import { SeasonalMasterComponent } from './features/master/seasonal-master/seasonal-master.component';
@@ -58,6 +58,7 @@ import { DonationReportComponent } from './features/Report/donation-report/donat
 import { MembersListComponent } from './features/Report/members-list/members-list.component';
 import { ReportMemberPendingCreditComponent } from './features/Report/report-member-pending-credit/report-member-pending-credit.component';
 import { ReportNonMemberPendingCreditComponent } from './features/Report/report-non-member-pending-credit/report-non-member-pending-credit.component';
+import { EndowmentBillingComponent } from './features/Billing/endowment-billing/endowment-billing.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -183,6 +184,7 @@ export const routes: Routes = [
   {path:"members-list",component: MembersListComponent},
   {path:"members-pending-report",component: ReportMemberPendingCreditComponent},
   {path:"non-members-pending-report",component: ReportNonMemberPendingCreditComponent},
+  {path:"endowment",component:EndowmentBillingComponent},
   {path:"Home",component: HomeComponent},
   {
     path: '**',

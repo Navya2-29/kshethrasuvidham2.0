@@ -41,7 +41,7 @@
             Find
           </button>
           <div>
-            <input type="checkbox" [(ngModel)]="memberDevoteeCheck" style="position:absolute;margin-top: 5px;" ><span style="color:black;position:absolute;left:0;margin-left:36px;">Member</span> 
+            <input type="checkbox" [(ngModel)]="memberDevoteeCheck" style="position:absolute;margin-top: 5px;" ><span style="color:black;position:absolute;left:0;margin-left:36px;">{{"Member" | translate }}</span> 
             <button
             class="btn btn-secondary"
             (click)="getNameAndStarByMobilenumber()"
@@ -224,35 +224,62 @@
                 <!-- <option value="EN">{{"Endowment" | translate}}</option> -->
               </select>
             </div>
-            <button
-              class="btn btn-primary"
-              #payButton
-              (click)="onSubmit()"
-              style="
-                font-size: 12pt;
-                background-color: #223d61;
-                color: white;
-                font-weight: 500;
-                width: auto;
-                border: none;
-                margin-bottom: 30px;
-                
-              "
-            >
-              Total &nbsp;<span
-                style="
-                  padding: 5px;
-                  border: 0px solid maroon;
-                  margin-right: 5%;
-                  background: white;
-                  border-radius: 5px;
-                  box-shadow: 0px 0px 8px white inset;
-                  color: rgb(173, 51, 122);
-                  font-size: 30px;
-                "
-                >&#8377; {{ totalAmount }}</span
-              >Pay
-            </button>
+            <div 
+  style="display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 100%; flex-wrap: nowrap;">
+
+  <div style="display: flex; flex-direction: column; align-items: start; text-align: left; gap: 5px; margin-left: 10px; margin-bottom: 20px; flex-grow: 1;margin-right: 0;">
+    <span style="font-size: 10pt; font-weight: bold; color: black;margin-left: 70px;">
+      Total
+    </span>
+
+    <button
+      style="
+        font-size: 24pt;
+        background-color: #f4f5f7;
+        color: purple;
+        font-weight: 500;
+        border: none;
+        white-space: nowrap;
+        padding: 5px 15px;
+        width: 180px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      "
+    >
+       {{ totalAmount }}
+    </button>
+  </div>
+  <!-- &#8377; -->
+  <button
+  class="paybutton"
+    #payButton
+    (click)="onSubmit()"
+    style="
+      font-size: 12pt;
+      background-color: #223d61;
+      color: white;
+      font-weight: 500;
+      border: none;
+      padding: 8px 20px;
+      cursor: pointer;
+      min-width: 80px; 
+      max-width: 120px; 
+      margin-right: 20px;
+      
+    "
+  >
+    Pay
+  </button>
+</div>
+
+          
+
+          
+
+            
+            
+            
+            
             <!-- <button class="btn btn-primary" (click)="" style="font-size:12pt;background-color:#046ef8;color:white;font-weight:500;width:auto;border:none;margin-bottom:30px;">pdf</button> -->
           </div>
         </div>

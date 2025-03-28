@@ -1,3 +1,4 @@
+import { Route, Router } from '@angular/router';
 import { Component } from '@angular/core';
 import {MatIconModule} from '@angular/material/icon';
 import {MatTabsModule} from '@angular/material/tabs';
@@ -13,5 +14,13 @@ import { PanjankamComponent } from '../../../panjankam/panjankam.component';
   styleUrl: './area.component.css'
 })
 export class AreaComponent {
+constructor(private router:Router ){
+
+  
+
+
+
+
+}
 
 }

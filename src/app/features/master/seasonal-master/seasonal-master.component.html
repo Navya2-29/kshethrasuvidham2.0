@@ -11,7 +11,7 @@
       <div class="master">
         <div class="col-md-4">
           <h1 style="font-weight:500;">Vazhipad Seasonal Booking</h1>
-          <form [formGroup]="seasonalBlockingForm">
+          <form [formGroup]="seasonalBlockingForm" (keydown.enter)="$event.preventDefault()" >
             <table class="table">
               <tr>
                 <td>Vazhipad Code<span class="text-danger" *ngIf="!updateFlag">*</span>

@@ -2,7 +2,6 @@
 <app-spinner *ngIf="isloading"></app-spinner>
 <form [formGroup]="searchForm">
 <div class="main-container">
-  <!-- First Column: Two rows, each with two columns -->
   <div class="first-column">
     <!-- First Row -->
     <div class="row">
@@ -36,12 +35,10 @@
             <label><input type="radio" formControlName="vazhipadOption" value="moneyorder"> {{ "Report.Money Order" | translate }}</label>
             <label><input type="radio" formControlName="vazhipadOption" value="upi"> {{ "Report.UPI" | translate }}</label>
             <label><input type="radio" formControlName="vazhipadOption" value="online"> {{ "Report.Online Report" | translate }}</label>
-
             <label><input type="radio" formControlName="vazhipadOption" value="cheque"> {{ "Report.Cheque Statement" | translate }}</label>
             <label><input type="radio" formControlName="vazhipadOption" value="credit"> {{ "Report.Due/Credit" | translate }}</label>
             <!-- <label>
             </label> -->
-            
           </div>
         <!-- </form> -->
       </div>
@@ -74,7 +71,6 @@
           <div class="radio-group">
             <label><input type="radio" formControlName="vazhipadOption" value="offering"> {{ "Report.Offering Only" | translate }}</label>
             <label><input type="radio" formControlName="vazhipadOption" value="nadavaravu"> {{ "Report.Nadavaravu Booking" | translate }}</label>
-
             <label><input type="radio" formControlName="vazhipadOption" value="mattinamgal"> {{ "Report.MATTINAM REPORT" | translate }}</label>
             <label><input type="radio" formControlName="vazhipadOption" value="salesitem"> {{ "Report.SALES ITEM REPORT" | translate }}</label>
           </div>

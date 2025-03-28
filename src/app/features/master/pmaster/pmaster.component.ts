@@ -215,12 +215,15 @@ export class PmasterComponent implements OnInit {
     this.loading = true;
     if (this.pmasterForm.valid) {
       this.masterService.updatePmaster(updatedata, this.Id).subscribe((res) => {
-        this.loading = false;
-        this.notification.showSuccess(
-          ' Prathishta Details updated success fully'
-        );
-        this.ngOnInit();
-        this.onReset();
+        if(res.RespStatus=='U'){
+          this.loading = false;
+          this.notification.showSuccess(
+            ' Prathishta Details updated success fully'
+          );
+          this.ngOnInit();
+          this.onReset();
+        }
+       
       });
     } else {
       this.markFormGroupTouched(this.pmasterForm);

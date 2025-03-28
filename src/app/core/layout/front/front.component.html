@@ -9,6 +9,7 @@
             font-weight: 500;
             color: white;
             line-height: 30.6pt;
+            font-family: Manjari;
           "
         >
           {{templeName}}
@@ -74,9 +75,11 @@
             font-weight: 800;
            
           "
+        [ngStyle]="{'font-family': lang=='ml' ? 'Manjari' : 'Roboto', 'font-weight': lang=='ml' ? 'Bold' : 'Bold'}"
+
           class="col-md-12"
         >
-          BILLING</a
+          {{"BILLING" | translate }}</a
         >
         <a
           routerLink="/getReport"
@@ -91,8 +94,10 @@
           
           "
           class="col-md-12"
+          [ngStyle]="{'font-family': lang=='ml' ? 'Manjari' : 'Roboto', 'font-weight': lang=='ml' ? 'Bold' : 'Bold'}"
+
         >
-          REPORTS</a
+          {{"REPORTS" | translate }}</a
         >
         <a
           routerLink="/mattinagal"
@@ -106,8 +111,9 @@
             font-weight: 800;
           "
           class="col-md-12"
+          [ngStyle]="{'font-family': lang=='ml' ? 'Manjari' : 'Roboto', 'font-weight': lang=='ml' ? 'Bold' : 'Bold','font-size': lang=='ml' ? 18 : 14 }"
         >
-        NADAVARAVU BILLING</a
+        {{"MISCELLANEOUS BILLING"| translate }}</a
         >
         <!-- <a
           routerLink="/mattinagal"

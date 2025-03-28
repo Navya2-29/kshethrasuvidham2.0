@@ -52,6 +52,7 @@ export class SeasonalMasterComponent implements OnInit {
   today: string |null;
   tomorrow:string | null;
   vazhipadDetails: any;
+  allseasonalVazhipad:any[]=[];
   private masterService = inject(MasterService);
   private formBuilder = inject(FormBuilder);
   private notification = inject(NotificationService);
@@ -241,9 +242,9 @@ compareDatesByDayMonthYear(date1: Date, date2: Date): boolean {
   //for editing the form fields
   onEdit(data: SeasonalMaster) {
     this.loading = true;
-    console.log(data);
+    console.log(data,"edit");
     this.updateFlag = true;
-    this.Id = data.VS_ID;
+    this.Id = this.getVMId(data.VM_Code).toString();
     // this.seasonalBlockingForm.get('VS_code')?.disable();
     // this.seasonalBlockingForm.get('VM_name')?.disable();
     const fromDate = new Date(data.VS_FromDate);
@@ -330,6 +331,8 @@ compareDatesByDayMonthYear(date1: Date, date2: Date): boolean {
   getAllSeasonalisedVazhipad() {
     this.masterService.getSeasonalisedVazhipad().subscribe({
       next: (data: Vmaster[]) => {
+        this.allseasonalVazhipad=data;
+        console.log(this.allseasonalVazhipad,"all data aaaaa")
         this.seasonalCode = data.map((item) => item.VM_Code);
         console.log(data);
       },
@@ -338,5 +341,21 @@ compareDatesByDayMonthYear(date1: Date, date2: Date): boolean {
 
   navigateToDAshboard(){
     this.router.navigate(['/dashboard']);
+  }
+
+
+  getVMId(code:any){
+   
+    console.log(code,"dattaaaaaaaaaaaaaaaaaaaa")
+      // console.log(id, 'star id');
+      
+        const vazhipad = this.allseasonalVazhipad.find((item) => item.VM_Code == code);
+        console.log(vazhipad,"dattattattatasssssssssssss")
+        console.log(vazhipad.VM_Id,"fffffffff")
+        return vazhipad ? vazhipad.VM_Id : '';
+     
+  
+      // console.log(star,"sssssssssssssssss")
+    
   }
 }

@@ -12,7 +12,7 @@
       style="width: 150px ;margin-right:10px"
       class="phone sps form-control"
     />
-    <input type="checkbox" [(ngModel)]="memberDevoteeCheck" style="margin: left 10px;" ><span style="color:black;margin-left: 5px;">Member</span> 
+    <input type="checkbox" [(ngModel)]="memberDevoteeCheck" style="margin: left 10px;" ><span style="color:black;margin-left: 5px;font-size: 12px;">{{"Member" | translate }}</span> 
     <button
     class="btn btn-secondary"
     (click)="getNameAndStarByMobilenumber()"
@@ -285,7 +285,7 @@
                         <input
                           type="text"
                         formControlName="Name2"
-                          placeholder="Enter 2nd Name"
+                          [placeholder]="'Name2'| translate "
                           style="border: none"
                         />
                       </td>
@@ -295,7 +295,7 @@
                           style="width: fit-content; height: 30.6px"
                           formControlName="Star2"
                         >
-                        <option value="">Select</option>
+                        <option value="">{{"Select" | translate }}</option>
                         <ng-container
                          *ngIf="lang=='en'">
                           <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_NameEng}}</option>
@@ -336,7 +336,7 @@
                         formControlName="Star"
                       >
 
-                      <option value="">Select</option>
+                      <option value="">-{{"Select" |translate}}-</option>
                       <ng-container
                        *ngIf="lang=='en'">
                         <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.SM_NameEng"> {{nakshtra.SM_NameEng}}</option>
@@ -359,7 +359,7 @@
                   style="width: 100%; height: 30.6px" 
                   formControlName="MalMonth"
                   >
-                  <option value="">-Select-</option>
+                  <option value="">-{{"Select" |translate}}-</option>
                   <ng-container *ngIf="lang=='en'">
                     <option *ngFor="let month of malayalamMonthList " [value]="month.mmonEng"> {{month.mmonEng}}</option>
 
@@ -376,7 +376,7 @@
                 <td>
                   <select class="form-control select-star"
                   style="width: 100%; height: 30.6px" formControlName="EngMonth">
-                  <option value="">-Select-</option>
+                  <option value="">-{{"Select" |translate}}-</option>
                     <option value="Sunday">{{"Day.SUNDAY" |translate}}</option>
                     <option value="Monday">{{"Day.MONDAY" | translate}}</option>
                     <option value="Tuesday">{{"Day.TUESDAY" | translate}}</option>
@@ -414,7 +414,7 @@
                 <td>
                   <select class="form-control select-star"  formControlName="Thithi"
                   style="width: 100%; height: 30.6px" >
-                  <option value="">-select-</option>
+                  <option value="">-{{"Select" |translate}}-</option>
                   <ng-container *ngIf="lang=='en'">
                     <option *ngFor="let thithi of thithiList" [value]="thithi.ThithiEng">{{thithi.ThithiEng}}</option>
                   </ng-container>

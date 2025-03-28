@@ -18,4 +18,5 @@ Rate?:number;
 Qty?:Number;
 Star?:string;
 Vazhipad?:string;
+NM_RName:string;
 }

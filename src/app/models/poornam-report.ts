@@ -21,7 +21,9 @@ export interface ReportData {
     MobileNo?:string;
     NM_Name?:string;
     NM_RName?:string;
-    Receipt_Amt?:string;
+    Receipt_Amt:number;
     Reason?:string;
     vazhipad?:string;
+    Canceldt?:string;
+    // Receipt_Amt?:number
   }

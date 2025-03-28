@@ -1,7 +1,12 @@
 {
+  "BILLING":"BILLING",
+  "REPORTS":"REPORTS",
+  "MISCELLANEOUS BILLING":" MISCELLANEOUS BILLING",
   "VAZHIPAD": "Vazhipad",
   "NAME": "Name",
+  "Name2":"Name2",
   "STAR": "Star",
+  
   "PRATHISTA": "Prathishta",
   "QUANTITY": "Quantity",
   "RATE": "Rate",
@@ -11,6 +16,7 @@
   "LastBillNo": "Last Bill No.",
   "Cash": "Cash",
   "Select": "Select",
+  "Search by Bill number":"Search by Bill number",
   "Credit": "Credit",
   "UPI": "Upi",
   "Debit": "Debit",
@@ -18,7 +24,6 @@
   "Cheque": "Cheque",
   "Money order": "Money Order",
   "Nadavaravu": "Nadavaravu",
- 
   "Credit Collection": "Credit Collection",
   "Multi day Booking": "Multi day Booking",
   "START DATE": "Starting date",
@@ -160,7 +165,7 @@
     "Booking":"Booking",
     "Seasonal":"Seasonal",
     "Special":"Special",
-    "Receipt":"Reciept",
+    "Receipt":"Receipt",
     "MultiName":"MultiName",
     "Description":"Description",
     "Rate-Change":"Rate-Change",
@@ -169,7 +174,7 @@
    "Select prathista":"Select Prathishta",
    "Credit Collection":"Credit Collection",
    "Credit Collection Report":"Credit Collection Report",
-
+"CREDITTOTAL":"Total Credit",
    "report-duplicate":"Duplicate Report",
    "Count":"Count",
    "Mobile No.":"Mobile No",
@@ -227,9 +232,11 @@
 "Select Month":"Select Month",
 "Amount":"Amount" ,
 "Total Amount":"Total Amount",
-"UPI ID/ Cheque No":"UPI ID/ Cheque No" ,
+"UPI ID/ Cheque No":"UPI ID/No" ,
 "UPI ID/ Cheque ID":"UPI ID/ Cheque ID", 
-"Payment":"Payment"
+"Payment":"Payment",
+"Cheque Date":"Cheque Date",
+"Bank Name":"Bank Name"
    
   }
 }

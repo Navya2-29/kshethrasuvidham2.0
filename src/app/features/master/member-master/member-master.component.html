@@ -12,7 +12,7 @@
         <div class="col-md-7 fixitems" style="background:rgba(98, 6, 202, .1);height: 60vh;">
           <!-- [ngStyle]="{'overflow-y': dynamicRows.length > 5 ? 'scroll' : 'hidden'}" -->
           <h1 style="font-weight:500;padding-top: 5px;">Devotee Master</h1>
-          <form [formGroup]="memeberForm">
+          <form [formGroup]="memeberForm" (keydown.enter)="$event.preventDefault()" >
           <div class="row">
             <div class="col-md-4">
               <table class="table">

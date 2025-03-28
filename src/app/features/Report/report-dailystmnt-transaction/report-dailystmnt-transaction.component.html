@@ -83,7 +83,7 @@
         </div>
       </ng-container>
         <div class="creditCollection" *ngIf="creditTransactionArray.length > 0">
-          <p class="transaction">{{"REport Name.CREDIT"| translate }}</p>
+          <p class="transaction">{{"Report Name.CREDIT"| translate }}</p>
           <table>
             <thead>
               <tr>
@@ -105,7 +105,7 @@
                 <td class="number">{{ item.Amount | number : "1.2-2" }}</td>
               </tr>
               <tr>
-                <td colspan="3" class="total">{{"Report Name.TOTAL"}}</td>
+                <td colspan="3" class="total">{{"Report Name.CREDITTOTAL" | translate }}</td>
                 <td class="total">
                   {{ getCrediTransactionTotal() | number : "1.2-2" }}
                 </td>

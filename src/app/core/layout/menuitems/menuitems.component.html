@@ -19,8 +19,11 @@
                 [attr.aria-disabled]="role=== 'staff'">
                 <li class="list-group-item">{{ link.label }}</li>
               </a>
-                      </ul>
+              <a routerLink="/member-master" [mat-dialog-close]="true"><li class="list-group-item">Devotee Master</li></a>
 
+                      </ul>
+                     
+                      <!-- { label: '', path: '/member-master' }, -->
                     </div>
                   </div>
             </div>
@@ -51,6 +54,7 @@
                        
                         <a  *ngIf="role === 'admin' || role === 'super' " routerLink="/userSignup" [mat-dialog-close]="true"><li class="list-group-item">Signup</li></a>
                         <a  *ngIf="role === 'super' "  routerLink="/settings" [mat-dialog-close]="true"><li class="list-group-item">Settings</li></a>
+                        <a   routerLink="/endowment" [mat-dialog-close]="true"><li class="list-group-item">Endowment</li></a>
 
                       </ul>
                    

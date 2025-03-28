@@ -1203,7 +1203,14 @@ openBillingDialog(mobileNumber: any) {
 
 
   getStarIdByNames(starName: string): number | null {
-    const star = this.nakshatham.find(n => n.SM_NameEng === starName);
+    const searchField = this.lang == 'en' ? 'SM_NameEng' : 'SM_Name';
+
+    const star = this.nakshatham.find(n => n[searchField] === starName);
     return star ? star.id : null; // Return ID if found, otherwise return null
   }
+
+
+
+
+
 }

@@ -44,6 +44,7 @@ interface Entry {
   Rate: number;
   Amount: number;
   VazhipadDate:string;
+  Qty:number;
 }
 
 interface GroupedData {
@@ -1161,7 +1162,8 @@ if(this.displayTrnsmode!=editedTransmodeValue){
         Star: item.Star,
         Rate: item.Rate,
         Amount: item.Amount,
-        VazhipadDate:item.EvazDate
+        VazhipadDate:item.EvazDate,
+        Qty:item.Qty
       });
   
       return acc;

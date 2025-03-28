@@ -40,37 +40,44 @@
   <div class="body-print">
     <div id="pdf-content" >
 <div class="vazhipad-cancel" *ngIf="data.length > 0">
-  <h4 class="tabble-heading" >Vazhipad Cancel</h4>
+  <h4 class="tabble-heading" >{{"VAZHIPAD" | translate}}</h4>
 
 
     <table>
       <thead>
         <tr>
           <th>{{ "BILL NO" | translate }}</th>
-          <!-- <th>{{"BILLDATE" |translate}}</th>
+           <th>{{"BILLDATE" |translate}}</th>
           <th>{{"VAZHIPAD" | translate}}</th>
           <th>{{"NAME" | translate }}</th>
           <th>{{"QUANTITY" |translate }}</th>
-          <th>{{"RATE" | translate }}</th>
-          <th>{{"AMOUNT" |translate}}</th> -->
+          <!-- <th>{{"RATE" | translate }}</th> -->
+          <th>{{"AMOUNT" |translate}}</th> 
           <th>{{ "CANCEL DATE" | translate }}</th>
           <th>{{ "REMARKS" | translate }}</th>
         </tr>
+       
       </thead>
       <tbody>
         <tr *ngFor="let item of data">
           <td>{{ item.BillNo }}</td>
-          <!-- <td>{{ item.BillDate }}</td>
+           <td>{{ item.BillDate }}</td> 
           <td>{{item.Vazhipad}}</td>
           <td>{{item.Name}}</td>
           <td>{{ item.Qty  }}</td>
-          <td style="text-align: right;">{{ item.Rate | number: '1.2-2' }}</td> -->
+          <td class="number">{{ item.Rate | number: '1.2-2' }}</td> 
           <!-- <td style="text-align: right;" >{{ item.Amount | number: '1.2-2'}}</td> -->
-          <td>{{ formatDate(item.CancelDate)  }}</td>
-          <td>{{ item.Reason }}</td>
+          <td>{{item.Canceldt}}</td>
+          <td>{{ item.Remarks }}</td>
           <!-- <td>{{ item.Remarks }}</td> -->
         </tr>
-       
+        <tr>
+          <td class="total" colspan="7">{{"Report Name.TOTAL" | translate}}</td>
+
+          <td class="total">
+            {{getTotalAmount() |  number: '1.2-2'}}
+          </td>
+        </tr>
       </tbody>
       <tfoot>
         <!-- <tr>
@@ -83,7 +90,7 @@
   </div>  
   <div class="page-break"></div>
 <div class="nadavaravu-Cancel" *ngIf="nadavaravuDatat.length>0">
-  <h3 class="tabble-heading">Nadavaravu Cancel</h3>
+  <h3 class="tabble-heading">{{"Nadavaravu" | translate }}</h3>
     <table>
       <thead>
         <tr>
@@ -92,7 +99,9 @@
           <th>{{"VAZHIPAD" | translate }}</th>
           <th>{{"NAME" | translate }}</th>
           <th>{{"QUANTITY" | translate }}</th>
-          <th>{{"RATE" | translate }}</th>
+          <th>{{"AMOUNT" |translate}}</th> 
+          <th>{{ "CANCEL DATE" | translate }}</th>
+
           <th>{{"REMARKS" | translate }}</th>
          
         </tr>
@@ -105,6 +114,7 @@
           <td>{{item.Name}}</td>
           <td>{{ item.Qty  }}</td>
           <td style="text-align: right;">{{ item.Receipt_Amt | number: '1.2-2' }}</td>
+          <td>{{item.Canceldt}}</td>
           <td >{{ item.Reason }}</td>
           
      
@@ -112,6 +122,13 @@
          
           
           <!-- <td>{{ item.Remarks }}</td> -->
+        </tr>
+
+        <tr>
+          <td class="total" colspan="7">{{"Report Name.TOTAL" | translate}}</td>
+          <td class="total">
+            {{getNadavaravuTotalAmount() |  number: '1.2-2'}}
+          </td>
         </tr>
        
       </tbody>
@@ -126,7 +143,9 @@
     </table>
 
   </div>
-
+  <div>
+    <p class="grandtotal" >{{"Report Name.GrandTotal" | translate}}:{{ getTotalAmount() +getNadavaravuTotalAmount() | number: '1.2-2' }}</p>
+  </div>
 
     </div>
     <div class="nodataFound" *ngIf="data.length == 0 && nadavaravuDatat.length==0">

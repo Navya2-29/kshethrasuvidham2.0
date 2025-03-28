@@ -72,8 +72,8 @@ vazhipad:string;
   fetchReportData( fromDate: string, toDate: string): void {
     const payLoad = {
       Type: "vazhipad",
-      FromDate: this.formatDateToDDMMYYYY(fromDate),
-      ToDate:this.formatDateToDDMMYYYY( toDate),
+      FromDate: fromDate,
+      ToDate:toDate,
       PMId:this.prathista,
       VazhId:this.vazhipad.trim()
     };

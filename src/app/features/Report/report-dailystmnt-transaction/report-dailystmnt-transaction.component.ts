@@ -284,15 +284,19 @@ export class ReportDailystmntTransactionComponent {
           .header-print h2 h3 h4 {
           margin:0;
           padding:0;
+          font-family:Manjari;
            }  
           h3,h4,h2{
           margin-top:0px;
           margin-botton:0px;
           text-align:center;
+          font-family:Manjari;
 
           }
           .tabble-heading h3{
-  font-family: 'Times New Roman', Times, serif;
+  // font-family: 'Times New Roman', Times, serif;
+            font-family:Manjari;
+
   font-weight: bold;
   font-size: 16px;
   margin: 8px 0 0 0;
@@ -320,7 +324,9 @@ padding-bottom: 100px;
   }
 p.transaction{
     margin: 10px 0 0 0;
-    font-family: 'Times New Roman', Times, serif;
+    // font-family: 'Times New Roman', Times, serif;
+      font-family:Manjari;
+
     font-size: 18px;
     text-decoration: underline;
     font-weight: bold;

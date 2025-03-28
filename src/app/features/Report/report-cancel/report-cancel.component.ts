@@ -75,7 +75,7 @@ ngOnInit() {
     };
     this.service.getReport(payLoad).subscribe({
       next: (data) => {
-        console.log('Fetched report data:', data);
+        console.log('Fetched report data:vazhipad', data);
         this.data=data;
             
       //    this.data = this.data.sort((a:any, b:any) => {
@@ -110,7 +110,7 @@ ngOnInit() {
     };
     this.service.getReport(payLoad).subscribe({
       next: (data) => {
-        console.log('Fetched report data:', data);
+        console.log('Fetched report data:nadavararvu', data);
         this.nadavaravuDatat=data;
             
       //    this.data = this.data.sort((a:any, b:any) => {
@@ -494,6 +494,12 @@ padding-bottom: 100px;
   } 
 }
 
+getTotalAmount(): number {
+  return this.data.reduce((sum, item) => sum + item.Amount, 0);
+}
+getNadavaravuTotalAmount(): number {
+  return this.nadavaravuDatat.reduce((sum, item) => sum + item.Receipt_Amt, 0);
+}
 
 }
 

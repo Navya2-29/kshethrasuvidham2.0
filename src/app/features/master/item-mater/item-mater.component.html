@@ -12,7 +12,7 @@
         <div class="col-md-4">
           <h1 style="font-weight:500;">Item Master</h1>
           <div class="fixitems">
-          <form [formGroup]="itemMasterForm">
+          <form [formGroup]="itemMasterForm" (keydown.enter)="$event.preventDefault()" >
             <table class="table">
               <tr>
                 <td>
@@ -104,7 +104,7 @@
               </tr>
               <tr>
                 <td>
-                    Item Description<span class="text-danger">*</span><textarea type="text"  formControlName="NM_Description" class="form-control" placeholder="Enter Decription" matInput></textarea>
+                    Item Description<span class="text-danger">*</span><textarea type="text"  formControlName="NM_Description" class="form-control" placeholder="Enter Description" matInput></textarea>
                 </td>
               </tr>
               <tr>

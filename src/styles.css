@@ -3,7 +3,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap'); 
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam:wght@100..900&display=swap');
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body { margin: 0; font-family: Manjari, "Helvetica Neue", sans-serif; }
 
 .mat-mdc-snack-bar-container {
     &.success-snackbar {
@@ -35,7 +35,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     font-style: normal;
   }
   @font-face {
-    font-family: 'Manjari';
+    font-family: 'Manjari-regular';
     src: url('assets/fonts/malayalam/manjari/Manjari-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
@@ -49,9 +49,19 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   }
   
   @font-face {
-    font-family: 'Manjari';
+    font-family: 'Manjari-thin';
     src: url('assets/fonts/malayalam/manjari/Manjari-Thin.ttf') format('truetype');
     font-weight: normal;
     font-style: italic;
   }
-  
+  @font-face {
+    font-family: 'annke';
+    src: url('assets/fonts/malayalam/Ank50104.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  html, body { height: 100%;
+  font-family:Manjari ;
+  body { margin: 0; font-family: Manjari, "Helvetica Neue", sans-serif; }
+
+  }
