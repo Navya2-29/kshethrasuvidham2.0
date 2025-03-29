@@ -1,424 +1,468 @@
-<h2  style="background: #223d61; color: white">
-    {{"Multi day Booking" | translate}}
-  </h2>
-  <div class="high" style="width: 100%">
-    
-    <div class="container" >
-      <div class="row">
-        <div class="vazhipad-details" class="col-md-6">
-          <form [formGroup]="form">
-            <div class="col-md-6">
-           
-                <div style="padding: 0px; margin-bottom: 18px">
-                  <table class="">
-                    <tr><td style="width: 100px;" colspan="2">{{ "VAZHIPAD" | translate}}</td>
-               
-                        <td>{{"RATE" |translate  }}  </td>
-                      <td>{{"PRATHISTA" |translate }}</td></tr>
-                        <tr>
-                          <td colspan="2">  <input
-                            type="text"
-                            style="width: 100%;"
-                            [placeholder]="'PLACEHOLDER.VAZHIPAD' | translate"
-                            matInput
-                            class="form-control sps"
-                            formControlName="Vazhipad"
-                            [matAutocomplete]="auto"
-                            
-                            [ngClass]="{
-                              'invalid-control': form.get('Vazhipad')?.invalid && form.get('Vazhipad')?.touched
-                            }"
-                          />
-                          <mat-autocomplete
-                            autoActiveFirstOption
-                            #auto="matAutocomplete"
-                            (optionSelected)="onSelect($event)"
-                          >
-                          @for (option of filteredOptions | async; track option) {
-                           
-                            <mat-option
-                             *ngIf="lang=='en'"
-                              [value]="option.VM_Name"
-                            >
-                          
-                            <p style="margin-bottom: 0;margin-top: 0;padding-top:0 ; padding-bottom: 0; font-size: 12px; line-height: normal;font-weight:800;">
-                              {{ option.VM_Code }}-{{ option.VM_Name }}
-                            </p>
-                            </mat-option>
-                            <mat-option
-                             *ngIf="lang!='en'"
-                              [value]="option.VM_RName"
-                            >
-                          
-                            <p style="margin-bottom: 0; padding-bottom: 0; font-size: 12px; line-height: normal;">
-                              {{ option.VM_Code }}-
-                            
-                              {{ option.VM_RName }}
-                            </p>
-                            </mat-option>
+<h2 mat-dialog-title style="background: #223d61; color: white">
+  {{"Multi day Booking" | translate}}
+</h2>
+<mat-dialog-content class="high" style="width: 100%">
   
-                          }
-                          </mat-autocomplete></td>
-    
-                          <td><input
-                            type="text"
-                            class="form-control formdate"
-                            [placeholder]="'PLACEHOLDER.RATE' | translate"
-                            formControlName="Rate"
-                            appNumber
-                            [readOnly]="rateChange==='N'"
-                            [ngClass]="{
-                              'invalid-control': form.get('Rate')?.invalid && form.get('Rate')?.touched
-                            }"
-                          /></td>
-                          <td colspan="2">
-                            <select
-                              class="form-control"
-                              formControlName="Prethista"
-                              style="width: 100%; height: 30.6px"
-                              
-                              [ngClass]="{
-                                'invalid-control': form.get('Prethista')?.invalid && form.get('Prethista')?.touched
-                              }"
-                            >
-                            <ng-container *ngIf="lang=='en'">
-                              <option
-                            *ngFor="let prathishta of prathishtaOptions"
-                            [value]="prathishta.PM_Name"
-                          >
-                            {{prathishta.PM_Name}}
-                          </option>
-                            </ng-container>
-                            
-                            <ng-container *ngIf="lang=='ml'">
-                              <option
-                            *ngFor="let prathishta of prathishtaOptions"
-                            value="prathishta.PM_RegName"
-                          >
-                            {{prathishta.PM_RegName}}
-                          </option>
-                            </ng-container>
-                              
-                            </select>
-                           
-                          </td>
-                          <td></td>
-                        </tr>
-                      <tr>
-                        <th >{{"START DATE" |translate  }}</th>
-                        <th>{{"NUMBER OF DAYS" |translate}}</th>
-                        <th>{{"QUANTITY" |translate  }}</th>
-                        <th>{{"END DATE"| translate }}</th>
-                        <th>{{"TIME"| translate }}</th>
-                      </tr>
-                      <tr>
-                        <td>
-                          <input
-                            type="date"
-                            class="form-control formdate"
-                            style="width: 100%" 
-                            [attr.min]="minDate"
-                            [readOnly]="form.get('VM_Receipt')?.value==='Y'"
-                            formControlName="VazhipadDate"
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="number"
-                            class="form-control formdate"
-                            formControlName="NoOfDays"
-                            [min]="1"
-                            appNumber
-                            [readonly]="VM_MaxNo > 0"
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="number"
-                            class="form-control formdate"
-                            style="width: 60px"
-                            formControlName="Qty"
-                            [min]="1"
-                            appNumber
-                            [readonly]="VM_MaxNo > 0"
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="text"
-                            class="form-control formdate"
-                            formControlName="EndDate"
-                            readonly
-                            style="width: 100px;"
-                          />
-                        </td>
-                        <td>
-                          <select 
-                        class="form-control"
-                        formControlName="VTime"
-                        style="width: 80%; height: 30.6px"
-                        style="width: 100px;height: 30px;"
-                      >
-                      <option *ngFor="let time of vazhipadtime" [value]="time.id" > {{ 'OPTIONS.' + time.key | translate }}</option>
-                        
-                      </select>
-                        </td>
-                      </tr>
-                     </table>
-                <div>
-                  <!-- <button class="btn btn-primary" (click)=" addDevotee()" >
-                    {{"ADD DEVOTEE" |translate }}
-                  </button>   -->
-                  <!-- <mat-icon (click)=" addDevotee()" ><span class="icons" style="color: blue; width: 100px;height: 50px;" >add_comment</span></mat-icon> -->
-                  <button mat-icon-button (click)="addDevotee()" style="font-size: 36px; " [disabled]="VM_MaxNo>0">
-                    <mat-icon style="font-size: 30px; color: blue;">add_comment</mat-icon>
-                  </button>
-                </div>
-                <div>
-                  <table class="table">
-                    <tbody    formArrayName="devotees" >
-                      <tr
-                      *ngFor="let devotee of devotees.controls; let i = index" [formGroupName]="i"
-                      >
-                        <td>
-                          <a color="accent"
-                            ><mat-icon class="icons" (click)="removeDevotee(i)"
-                              >delete</mat-icon
-                            ></a
-                          >
-                        </td>
-                        <td colspan="2">
-                          <input
-                          style="width:100%"
-                          appUpperCase
-                            type="text"
-                            formControlName="Name"
-                            [placeholder]="'PLACEHOLDER.NAME' | translate"
-                            style="border: none"
-                            (blur)="validateDevoteeName()" 
-                            [ngClass]="{
-                              'invalid-control': devotee.get('Name')?.invalid && devotee.get('Name')?.touched
-                            }" 
-                          />
-                        </td>
-                        <td style="width:100%"></td>
-                        <td>
-                          <select
-                            class="form-control select-star"
-                            style="width: fit-content; height: 30.6px"
-                            formControlName="Star"
-                            [ngClass]="{
-                              'invalid-control': devotee.get('Star')?.invalid && devotee.get('Star')?.touched
-                            }" 
-                          >
-                          <option value="">{{"Select" | translate}}</option>
-                          <ng-container *ngIf="lang=='en'">
-                             <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_NameEng}}</option>
+
+  <div style="margin-left: 30px;" class="d-flex align-items-center ms-3">
+    <input
+      type="text"
+      [placeholder]="'PLACEHOLDER.MOBILENUMBER' | translate"
+      [(ngModel)]="mobileNumber"
+      style="width: 150px ;margin-right:10px"
+      class="phone sps form-control"
+    />
+    <input type="checkbox" [(ngModel)]="memberDevoteeCheck" style="margin: left 10px;" ><span style="color:black;margin-left: 5px;font-size: 12px;">{{"Member" | translate }}</span> 
+    <button
+    class="btn btn-secondary"
+    (click)="getNameAndStarByMobilenumber()"
+    style=" font-size: 9pt; background-color: #223d61;padding-left: 5px;margin-left: 5px;"
+  >
+    Search for Devotee
+  </button>
+    <!-- <button -->
+      <!-- class="btn btn-secondary"
+      (click)="onFind()"
+      style="padding: 5px; font-size: 9pt; background-color: #223d61"
+    >
+      Find
+    </button> -->
+    <!-- <div style="margin-top:10px;margin-bottom: 10px;">
+      <input type="checkbox" [(ngModel)]="memberDevoteeCheck" style="margin-top: 5px;" ><span style="color:black;margin-left: 5px;">Member</span> 
+      <button
+      class="btn btn-secondary"
+      (click)="getNameAndStarByMobilenumber()"
+      style=" font-size: 9pt; background-color: #223d61;padding-left: 10px;margin-left: 50px;"
+    >
+      Search for Devotee
+    </button>
+    </div> -->
+  </div>
+
+  <div class="container" >
+
    
-                           </ng-container>
-                           <ng-container *ngIf="lang=='ml'">
-                             <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_Name}}</option>
-   
-                           </ng-container>
-                          </select>
-    
-    
-                          <!-- <input type="text"
-                          placeholder="Select star"
-                          aria-label="star"
-                          class="form-control sps"
+
+
+
+    <div class="row">
+      <div class="vazhipad-details" class="col-md-6">
+
+       
+
+
+        <form [formGroup]="form">
+          <div class="col-md-6">
+         
+              <div style="padding: 0px; margin-bottom: 18px">
+                <table class="">
+                  <tr><td style="width: 100px;" colspan="2">{{ "VAZHIPAD" | translate}}</td>
+             
+                      <td>{{"RATE" |translate  }}  </td>
+                    <td>{{"PRATHISTA" |translate }}</td></tr>
+                      <tr>
+                        <td colspan="2">  <input
+                          type="text"
+                          style="width: 100%;"
+                          [placeholder]="'PLACEHOLDER.VAZHIPAD' | translate"
                           matInput
-                          formControlName="Star"
-                          [matAutocomplete]="star">
-                          <mat-autocomplete #star="matAutocomplete" (optionSelected)="onSelectStar(i, $event)">
-                            <mat-option *ngFor="let star of filteredStars[i] | async" [value]="star">
-                              {{ star }}
-                            </mat-option>
-                          </mat-autocomplete> -->
-                        </td>
-                        <td *ngIf="form.get('multiName')?.value === 'Y'">
-                          <input
-                            type="text"
-                          formControlName="Name2"
-                            placeholder="Enter 2nd Name"
-                            style="border: none"
-                          />
-                        </td>
-                        <td *ngIf="form.get('multiName')?.value === 'Y'">
-                          <select
-                            class="form-control select-star"
-                            style="width: fit-content; height: 30.6px"
-                            formControlName="Star2"
-                          >
-                          <option value="">Select</option>
-                          <ng-container
-                           *ngIf="lang=='en'">
-                            <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_NameEng}}</option>
-  
-                          </ng-container>
-                          <ng-container *ngIf="lang!='en'">
-                            <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_Name}}</option>
-  
-                          </ng-container>
-                          </select>
-                        </td>
-                      </tr>  
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </form>
-        </div>
-      
-  
-        <div class="col-md-3">
-          <div>
-            <form [formGroup]="multidayFilterForm">
-            <table class="table" >
-              <thead>
-                <tr style="background-color: #223d61; color: white">
-                  <th colspan="2">{{"Filter Options" |translate}}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td> {{"starwise" |translate }}</td>
-                  <td>
-                    <select
-                          class="form-control select-star"
-                          style="width: 100%; height: 30.6px"
-                          formControlName="Star"
+                          class="form-control sps"
+                          formControlName="Vazhipad"
+                          [matAutocomplete]="auto"
+                          
+                          [ngClass]="{
+                            'invalid-control': form.get('Vazhipad')?.invalid && form.get('Vazhipad')?.touched
+                          }"
+                        />
+                        <mat-autocomplete
+                          autoActiveFirstOption
+                          #auto="matAutocomplete"
+                          (optionSelected)="onSelect($event)"
                         >
+                        @for (option of filteredOptions | async; track option) {
+                         
+                          <mat-option
+                           *ngIf="lang=='en'"
+                            [value]="option.VM_Name"
+                          >
+                        
+                          <p style="margin-bottom: 0;margin-top: 0;padding-top:0 ; padding-bottom: 0; font-size: 12px; line-height: normal;font-weight:800;">
+                            {{ option.VM_Code }}-{{ option.VM_Name }}
+                          </p>
+                          </mat-option>
+                          <mat-option
+                           *ngIf="lang!='en'"
+                            [value]="option.VM_RName"
+                          >
+                        
+                          <p style="margin-bottom: 0; padding-bottom: 0; font-size: 12px; line-height: normal;">
+                            {{ option.VM_Code }}-
+                          
+                            {{ option.VM_RName }}
+                          </p>
+                          </mat-option>
+
+                        }
+                        </mat-autocomplete></td>
   
-                        <option value="">Select</option>
+                        <td><input
+                          type="text"
+                          class="form-control formdate"
+                          [placeholder]="'PLACEHOLDER.RATE' | translate"
+                          formControlName="Rate"
+                          appNumber
+                          [readOnly]="rateChange==='N'"
+                          [ngClass]="{
+                            'invalid-control': form.get('Rate')?.invalid && form.get('Rate')?.touched
+                          }"
+                        /></td>
+                        <td colspan="2">
+                          <select
+                            class="form-control"
+                            formControlName="Prethista"
+                            style="width: 100%; height: 30.6px"
+                            
+                            [ngClass]="{
+                              'invalid-control': form.get('Prethista')?.invalid && form.get('Prethista')?.touched
+                            }"
+                          >
+                          <ng-container *ngIf="lang=='en'">
+                            <option
+                          *ngFor="let prathishta of prathishtaOptions"
+                          [value]="prathishta.PM_Name"
+                        >
+                          {{prathishta.PM_Name}}
+                        </option>
+                          </ng-container>
+                          
+                          <ng-container *ngIf="lang=='ml'">
+                            <option
+                          *ngFor="let prathishta of prathishtaOptions"
+                          value="prathishta.PM_RegName"
+                        >
+                          {{prathishta.PM_RegName}}
+                        </option>
+                          </ng-container>
+                            
+                          </select>
+                         
+                        </td>
+                        <td></td>
+                      </tr>
+                    <tr>
+                      <th >{{"START DATE" |translate  }}</th>
+                      <th>{{"NUMBER OF DAYS" |translate}}</th>
+                      <th>{{"QUANTITY" |translate  }}</th>
+                      <th>{{"END DATE"| translate }}</th>
+                      <th>{{"TIME"| translate }}</th>
+                    </tr>
+                    <tr>
+                      <td>
+                        <input
+                          type="date"
+                          class="form-control formdate"
+                          style="width: 100%" 
+                          [attr.min]="minDate"
+                          [readOnly]="form.get('VM_Receipt')?.value==='Y'"
+                          formControlName="VazhipadDate"
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="number"
+                          class="form-control formdate"
+                          formControlName="NoOfDays"
+                          [min]="1"
+                          appNumber
+                          [readonly]="VM_MaxNo > 0"
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="number"
+                          class="form-control formdate"
+                          style="width: 60px"
+                          formControlName="Qty"
+                          [min]="1"
+                          appNumber
+                          [readonly]="VM_MaxNo > 0"
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          class="form-control formdate"
+                          formControlName="EndDate"
+                          readonly
+                          style="width: 100px;"
+                        />
+                      </td>
+                      <td>
+                        <select 
+                      class="form-control"
+                      formControlName="VTime"
+                      style="width: 80%; height: 30.6px"
+                      style="width: 100px;height: 30px;"
+                    >
+                    <option *ngFor="let time of vazhipadtime" [value]="time.id" > {{ 'OPTIONS.' + time.key | translate }}</option>
+                      
+                    </select>
+                      </td>
+                    </tr>
+                   </table>
+              <div>
+                <!-- <button class="btn btn-primary" (click)=" addDevotee()" >
+                  {{"ADD DEVOTEE" |translate }}
+                </button>   -->
+                <!-- <mat-icon (click)=" addDevotee()" ><span class="icons" style="color: blue; width: 100px;height: 50px;" >add_comment</span></mat-icon> -->
+                <button mat-icon-button (click)="addDevotee()" style="font-size: 36px; " [disabled]="VM_MaxNo>0">
+                  <mat-icon style="font-size: 30px; color: blue;">add_comment</mat-icon>
+                </button>
+              </div>
+              <div>
+                <table class="table">
+                  <tbody    formArrayName="devotees" >
+                    <tr
+                    *ngFor="let devotee of devotees.controls; let i = index" [formGroupName]="i"
+                    >
+                      <td>
+                        <a color="accent"
+                          ><mat-icon class="icons" (click)="removeDevotee(i)"
+                            >delete</mat-icon
+                          ></a
+                        >
+                      </td>
+                      <td colspan="2">
+                        <input
+                        style="width:100%"
+                        appUpperCase
+                          type="text"
+                          formControlName="Name"
+                          [placeholder]="'PLACEHOLDER.NAME' | translate"
+                          style="border: none"
+                          (blur)="validateDevoteeName()" 
+                          [ngClass]="{
+                            'invalid-control': devotee.get('Name')?.invalid && devotee.get('Name')?.touched
+                          }" 
+                        />
+                      </td>
+                      <td style="width:100%"></td>
+                      <td>
+                        <select
+                          class="form-control select-star"
+                          style="width: fit-content; height: 30.6px"
+                          formControlName="Star"
+                          [ngClass]="{
+                            'invalid-control': devotee.get('Star')?.invalid && devotee.get('Star')?.touched
+                          }" 
+                        >
+                        <option value="">{{"Select" | translate}}</option>
+                        <ng-container *ngIf="lang=='en'">
+                           <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_NameEng}}</option>
+ 
+                         </ng-container>
+                         <ng-container *ngIf="lang=='ml'">
+                           <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_Name}}</option>
+ 
+                         </ng-container>
+                        </select>
+  
+  
+                        <!-- <input type="text"
+                        placeholder="Select star"
+                        aria-label="star"
+                        class="form-control sps"
+                        matInput
+                        formControlName="Star"
+                        [matAutocomplete]="star">
+                        <mat-autocomplete #star="matAutocomplete" (optionSelected)="onSelectStar(i, $event)">
+                          <mat-option *ngFor="let star of filteredStars[i] | async" [value]="star">
+                            {{ star }}
+                          </mat-option>
+                        </mat-autocomplete> -->
+                      </td>
+                      <td *ngIf="form.get('multiName')?.value === 'Y'">
+                        <input
+                          type="text"
+                        formControlName="Name2"
+                          [placeholder]="'Name2'| translate "
+                          style="border: none"
+                        />
+                      </td>
+                      <td *ngIf="form.get('multiName')?.value === 'Y'">
+                        <select
+                          class="form-control select-star"
+                          style="width: fit-content; height: 30.6px"
+                          formControlName="Star2"
+                        >
+                        <option value="">{{"Select" | translate }}</option>
                         <ng-container
                          *ngIf="lang=='en'">
-                          <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.SM_NameEng"> {{nakshtra.SM_NameEng}}</option>
-  
+                          <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_NameEng}}</option>
+
                         </ng-container>
                         <ng-container *ngIf="lang!='en'">
-                          <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.SM_NameEng"> {{nakshtra.SM_Name}}</option>
-  
+                          <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_Name}}</option>
+
                         </ng-container>
-  
-                        <!-- <option value="">-Select-</option> -->
-                         <!-- <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.SM_NameEng"> {{nakshtra.SM_NameEng}}</option> -->
                         </select>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="line-height: 11.7pt">{{"Malayalam Monthwise" |translate}}</td>
-                  <td>
-                    <select class="form-control select-star"
-                    style="width: 100%; height: 30.6px" 
-                    formControlName="MalMonth"
-                    >
-                    <option value="">-Select-</option>
-                    <ng-container *ngIf="lang=='en'">
-                      <option *ngFor="let month of malayalamMonthList " [value]="month.mmonEng"> {{month.mmonEng}}</option>
-  
-                    </ng-container>
-                    <ng-container  *ngIf="lang!='en'" >
-                      <option *ngFor="let month of malayalamMonthList " [value]="month.mmonEng"> {{month.mmon}}</option>
-  
-                    </ng-container>
-                    </select>
-                  </td>
-                </tr>
-                <tr>
-                  <td> {{"daywise" |translate }}</td>
-                  <td>
-                    <select class="form-control select-star"
-                    style="width: 100%; height: 30.6px" formControlName="EngMonth">
-                    <option value="">-Select-</option>
-                      <option value="Sunday">{{"Day.SUNDAY" |translate}}</option>
-                      <option value="Monday">{{"Day.MONDAY" | translate}}</option>
-                      <option value="Tuesday">{{"Day.TUESDAY" | translate}}</option>
-                      <option value="wednesday">{{"Day.WEDNESDAY" | translate}}</option>
-                      <option value="Thursday">{{"Day.THURSDAY" | translate}}</option>
-                      <option value="Friday">{{"Day.FRIDAY" | translate}}</option>
-                      <option value="saturday">{{"Day.SATURDAY" |translate }}</option>
-                    </select>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="line-height: 11.7pt">{{"Malayalam Datewise"|translate}}</td>
-                  <td>
-                    <select class="form-control select-star"  formControlName="MalDay"
-                    style="width: 100%; height: 30.6px" >
-                    <option value="">0</option>
-                      <option *ngFor="let day of MlayalamDays" [value]="day">{{day}}</option>
-                      
-                    </select>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="line-height: 11.7pt">{{"English Datewise" |translate}}</td>
-                  <td>
-                    <select class="form-control select-star"
-                    style="width:100%; height: 30.6px" formControlName="EngishDay" >
-                    <option value="">0</option>
-                      <option *ngFor="let day of EnglishDays" [value]="day">{{day}}</option>
-                      
-                    </select>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="line-height: 11.7pt"> {{"Thithi"|translate }}</td>
-                  <td>
-                    <select class="form-control select-star"  formControlName="Thithi"
-                    style="width: 100%; height: 30.6px" >
-                    <option value="">-select-</option>
-                    <ng-container *ngIf="lang=='en'">
-                      <option *ngFor="let thithi of thithiList" [value]="thithi.ThithiEng">{{thithi.ThithiEng}}</option>
-                    </ng-container>
-                    <ng-container *ngIf="lang!='en'">
-                      <option *ngFor="let thithi of thithiList" [value]="thithi.ThithiEng">{{thithi.Thithi}}</option>
-                    </ng-container>
-                    </select>
-                  </td>
-                </tr>
-                <tr>
-                  <td><button class="btn btn-danger" (click)="onCancelClick()" >Cancel</button></td>
-                  <td><button class="btn btn-primary" (click)="onSearchClick()" >Search</button></td>
-                </tr>
-              </tbody>
-            </table>
-            </form>
+                      </td>
+                    </tr>  
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
+        </form>
+      </div>
+    
+
+      <div class="col-md-3">
+        <div>
+          <form [formGroup]="multidayFilterForm">
+          <table class="table" >
+            <thead>
+              <tr style="background-color: #223d61; color: white">
+                <th colspan="2">{{"Filter Options" |translate}}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td> {{"starwise" |translate }}</td>
+                <td>
+                  <select
+                        class="form-control select-star"
+                        style="width: 100%; height: 30.6px"
+                        formControlName="Star"
+                      >
+
+                      <option value="">-{{"Select" |translate}}-</option>
+                      <ng-container
+                       *ngIf="lang=='en'">
+                        <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.SM_NameEng"> {{nakshtra.SM_NameEng}}</option>
+
+                      </ng-container>
+                      <ng-container *ngIf="lang!='en'">
+                        <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.SM_NameEng"> {{nakshtra.SM_Name}}</option>
+
+                      </ng-container>
+
+                      <!-- <option value="">-Select-</option> -->
+                       <!-- <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.SM_NameEng"> {{nakshtra.SM_NameEng}}</option> -->
+                      </select>
+                </td>
+              </tr>
+              <tr>
+                <td style="line-height: 11.7pt">{{"Malayalam Monthwise" |translate}}</td>
+                <td>
+                  <select class="form-control select-star"
+                  style="width: 100%; height: 30.6px" 
+                  formControlName="MalMonth"
+                  >
+                  <option value="">-{{"Select" |translate}}-</option>
+                  <ng-container *ngIf="lang=='en'">
+                    <option *ngFor="let month of malayalamMonthList " [value]="month.mmonEng"> {{month.mmonEng}}</option>
+
+                  </ng-container>
+                  <ng-container  *ngIf="lang!='en'" >
+                    <option *ngFor="let month of malayalamMonthList " [value]="month.mmonEng"> {{month.mmon}}</option>
+
+                  </ng-container>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td> {{"daywise" |translate }}</td>
+                <td>
+                  <select class="form-control select-star"
+                  style="width: 100%; height: 30.6px" formControlName="EngMonth">
+                  <option value="">-{{"Select" |translate}}-</option>
+                    <option value="Sunday">{{"Day.SUNDAY" |translate}}</option>
+                    <option value="Monday">{{"Day.MONDAY" | translate}}</option>
+                    <option value="Tuesday">{{"Day.TUESDAY" | translate}}</option>
+                    <option value="wednesday">{{"Day.WEDNESDAY" | translate}}</option>
+                    <option value="Thursday">{{"Day.THURSDAY" | translate}}</option>
+                    <option value="Friday">{{"Day.FRIDAY" | translate}}</option>
+                    <option value="saturday">{{"Day.SATURDAY" |translate }}</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td style="line-height: 11.7pt">{{"Malayalam Datewise"|translate}}</td>
+                <td>
+                  <select class="form-control select-star"  formControlName="MalDay"
+                  style="width: 100%; height: 30.6px" >
+                  <option value="">0</option>
+                    <option *ngFor="let day of MlayalamDays" [value]="day">{{day}}</option>
+                    
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td style="line-height: 11.7pt">{{"English Datewise" |translate}}</td>
+                <td>
+                  <select class="form-control select-star"
+                  style="width:100%; height: 30.6px" formControlName="EngishDay" >
+                  <option value="">0</option>
+                    <option *ngFor="let day of EnglishDays" [value]="day">{{day}}</option>
+                    
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td style="line-height: 11.7pt"> {{"Thithi"|translate }}</td>
+                <td>
+                  <select class="form-control select-star"  formControlName="Thithi"
+                  style="width: 100%; height: 30.6px" >
+                  <option value="">-{{"Select" |translate}}-</option>
+                  <ng-container *ngIf="lang=='en'">
+                    <option *ngFor="let thithi of thithiList" [value]="thithi.ThithiEng">{{thithi.ThithiEng}}</option>
+                  </ng-container>
+                  <ng-container *ngIf="lang!='en'">
+                    <option *ngFor="let thithi of thithiList" [value]="thithi.ThithiEng">{{thithi.Thithi}}</option>
+                  </ng-container>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td><button class="btn btn-danger" (click)="onCancelClick()" >Cancel</button></td>
+                <td><button class="btn btn-primary" (click)="onSearchClick()" >Search</button></td>
+              </tr>
+            </tbody>
+          </table>
+          </form>
         </div>
-  
-        <div class="col-md-3">
-          <div>
-            <table class="table" >
-              <thead>
-                <tr style="background-color: #223d61; color: white">
-                  <th colspan="2">{{"Day List"| translate}}</th>
-                </tr>
-              </thead>
-            </table>
-          </div>
-          <div class="daylist" style="height: 35vh;">
-            <table class="table" style="width: 100%; ">
-              <tbody>
-                <tr *ngFor="let day of updatedDayList; let i = index">
-                  <td><input type="checkbox" [checked]="day.selected" (change)="onCheckboxChange(i)" />&nbsp;{{ day.date }}  </td>
-                </tr>
-                <tr *ngIf="updatedDayList.length==0">
-                  <td>No day found</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+      </div>
+
+      <div class="col-md-3">
+        <div>
+          <table class="table" >
+            <thead>
+              <tr style="background-color: #223d61; color: white">
+                <th colspan="2">{{"Day List"| translate}}</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+        <div class="daylist" style="height: 35vh;">
+          <table class="table" style="width: 100%; ">
+            <tbody>
+              <tr *ngFor="let day of updatedDayList; let i = index">
+                <td><input type="checkbox" [checked]="day.selected" (change)="onCheckboxChange(i)" />&nbsp;{{ day.date }}  </td>
+              </tr>
+              <tr *ngIf="updatedDayList.length==0">
+                <td>No day found</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
-  
   </div>
-  
-  <div class="menuend">
-    <button mat-button class="close" (click)="cancel()">Cancel</button>
-    <button mat-button class="proceed" (click)="onSubmit()" >Proceed</button>
-  </div>
-  
+
+</mat-dialog-content>
+
+<mat-dialog-actions class="menuend">
+  <button mat-button [mat-dialog-close]="true" class="close" (click)="cancel()">Cancel</button>
+  <button mat-button class="proceed" (click)="onSubmit()" >Proceed</button>
+</mat-dialog-actions>

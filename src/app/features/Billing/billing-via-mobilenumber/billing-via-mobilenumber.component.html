@@ -2,8 +2,8 @@
     <span>Mobile: {{ mobileNumber }}</span>
   </div>
   
-  <div class="dialog-body" *ngIf="!noDataFound">
-    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" style="width: 100%;" >
+  <div class="dialog-body" *ngIf="!noDataFound" style="font-family:Manjari;">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" style="width: 100%;font-family: Manjari;" >
       <!-- Checkbox Column -->
       <ng-container matColumnDef="select">
         <th mat-header-cell *matHeaderCellDef>
@@ -29,7 +29,7 @@
         <td mat-cell *matCellDef="let element"> {{ element.Name }} </td>
       </ng-container>
   
-      <!-- Star Column -->this.dataSource
+      <!-- Star Columnthis.dataSource -->
       <ng-container matColumnDef="star">
         <th mat-header-cell *matHeaderCellDef> {{"STAR" | translate }} </th>
         <td mat-cell *matCellDef="let element"> {{ element.Star }} </td>

@@ -64,7 +64,7 @@
              
               <td>{{ data.Name }}</td>
               <!-- <td>{{ data.Star }}</td> -->
-              <td>{{ data.Rate }}</td>
+              <td class="number">{{ data.Rate | number : "1.2-2"}}</td>
               <!-- <td class="qty">{{ data.Qty }}</td> -->
               <td class="number">{{ data.Amount | number : "1.2-2" }}</td>
             </tr>

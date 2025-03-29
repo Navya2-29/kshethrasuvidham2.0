@@ -6,6 +6,7 @@
   "NAME": "പേര്",
   "Name2":"പേര്2",
   "STAR": "നക്ഷത്രം",
+  "Star2":"നക്ഷത്രം2",
   "PRATHISTA": "പ്രതിഷ്ഠ",
   "QUANTITY": "എണ്ണം ",
   "RATE": "നിരക്ക്",
@@ -46,7 +47,10 @@
   "REMARKS":"റിമാർക്സ്",
   "CHEQUEDATE":"ചെക്ക് തീയതി",
   "CHEQUENO":"ചെക്ക് നം",
+  "Multiday Booking Details":"ബുക്ക് ചെയ്ത വഴിപാടിന്റെ വിവരങ്ങൾ",
   "ID":"ഐഡി",
+  "From":"മുതൽ",
+  "To":"വരെ",
   "FROMDATE":"മുതൽ",
   "TODATE":"വരെ",
   "Select Diety":"സെലക്ട് പ്രതിഷ്ഠ",
@@ -80,7 +84,7 @@
     "DATE": "തീയതി   ",
     "TIME": "സമയം",
     "BILLNUMBER": "ബിൽ നമ്പർ    ",
-    "MOBILENUMBER": "മൊബൈൽ നമ്പർ ",
+    "MOBILENUMBER": "മൊബൈൽ നമ്പർ",
     "ADDRESS": "വിലാസം",
     "ADDRESS1": "വിലാസം1",
     "ADDRESS2": "വിലാസം2",
@@ -175,6 +179,7 @@
   "report-duplicate":"ഡ്യൂപ്ലിക്കേറ്റ് റിപ്പോർട്ട്",
   "Credit Collection":"ക്രെഡിറ്റ് കളക്ഷൻ ",
   "Count":"കൌണ്ട്",
+  "total":"ആകെ തുക",
   "TOTAL":"തുക",
   "Total for":"ആകെ",
   "CREDITTOTAL":"ആകെ കിട്ടാനുള്ള തുക",
@@ -202,7 +207,7 @@
   "Credits":{
     "RefNo":"റെഫറൻസ് നം", 
     "Name":"പേര്",
-    "Mobile Number":"മൊബൈൽ നമ്പർ", 
+    "Mobile Number":"മൊബൈൽ", 
     "Address":"അഡ്രസ്",
      "Total Amount":"ആകെ തുക",
     "Payment Method":"പെയ്‌മെന്റ് മെത്തേഡ്",
@@ -217,7 +222,7 @@
 
   },
   "feecollection":{
-   "Mobile Number": "മൊബൈൽ നമ്പർ" ,  
+   "Mobile Number": "മൊബൈൽ" ,  
 "Member ID":"മെമ്പർ ഐഡി" ,
 "Bill No":"ബിൽ നം",
 

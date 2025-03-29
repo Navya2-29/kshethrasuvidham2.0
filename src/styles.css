@@ -62,6 +62,6 @@ body { margin: 0; font-family: Manjari, "Helvetica Neue", sans-serif; }
   }
   html, body { height: 100%;
   font-family:Manjari ;
-  body { margin: 0; font-family: Manjari, "Helvetica Neue", sans-serif; }
+  body { margin: 0; font-family: Manjari !important; }
 
   }

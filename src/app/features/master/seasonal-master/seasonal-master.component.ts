@@ -74,6 +74,7 @@ export class SeasonalMasterComponent implements OnInit {
       VS_FromDate: [this.today, [Validators.required]],
       VS_ToDate: [this.tomorrow, [Validators.required]],
       VS_Reasion: [''],
+      VM_ID:[''],
     });
    
   }
@@ -91,9 +92,10 @@ export class SeasonalMasterComponent implements OnInit {
       )
       .subscribe((response: any) => {
         if (response?.length > 0) {
-          this.seasonalBlockingForm
-            .get('VM_name')
-            ?.setValue(response[0].VM_Name);
+          this.seasonalBlockingForm.patchValue({
+            VM_name: response[0].VM_Name,
+            // VM_ID: response[0].VM_Id,  // Update VM_Id in the form
+          });
           this.VM_Id = response[0].VM_Id;
           console.log(response);
         } else {
@@ -244,7 +246,7 @@ compareDatesByDayMonthYear(date1: Date, date2: Date): boolean {
     this.loading = true;
     console.log(data,"edit");
     this.updateFlag = true;
-    this.Id = this.getVMId(data.VM_Code).toString();
+    this.Id = data.VS_ID;
     // this.seasonalBlockingForm.get('VS_code')?.disable();
     // this.seasonalBlockingForm.get('VM_name')?.disable();
     const fromDate = new Date(data.VS_FromDate);

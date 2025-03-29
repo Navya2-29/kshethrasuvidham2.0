@@ -1,7 +1,7 @@
-<div class="card-body" style="background:white;">
+<div class="card-body" style="background:white; font-family: Manjari;">
     <div class="row">
         <div class="col-md-4">
-            <h2>
+            <h2 style="margin-bottom: 0;">
                 {{"Credit Collection" | translate}}</h2>
                 <form [formGroup]="CreditForm">
             <table class="table">
@@ -121,7 +121,7 @@
                         
                         <td>{{ data.BillDate | date :"dd/MM/YYYY"}}</td>
                        
-                        <td style="text-align:left;"><p>{{data.Name}}</p><p>{{data.Name2}}</p></td>
+                        <td ><p>{{data.Name}}</p><p>{{data.Name2}}</p></td>
                         <td>{{data.MobileNo}}</td>
                         <td>{{data.Amount}}</td>
                         

@@ -34,7 +34,7 @@ export class MemberMasterComponent implements OnInit {
   vmActivelist: any[] = [];
   filteredPmaster: any[] = [];
   lang: string | null;
-
+  previousRelativeDetails: any[] = [];
   private formBuilder = inject(FormBuilder);
   private masterservice = inject(MasterService);
   // constructor
@@ -54,6 +54,7 @@ export class MemberMasterComponent implements OnInit {
 
   ngOnInit(): void {
     this.getNakshthram();
+    this.editFlag=false;
     this.getDevoteeMaster()
     this.getAllActivevazhipad()
     this.memeberForm = this.formBuilder.group({
@@ -130,6 +131,7 @@ export class MemberMasterComponent implements OnInit {
     this.relativesDetails.removeAt(lessonIndex);
   }
   onSubmit(data: any) {
+    this.editFlag=false;
     if(this.memeberForm.invalid){
       this.notification.showError("Please fil the form");
       return
@@ -197,11 +199,13 @@ export class MemberMasterComponent implements OnInit {
     next:(data)=>{
       console.log(data);
       this.getDevoteeMaster()
+      this.resetForm();
     }
   })
   }
 
   onEdit(member:any){
+    console.log(member,"editdata")
   this.editFlag=true;
   this.memberId=member.MID;
   const payLoad={
@@ -214,7 +218,16 @@ this.memeberForm.patchValue({
   
   mobile: member.mobile ,
   email: member.email,
+ 
+
 })
+if(member.VazhId!=0 && member.Amount>0 ){
+  this.memeberForm.patchValue({
+    endowment:true,
+    VazhId:member.VazhId?member.VazhId:0,
+    Amount:member.Amount?member.Amount:0
+  })
+}
 this.masterservice.getMaster(payLoad).subscribe({
   next: (data) => {
     if (data && Array.isArray(data)) { // Ensure data is defined and an array
@@ -249,6 +262,10 @@ this.masterservice.getMaster(payLoad).subscribe({
 
 onUpdate(data:any){
   this.editFlag=false
+
+  this.previousRelativeDetails = [...this.relativesDetails.value];
+
+
   if(data){
     const deletePayLoad={
       Type:"DevoteeDetails",
@@ -275,10 +292,10 @@ onUpdate(data:any){
     VazhId:data.VazhId?data.VazhId:"0",
     Type: "UPDATE",
     
-    DevoteeDetails: data.relativesDetails.map((relative: any) => ({
+    DevoteeDetails:this.previousRelativeDetails.map((relative: any) => ({
       ...relative,
       MID: this.memberId // Assigning MID to each relative dynamically
-    }))
+    })),
 
   }
   console.log(payLoad, "paylod")
@@ -287,7 +304,8 @@ onUpdate(data:any){
       console.log(data)
       if (data.RespStatus === "U") {
         this.notification.showSuccess("Devotee details updated successfully")
-        this.resetForm()
+        this.resetForm();
+        this.getDevoteeMaster()
       }
     },error:(err)=>{
       console.log(err);
@@ -301,6 +319,8 @@ resetForm() {
   this.memeberForm.reset();
   this.relativesDetails.clear(); // Clears the FormArray
   this.addRelativeDetails(); // Ensures at least one relative entry remains
+  this.editFlag=false;
+  this.getDevoteeMaster()
 }
 
 

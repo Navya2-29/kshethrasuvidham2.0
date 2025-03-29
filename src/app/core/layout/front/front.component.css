@@ -206,3 +206,13 @@ h2 {
   background-color: #4caf50 !important; /* Green background or any color you prefer */
   color: white; /* Optional: adjust text color */
 }
+/* @media only screen and (max-width: 624px) {
+  .copyright  {
+   
+   
+    padding: 30px;
+   margin-top: 20px;
+   
+    
+  }
+} */

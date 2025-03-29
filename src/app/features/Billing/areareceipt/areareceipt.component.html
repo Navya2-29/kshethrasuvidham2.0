@@ -1,4 +1,4 @@
-<div class="" style="background-image:url(assets/images/bgadmin.jpg);background-size:cover;background-position:center;">
+<div class="" style="background-image:url(assets/images/bgadmin.jpg);background-size:cover;background-position:center;font-family: Manjari;">
   <div>
     <div class="card-body fixitems" id="details">
        <!-- Back Button -->
@@ -51,6 +51,8 @@
                 <td  style="padding-left:15px;">
                   <input
                     type="text"
+                    (focus)="selectText($event)"
+
                     [placeholder]="'PLACEHOLDER.VAZHIPAD' | translate"
                     id="Vazhipad-{{i}}"
                     matInput
@@ -138,12 +140,14 @@
                   [matAutocomplete]="str"
                   [readonly]="multidayBooking[i]"
                   (keydown)="navigateToNext($event, i, 'Prethista')"
+                  (focus)="selectText($event)"
                 />
                 <mat-autocomplete
                   autoActiveFirstOption
                   #str="matAutocomplete"
                   class="large-autocomplete-panel"
                   (optionSelected)="onStarSelect($event, i)"
+                 
                 >
 
                 <ng-container *ngIf="lang=='en'">

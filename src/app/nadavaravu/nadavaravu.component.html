@@ -1,4 +1,4 @@
-<div class="card-body" style="background: white">
+<div class="card-body" style="background: white;font-family: Manjari;">
   <!-- <button
     class="btn btn-secondary rounded-circle back-btn"
     (click)="goBack()"
@@ -7,9 +7,9 @@
     <mat-icon   (click)="goBack()" >arrow_back</mat-icon>
   </button> -->
   <div class="row">
-    <div class="col-md-5">
-      <h2 style="margin-left: 20px">{{"Nadavaravu"|translate }}</h2>
-      <div [formGroup]="nadavaravForm">
+    <div class="col-md-5 fixitems" style="margin-top: 0px;padding-top: 0;">
+      <h2 style="margin-bottom: 0;">{{"Nadavaravu"|translate }}</h2>
+      <div [formGroup]="nadavaravForm" >
         <table class="table">
           <tr>
             <td colspan="2">
@@ -216,9 +216,9 @@
               </select>
             </td>
             <td>
-              <button class="btn btn-primary" (click)="onSubmit()">Save</button>
+              <button class="btn btn-primary" (click)="onSubmit()">Save</button><br>
 
-              <button (click)="resetForm()" class="btn btn-danger ml-2">
+              <button (click)="resetForm()" class="btn btn-danger mt-2">
                 Cancel
               </button>
             </td>
@@ -234,7 +234,7 @@
           type="text"
           formControlName="searchBillNO"
           class="form-control sps"
-          placeholder="search by Bill No."
+          [placeholder]="'Search by Bill number' | translate "
           style="width: 25%"
           (input)="onSearch()"
          

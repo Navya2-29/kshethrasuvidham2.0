@@ -35,8 +35,10 @@ export class ReportVazhipadwiseComponent {
   pageSizeOptions: number[] = [10,50,100,200,300,500,1000];
   pageIndex = 0;
   data:ReportData[]=[];
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
   groupedData: { [key: string]: ReportData[] } = {};
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  // groupedData: { [key: string]: ReportData[] } = {};
 fromDate:string;
 toDate:string;
 prathista:string;
@@ -84,7 +86,7 @@ vazhipad:string;
         this.data=data;
        
       // this.consolidateData()
-      
+      this.groupedData = this.groupByVazhipad(data);
         this.dataSource.data = this.consolidatedData
         this.length =this.consolidatedData.length; 
         this.dataSource.paginator = this.paginator;
@@ -95,6 +97,21 @@ vazhipad:string;
         console.error('Error fetching report data:', error);
       },
     });
+  }
+
+  groupByVazhipad(data: ReportData[]): { [key: string]: ReportData[] } {
+    return data.reduce((acc, current) => {
+        const key = `${current.Vazhipad}-${current.Prathista}`; 
+        if (!acc[key]) {
+            acc[key] = [];
+        }
+        acc[key].push(current);
+        return acc;
+    }, {} as { [key: string]: ReportData[] });
+  }
+
+  getTotalAmounts(entries: ReportData[]): number {
+    return entries.reduce((total, entry) => total + (entry.Amount || 0), 0);
   }
 
   onPageChange(event: PageEvent) {
@@ -380,7 +397,7 @@ generatePDF(){
     font-size: 16px;
     font-family: "Times New Roman", serif;
   }
-          h3,p,h4,h2{
+          p,h4,h2{
           line-height:1;
           margin-top:0;
           text-align:center;
@@ -421,11 +438,17 @@ generatePDF(){
             #print-section{
 padding-bottom: 100px;
   }
-       
+       .grandtotal{
+       text-align:right;
+       margin-top:10px
+       }
     
     .page-break {
       page-break-before: always;
     }
+      .tabble-heading h3{
+      text-align:left;
+      }
       .qty{
       text-align:center
       }

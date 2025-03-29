@@ -253,8 +253,8 @@ this.userId=localStorage.getItem('LoginId');
       VazhCode: obj.VM_Code,
       VazhName: obj.VM_Name,
       VazhRName: obj.VM_RName,
-      VazhAmt: `${obj.VM_Amt}`,
-      VazhMaxNo: `${obj.VM_MaxNo}`,
+      VazhAmt: obj.VM_Amt.toString()!=""?`${obj.VM_Amt}`:"0",
+      VazhMaxNo: `${obj.VM_MaxNo}`!="0"?`${obj.VM_MaxNo}`:"0",
       VazhReceipt: obj.VM_Receipt ? 'Y' : 'N',
       VazhBooking: obj.VM_Booking ? 'Y' : 'N',
       VazhSeasonal: obj.VM_Seasonal ? 'Y' : 'N',
@@ -265,7 +265,7 @@ this.userId=localStorage.getItem('LoginId');
       VMspecial: obj.VM_Special ? 'Y' : 'N',
       VMRatechange: obj.VM_Rate_Change ? 'Y' : 'N',
       VazhTime: obj.VM_Time,
-      VazhTimeLimit: `${obj.VM_TimeLimit}`,
+      VazhTimeLimit: `${obj.VM_TimeLimit}`!=""?`${obj.VM_TimeLimit}`:"0",
       VMDescription: obj.VM_Description,
       VMAlert: obj.VM_AlertMsg,
       Active: obj.VM_Active ? 'Y' : 'N',
@@ -383,7 +383,7 @@ this.userId=localStorage.getItem('LoginId');
   // update  seasonal master
   updateSeasonalMaster(id: string, data: SeasonalMaster): Observable<any> {
     const payLoad = {
-      VazhId: `${id}`,
+      VazhId: id.toString(),
       Fdate: data.VS_FromDate,
       Tdate: data.VS_ToDate,
       reason: data.VS_Reasion,

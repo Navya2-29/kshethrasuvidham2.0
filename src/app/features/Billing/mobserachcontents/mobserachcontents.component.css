@@ -1,7 +1,9 @@
 table {
     width: 100%;
   }
-
+*{
+  font-family: Manjari;
+}
   .menuend {
     background: #223d61;
     display:flex;

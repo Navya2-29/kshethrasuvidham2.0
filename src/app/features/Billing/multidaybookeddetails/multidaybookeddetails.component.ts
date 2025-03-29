@@ -10,11 +10,14 @@ import {MatIconModule} from '@angular/material/icon'
 import { TotalAmountService } from '../../../shared/service/total-amount.service';
 import { CommonModule } from '@angular/common';
 import { MasterService } from '../../../services/master/master.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-multidaybookeddetails',
   standalone: true,
-  imports: [MatButtonModule, MatDialogModule, MatTableModule, MatCheckboxModule,MatIconModule,CommonModule],
+  imports: [MatButtonModule, MatDialogModule, MatTableModule, MatCheckboxModule,MatIconModule,CommonModule,
+    TranslateModule,
+   ],
   templateUrl: './multidaybookeddetails.component.html',
   styleUrl: './multidaybookeddetails.component.css'
 })
@@ -23,17 +26,27 @@ export class MultidaybookeddetailsComponent implements OnInit {
   starDate:Date;
   lastDAte:Date;
  vazhipad:string;
+ nakshthram:any[]=[];
  starData: { [id: string]: string } = {};
+ lang:string | null;
   constructor(
     private dialogRef: MatDialogRef<MultidaybookeddetailsComponent>,
     private multidayService: TotalAmountService,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private masterService:MasterService
+    private masterService:MasterService,
+       private ts: TranslateService,
    
   ) {
     // Access the passed data here
     console.log(data)
     console.log("hai");
+
+    this.lang = localStorage.getItem('Language');
+    const userLang = navigator.language || 'en';
+    const languageCode = userLang.split('-')[0];
+    this.ts.setDefaultLang(languageCode);
+    this.ts.use(this.lang || 'en');
+
   }
 ngOnInit() {
   let lastIndex = this.data.length - 1;
@@ -58,8 +71,14 @@ getNakshthram(id: string): string {
     this.masterService.getStarData(payLoad).subscribe({
       next: (data: any[]) => { 
         console.log(data)// Specify that data is an array of Star
+        this.nakshthram=data;
         this.starData = data.reduce((acc: { [id: string]: string }, star:any) => {
-          acc[star.id] = star.SM_NameEng;
+          if(this.lang=='en'){
+            acc[star.id] = star.SM_NameEng;
+          }else{
+            acc[star.id] = star.SM_Name;
+          }
+          
           return acc;
         }, {});
 
@@ -71,4 +90,18 @@ getNakshthram(id: string): string {
     });
   }
  
+
+  getStarbyId(id: string) {
+    console.log(id, 'star id');
+    if (this.lang == 'en') {
+      const star = this.nakshthram.find((item) => item.id == id);
+      return star ? star.SM_NameEng : '';
+    } else if (this.lang == 'ml') {
+      const star = this.nakshthram.find((item) => item.id == id);
+      return star ? star.SM_Name : '';
+    }
+
+    // console.log(star,"sssssssssssssssss")
+  }
+
 }

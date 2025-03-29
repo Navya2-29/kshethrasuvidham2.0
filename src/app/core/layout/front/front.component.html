@@ -16,7 +16,7 @@
         </h2>
       </div>
 
-      <div
+      <div class="copyright"
         style="
           width: 100%;
           position: absolute;
@@ -31,11 +31,11 @@
         "
       >
         <!-- <p style="color:white;">Version 1.0</p> -->
-        <p style="color: white;   padding: 9px;">Last Updated on: {{todayDate | date:'dd MMM yyyy'}}</p>
+        <!-- <p  class="copyright" style="color: white;   padding: 9px;">Last Updated on: {{todayDate | date:'dd MMM yyyy'}}</p> -->
       </div>
     </div>
-
-    <p
+    
+    <p 
       style="
         color: brown;
         position: absolute;
@@ -46,6 +46,12 @@
     >
       &#169; Copyright 2025 | Cubix Software Solutions
     </p>
+    <p style=" color: brown;
+    position: absolute;
+    bottom: 0px;
+    margin-bottom: 40px;
+    font-size: 12.6pt;">Last Updated on: {{todayDate | date:'dd MMM yyyy'}}</p>
+
     <!-- <div class="divider" role="separator" aria-label="Divider"></div> -->
     <div class="right-side">
       <p
@@ -70,9 +76,9 @@
             text-decoration: none;
             margin-top: 9px;
             margin-bottom: 9px;
-            font-size: 12pt;
+            font-size: 14pt;
             padding: 22.5px;
-            font-weight: 800;
+            font-weight: bold;
            
           "
         [ngStyle]="{'font-family': lang=='ml' ? 'Manjari' : 'Roboto', 'font-weight': lang=='ml' ? 'Bold' : 'Bold'}"
@@ -88,9 +94,9 @@
             text-decoration: none;
             margin-top: 9px;
             margin-bottom: 9px;
-            font-size: 12pt;
+            font-size: 14pt;
             padding: 22.5px;
-            font-weight: 800;
+            font-weight: bold;
           
           "
           class="col-md-12"
@@ -106,9 +112,10 @@
             text-decoration: none;
             margin-top: 9px;
             margin-bottom: 9px;
-            font-size: 12pt;
+            font-size: 14pt;
             padding: 22.5px;
-            font-weight: 800;
+            font-weight: bold;
+            font-family: Manjari;
           "
           class="col-md-12"
           [ngStyle]="{'font-family': lang=='ml' ? 'Manjari' : 'Roboto', 'font-weight': lang=='ml' ? 'Bold' : 'Bold','font-size': lang=='ml' ? 18 : 14 }"
@@ -130,6 +137,7 @@
         >
           പഞ്ചാംഗം</a
         > -->
+         
         <div style="width:63px;position:absolute;right:0px;background:maroon;border-radius:90px;bottom:0;margin-bottom:-36px;">
           <a  (click)="goBack()" ><img src="assets/images/home.png"></a>
         </div>

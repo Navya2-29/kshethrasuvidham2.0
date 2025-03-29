@@ -1447,7 +1447,13 @@ console.log(this.memberDevoteeCheck,"dsssssssssssssss");
 
 
 
+onPayFocus() {
+  document.getElementById('paybutton')?.classList.add('paybuttonhg');
+}
 
+onPayBlur() {
+  document.getElementById('paybutton')?.classList.remove('paybuttonhg');
+}
 
 
 getdevoteeDetailsforBiling(){

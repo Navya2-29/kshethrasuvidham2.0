@@ -15,8 +15,8 @@
     border-top: 6px solid #223d61;
     /* font-family: 'Times New Roman', Times, serif; */
 }
-button.paybutton:hover{
-    background-color: purple;
+.paybuttonhg{
+    background-color: purple !important;
 }
 .total {
     display:flex;

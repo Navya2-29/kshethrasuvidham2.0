@@ -1,4 +1,4 @@
-<div class="card-body" style="background: white">
+<div class="card-body" style="background: white;font-family: Manjari;">
     <!-- <button
       class="btn btn-secondary rounded-circle back-btn"
       title="Go Back"
@@ -8,9 +8,9 @@
     <div class="row">
      
 
-      <div class="col-md-5 "  > 
-        <h2 style="margin-left: 100px">{{"FeeCollection"|translate }}</h2>
-        <div class="fixitems"> <form [formGroup]="feeCollctionForm">
+      <div class="col-md-5 fixitems"  > 
+        <h2 style="margin-bottom: 0;">{{"FeeCollection"|translate }}</h2>
+        <div > <form [formGroup]="feeCollctionForm">
           <table class="table">
             <tr>
                 <td>
@@ -198,7 +198,7 @@
           <input
             type="text"
             class="form-control sps"
-            placeholder="search by Mobile No."
+            [placeholder]="'Search by Bill number' | translate "
             style="width: 25%"
             [(ngModel)]="DevoteemobileNumber"
           />
@@ -207,13 +207,13 @@
         <div *ngIf="devoteeFeeeCollectiondetails">
           <table class="table">
             <tr  style="border-bottom: 2px solid #223d61">
-              <th>Sl No.</th>
-              <th>BillDate</th>
-              <th>BillNo</th>
-              <th>Item</th>
-              <th>Month</th>
+              <th>{{"Report Name.SINO" | translate }}</th>
+              <th>{{"BILLDATE"| translate }}</th>
+              <th>{{"BILL NO" | translate }}</th>
+              <th>{{"feecollection.Item" | translate}}</th>
+              <th>{{"feecollection.Month" | translate }}</th>
             
-              <th>Year</th>
+              <th>{{"feecollection.Year" | translate}}</th>
             </tr>
             <tr *ngFor="let item of devoteeFeeeCollectiondetails;let i=index ">
               <td>{{i+1}}</td>

@@ -192,6 +192,8 @@ export class AreareceiptComponent implements OnInit {
   }
 
   createRow(): FormGroup {
+
+
     const row = this.fb.group({
       Slno: [''],
       Vazhipad: ['', [Validators.required, this.vazhipadValidator.bind(this)]],
@@ -335,6 +337,14 @@ export class AreareceiptComponent implements OnInit {
     }
     return null;
   }
+  selectText(event: FocusEvent): void {
+    const inputField = event.target as HTMLInputElement;
+    if (inputField.value.trim().length > 0) {
+      setTimeout(() => {
+        inputField.select();  
+      }, 0);
+    }
+  }
 
   addRow(index: number): void {
     if (index === -1 && this.vazhipadinfo.length === 0) {
@@ -349,7 +359,12 @@ export class AreareceiptComponent implements OnInit {
       this.vazhipadinfo.length > 0 &&
       !this.vazhipadinfo.at(this.vazhipadinfo.length - 1).valid
     ) {
-      const row = this.vazhipadinfo.at(index) as FormGroup;
+
+
+
+      for (let i = 0; i < this.vazhipadinfo.length; i++) {
+        const row = this.vazhipadinfo.at(i) as FormGroup;
+      // const row = this.vazhipadinfo.at(index) as FormGroup;
 
       if (row.invalid) {
         if (row.get('Vazhipad')?.errors?.['required']) {
@@ -376,6 +391,7 @@ export class AreareceiptComponent implements OnInit {
 
         return; // Stop adding new row if current row is invalid
       }
+    }
     }
 
     const currentRow = this.vazhipadinfo.at(index) as FormGroup;

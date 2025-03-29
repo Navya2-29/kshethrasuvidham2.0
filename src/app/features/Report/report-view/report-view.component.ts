@@ -107,6 +107,7 @@ this.ts.use(this.lang || 'en');
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
+  
   formatDateToDDMMYYYY(date: string): string {
     const [year, month, day] = date.split('-');
     return `${day}/${month}/${year}`;
