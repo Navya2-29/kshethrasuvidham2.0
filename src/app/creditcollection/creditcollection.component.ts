@@ -332,7 +332,8 @@ printCreditCollection(){
               margin: 0;
               padding: 0;
               font-family: Arial, sans-serif;
-              font-size: 12px;
+              font-size: 12pt;
+              font-weight:bold;
             }
             #receipt, #duplicateRecipt {
               width: 6in; /* Width in inches */

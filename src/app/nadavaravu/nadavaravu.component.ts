@@ -429,6 +429,7 @@ export class NadavaravuComponent implements OnInit {
                 padding: 0;
                 font-family: Arial, sans-serif;
                 font-size: 12px;
+                font-weight:bold;
               }
               #receipt, #duplicateRecipt {
                 width: 6in; /* Width in inches */

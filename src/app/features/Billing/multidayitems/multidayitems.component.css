@@ -436,3 +436,17 @@ th {
   font-size: 8px;
   
 }
+input:focus{
+  background-color: #a1c1eb;
+}
+select:focus{
+  background-color: #a1c1eb;
+}
+#rateInput:focus{
+  background-color: #a1c1eb;
+
+}
+.sps:focus {
+  background-color: #a1c1eb !important; /* Light blue background */
+  /* outline: none; Removes default focus outline */
+}

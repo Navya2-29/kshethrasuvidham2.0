@@ -118,19 +118,16 @@ export class BillingViaMobilenumberComponent implements OnInit {
   }
 
   onCancel() {
-    
     if(this.selectedRows.size>0){
       this.dialogRef.close(null);  
     }else{
       this.sharedService.triggerRefresh()
       this.dialogRef.close(null); 
     }
-
   }
 
   onSubmit(SmFlag: boolean) {
     const selectedData = Array.from(this.selectedRows); // Convert Set to an array
-
     console.log(
       { selectedData, SmFlag },
       'checking the data in billing via mobile number'

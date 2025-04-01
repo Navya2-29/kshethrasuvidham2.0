@@ -778,15 +778,15 @@ return formattedDate
         pageIndex < pages.length - 1 ? 'always' : 'avoid'
       };">
             <!-- Prathista -->
-            <div style="position: absolute; left: 2.2cm; top: 3.4cm; max-width: 8cm;  white-space: pre-wrap; word-wrap: break-word; line-height: 1em;">${prathista}</div>
+            <div style="position: absolute; left: 3.5cm; top: 3cm; max-width: 8cm;  white-space: pre-wrap; word-wrap: break-word; line-height: 1em;">${prathista}</div>
             <!-- Vazhipad -->
-            <div style="position: absolute; left: 2.1cm; top: 3.9cm; max-width: 5cm; white-space: pre-wrap;">${vazhipad}</div>
+            <div style="position: absolute; left: 3.5cm; top: 3.5cm; max-width: 5cm; white-space: pre-wrap;">${vazhipad}</div>
             <!-- From Date -->
-            <div style="position: absolute; left: 10.5cm; top: 3.4cm;">${this.billDate}</div>
+            <div style="position: absolute; left: 9cm; top: 3cm;">${this.billDate}</div>
             <!-- Total Quantity -->
-            <div style="position: absolute; left: 10.5cm; top: 3.9cm;"> ${this.lastBillNo}</div>
+            <div style="position: absolute; left: 9cm; top: 3.5cm;"> ${this.lastBillNo}</div>
              <!-- Vazhipad Date -->
-           <div style="position: absolute; left: 5cm; top: 9.15cm;">
+           <div style="position: absolute; left: 5cm; top: 7.3cm;">
     ${fromDate != toDate ? `${this.convertDateFormat(fromDate)} to ${this.convertDateFormat(toDate)}` : `${this.convertDateFormat(fromDate)}`}
   </div>
   ${group.nalBy ? `<div style="position: absolute; left: 10cm; top: 9cm;">- ${group.nalBy},</div>` : ''}
@@ -817,7 +817,7 @@ return formattedDate
         // Add grand total at the end of the page
       // const grandTotalTop = 5 + page.length * 0.7 + 1; // Position it below the last row
       receiptContent += `
-        <div style="position: absolute; left: 10.5cm; top: 8.4cm; font-weight: bold; font-size: 15pt;">
+        <div style="position: absolute; left: 10.5cm; top: 7.3cm; font-weight: bold; font-size: 15pt;">
            ${grandTotalAmount.toFixed(2)}
         </div>
          

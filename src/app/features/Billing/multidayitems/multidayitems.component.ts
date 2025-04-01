@@ -1,5 +1,5 @@
 // import { multiDayFilter } from './../../../models/multidayFilter.model';
-import { Component, inject, Inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, inject, Inject, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import {
   MAT_DIALOG_DATA,
@@ -80,6 +80,7 @@ export class MultidayitemsComponent implements OnInit {
   daysList: any[] = [];
   selectedVazhipadItem: any;
   updatedDayList: any[] = [];
+  selecteddayalist:any[]=[];
   devotees: FormArray;
   rateChange: string = 'N';
   seasonalDates: { fromDate: any; toDate: any } | null = null;
@@ -102,6 +103,14 @@ export class MultidayitemsComponent implements OnInit {
   multiDayList: multiDayFilter[] = [];
   updatedmultiDayList: multiDayFilter[] = [];
   memberDevoteeCheck:boolean=false;
+  allselecteddaylist:any[]=[]
+  @ViewChild('vazhipadInput') vazhipadInput!: ElementRef;
+  @ViewChild('rateInput') rateInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('prathistaInput') prathistaInput!: ElementRef<HTMLInputElement>;
+  @ViewChildren('nameInput') nameInputs!: QueryList<ElementRef>;
+  @ViewChildren('starInput') starInputs!: QueryList<ElementRef>;
+  @ViewChild('timeInput') timeInput!: ElementRef; // Fix: Define timeInput
+
   private readonly masterservice = inject(MasterService);
   constructor(
     public dialog: MatDialog,
@@ -111,7 +120,7 @@ export class MultidayitemsComponent implements OnInit {
     private datePipe: DatePipe,
     private ts: TranslateService,
     @Inject(MAT_DIALOG_DATA) public data: { Name: string,Star:string ,MID:string}[],
-
+private cdr: ChangeDetectorRef
   ) {
     console.log(data,"multiday devoteee master checking")
     this.lang = localStorage.getItem('Language');
@@ -942,7 +951,9 @@ export class MultidayitemsComponent implements OnInit {
         }));
         console.log(this.multiDayList, 'day listtttttttttttttttttttt');
         this.multiDayList = [...this.updatedDayList];
-this.validateVazhipadDate()
+        console.log(this.multiDayList, 'day listtttttttttttttttttttt after selct added');
+        this
+        this.validateVazhipadDate()
         //finding end date
         if (this.multiDayList.length > 0) {
           let lastItem = this.multiDayList[this.multiDayList.length - 1];
@@ -1008,15 +1019,19 @@ this.validateVazhipadDate()
 
   onCheckboxChange(index: number): void {
     // Toggle the selected status of the date
+    console.log(index,"index checking in checkbox")
     this.updatedDayList[index].selected = !this.updatedDayList[index].selected;
-
+    this.allselecteddaylist=this.updatedDayList;
+    console.log(this.allselecteddaylist,"all selected day list to show om array");
     // Filter out the unselected dates from the list
     this.multiDayList = this.updatedDayList.filter((item) => item.selected);
-
+// const selecteddayalist=this.updatedDayList;
+// console.log(selecteddayalist,"selected day list after check change");
     console.log(
       this.multiDayList,
       'Updated multiDayList after checkbox change'
     );
+    console.log(this.updatedDayList,"updatedlist checkbox change");
 
     if (this.multiDayList.length > 0) {
       let lastItem = this.multiDayList[this.multiDayList.length - 1];
@@ -1209,7 +1224,132 @@ openBillingDialog(mobileNumber: any) {
     return star ? star.id : null; // Return ID if found, otherwise return null
   }
 
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.vazhipadInput.nativeElement.focus();
+    }, 300); // Slight delay ensures focus after rendering
+  }
 
+  selectText(event: FocusEvent): void {
+    const inputField = event.target as HTMLInputElement;
+    if (inputField.value.trim().length > 0) {
+      setTimeout(() => {
+        inputField.select();  
+      }, 0);
+    }
+  }
+
+  moveFocus(currentInput: HTMLInputElement | HTMLSelectElement,nextInput: HTMLInputElement | HTMLSelectElement): void {
+    if (!currentInput.value.trim()) {
+      this.notification.showError( `Please enter the value` )
+      return; // Stop focus movement if the field is empty
+    }
+    if (nextInput) {
+      nextInput.focus();
+    }
+  }
+
+  moveleftarrowFocus(nextInput: HTMLInputElement | HTMLSelectElement): void {
+    if (nextInput) {
+      nextInput.focus();
+    }
+  }
+
+  moveFocusToName(index:number): void {
+    setTimeout(() => {
+      const firstNameInput = this.nameInputs.first;
+      if (firstNameInput) {
+        firstNameInput.nativeElement.focus();
+      }
+    }, 0);
+  }
+
+  moveFocusToStar(index: number): void {
+    setTimeout(() => {
+      const starInput = this.starInputs.toArray()[index];
+      if (starInput) {
+        starInput.nativeElement.focus();
+      }
+    }, 0);
+  }
+handleEnterOnStar(event: Event, index: number): void {
+  event.preventDefault(); // Prevent default behavior
+
+  console.log("Pressed Enter on Star input at index:", index);
+  console.log("Current number of devotees:", this.devotees.length);
+
+  if (index === this.devotees.length - 1) {
+    console.log("Adding new devotee...");
+    this.addDevotee(); // Create new row
+
+    // Wait for the DOM update
+    setTimeout(() => {
+      this.cdr.detectChanges(); // Ensure Angular detects changes
+
+      setTimeout(() => {
+        const nameInputsArray = this.nameInputs.toArray();
+        const newIndex = nameInputsArray.length - 1; // Last row index
+
+        console.log("New row index:", newIndex);
+        
+        if (newIndex >= 0) {
+          nameInputsArray[newIndex].nativeElement.focus();
+          console.log("Focused on new row Name input");
+        }
+      }, 100); // Extra delay to allow rendering
+    }, 0);
+  } else {
+    this.moveFocusToName(index + 1);
+  }
+}
+
+
+
+
+handleArrowKeys(event: any, index: number, field: string): void {
+  event.preventDefault(); // Prevents default scrolling behavior
+
+  if (event.key === 'ArrowLeft') {
+    if (field === 'Name' && index === 0) {
+      // Move focus to Time input if the first Name input is focused
+      this.moveFocusToTime();
+    } else if (field === 'Star') {
+      this.moveFocusToName(index);
+    } else if (field === 'Name' && index > 0) {
+      this.moveFocusToStar(index - 1);
+    }
+  }
+
+  if (event.key === 'ArrowRight') {
+    if (field === 'Name') {
+      this.moveFocusToStar(index);
+    } else if (field === 'Star' && index < this.devotees.length - 1) {
+      this.moveFocusToName(index + 1);
+    }
+  }
+
+  if (event.key === 'ArrowUp') {
+    if (field === 'Name' && index > 0) {
+      setTimeout(() => {
+        this.nameInputs.toArray()[index - 1].nativeElement.focus();
+      }, 0);    }
+  }
+
+  if (event.key === 'ArrowDown'  && index < this.nameInputs.length - 1) {
+    if (field === 'Name' && index < this.devotees.length - 1) {
+      setTimeout(() => {
+        this.nameInputs.toArray()[index + 1].nativeElement.focus();
+      }, 0);    }
+  }
+}
+
+moveFocusToTime(): void {
+  setTimeout(() => {
+    if (this.timeInput) {
+      this.timeInput.nativeElement.focus();
+    }
+  }, 0);
+}
 
 
 

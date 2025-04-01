@@ -206,13 +206,85 @@ h2 {
   background-color: #4caf50 !important; /* Green background or any color you prefer */
   color: white; /* Optional: adjust text color */
 }
-/* @media only screen and (max-width: 624px) {
-  .copyright  {
-   
-   
-    padding: 30px;
-   margin-top: 20px;
-   
-    
-  }
-} */
+.temple-details{
+ display: flex;
+  flex-direction: column;
+   align-items: center;
+}
+.temple-name{
+  font-size: 18pt;
+  font-weight: 500;
+  color: white;
+  line-height: 25pt;
+  font-family: Manjari;
+  padding: 0 10px;
+}
+.temple-image{
+   width: 50%;
+   padding-top: 25px;
+}
+.copyright{
+
+  width: 100%;
+  position: absolute;
+  bottom: 0px;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  align-items: center;
+  justify-items: center;
+  text-align: center;
+
+
+}
+.copy-right{
+  
+  color: brown;
+  position: absolute;
+  bottom: 0px;
+  margin-bottom: 15px;
+  font-size: 12.6pt;
+
+}
+.lastupdate{
+  color: brown;
+    position: absolute;
+    bottom: 0px;
+    margin-bottom: 40px;
+    font-size: 12.6pt;
+}
+.version{
+  
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin-top: 0px;
+  margin-right: 27px;
+  font-weight: 800;
+
+}
+.dashbord{
+  margin-top: 18px;
+}
+.dashbord a{
+  
+  text-decoration: none;
+  margin-top: 9px;
+  margin-bottom: 9px;
+  font-size: 14pt;
+  padding: 22.5px;
+  font-weight: bold;
+ font-family: Manjari;
+
+}
+.backicon{
+  width:63px;
+  position:absolute;
+  right:0px;
+  /* background:maroon; */
+  border-radius:90px;
+  bottom:0;
+  margin-bottom:-36px;
+}
+
+  

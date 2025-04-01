@@ -2,22 +2,23 @@
 <main class="main">
     <div class="content">
       <div class="left-side">
-        <div style="display:flex;flex-direction: column;align-items: center;">
-          <img [src]="getLogoUrl()" style="width:50%;">
-         <h2 style="font-size:25.2pt;font-weight:500;color:white;line-height:30.6pt;font-family: Manjari;">{{templeName}}</h2>
+        <div class="temple-details">
+          <img [src]="getLogoUrl()" class="temple-image">
+         <h2 class="temple-name">{{templeName}}</h2>
         </div>
        
-       <div style="width:100%;position:absolute;bottom:0px;display:flex;justify-content: space-between;padding:10px;align-items: center;justify-items: center;">
-        <!-- <p style="color:white;">Version 1.0</p> -->
-        <p style="color:white;">Last Updated on: {{todayDate | date:'dd MMM yyyy'}}</p>
-       </div>
+       
     </div>
-     
-    <p style="color:brown;position:absolute;bottom:0px;margin-bottom:15px;font-size:12.6pt;">&#169; Copyright 2025 | Cubix Software Solutions</p>
-     
+    <!-- <div style="width:100%;position:absolute;bottom:0px;margin-bottom:15px;font-size:12.6pt;">
+    <p style="color:white;">Version 1.0</p> -->
+      <!-- <p style="color:brown;">Last Updated on: {{todayDate | date:'dd MMM yyyy'}}</p> -->
+     <!-- </div> --> 
+    <p class="copy-right">&#169; Copyright 2025 | Cubix Software Solutions</p>
+    <p class="last-updated">Last Updated on: {{todayDate | date:'dd MMM yyyy'}}</p>
+
       <!-- <div class="divider" role="separator" aria-label="Divider"></div> -->
       <div class="right-side">
-        <p style="position:absolute;top:0;right:0;margin-top:0px;margin-right:27px;font-weight:800;">Version 1.0</p>
+        <p class="version">Version 1.0</p>
 
         <img src="assets/images/logo.jpg">
         <h2>Counter Login</h2>
@@ -42,7 +43,7 @@
             </mat-form-field>
            
            </div>  
-          <button mat-raised-button type="submit" style="background-color: maroon;color:orange;" (click)="submitLogin(loginForm.value)">Login</button>
+          <button mat-raised-button type="submit" class="submit" (click)="submitLogin(loginForm.value)">Login</button>
           </form>
        </div>
     </div>

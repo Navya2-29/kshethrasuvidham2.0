@@ -339,6 +339,14 @@ mat-option {
   margin-top:-10px;
   margin-bottom:-4px;
   height:20px;
+  width: 100%;
+  background-color: #0d2a44 !important;
+}
+mat-option p{
+  /* margin-bottom: 0;margin-top: 0;padding-top:0 ; padding-bottom: 0; font-size: 12px; line-height: normal;font-weight:800; */
+  background-color: #0d2a44 !important;
+  color: wheat;
+
 }
 .formdate {
   border-bottom:2px solid rgb(202, 202, 202);

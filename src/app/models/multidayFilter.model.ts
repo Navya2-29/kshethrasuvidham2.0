@@ -6,4 +6,5 @@ export interface multiDayFilter {
   mmon: string;
   myr: string;
   pournami: number;
+  selected:boolean;
 }

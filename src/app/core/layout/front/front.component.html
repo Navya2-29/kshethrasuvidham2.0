@@ -1,34 +1,17 @@
 <main class="main">
   <div class="content">
     <div class="left-side">
-      <div style="display: flex; flex-direction: column; align-items: center">
-        <img [src]="getLogoUrl()" style="width: 50%" />
+      <div class="temple-details">
+        <img [src]="getLogoUrl()" class="temple-image" />
         <h2
-          style="
-            font-size: 18pt;
-            font-weight: 500;
-            color: white;
-            line-height: 30.6pt;
-            font-family: Manjari;
-          "
+         class="temple-name"
         >
           {{templeName}}
         </h2>
       </div>
 
       <div class="copyright"
-        style="
-          width: 100%;
-          position: absolute;
-          bottom: 0px;
-          display: flex;
-          justify-content: space-between;
-          padding: 10px;
-          align-items: center;
-          justify-items: center;
-          text-align: center;
-        
-        "
+       
       >
         <!-- <p style="color:white;">Version 1.0</p> -->
         <!-- <p  class="copyright" style="color: white;   padding: 9px;">Last Updated on: {{todayDate | date:'dd MMM yyyy'}}</p> -->
@@ -36,52 +19,27 @@
     </div>
     
     <p 
-      style="
-        color: brown;
-        position: absolute;
-        bottom: 0px;
-        margin-bottom: 15px;
-        font-size: 12.6pt;
-      "
+     class="copy-right"
     >
       &#169; Copyright 2025 | Cubix Software Solutions
     </p>
-    <p style=" color: brown;
-    position: absolute;
-    bottom: 0px;
-    margin-bottom: 40px;
-    font-size: 12.6pt;">Last Updated on: {{todayDate | date:'dd MMM yyyy'}}</p>
+    <p class="lastupdate">Last Updated on: {{todayDate | date:'dd MMM yyyy'}}</p>
 
     <!-- <div class="divider" role="separator" aria-label="Divider"></div> -->
     <div class="right-side">
       <p
-        style="
-          position: absolute;
-          top: 0;
-          right: 0;
-          margin-top: 0px;
-          margin-right: 27px;
-          font-weight: 800;
-        "
+       class="version"
       >
         Version 1.0
       </p>
       <img src="assets/images/logo.jpg" />
-      <div style="margin-top: 18px">
+      <div class="dashbord">
         <a
           routerLink="/dashboard"
           mat-raised-button
           #billingButton
-          style="
-            text-decoration: none;
-            margin-top: 9px;
-            margin-bottom: 9px;
-            font-size: 14pt;
-            padding: 22.5px;
-            font-weight: bold;
-           
-          "
-        [ngStyle]="{'font-family': lang=='ml' ? 'Manjari' : 'Roboto', 'font-weight': lang=='ml' ? 'Bold' : 'Bold'}"
+         
+        
 
           class="col-md-12"
         >
@@ -90,17 +48,8 @@
         <a
           routerLink="/getReport"
           mat-raised-button
-          style="
-            text-decoration: none;
-            margin-top: 9px;
-            margin-bottom: 9px;
-            font-size: 14pt;
-            padding: 22.5px;
-            font-weight: bold;
-          
-          "
+         
           class="col-md-12"
-          [ngStyle]="{'font-family': lang=='ml' ? 'Manjari' : 'Roboto', 'font-weight': lang=='ml' ? 'Bold' : 'Bold'}"
 
         >
           {{"REPORTS" | translate }}</a
@@ -108,17 +57,8 @@
         <a
           routerLink="/mattinagal"
           mat-raised-button
-          style="
-            text-decoration: none;
-            margin-top: 9px;
-            margin-bottom: 9px;
-            font-size: 14pt;
-            padding: 22.5px;
-            font-weight: bold;
-            font-family: Manjari;
-          "
+          
           class="col-md-12"
-          [ngStyle]="{'font-family': lang=='ml' ? 'Manjari' : 'Roboto', 'font-weight': lang=='ml' ? 'Bold' : 'Bold','font-size': lang=='ml' ? 18 : 14 }"
         >
         {{"MISCELLANEOUS BILLING"| translate }}</a
         >
@@ -138,7 +78,7 @@
           പഞ്ചാംഗം</a
         > -->
          
-        <div style="width:63px;position:absolute;right:0px;background:maroon;border-radius:90px;bottom:0;margin-bottom:-36px;">
+        <div class="backicon">
           <a  (click)="goBack()" ><img src="assets/images/home.png"></a>
         </div>
 

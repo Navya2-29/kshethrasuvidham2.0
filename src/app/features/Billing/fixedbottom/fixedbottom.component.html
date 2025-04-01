@@ -166,7 +166,7 @@
           >
             <input
               type="text"
-              
+              style="width:100px"
               *ngIf="
                 customerdetailsForBillingForm.get('Trnsmode')?.value != 'CS'
               "
@@ -176,6 +176,7 @@
               [class.is-invalid]="customerdetailsForBillingForm.get('Instno')?.invalid && customerdetailsForBillingForm.get('Instno')?.touched"
             />
             <input
+            style="width:100px"
               type="date"
               *ngIf="
                 customerdetailsForBillingForm.get('Trnsmode')?.value ===
@@ -188,6 +189,7 @@
 
             />
             <input
+            style="width:100px"
               type="text"
               *ngIf="
                 customerdetailsForBillingForm.get('Trnsmode')?.value ===
@@ -207,9 +209,9 @@
                 formControlName="Trnsmode"
                 #paymentDropdown
                 style="
-                  width: 100%;
+                  width: 90%;
                   height: 30.6px;
-                  padding-left: 5px;
+                  padding-left: 0px;
                   padding-top: 0px;
                   padding-bottom: 0px;
                 "
@@ -241,9 +243,10 @@
         border: none;
         white-space: nowrap;
         padding: 15px 0px 0px 0px;
-        width: 180px;
+        width: 160px;
         text-overflow: ellipsis;
         overflow: hidden;
+        box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
       "
     >
        {{ totalAmount }}
@@ -269,20 +272,11 @@
       min-width: 80px; 
       max-width: 120px; 
       margin-right: 20px;
-      
     "
   >
     Pay
   </button>
 </div>
-
-          
-
-          
-
-            
-            
-            
             
             <!-- <button class="btn btn-primary" (click)="" style="font-size:12pt;background-color:#046ef8;color:white;font-weight:500;width:auto;border:none;margin-bottom:30px;">pdf</button> -->
           </div>

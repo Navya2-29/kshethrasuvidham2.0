@@ -1165,6 +1165,7 @@ export class AreareceiptComponent implements OnInit {
   // confirm printing
   prnitConfirmDialog(formattedData: any) {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      disableClose: true,
       data: { message: 'Do you want to proceed with printing ?' },
     });
     dialogRef.afterClosed().subscribe((result) => {

@@ -73,7 +73,7 @@
 "Item Value":"ഇനം വില",
 "Sl No":"നമ്പർ",
 "Enter weight":"തൂക്കം",
-"Counter":"കൌണ്ടർ",
+"Counter":"കൗണ്ടർ",
   "PLACEHOLDER": {
     "VAZHIPAD": "വഴിപാട്",
     "NAME": "പേര് ",
@@ -96,7 +96,7 @@
     "BANKNAME": "ബാങ്കിന്റെ പേര്",
     "Remark": "റിമാർക്",
     "Description": "വിവരണം",
-    "COUNTERID":"കൌണ്ടർ ഐഡി",
+    "COUNTERID":"കൗണ്ടർ ഐഡി",
     "ITEM":"ഐറ്റം",
     "Endowment":"എൻഡോവ്മെന്റ്"
    
@@ -136,7 +136,7 @@
     "POORNAM REPORT": "പൂർണം റിപ്പോർട്ട്",
     "DAILY STATEMENT REPORT": "ഡെയിലി സ്റ്റേറ്റ്മെന്റ് റിപ്പോർട്ട്",
     "DAILY STATEMENT (DETAILED) REPORT": "ഡെയിലി സ്റ്റേറ്റ്മെന്റ് (ഡീറ്റൈൽഡ്) റിപ്പോർട്ട് ",
-    "DAILY TEMPLE COLLECTION (COUNTER)": "ഡെയിലി ടെംപ്ളേ കളക്ഷൻ (കൌണ്ടർ)",
+    "DAILY TEMPLE COLLECTION (COUNTER)": "ഡെയിലി ടെംപ്ളേ കളക്ഷൻ (കൗണ്ടർ)",
     "ONLINE REPORT": "ഓൺലൈൻ റിപ്പോർട്ട്",
     "VAZHIPAD BOOKING CANCEL REPORT": "ക്യാൻസൽ റിപ്പോർട്ട്",
     "NADAVARAVU CANCEL REPORT": "നടവറവ് ക്യാൻസൽ റിപ്പോർട്ട്",
@@ -178,7 +178,7 @@
   "Credit Collection Report":"ക്രെഡിറ്റ് കളക്ഷൻ റിപ്പോർട്ട്",
   "report-duplicate":"ഡ്യൂപ്ലിക്കേറ്റ് റിപ്പോർട്ട്",
   "Credit Collection":"ക്രെഡിറ്റ് കളക്ഷൻ ",
-  "Count":"കൌണ്ട്",
+  "Count":"കൗണ്ട്",
   "total":"ആകെ തുക",
   "TOTAL":"തുക",
   "Total for":"ആകെ",
@@ -186,6 +186,7 @@
   "CREDIT":"ക്രെഡിറ്റ്",
    "GrandTotal":"ആകെ തുക",
    "VAZHIPAD DATE":" വഴിപാട്  തീയതി",
+   "Relative Details":"റിലേറ്റീവ്  ഡീറ്റെയിൽസ്",
    "MOBILE NO":"മൊബൈൽ",
    "Total Collection":"ആകെ  കളക്ഷൻ",
    "Devotee Credit Collection":"ഭക്തരുടെ ക്രെഡിറ്റ് കളക്ഷൻ",

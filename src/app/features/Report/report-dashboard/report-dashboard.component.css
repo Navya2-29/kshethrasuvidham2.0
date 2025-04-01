@@ -176,6 +176,6 @@ select option:hover {
   }
 
   .row {
-      grid-template-columns: 1fr; /
+      grid-template-columns: 1fr; 
   }
 }

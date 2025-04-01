@@ -51,7 +51,7 @@
        
 
 
-        <form [formGroup]="form">
+        <form [formGroup]="form" (keydown.enter)="$event.preventDefault()">
           <div class="col-md-6">
          
               <div style="padding: 0px; margin-bottom: 18px">
@@ -69,7 +69,9 @@
                           class="form-control sps"
                           formControlName="Vazhipad"
                           [matAutocomplete]="auto"
-                          
+                          #vazhipadInput
+                          (focus)="selectText($event)"
+                          (keydown.enter)="moveFocus(vazhipadInput,rateInput)"
                           [ngClass]="{
                             'invalid-control': form.get('Vazhipad')?.invalid && form.get('Vazhipad')?.touched
                           }"
@@ -106,11 +108,15 @@
                         </mat-autocomplete></td>
   
                         <td><input
+                          #rateInput
+                          id="rateInput"
                           type="text"
                           class="form-control formdate"
                           [placeholder]="'PLACEHOLDER.RATE' | translate"
                           formControlName="Rate"
                           appNumber
+                          (keydown.enter)="moveFocus(rateInput,prathistaInput)"
+                          (keydown.arrowleft)="moveleftarrowFocus(vazhipadInput)"
                           [readOnly]="rateChange==='N'"
                           [ngClass]="{
                             'invalid-control': form.get('Rate')?.invalid && form.get('Rate')?.touched
@@ -118,10 +124,13 @@
                         /></td>
                         <td colspan="2">
                           <select
+                          #prathistaInput
                             class="form-control"
                             formControlName="Prethista"
                             style="width: 100%; height: 30.6px"
-                            
+                            (keydown.enter)="moveFocus(prathistaInput,startDateInput)"
+                            (keydown.arrowleft)="moveleftarrowFocus(rateInput)"
+
                             [ngClass]="{
                               'invalid-control': form.get('Prethista')?.invalid && form.get('Prethista')?.touched
                             }"
@@ -159,16 +168,23 @@
                     <tr>
                       <td>
                         <input
+                        #startDateInput
                           type="date"
                           class="form-control formdate"
                           style="width: 100%" 
                           [attr.min]="minDate"
                           [readOnly]="form.get('VM_Receipt')?.value==='Y'"
                           formControlName="VazhipadDate"
+                          (keydown.enter)="moveFocus(startDateInput,noOfDaysInput)"
+                          (keydown.arrowleft)="moveleftarrowFocus(prathistaInput)"
+
                         />
                       </td>
                       <td>
                         <input
+                        #noOfDaysInput
+                        (keydown.enter)="moveFocus(noOfDaysInput,qtyInput)"
+                        (keydown.arrowleft)="moveleftarrowFocus(startDateInput)"
                           type="number"
                           class="form-control formdate"
                           formControlName="NoOfDays"
@@ -179,6 +195,10 @@
                       </td>
                       <td>
                         <input
+                        #qtyInput
+                        (keydown.enter)="moveFocus(qtyInput,timeInput)"
+                        (keydown.arrowleft)="moveleftarrowFocus(noOfDaysInput)"
+
                           type="number"
                           class="form-control formdate"
                           style="width: 60px"
@@ -190,6 +210,7 @@
                       </td>
                       <td>
                         <input
+
                           type="text"
                           class="form-control formdate"
                           formControlName="EndDate"
@@ -199,6 +220,10 @@
                       </td>
                       <td>
                         <select 
+                        #timeInput
+                        (keydown.enter)="moveFocusToName(0)"
+                        (keydown.arrowleft)="moveleftarrowFocus(qtyInput)"
+
                       class="form-control"
                       formControlName="VTime"
                       style="width: 80%; height: 30.6px"
@@ -211,10 +236,7 @@
                     </tr>
                    </table>
               <div>
-                <!-- <button class="btn btn-primary" (click)=" addDevotee()" >
-                  {{"ADD DEVOTEE" |translate }}
-                </button>   -->
-                <!-- <mat-icon (click)=" addDevotee()" ><span class="icons" style="color: blue; width: 100px;height: 50px;" >add_comment</span></mat-icon> -->
+                
                 <button mat-icon-button (click)="addDevotee()" style="font-size: 36px; " [disabled]="VM_MaxNo>0">
                   <mat-icon style="font-size: 30px; color: blue;">add_comment</mat-icon>
                 </button>
@@ -234,6 +256,11 @@
                       </td>
                       <td colspan="2">
                         <input
+                        #nameInput
+                        (keydown.enter)="moveFocusToStar(i)"
+                        (keydown.arrowleft)="handleArrowKeys($event, i, 'Name')"
+                        (keydown.arrowup)="handleArrowKeys($event, i, 'Name')"
+                        (keydown.arrowdown)="handleArrowKeys($event, i, 'Name')"
                         style="width:100%"
                         appUpperCase
                           type="text"
@@ -249,7 +276,11 @@
                       <td style="width:100%"></td>
                       <td>
                         <select
-                          class="form-control select-star"
+                        #starInput
+                        (keydown.enter)="handleEnterOnStar($event, i)"   
+                        (keydown.arrowleft)="handleArrowKeys($event, i, 'Star')"
+  (keydown.arrowright)="handleArrowKeys($event, i, 'Star')"         
+                                      class="form-control select-star"
                           style="width: fit-content; height: 30.6px"
                           formControlName="Star"
                           [ngClass]="{
@@ -268,18 +299,7 @@
                         </select>
   
   
-                        <!-- <input type="text"
-                        placeholder="Select star"
-                        aria-label="star"
-                        class="form-control sps"
-                        matInput
-                        formControlName="Star"
-                        [matAutocomplete]="star">
-                        <mat-autocomplete #star="matAutocomplete" (optionSelected)="onSelectStar(i, $event)">
-                          <mat-option *ngFor="let star of filteredStars[i] | async" [value]="star">
-                            {{ star }}
-                          </mat-option>
-                        </mat-autocomplete> -->
+                       
                       </td>
                       <td *ngIf="form.get('multiName')?.value === 'Y'">
                         <input
@@ -447,10 +467,10 @@
         <div class="daylist" style="height: 35vh;">
           <table class="table" style="width: 100%; ">
             <tbody>
-              <tr *ngFor="let day of updatedDayList; let i = index">
-                <td><input type="checkbox" [checked]="day.selected" (change)="onCheckboxChange(i)" />&nbsp;{{ day.date }}  </td>
+              <tr *ngFor="let day of allselecteddaylist let i = index">
+                <td><input type="checkbox" [(ngModel)]="day.selected" [checked]="day.selected" (change)="onCheckboxChange(i)" />&nbsp;{{ day.date }}  </td>
               </tr>
-              <tr *ngIf="updatedDayList.length==0">
+              <tr *ngIf="allselecteddaylist.length==0">
                 <td>No day found</td>
               </tr>
             </tbody>
