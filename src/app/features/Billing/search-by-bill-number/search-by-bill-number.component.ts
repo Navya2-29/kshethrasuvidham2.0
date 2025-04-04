@@ -40,7 +40,9 @@ export interface Data {
 
 interface Entry {
   Name: string;
+  Name2:string;
   Star: string;
+  Star2:string;
   Rate: number;
   Amount: number;
   VazhipadDate:string;
@@ -1159,11 +1161,14 @@ if(this.displayTrnsmode!=editedTransmodeValue){
   
       acc[prathistaKey][vazhipadKey].push({
         Name: item.Name,
+        Name2:item.Name2,
         Star: item.Star,
+        Star2:item.Star2,
         Rate: item.Rate,
         Amount: item.Amount,
         VazhipadDate:item.EvazDate,
         Qty:item.Qty
+
       });
   
       return acc;

@@ -16,7 +16,7 @@
                         <tr>
                            <td> Code<input type="text" formControlName="vihidham_code"  class="form-control sps" placeholder="Enter Code"> </td>
                            <td></td>
-                           <td> SI No<input type="text"  class="form-control sps" > </td>
+                           <!-- <td> SI No<input type="text"  class="form-control sps" > </td> -->
                          </tr>
                          <div
                          *ngIf="vihidhamMasterControl['vihidham_code'].invalid && (vihidhamMasterControl['vihidham_code'].dirty || vihidhamMasterControl['vihidham_code'].touched)"
@@ -35,7 +35,7 @@
                          </div>
                        </div>
                          <tr>
-                           <td colspan="3"> Vihidham Name<input formControlName="vihidham_name" type="text" class="form-control" placeholder="Enter Name"> </td>
+                           <td colspan="3"> Vazhipad Name<input formControlName="vihidham_name" type="text" class="form-control" placeholder="Enter Name"> </td>
                          </tr>
                          <div
                          *ngIf="vihidhamMasterControl['vihidham_name'].invalid && (vihidhamMasterControl['vihidham_name'].dirty || vihidhamMasterControl['vihidham_name'].touched)"
@@ -51,18 +51,95 @@
                          </div>
          
                        </div>
-                         <tr>
+
+                       <tr>
+                        <td colspan="3"> vazhipad Rate<input formControlName="vihidham_name" type="text" class="form-control" placeholder="Enter Name"> </td>
+                      </tr>
+                      <div
+                      *ngIf="vihidhamMasterControl['vihidham_name'].invalid && (vihidhamMasterControl['vihidham_name'].dirty || vihidhamMasterControl['vihidham_name'].touched)"
+                      class="pl-1 text-danger">
+                      <div *ngIf="vihidhamMasterControl['vihidham_name'].hasError('required')">
+                        name is required.
+                      </div>
+                      <div *ngIf="vihidhamMasterControl['vihidham_name'].hasError('pattern')">
+                        name must be include english alphabat and spaces only.
+                      </div>
+                      <div *ngIf="vihidhamMasterControl['vihidham_name'].hasError('duplicateName')" class="text-danger">
+                        Name already exists.
+                      </div>
+      
+                    </div>
+
+
+
+                    <tr>
+                      <td colspan="3"> Vihidham Type<input formControlName="vihidham_name" type="text" class="form-control" placeholder="Enter Name"> </td>
+                    </tr>
+                    <div
+                    *ngIf="vihidhamMasterControl['vihidham_name'].invalid && (vihidhamMasterControl['vihidham_name'].dirty || vihidhamMasterControl['vihidham_name'].touched)"
+                    class="pl-1 text-danger">
+                    <div *ngIf="vihidhamMasterControl['vihidham_name'].hasError('required')">
+                      name is required.
+                    </div>
+                    <div *ngIf="vihidhamMasterControl['vihidham_name'].hasError('pattern')">
+                      name must be include english alphabat and spaces only.
+                    </div>
+                    <div *ngIf="vihidhamMasterControl['vihidham_name'].hasError('duplicateName')" class="text-danger">
+                      Name already exists.
+                    </div>
+    
+                  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  
+
+                  <tr>
+                    <td colspan="3"> Vihidham Rate<input formControlName="vihidham_name" type="text" class="form-control" placeholder="Enter Name"> </td>
+                  </tr>
+                  <div
+                  *ngIf="vihidhamMasterControl['vihidham_name'].invalid && (vihidhamMasterControl['vihidham_name'].dirty || vihidhamMasterControl['vihidham_name'].touched)"
+                  class="pl-1 text-danger">
+                  <div *ngIf="vihidhamMasterControl['vihidham_name'].hasError('required')">
+                    name is required.
+                  </div>
+                  <div *ngIf="vihidhamMasterControl['vihidham_name'].hasError('pattern')">
+                    name must be include english alphabat and spaces only.
+                  </div>
+                  <div *ngIf="vihidhamMasterControl['vihidham_name'].hasError('duplicateName')" class="text-danger">
+                    Name already exists.
+                  </div>
+  
+                </div>
+
+
+
+
+
+                         <!-- <tr>
                             <!-- <td colspan="3"> Account Head <mat-select [(ngModel)]="selectedValue" name="food">
                               @for (food of foods; track food) {
                                 <mat-option [value]="food.value">{{food.viewValue}}</mat-option>
                               }
                             </mat-select></td> -->
                               <!-- <input formControlName="account_head" type="text" class="form-control" placeholder="Enter Name"> </td> -->
-                          </tr>
+                          <!-- </tr>
                           <tr>
                             <td colspan="3"> Account Sub Head<input formControlName="account_subHead"  type="text" class="form-control" placeholder="Enter Name"> </td>
-                          </tr>
-                         <tr>
+                          </tr> --> 
+                         <!-- <tr>
                             <td colspan="3" >
                                 Type<br>
                                 <div class="p-2" style="border:1px solid rgb(155, 144, 144);text-align:center; text-align: start;display: flex; justify-content: space-between;">
@@ -71,7 +148,7 @@
                             </div>
                             </td>
                            
-                        </tr>
+                        </tr> -->
                        
                          
                            

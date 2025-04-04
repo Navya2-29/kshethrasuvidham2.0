@@ -259,7 +259,7 @@ getPrathistaList(){
         this.pmaster = data;
         
        
-        console.log(this.pmaster);
+        console.log(this.pmaster,"prathista");
       }
     },
     error: (error) => {
@@ -268,6 +268,53 @@ getPrathistaList(){
     },
   });
 }
+
+
+onPrathistaChange(event: Event) {
+  const selectedPrathista = (event.target as HTMLSelectElement).value;
+  console.log(selectedPrathista,"selected prathista change");
+
+  const prathista = this.getPrathistaNameByCode(selectedPrathista);
+  console.log(prathista,"code prathista");
+
+  this.vazhipadListBasedOnPrathista(prathista);
+  console.log(selectedPrathista);
+
+}
+
+
+
+getPrathistaNameByCode(id: string): string {
+  const prathista = this.pmaster.find(
+    (item: any) => item.PM_ID == id
+  );
+  if (!prathista) {
+    return ''; 
+  }
+   return prathista.PM_Code;  
+}
+
+
+vazhipadListBasedOnPrathista(prathista: any) {
+  if (prathista) {
+    console.log(typeof prathista);
+    const payLoad = { Type: 'DietywiseVazhipad', Code: prathista };
+    this.masterService
+      .getVazhipadListBasedOnPrathistaList(payLoad)
+      .subscribe((data) => {
+        console.log(data);
+        this.Vmaster = data;
+        // this.sortVazhipadDetails();
+      });
+  } else {
+    this.getVazhipadList();
+  }
+}
+
+
+
+
+
 
 getVazhipadList(){
   this.masterService.getVmaster().subscribe({
@@ -284,5 +331,12 @@ getVazhipadList(){
     },
   });
 }
+
+
+
+
+
+
+
 
 }

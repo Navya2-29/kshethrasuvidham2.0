@@ -86,7 +86,7 @@
       <form [formGroup]="searchForm">
         <!-- PRATHISTA Dropdown -->
         <label for="prathishta">{{ "PRATHISTA" | translate }}</label>
-        <select class="form-control" formControlName="prathista" id="prathishta">
+        <select class="form-control" formControlName="prathista" id="prathishta" (change)="onPrathistaChange($event)">
           <option value="">{{ "Select Diety" | translate }}</option>
           <ng-container *ngIf="lang == 'en'">
             <option *ngFor="let item of pmaster" [value]="item.PM_ID">

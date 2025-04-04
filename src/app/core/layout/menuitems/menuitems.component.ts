@@ -32,6 +32,7 @@ export class MenuitemsComponent {
     { label: 'Vazhipad Seasonal', path: '/seasonal' },
     { label: 'Day Master', path: '/day-master' },
     { label: 'Item Master', path: '/item-master' },
+    {label:"Vihidam Master",path:'/vihidham-master'}
    
   ];
 

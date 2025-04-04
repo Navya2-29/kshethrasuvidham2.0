@@ -152,6 +152,7 @@ export const routes: Routes = [
     component: ReportDashboardComponent,
     canActivate: [authGuard],
   },
+  
   { path: 'report-viewer', component: ReportViewComponent },
   { path: 'report-dailystmnt', component: ReportDailystmtComponent },
   { path: 'report-cheque', component: ReportChecquestmntComponent },

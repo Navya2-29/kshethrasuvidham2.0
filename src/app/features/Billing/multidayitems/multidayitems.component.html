@@ -147,7 +147,7 @@
                           <ng-container *ngIf="lang=='ml'">
                             <option
                           *ngFor="let prathishta of prathishtaOptions"
-                          value="prathishta.PM_RegName"
+                          [value]="prathishta.PM_RegName"
                         >
                           {{prathishta.PM_RegName}}
                         </option>
@@ -279,8 +279,8 @@
                         #starInput
                         (keydown.enter)="handleEnterOnStar($event, i)"   
                         (keydown.arrowleft)="handleArrowKeys($event, i, 'Star')"
-  (keydown.arrowright)="handleArrowKeys($event, i, 'Star')"         
-                                      class="form-control select-star"
+                        (keydown.arrowright)="handleArrowKeys($event, i, 'Star')"         
+                          class="form-control select-star"
                           style="width: fit-content; height: 30.6px"
                           formControlName="Star"
                           [ngClass]="{
@@ -467,10 +467,10 @@
         <div class="daylist" style="height: 35vh;">
           <table class="table" style="width: 100%; ">
             <tbody>
-              <tr *ngFor="let day of allselecteddaylist let i = index">
-                <td><input type="checkbox" [(ngModel)]="day.selected" [checked]="day.selected" (change)="onCheckboxChange(i)" />&nbsp;{{ day.date }}  </td>
+              <tr *ngFor="let day of updatedDayList let i = index">
+                <td><input type="checkbox" [(ngModel)]="day.selected"  (change)="onCheckboxChange(i)" />&nbsp;{{ day.date }}  </td>
               </tr>
-              <tr *ngIf="allselecteddaylist.length==0">
+              <tr *ngIf="updatedDayList.length==0">
                 <td>No day found</td>
               </tr>
             </tbody>

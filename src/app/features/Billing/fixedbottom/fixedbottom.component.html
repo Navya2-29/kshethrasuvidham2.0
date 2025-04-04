@@ -35,7 +35,8 @@
           />
           <button
             class="btn btn-secondary"
-            (click)="onFind()"
+            (click)="getNameAndStarByMobilenumber()"
+
             style="padding: 5px; font-size: 9pt; background-color: #223d61"
           >
             Find
@@ -43,11 +44,12 @@
           <div>
             <input type="checkbox" [(ngModel)]="memberDevoteeCheck" style="position:absolute;margin-top: 5px;" ><span style="color:black;position:absolute;left:0;margin-left:36px;">{{"Member" | translate }}</span> 
             <button
+            (click)="onFind()"
+
             class="btn btn-secondary"
-            (click)="getNameAndStarByMobilenumber()"
             style="padding: 5px; font-size: 9pt; background-color: #223d61;position:absolute;right:0;"
           >
-            Search for Devotee
+            Devotee Details
           </button>
           </div>
         </div>

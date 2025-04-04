@@ -74,6 +74,7 @@
 "Sl No":"നമ്പർ",
 "Enter weight":"തൂക്കം",
 "Counter":"കൗണ്ടർ",
+"Search by Mobile number":"സെർച്ച് മൊബൈൽ നം",
   "PLACEHOLDER": {
     "VAZHIPAD": "വഴിപാട്",
     "NAME": "പേര് ",
@@ -213,10 +214,10 @@
      "Total Amount":"ആകെ തുക",
     "Payment Method":"പെയ്‌മെന്റ് മെത്തേഡ്",
     "cash":"ക്യാഷ്", 
-    "UPI":"യുപി ഐ",
+    "UPI":"യുപിഐ",
     "cheque":"ചെക്ക്",
     "Money Order":"മണി ഓർഡർ",
-     "Enter  Number Cheque / DD /Mo /UPI":"ചെക്ക് /ഡിഡി/എംഒ/യുപിഐ",
+     "Enter  Number Cheque / DD /Mo /UPI":"യുപിഐ/ഓൺലൈൻ/ഡെബിറ്റ് ഐഡി ",
    "Save": "സേവ് ",
     "cancel":"ക്യാൻസൽ"
 

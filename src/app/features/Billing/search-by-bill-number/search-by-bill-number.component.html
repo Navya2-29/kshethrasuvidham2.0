@@ -317,8 +317,8 @@ class="proceed"
         <tbody>
           <tr *ngFor="let entry of gropedData[prathista][vazhipad]" style="border-bottom:.25px solid silver;">
             <td style="font-size:10pt;vertical-align:middle;">{{entry.VazhipadDate | date:"dd-MM-yyyy"}}</td>
-            <td style="font-size:10pt;vertical-align:middle;">{{ entry.Name }}</td>
-            <td style="font-size:10pt;vertical-align:middle;">{{this.getStarbyId( entry.Star) }}</td>
+            <td style="font-size:10pt;vertical-align:middle;">{{ entry.Name }}<br/>{{entry.Name2}}</td>
+            <td style="font-size:10pt;vertical-align:middle;">{{this.getStarbyId( entry.Star) }}<br/>{{this.getStarbyId( entry.Star2)}}</td>
             <td style="font-size:10pt;text-align:center;vertical-align:middle;">{{entry.Qty}}</td>
             <td style="font-size:10pt;text-align:right;vertical-align:middle;">{{ entry.Rate }}</td>
             <td style="font-size:10pt;text-align:right;vertical-align:middle;">{{ entry.Amount }}</td>

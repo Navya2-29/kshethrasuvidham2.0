@@ -479,7 +479,7 @@ private cdr: ChangeDetectorRef
       this.selectedVazhipadItem = this.VMList.find(
         (item) => item.VM_Name === selectedVazhipad
       );
-    } else if (this.lang == 'ml') {
+    } else if (this.lang != 'en') {
       this.selectedVazhipadItem = this.VMList.find(
         (item) => item.VM_RName === selectedVazhipad
       );
@@ -528,7 +528,7 @@ private cdr: ChangeDetectorRef
           .getVazhipadByCodeForDiety(vazhipadcode)
           .subscribe((data: any) => {
             this.prathishtaOptions = data;
-            console.log(this.prathishtaOptions);
+            console.log(this.prathishtaOptions,"prathista options dataaaaaaaaaaaaaaaaa check mlyalm");
             if (this.prathishtaOptions.length > 0) {
               if (this.lang === 'en') {
                 const defaultPrathishta = this.prathishtaOptions[0].PM_Name;
@@ -942,7 +942,7 @@ private cdr: ChangeDetectorRef
         console.log(data);
         const dayList = Array.isArray(data) ? data : [data];
         this.updatedDayList = Array.isArray(data) ? data : [data];
-
+console.log(this.updatedDayList);
         // this.multiDayList = Array.isArray(data) ? data : [data];
 
         this.updatedDayList = dayList.map((item: any) => ({
@@ -1018,21 +1018,16 @@ private cdr: ChangeDetectorRef
   }
 
   onCheckboxChange(index: number): void {
-    // Toggle the selected status of the date
-    console.log(index,"index checking in checkbox")
-    this.updatedDayList[index].selected = !this.updatedDayList[index].selected;
-    this.allselecteddaylist=this.updatedDayList;
-    console.log(this.allselecteddaylist,"all selected day list to show om array");
-    // Filter out the unselected dates from the list
+    console.log(index,"index");
+    console.log(this.updatedDayList,"updated list");
+    console.log( this.updatedDayList[index].selected ,"selected")
+    console.log(!this.updatedDayList[index].selected,"not selected");
+    this.updatedDayList[index].selected = this.updatedDayList[index].selected;
+    // this.allselecteddaylist=[...this.updatedDayList];
+    // console.log(this.allselecteddaylist, "All selected day list to show in array");
+    // this.updatedDayList = [...this.updatedDayList];
     this.multiDayList = this.updatedDayList.filter((item) => item.selected);
-// const selecteddayalist=this.updatedDayList;
-// console.log(selecteddayalist,"selected day list after check change");
-    console.log(
-      this.multiDayList,
-      'Updated multiDayList after checkbox change'
-    );
-    console.log(this.updatedDayList,"updatedlist checkbox change");
-
+    // this.updatedDayList = [...this.updatedDayList];
     if (this.multiDayList.length > 0) {
       let lastItem = this.multiDayList[this.multiDayList.length - 1];
       let lastDate = lastItem ? lastItem.date : null;
@@ -1040,11 +1035,14 @@ private cdr: ChangeDetectorRef
       const endDate = lastItem.edate1;
       this.form.patchValue({
         EndDate: this.datePipe.transform(endDate, 'dd-MM-YYYY'),
-        VazhipadDate: firstItem.edate1
+        // VazhipadDate: firstItem.edate1
       });
       console.log('Last Date:', endDate);
     }
   }
+
+
+
 
   validateVazhipadDate() {
     const vazhipadDateControl = this.form.get("VazhipadDate");

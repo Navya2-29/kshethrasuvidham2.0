@@ -39,7 +39,6 @@ import { NumberToWordsPipe } from '../../../shared/pipe/number-to-words.pipe';
   imports: [
     MatInputModule,
     MatButtonModule,
-
     ReactiveFormsModule,
     CommonModule,
     TranslateModule,
@@ -340,21 +339,21 @@ console.log(data,"dot metrix checkingkkkkkk")
       pageIndex < pages.length - 1 ? 'always' : 'avoid'
     };">
           <!-- Prathista -->
-          <div style="position: absolute; left: 4.8cm; top: 2.6cm; max-width: 8cm; font-size:10pt; white-space: pre-wrap; word-wrap: break-word;">${prathista}</div>
+          <div style="position: absolute; left: 4.8cm; top: 2.5cm; max-width: 8cm; font-size:10pt; white-space: pre-wrap; word-wrap: break-word;">${prathista}</div>
           <!-- Vazhipad -->
-          <div style="position: absolute; left: 4.8cm; top: 3.2cm; max-width: 5cm;font-size:9pt; white-space: pre-wrap;">${vazhipad}</div>
+          <div style="position: absolute; left: 4.8cm; top: 3cm; max-width: 5cm;font-size:9pt; white-space: pre-wrap;">${vazhipad}</div>
           <!-- From Date -->
-          <div style="position: absolute; left: 10.9cm; top: 2.6cm;">${Billdate}</div>
+          <div style="position: absolute; left: 10.9cm; top: 2.5cm;">${Billdate}</div>
           <!-- Total Quantity -->
-          <div style="position: absolute; left: 10.9cm; top: 3.2cm;"> ${BillNo}</div>
+          <div style="position: absolute; left: 10.9cm; top: 3cm;"> ${BillNo}</div>
            <!-- Vazhipad Date -->
-         <div style="position: absolute; left: 5cm; top: 7.3cm;">
+         <div style="position: absolute; left: 4.5cm; top: 7.2cm;">
   ${fromDate != toDate ? `${this.convertDateFormat(fromDate)} to ${this.convertDateFormat(toDate)}` : `${this.convertDateFormat(fromDate)}`}
 </div>
-${group.nalBy ? `<div style="position: absolute; left: 8cm; top: 8cm;">- ${group.nalBy},</div>` : ''}
-${group.mday ? `<div style="position: absolute; left: 9cm; top: 8cm;">- ${group.mday},</div>` : ''}
+${group.nalBy ? `<div style="position: absolute; left: 2cm; top: 8.5cm;">- ${group.nalBy},</div>` : ''}
+${group.mday ? `<div style="position: absolute; left: 5cm; top: 8.5cm;">- ${group.mday},</div>` : ''}
 ${group.mmonth ? `<div style="position: absolute; left: 8cm; top:8.5cm;">- ${group.mmonth}</div>` : ''}
- <div style="position: absolute; left: 5cm; top: 8cm;">User id:${this.name}  ${Trnsmode=='CR'?"Not Paid":""}</div>
+ <div style="position: absolute; left: 2cm; top: 7.5cm;font-size:8pt">User:${this.name}  ${Trnsmode=='CR'?"Not Paid":""}</div>
           `
 
       // Render rows in the current page
@@ -376,11 +375,11 @@ ${group.mmonth ? `<div style="position: absolute; left: 8cm; top:8.5cm;">- ${gro
       // Add grand total at the end of the page
     // const grandTotalTop = 5 + page.length * 0.7 + 1; // Position it below the last row
     receiptContent += `
-      <div style="position: absolute; left: 11.5cm; top: 7.2cm; font-weight: bold; font-size: 12pt;">
+      <div style="position: absolute; left: 11.2cm; top: 7.1cm; font-weight: bold; font-size: 12pt;">
          ${grandTotalAmount.toFixed(2)}
       </div>
-       <div style="position: absolute; left: 11.5cm; top: 7.2cm; font-weight: bold; font-size: 12pt;">
-         ${this.numbertowordpipe.transform(grandTotalAmount)}
+       <div style="position: absolute; left: 3cm; top: 8cm; font-weight: bold; font-size: 9pt;">
+         ${this.numbertowordpipe.transform(grandTotalAmount)}<span>Rupees</span>
       </div>
       
     </div>`; // Close receipt page

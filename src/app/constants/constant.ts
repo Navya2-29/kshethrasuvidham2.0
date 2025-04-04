@@ -26,7 +26,6 @@ export const Constant = {
     CREATE_VSPECIAL: 'create',
     UPDATE_VSPECIAL: 'update',
     DELETE_VSPECIAL: 'delete',
-
     // seasonal master
     CREATE_SEASONAL: 'VazhipadSeasonal',
     // vihidhm master
@@ -88,7 +87,7 @@ export const Constant = {
   DAY:"Day",
   DEVOTEEMASTER:"DevoteeMaster",
   FEECOLLECTION:"FeeCollection",
-    CHANGEPASSWORD:"ChangePassword"
+  CHANGEPASSWORD:"ChangePassword"
   },
 
 };

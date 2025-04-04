@@ -930,7 +930,7 @@ export class AreareceiptComponent implements OnInit {
 
     let lastIndex = result.length - 1;
     const data = result[0];
-
+console.log(data,"multaday booked details prathsta name check");
     //  data.VazhipadDate is a Date object
     const startDate = new Date(data.VazhipadDate); // This should be the start date
     const endDate = new Date(result[lastIndex].VazhipadDate); // This should be the end date
