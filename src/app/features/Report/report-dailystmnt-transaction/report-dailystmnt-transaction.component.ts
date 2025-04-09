@@ -20,6 +20,7 @@ import { ReportDailyStmt } from '../../../models/dailytrasaction.model';
 
 
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { PrintreportService } from '../../../shared/service/printreport.service';
 
 // Fix TypeScript issues with `vfs`
 // (pdfMake as any).setVfs(pdfFonts.pdfMake.vfs);
@@ -86,7 +87,8 @@ export class ReportDailystmntTransactionComponent {
     private service: ReportService,
     private router: Router,
     private http: HttpClient,
-    private ts: TranslateService
+    private ts: TranslateService,
+    private reportPrintservice:PrintreportService
   ) {
     this.lang = localStorage.getItem('Language');
     this.templeName =
@@ -232,10 +234,12 @@ export class ReportDailystmntTransactionComponent {
   }
   // Grouping function
   groupDataByTransactionModeAndCategory(): void {
-    this.groupedData = this.data.reduce((acc:any, item:any) => {
-      const mode = item.TrnsMode; // Transaction Mode
-      const category = item.Category; // Category under Transaction Mode
-      const vazhipad = item.vazhipad; // Vazhipad Name
+    this.groupedData = this.data.reduce((acc: any, item: any) => {
+      const mode = item.TrnsMode;         // Transaction Mode
+      const category = item.Category;     // Category
+      const vazhipad = item.vazhipad;     // Vazhipad Name
+      const rate = item.Rate;             // Rate
+      const uniqueKey = `${vazhipad}_${rate}`; // Unique vazhipad per rate
   
       if (!acc[mode]) {
         acc[mode] = {}; // Initialize Transaction Mode group
@@ -243,152 +247,36 @@ export class ReportDailystmntTransactionComponent {
       if (!acc[mode][category]) {
         acc[mode][category] = {}; // Initialize Category group
       }
-      if (!acc[mode][category][vazhipad]) {
-        acc[mode][category][vazhipad] = { 
-          vazhipad: item.vazhipad, 
-          Qty: 0, 
-          Rate: item.Rate, 
+      if (!acc[mode][category][uniqueKey]) {
+        acc[mode][category][uniqueKey] = { 
+          vazhipad: vazhipad,
+          Rate: rate,
+          Qty: 0,
           Amount: 0 
         };
       }
   
-      // Aggregate Qty and Amount
-      acc[mode][category][vazhipad].Qty += item.Qty;
-      acc[mode][category][vazhipad].Amount += item.Amount;
+      // Aggregate Qty and Amount only if rate is same (since key includes rate)
+      acc[mode][category][uniqueKey].Qty += item.Qty;
+      acc[mode][category][uniqueKey].Amount += item.Amount;
   
       return acc;
-    }, {} as { [trnsMode: string]: { [category: string]: { [vazhipad: string]: { vazhipad: string, Qty: number, Rate: number, Amount: number } } } });
+    }, {} as {
+      [trnsMode: string]: {
+        [category: string]: {
+          [vazhipad_rate_key: string]: {
+            vazhipad: string,
+            Rate: number,
+            Qty: number,
+            Amount: number
+          }
+        }
+      }
+    });
   }
+  
   generatePDF() {
-    const printContent = document.getElementById('print-section');
-    if (!printContent) {
-      console.error('No content found to print');
-      return;
-    }
-
-    const WindowPrt = window.open('', '', 'width=800,height=600');
-
-    // Check if the print window was successfully opened
-    if (!WindowPrt) {
-      console.error(
-        'Unable to open print window. Please check pop-up blockers.'
-      );
-      return;
-    }
-
-    WindowPrt.document.write(`
-    <html>
-      <head>
-        <title>Print</title>
-        <style>
-          .header-print h2 h3 h4 {
-          margin:0;
-          padding:0;
-          font-family:Manjari;
-           }  
-          h3,h4,h2{
-          margin-top:0px;
-          margin-botton:0px;
-          text-align:center;
-          font-family:Manjari;
-
-          }
-          .tabble-heading h3{
-  // font-family: 'Times New Roman', Times, serif;
-            font-family:Manjari;
-
-  font-weight: bold;
-  font-size: 16px;
-  margin: 8px 0 0 0;
-}
-  .date{
-   line-height:1;
-          margin-top:0;
-  text-align:center;
-  }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-          }
-          table, th, td {
-            border: 1px solid black;
-            text-transform: uppercase;
-
-          }
-          th, td {
-           padding-left:5px;
-            text-align: left;
-          }
-            #print-section{
-padding-bottom: 100px;
-  }
-p.transaction{
-    margin: 10px 0 0 0;
-    // font-family: 'Times New Roman', Times, serif;
-      font-family:Manjari;
-
-    font-size: 18px;
-    text-decoration: underline;
-    font-weight: bold;
-    /* text-align: center; */
-
-}
-p.category{
-    font-family: 'Times New Roman', Times, serif;
-    font-size: 16px;
-    margin:0;
-    font-weight: 800;
-    text-transform: uppercase;
-}
-.transactionTable{
-    margin-bottom: 10px;
-    margin-bottom: 10px;
-}
-.number{
-    text-align: right;
-    /* font-weight: bold; */
-}
-.total{
-
-    text-align: right;
-    font-weight: bold;
-    font-size: 14px;
-}
-.transactionTotal{
-  font-family: 'Times New Roman', Times, serif; 
-  font-weight: bold;
-  margin-top: 10px;
-  text-align: right;
-  margin-bottom: 5px;
-  font-size: 18px;
-
-}
-.grandtotal{
-    text-align: right;
-    font-family: 'Times New Roman', Times, serif;
-    font-weight:bolder;
-    color: red;
-    font-size: 20px;
-    margin: 10px 0;
-
-
-}
-
-
-        </style>
-      </head>
-      <body>${printContent.innerHTML}</body>
-    </html>
-  `);
-
-    WindowPrt.document.close();
-    WindowPrt.focus();
-
-    // Make sure that the window is still valid before calling print and close
-    if (WindowPrt) {
-      WindowPrt.print();
-      WindowPrt.close();
-    }
+  this.reportPrintservice.generatePDF();
   }
 
   onPageChange(event: PageEvent) {

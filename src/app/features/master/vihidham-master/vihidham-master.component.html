@@ -1,6 +1,6 @@
 
 <app-header></app-header>
-<app-spinner></app-spinner>
+<!-- <app-spinner></app-spinner> -->
 <div class="amster">
     <div class="container">
      <div class="card-body outlook" style="background:white;">
@@ -14,149 +14,49 @@
                     <form [formGroup]="vihidhamMasterForm">
                     <table class="table">
                         <tr>
-                           <td> Code<input type="text" formControlName="vihidham_code"  class="form-control sps" placeholder="Enter Code"> </td>
+                           <td> Code<input type="text" formControlName="vazhipad_code"  class="form-control sps" placeholder="Enter vazhipad Code"> </td>
                            <td></td>
                            <!-- <td> SI No<input type="text"  class="form-control sps" > </td> -->
                          </tr>
-                         <div
-                         *ngIf="vihidhamMasterControl['vihidham_code'].invalid && (vihidhamMasterControl['vihidham_code'].dirty || vihidhamMasterControl['vihidham_code'].touched)"
-                         class="pl-1 text-danger">
-                         <div *ngIf="vihidhamMasterControl['vihidham_code'].hasError('required')">
-                           code is required.
-                         </div>
-                         <div *ngIf="vihidhamMasterControl['vihidham_code'].hasError('maxlength')">
-                           code must be 3 characters long.
-                         </div>
-                         <div *ngIf="vihidhamMasterControl['vihidham_code'].hasError('pattern')">
-                           code must be include number or english alphabat.
-                         </div>
-                         <div *ngIf="vihidhamMasterControl['vihidham_code'].hasError('duplicateCode')" class="text-danger">
-                           Code already exists.
-                         </div>
-                       </div>
+                       
                          <tr>
-                           <td colspan="3"> Vazhipad Name<input formControlName="vihidham_name" type="text" class="form-control" placeholder="Enter Name"> </td>
+                           <td colspan="3"> Vazhipad Name<input readonly formControlName="vazhipad_name" type="text" class="form-control" placeholder="vazhipad Name"> </td>
                          </tr>
-                         <div
-                         *ngIf="vihidhamMasterControl['vihidham_name'].invalid && (vihidhamMasterControl['vihidham_name'].dirty || vihidhamMasterControl['vihidham_name'].touched)"
-                         class="pl-1 text-danger">
-                         <div *ngIf="vihidhamMasterControl['vihidham_name'].hasError('required')">
-                           name is required.
-                         </div>
-                         <div *ngIf="vihidhamMasterControl['vihidham_name'].hasError('pattern')">
-                           name must be include english alphabat and spaces only.
-                         </div>
-                         <div *ngIf="vihidhamMasterControl['vihidham_name'].hasError('duplicateName')" class="text-danger">
-                           Name already exists.
-                         </div>
-         
-                       </div>
+                       
 
                        <tr>
-                        <td colspan="3"> vazhipad Rate<input formControlName="vihidham_name" type="text" class="form-control" placeholder="Enter Name"> </td>
-                      </tr>
-                      <div
-                      *ngIf="vihidhamMasterControl['vihidham_name'].invalid && (vihidhamMasterControl['vihidham_name'].dirty || vihidhamMasterControl['vihidham_name'].touched)"
-                      class="pl-1 text-danger">
-                      <div *ngIf="vihidhamMasterControl['vihidham_name'].hasError('required')">
-                        name is required.
-                      </div>
-                      <div *ngIf="vihidhamMasterControl['vihidham_name'].hasError('pattern')">
-                        name must be include english alphabat and spaces only.
-                      </div>
-                      <div *ngIf="vihidhamMasterControl['vihidham_name'].hasError('duplicateName')" class="text-danger">
-                        Name already exists.
-                      </div>
-      
-                    </div>
-
-
-
-                    <tr>
-                      <td colspan="3"> Vihidham Type<input formControlName="vihidham_name" type="text" class="form-control" placeholder="Enter Name"> </td>
-                    </tr>
-                    <div
-                    *ngIf="vihidhamMasterControl['vihidham_name'].invalid && (vihidhamMasterControl['vihidham_name'].dirty || vihidhamMasterControl['vihidham_name'].touched)"
-                    class="pl-1 text-danger">
-                    <div *ngIf="vihidhamMasterControl['vihidham_name'].hasError('required')">
-                      name is required.
-                    </div>
-                    <div *ngIf="vihidhamMasterControl['vihidham_name'].hasError('pattern')">
-                      name must be include english alphabat and spaces only.
-                    </div>
-                    <div *ngIf="vihidhamMasterControl['vihidham_name'].hasError('duplicateName')" class="text-danger">
-                      Name already exists.
-                    </div>
-    
-                  </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                  
-
-                  <tr>
-                    <td colspan="3"> Vihidham Rate<input formControlName="vihidham_name" type="text" class="form-control" placeholder="Enter Name"> </td>
-                  </tr>
-                  <div
-                  *ngIf="vihidhamMasterControl['vihidham_name'].invalid && (vihidhamMasterControl['vihidham_name'].dirty || vihidhamMasterControl['vihidham_name'].touched)"
-                  class="pl-1 text-danger">
-                  <div *ngIf="vihidhamMasterControl['vihidham_name'].hasError('required')">
-                    name is required.
-                  </div>
-                  <div *ngIf="vihidhamMasterControl['vihidham_name'].hasError('pattern')">
-                    name must be include english alphabat and spaces only.
-                  </div>
-                  <div *ngIf="vihidhamMasterControl['vihidham_name'].hasError('duplicateName')" class="text-danger">
-                    Name already exists.
-                  </div>
-  
-                </div>
-
-
-
-
-
-                         <!-- <tr>
-                            <!-- <td colspan="3"> Account Head <mat-select [(ngModel)]="selectedValue" name="food">
-                              @for (food of foods; track food) {
-                                <mat-option [value]="food.value">{{food.viewValue}}</mat-option>
-                              }
-                            </mat-select></td> -->
-                              <!-- <input formControlName="account_head" type="text" class="form-control" placeholder="Enter Name"> </td> -->
-                          <!-- </tr>
-                          <tr>
-                            <td colspan="3"> Account Sub Head<input formControlName="account_subHead"  type="text" class="form-control" placeholder="Enter Name"> </td>
-                          </tr> --> 
-                         <!-- <tr>
-                            <td colspan="3" >
-                                Type<br>
-                                <div class="p-2" style="border:1px solid rgb(155, 144, 144);text-align:center; text-align: start;display: flex; justify-content: space-between;">
-                                <div><input type="radio" formControlName="type"  name="type" value="Avakasikal"> Avakasikal</div> &nbsp;&nbsp;<div><input type="radio" value="Samanavila" name="type" formControlName="type" > Samanavila</div>
-                                &nbsp;&nbsp;<div><input type="checkbox" formControlName="pvItem" value="pvitem" > PV Item</div>
-                            </div>
-                            </td>
-                           
-                        </tr> -->
-                       
+                        <td colspan="3"> vazhipad Rate
                          
-                           
+                          
+                          <input readonly formControlName="vazhipad_rate" type="text" class="form-control" placeholder="Vazhipad Rate"> </td>
+
+                          
+                          <!-- <input  type="text" class="form-control" placeholder="Enter Name"> </td> -->
+                      </tr>
+                    <tr>
+                      <td colspan="3"> Vihidham Type
+                        
+                        <select name="" id=""  formControlName="vihidham_type"  [disabled]="updateFlag" class="form-control" style="width:100%" >
+                          <option value="">select type </option>
+                          <option *ngFor="let type of filteredCmaster" [value]="type.VC_ID" >{{type.VC_Name}}</option>
+                        </select>
+                        
+                    </tr>
+                    
+                  <tr>
+                    <td colspan="3"> Vihidham Rate<input [readOnly]="updateFlag" formControlName="vihidham_rate" type="text" class="form-control" placeholder="Enter vihidham"> </td>
+                  </tr>
+                  <tr>
+                    <td>From date <input [readOnly]="updateFlag" type="date"formControlName="FromDate" class="form-control"></td>
+                    <td>To date <input type="date" formControlName="ToDate" class="form-control"> </td>
+                    <td></td>
+                  </tr>
+                  
                          <tr>
-                          <td colspan="3"><button *ngIf="!updateFlag" class="btn btn-primary"
+                          <td colspan="3"><button class="btn btn-primary" *ngIf="!updateFlag"
                             (click)="onSubmit(vihidhamMasterForm.value)">save</button>
                           <button *ngIf="updateFlag" class="btn btn-primary"
-                            (click)="onUpdate(vihidhamMasterForm.value)">update</button>
+                            (click)="onUpdate(vihidhamMasterForm.value)"  >update</button>
                           <button class="btn btn-danger ml-1" (click)="onReset()">cancel</button>
                         </td>
                          </tr>
@@ -173,26 +73,28 @@
                     <div class="fixitems prathishta">
                         <table class="table">
                             <tr style="border-bottom: 2px solid #223d61;">
-                              <th style="width:10px;background-color: #223d61;color:white;">Active</th>  
+                              <!-- <th style="width:10px;background-color: #223d61;color:white;">Active</th>   -->
                               
-                              <th >code</th>
-                              <th >vihidham Name</th>
+                              <th >Vazhipad</th>
+                              <th >Vihidham Type</th>
                              
-                              <th >Type</th>
-                              <th >Account sub</th>
+                              <th >Rate</th>
+                              <th >From date</th>
+                              <th >To date</th>
                               <th></th>
                             </tr>
                             <tbody *ngIf="!showNoRecordsMessage &&vihidhamMaster && vihidhamMaster.length > 0">
                               <tr *ngFor="let data of filteredVihidhamMaster">
-                                <td style="background-color: #87b6f3;"><input type="Checkbox" style="vertical-align: middle;width:12px;" checked></td>
-                              <td>{{data.vihidham_code}}</td>
-                              <td>{{data.vihidham_name}}</td>
-                              <td style="text-align:left;">{{data.type}}</td>
-                              <td>{{data.account_head}}</td>
+                                <!-- <td style="background-color: #87b6f3;"><input type="Checkbox" style="vertical-align: middle;width:12px;" checked></td> -->
+                              <td style="text-align:left;">{{getVazhipadNameById(data.VazhId)}}</td>
+                              <td style="text-align:left;">{{data.VC_Name}}</td>
+                              <td >{{data.Rate}}-{{data.VR_ID}}</td>
+                              <td>{{data.FDate | date:'dd-MM-yyyy' }}</td>
+                              <td>{{data.ToDate  | date:'dd-MM-yyyy' }}</td>
                               
                               <td>
-                                <mat-icon title="Edit" class="small" style="vertical-align: middle;">edit</mat-icon>
-                                <mat-icon title="Delete" class="small" style="vertical-align: middle;">delete</mat-icon>
+                                <mat-icon title="Edit" class="small" style="vertical-align: middle;" (click)="onEdit(data)" >edit</mat-icon>
+                                <mat-icon title="Delete" class="small" style="vertical-align: middle;" (click)="onDeleteCheck(data.VR_ID)" >delete</mat-icon>
                               </td>
                               
                             </tr>

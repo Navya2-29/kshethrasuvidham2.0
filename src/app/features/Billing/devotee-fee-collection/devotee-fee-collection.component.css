@@ -15,6 +15,9 @@
   text-align: left;
   align-items: left;
 }
+.right{
+  text-align: right;
+}
 
 .main {
     display:block;

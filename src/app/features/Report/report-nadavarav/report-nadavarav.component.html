@@ -67,7 +67,13 @@
             <span *ngIf="lang == 'en'"> {{ item.NM_Name }}</span
             ><span *ngIf="lang == 'ml'">{{ item.NM_RName }}</span>
           </td>
-          <td>{{ item.Name }}</td>
+          <td>{{ item.Name }}
+<br *ngIf="item.Address">{{item.Address}}
+<br *ngIf="item.Address1">{{item.Address1}}
+
+
+
+          </td>
           <td>{{ item.Star || "N/A" }}</td>
 
           <td>{{ item.Qty }}</td>

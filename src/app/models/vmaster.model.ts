@@ -19,6 +19,7 @@ VM_MultiName:string;
 VM_Name:string;
 VM_RName:string;
 VM_Rate_Change:string;
+VM_Donation:string;
 VM_Receipt:string;
 VM_Sales:string,
 VM_Seasonal:string;

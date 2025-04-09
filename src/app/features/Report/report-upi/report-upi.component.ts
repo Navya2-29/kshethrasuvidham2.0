@@ -38,6 +38,9 @@ export class ReportUpiComponent {
   lang:string|null;
   templeName:string|null;
   templeAddress:string|null;
+  filteredNadavaravu:any[]=[];
+  filteredCreditCollection:any[]=[];
+  filteredFeecollection:any[]=[];
   constructor(private route: ActivatedRoute,private ts: TranslateService, private service: ReportService,private router: Router, private http:HttpClient) {
     this.lang=localStorage.getItem('Language');
     this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
@@ -54,6 +57,9 @@ export class ReportUpiComponent {
       this. fromDate = params['fromDate'];
       this. toDate = params['toDate'];
       this.fetchReportData(type,this. fromDate, this.toDate);
+      this.fetchNadavaravuReportData(type,this. fromDate, this.toDate);
+      this.fetchCreditcollectionReportData(type,this. fromDate, this.toDate);
+      this.fetchFeecollectionReportData(type,this. fromDate, this.toDate);
     });
   }
 
@@ -66,7 +72,7 @@ export class ReportUpiComponent {
     };
     this.service.getReport(payLoad).subscribe({
       next: (data) => {
-        console.log('Fetched report data:', data);
+        console.log('Fetched report data:vazhipad', data);
         this.data=data;
          this.filteredData = this.data.filter(item => item.TrnsMode === 'UP');   
       //    this.filteredData = this.filteredData.sort((a:any, b:any) => {
@@ -76,20 +82,101 @@ export class ReportUpiComponent {
       //     // Compare the two parts: first compare the numerator, then the denominator
       //     return numA - numB || denomA - denomB;
       // });
-      console.log(this.filteredData,"aaaaaaaaaaaaaaaaaaa")  
+     
 
-        this.dataSource.data = this.filteredData
-        console.log( this.dataSource.data)
+      
         this.length =this.filteredData .length; 
-        this.dataSource.paginator = this.paginator;
-        
-        console.log(this.filteredData);
+        console.log(this.filteredData,"vzhipad")  
+        // console.log(this.filteredData);
       },
       error: (error) => {
         console.error('Error fetching report data:', error);
       },
     });
   }
+
+
+  fetchNadavaravuReportData(type: string, fromDate: string, toDate: string): void {
+    const payLoad = {
+      Type: 'NadavaravuRpt',
+      FromDate: fromDate,
+      ToDate: toDate,
+    };
+    this.service.getReport(payLoad).subscribe({
+      next: (data:any) => {
+       
+        // this.data=data;
+         this.filteredNadavaravu = data.filter((item:any) => item.TrnMode === 'UP');   
+      
+         console.log('Fetched report data:nadavaravu',  this.filteredNadavaravu);
+        // this.length =this.filteredData .length; 
+       
+      },
+      error: (error) => {
+        console.error('Error fetching report data:', error);
+      },
+    });
+  }
+
+
+  fetchCreditcollectionReportData(type: string, fromDate: string, toDate: string): void {
+    const payLoad = {
+      Type: 'CreditCollect',
+      FromDate: fromDate,
+      ToDate: toDate,
+    };
+    this.service.getReport(payLoad).subscribe({
+      next: (data) => {
+        // this.data=data;
+         this.filteredCreditCollection = data.filter((item:any) => item.TrnMode === 'UP');   
+         console.log('Fetched report data: credit collect', this.filteredCreditCollection);
+
+      },
+      error: (error) => {
+        console.error('Error fetching report data:', error);
+      },
+    });
+  }
+
+  fetchFeecollectionReportData(type: string, fromDate: string, toDate: string): void {
+    const payLoad = {
+      Type: 'FeeCollectRpt',
+      FromDate: fromDate,
+      ToDate: toDate,
+    };
+    this.service.getReport(payLoad).subscribe({
+      next: (data) => {
+       
+        // this.data=data;
+         this.filteredFeecollection = data.filter((item:any) => item.TrnMode === 'UP');   
+      //    this.filteredData = this.filteredData.sort((a:any, b:any) => {
+      //     const [numA, denomA] = a.BillNo.split('/').map(Number);
+      //     const [numB, denomB] = b.BillNo.split('/').map(Number);
+          
+      //     // Compare the two parts: first compare the numerator, then the denominator
+      //     return numA - numB || denomA - denomB;
+      // });
+      // console.log(this.filteredData,"aaaaaaaaaaaaaaaaaaa")  
+
+      //   this.dataSource.data = this.filteredData
+      //   console.log( this.dataSource.data)
+      //   this.length =this.filteredData .length; 
+      //   this.dataSource.paginator = this.paginator;
+        
+      //   console.log(this.filteredData);
+      console.log('Fetched report data fee collect:', this.filteredFeecollection);
+      },
+      error: (error) => {
+        console.error('Error fetching report data:', error);
+      },
+    });
+  }
+
+
+
+
+
+
 
   onPageChange(event: PageEvent) {
     this.pageIndex = event.pageIndex;
@@ -117,6 +204,16 @@ export class ReportUpiComponent {
   
   getTotalAmount(): number {
     return this.filteredData.reduce((sum, item) => sum + item.Amount, 0);
+  }
+
+  getNadavaravuTotalAmount(): number {
+    return this.filteredNadavaravu.reduce((sum, item) => sum + item.Receipt_Amt, 0);
+  }
+  getCreditCollectTotalAmount(): number {
+    return this.filteredCreditCollection.reduce((sum, item) => sum + item.Amount, 0);
+  }
+  getFeecollectionTotalAmount(): number {
+    return this.filteredFeecollection.reduce((sum, item) => sum + item.Amount, 0);
   }
   formatDateToDDMMYYYY(date: string): string {
     const [year, month, day] = date.split('-');

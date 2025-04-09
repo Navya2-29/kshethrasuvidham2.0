@@ -131,6 +131,7 @@ export class VmasterComponent implements OnInit {
       VM_Whatsapp: [false],
       VM_Mattinam: [false],
       VM_Sales:[false],
+      VM_Donation:[false],
       prathistainfo: this.formBuilder.array([]),
       //  deities: this.formBuilder.array([]),
     });
@@ -297,6 +298,7 @@ export class VmasterComponent implements OnInit {
       VM_Description: '',
       VM_AlertMsg: '',
       VM_Mattinam: false,
+      VM_Donation:false,
       DisplayMode: false,
       ACHeadCode: '',
       ACSubCode: '',
@@ -348,6 +350,7 @@ export class VmasterComponent implements OnInit {
       VM_Special: data.VM_Special == 'Y' ? true : false,
       VM_Rate_Change: data.VM_Rate_Change == 'Y' ? true : false,
       VM_Sales:data.VM_Sales=='Y'?true:false,
+      VM_Donation:data.VM_Donation=="Y"?true:false,
       VM_TimeLimit: data.VM_TimeLimit,
       VM_Description: data.VM_Description,
       VM_AlertMsg: data.VM_AlertMsg,

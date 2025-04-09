@@ -59,6 +59,8 @@ import { MembersListComponent } from './features/Report/members-list/members-lis
 import { ReportMemberPendingCreditComponent } from './features/Report/report-member-pending-credit/report-member-pending-credit.component';
 import { ReportNonMemberPendingCreditComponent } from './features/Report/report-non-member-pending-credit/report-non-member-pending-credit.component';
 import { EndowmentBillingComponent } from './features/Billing/endowment-billing/endowment-billing.component';
+import { VihidhamCateogryMasterComponent } from './features/master/vihidham-cateogry-master/vihidham-cateogry-master.component';
+import { ReportVihidhamComponent } from './features/Report/report-vihidham/report-vihidham.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -94,6 +96,11 @@ export const routes: Routes = [
   {
     path: 'vihidham-master',
     component: VihidhamMasterComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'vihidham-category-master',
+    component: VihidhamCateogryMasterComponent,
     canActivate: [authGuard],
   },
   {
@@ -186,7 +193,9 @@ export const routes: Routes = [
   {path:"members-pending-report",component: ReportMemberPendingCreditComponent},
   {path:"non-members-pending-report",component: ReportNonMemberPendingCreditComponent},
   {path:"endowment",component:EndowmentBillingComponent},
+  {path:'report-vihidham',component:ReportVihidhamComponent},
   {path:"Home",component: HomeComponent},
+
   {
     path: '**',
     pathMatch: 'full',

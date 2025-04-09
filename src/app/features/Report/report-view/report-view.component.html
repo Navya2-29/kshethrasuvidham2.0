@@ -43,27 +43,27 @@
           <table>
             <thead>
               <tr>
-                <th>
+                <th class="sino">
                   {{ "Report Name.SINO" | translate }}
                 </th>
-                <th>
+                <th class="name">
                   {{ "NAME" | translate }}
-                </th>
-                <th>
+                </th >
+                <th class=star>
                   {{ "STAR" | translate }}
                 </th>
-                <th>
+                <th claas="qty" >
                   {{ "QUANTITY" | translate }}
                 </th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let entry of group.value; let i = index">
-                <td>{{ i + 1 }}</td>
-                <td>
+                <td class="sino">{{ i + 1 }}</td>
+                <td class="name">
                   {{ entry.Name }}
                 </td>
-                <td>
+                <td class="star">
                   {{ entry.Star }}
                 </td>
                 <td class="qty">

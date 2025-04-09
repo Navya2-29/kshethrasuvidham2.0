@@ -12,89 +12,232 @@
       <span class="material-icons">print</span>
     </button>
     <button mat-icon-button matTooltip="Make PDF">
-      <span class="material-icons" (click)="generatePDFs()">picture_as_pdf</span>
+      <span class="material-icons" (click)="generatePDFs()"
+        >picture_as_pdf</span
+      >
     </button>
   </div>
 
   <div id="print-section">
     <div class="header-print">
-      <h3
-       
-      >
+      <h3>
         {{ templeName }}
       </h3>
-      <h4
-       
-      >
+      <h4>
         {{ templeAddress }}
       </h4>
 
-      <h2
-       
-      >
+      <h2>
         {{ "Report Name.UPI REPORT" | translate }}
       </h2>
-      <p
-        
-      >
+      <p>
         {{ formatDateToDDMMYYYY(fromDate) }} to
         {{ formatDateToDDMMYYYY(toDate) }}
       </p>
-      <hr>
+      <hr />
     </div>
-    
 
     <div class="body-print">
       <div id="pdf-content" *ngIf="filteredData.length > 0">
-  
-      <table>
-        <thead>
-          <tr>
-            <th>{{ "BILL NO" | translate }}</th>
-            <th>{{ "BILLDATE" | translate }}</th>
-            <th>{{ "ID" | translate }}</th>
-            <th>{{ "VAZHIPAD" | translate }}</th>
-            <th>{{ "NAME" | translate }}</th>
-            <th>{{ "QUANTITY" | translate }}</th>
-            <th>{{ "RATE" | translate }}</th>
-            <th>{{ "AMOUNT" | translate }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of data">
-            <td>{{ item.BillNo }}</td>
-            <td>{{ item.BillDate }}</td>
-            <td>{{ item.InstNo }}</td>
-            <td>{{ item.Vazhipad }}</td>
-            <td>{{ item.Name }}</td>
-            <td>{{ item.Qty }}</td>
-            <td class="number">
-              {{ item.Rate | number : "1.2-2" }}
-            </td>
-            <td class="number">
-              {{ item.Amount | number : "1.2-2" }}
-            </td>
+        <div class="vazhipad-upi">
+          <h4 class="tabble-heading">{{"VAZHIPAD" | translate }}</h4>
 
-            <!-- <td>{{ item.Remarks }}</td> -->
-          </tr>
-          <tr>
-            <td colspan="7" class="total">
-              {{"Report Name.GrandTotal" | translate }}:
+          <table>
+            <thead>
+              <tr>
+                <th>{{ "BILL NO" | translate }}</th>
+                <th>{{ "BILLDATE" | translate }}</th>
+                <th>{{ "ID" | translate }}</th>
+                <th>{{"Counter" | translate }}</th>
+                <th>{{ "VAZHIPAD" | translate }}</th>
+                <th>{{ "NAME" | translate }}</th>
+                <th>{{ "QUANTITY" | translate }}</th>
+                <th>{{ "RATE" | translate }}</th>
+                <th>{{ "AMOUNT" | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of filteredData">
+                <td>{{ item.BillNo }}</td>
+                <td>{{ item.BillDate }}</td>
+                <td>{{ item.InstNo }}</td>
+               <td>{{item.CounterId}}</td> 
+                <td>{{ item.Vazhipad }}</td>
+                <td>{{ item.Name }}</td>
+                <td>{{ item.Qty }}</td>
+                <td class="number">
+                  {{ item.Rate | number : "1.2-2" }}
+                </td>
+                <td class="number">
+                  {{ item.Amount | number : "1.2-2" }}
+                </td>
 
-            </td>
-            <td class="total">
-              {{ getTotalAmount() | number : "1.2-2" }}
-            </td>
-            <!-- <td colspan="2"></td> -->
-          </tr>  
-        </tbody>
-       
-      </table>
+                <!-- <td>{{ item.Remarks }}</td> -->
+              </tr>
+              <tr>
+                <td colspan="8" class="total">
+                  {{ "Report Name.TOTAL" | translate }}:
+                </td>
+                <td class="total">
+                  {{ getTotalAmount() | number : "1.2-2" }}
+                </td>
+                <!-- <td colspan="2"></td> -->
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="Nadavaravu">
+          <h4 class="tabble-heading">{{"Nadavaravu" | translate }}</h4>
+          <table>
+            <thead>
+              <tr>
+                <th>{{ "BILL NO" | translate }}</th>
+                <th>{{ "BILLDATE" | translate }}</th>
+                <th>{{ "ID" | translate }}</th>
+                <th>{{"Counter" | translate }}</th>
+                <th>{{ "VAZHIPAD" | translate }}</th>
+                <th>{{ "NAME" | translate }}</th>
+                <th>{{ "QUANTITY" | translate }}</th>
+                <th>{{ "RATE" | translate }}</th>
+                <th>{{ "AMOUNT" | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of filteredNadavaravu">
+                <td>{{ item.BillNo }}</td>
+                <td>{{ item.BillDate }}</td>
+                <td>{{ item.InstNo }}</td>
+                <td>{{item.CounterId}}</td> 
+                <td><span *ngIf="this.lang!='en'">{{ item.NM_RName }}</span><span *ngIf="this.lang=='en'" >{{ item.NM_Name}}</span></td>
+                <td>{{ item.Name }}</td>
+                <td>{{ item.Qty }}</td>
+                <td >
+                  {{ item.Rate?item.Rate:"Nil"  }}
+                </td>
+                <td class="number">
+                  {{ item.Receipt_Amt | number : "1.2-2" }}
+                </td>
+
+                <!-- <td>{{ item.Remarks }}</td> -->
+              </tr>
+              <tr>
+                <td colspan="8" class="total">
+                  {{ "Report Name.TOTAL" | translate }}:
+                </td>
+                <td class="total">
+                  {{ getNadavaravuTotalAmount() | number : "1.2-2" }}
+                </td>
+                <!-- <td colspan="2"></td> -->
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="Credit Collection">
+          <h4 class="tabble-heading">{{"Credit Collection" | translate }}</h4>
+          <table>
+            <thead>
+              <tr>
+                <th>{{ "BILL NO" | translate }}</th>
+                <th>{{ "BILLDATE" | translate }}</th>
+                <th>{{ "ID" | translate }}</th>
+                <th>{{"Counter" | translate }}</th>
+               
+                <th>{{ "VAZHIPAD" | translate }}</th>
+                <th>{{ "NAME" | translate }}</th>
+                <th>{{ "QUANTITY" | translate }}</th>
+                <th>{{ "RATE" | translate }}</th>
+                <th>{{ "AMOUNT" | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of filteredCreditCollection">
+                <td>{{ item.BillNo }}</td>
+                <td>{{ item.BillDate }}</td>
+                <td>{{ item.InstNo }}</td>
+                
+                <td>{{item.CounterId}}</td>
+                <td>{{ item.Vazhipad }}</td>
+                <td>{{ item.Name }}</td>
+                <td>{{ item.Qty }}</td>
+                <td class="number">
+                  {{ item.Rate | number : "1.2-2" }}
+                </td>
+                <td class="number">
+                  {{ item.Amount | number : "1.2-2" }}
+                </td>
+
+                <!-- <td>{{ item.Remarks }}</td> -->
+              </tr>
+              <tr>
+                <td colspan="8" class="total">
+                  {{ "Report Name.TOTAL" | translate }}:
+                </td>
+                <td class="total">
+                  {{ getCreditCollectTotalAmount() | number : "1.2-2" }}
+                </td>
+                <!-- <td colspan="2"></td> -->
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="Fee collection">
+          <h4 class="tabble-heading">{{"FeeCollection" | translate }}</h4>
+          <table>
+            <thead>
+              <tr>
+                <th>{{ "BILL NO" | translate }}</th>
+                <th>{{ "BILLDATE" | translate }}</th>
+                <th>{{ "ID" | translate }}</th>
+                <th>{{"Counter" | translate }}</th>
+                <th>{{ "VAZHIPAD" | translate }}</th>
+                <th>{{ "NAME" | translate }}</th>
+                <th>{{ "QUANTITY" | translate }}</th>
+                <th>{{ "RATE" | translate }}</th>
+                <th>{{ "AMOUNT" | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of filteredFeecollection">
+                <td>{{ item.BillNo }}</td>
+                <td>{{ item.BillDate }}</td>
+                <td>{{ item.InstNo }}</td>
+                <td>{{item.CounterId}}</td> 
+                <td>{{ item.NM_Name }}({{item.Month}})</td>
+                <td>{{ item.Name }}</td>
+                <td>--</td>
+                <td class="number">
+                --
+                </td>
+                <td class="number">
+                  {{ item.Amount | number : "1.2-2" }}
+                </td>
+
+                <!-- <td>{{ item.Remarks }}</td> -->
+              </tr>
+              <tr>
+                <td colspan="8" class="total">
+                  {{ "Report Name.TOTAL" | translate }}:
+                </td>
+                <td class="total">
+                  {{ getFeecollectionTotalAmount() | number : "1.2-2" }}
+                </td>
+                <!-- <td colspan="2"></td> -->
+              </tr>
+            </tbody>
+          </table>
+          <div>
+            <p class="grandtotal" >{{"Report Name.Total Collection" | translate}}:{{ getTotalAmount() +getCreditCollectTotalAmount() +getFeecollectionTotalAmount() +getNadavaravuTotalAmount() |number: '1.2-2' }}</p>
+          </div>
+
+
+        </div>
       </div>
       <div class="nodataFound" *ngIf="filteredData.length === 0">
         <h2></h2>
       </div>
-      <hr />
+      <hr/>
     </div>
   </div>
 </div>

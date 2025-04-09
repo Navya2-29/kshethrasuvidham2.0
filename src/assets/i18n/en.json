@@ -129,7 +129,8 @@
     "SALES ITEM REPORT":"Material Sales Report",
     "MATTINAM REPORT":"Miscellaneous Report",
     "FEE COLLECTION REPORT":"Fee Collection Report",
-    "Credit Collection":"Credit Collection Report"
+    "Credit Collection":"Credit Collection Report",
+    "VIHIDHAM REPORT":"Vihidham Report"
   },
 
   "Report Name": {
@@ -178,6 +179,7 @@
    "Select prathista":"Select Prathishta",
    "Credit Collection":"Credit Collection",
    "Credit Collection Report":"Credit Collection Report",
+   "VIHIDHAM REPORT":"Vihidham Report",
 "CREDITTOTAL":"Total Credit",
    "report-duplicate":"Duplicate Report",
    "Count":"Count",

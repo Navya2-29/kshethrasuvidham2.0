@@ -172,18 +172,24 @@ export class ReportDailystmtComponent {
         <style>
          
           body {
-    font-size: 16px;
-    font-family: "Times New Roman", serif;
+    font-size: 10px;
+    font-family: "Manjari";
+    margin:5px;
   }
           h3,p,h4,h2{
           line-height:1;
           margin-top:0;
           text-align:center;
+          font-family: "Roboto";
+          font-size:12px;
+          margin-bottom:0px;
           }
           .templename{
            line-height:1;
           margin-top:0;
           text-align:center;
+          font-family: "Manjari";
+          font-size:12px;
           }
           hr{
           height:2px;
@@ -192,7 +198,7 @@ export class ReportDailystmtComponent {
             text-align:right;
             }
           .tabble-heading h3{
-  font-family: 'Times New Roman', Times, serif;
+  font-family: "Manjari;
   font-weight: bold;
   font-size: 16px;
   margin: 8px 0 0 0;
@@ -204,14 +210,21 @@ export class ReportDailystmtComponent {
           table, th, td {
             border: 1px solid black;
             text-transform: uppercase;
+            font-family: "Manjari";
+          font-size:12px;
 
           }
             .total,number{
             text-align:right;
+            font-family: "Manjari";
+          font-size:12px;
             }
           th, td {
            padding-left:5px;
             text-align: left;
+             font-family: "Manjari";
+          font-size:10px;
+          border:1px solid gray;
           }
             #print-section{
 padding-bottom: 100px;

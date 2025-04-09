@@ -7,3 +7,6 @@ td, th {
   overflow-wrap: break-word; 
   max-width: 200px;
 }
+i{
+  text-transform: capitalize;
+}

@@ -64,7 +64,12 @@
           <td>{{ item.BillNo }}</td>
           <td>{{ item.BillDate }}</td>
           <td>{{ item.Vazhipad }}</td>
-          <td>{{ item.Name }}</td>
+          <td>{{ item.Name }}
+            <br *ngIf="item.Address1" ><i>{{ item.Address1 }}</i>
+            <br *ngIf="item.Address2"><i>{{ item.Address2 }}</i>
+            <br *ngIf="item.MobileNo">{{ item.MobileNo }}
+
+          </td>
           <td>{{ item.Star || "N/A" }}</td>
           <td>{{ item.Qty }}</td>
           <td>{{ item.Rate }}</td>

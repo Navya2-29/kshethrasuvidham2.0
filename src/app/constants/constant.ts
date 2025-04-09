@@ -6,6 +6,10 @@ export const Constant = {
   // BASE_URL: 'https://panchiyammaapi.suvidham.in/api/KshetramAPI/',
   // BASE_URL: 'https://api.rgstrusttvm.in/api/KshetramAPI/',
   // BASE_URL:'https://api.oolamparaganapthy.in/api/KshetramAPI/',
+  // BASE_URL:'https://api.egmoreayyappantempleapms.in/api/KshetramAPI/',
+  // BASE_URL:'https://api.pisharikavukollam.in/api/KshetramAPI/',
+
+  
   METHODS: {
     // master view
     GET_MASTER: 'ViewMasters',
@@ -29,10 +33,11 @@ export const Constant = {
     // seasonal master
     CREATE_SEASONAL: 'VazhipadSeasonal',
     // vihidhm master
-    GET_ALL_VIHIDHAM: 'getall',
-    CREATE_VIHIDHAM: 'create',
-    UPDATE_VIHIDHAM: 'update',
-    DELETE_VIHIDHAM: 'delete',
+    // GET_ALL_VIHIDHAM: 'getall',
+    CREATE_VIHIDHAM: 'AddVihidhamCategory',
+    CREATE_VIHIDHAMRATE:"AddVihidhamRateMaster",
+    // UPDATE_VIHIDHAM: 'update',
+    DELETE_VIHIDHAM: 'VihidhamCategory',
 
     // BLOcking master
 

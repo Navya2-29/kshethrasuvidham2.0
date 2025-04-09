@@ -19,4 +19,7 @@ Qty?:Number;
 Star?:string;
 Vazhipad?:string;
 NM_RName:string;
+Address1:string;
+Address2:string;
+MobileNo:string;
 }

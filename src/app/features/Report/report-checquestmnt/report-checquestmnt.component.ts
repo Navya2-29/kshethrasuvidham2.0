@@ -61,6 +61,7 @@ export class ReportChecquestmntComponent implements OnInit {
   lang: string | null;
   templeName: string | null;
   templeAddress: string | null;
+  filteredFeecollection:any[]=[];
   constructor(
     private route: ActivatedRoute,
     private ts: TranslateService,
@@ -86,6 +87,8 @@ export class ReportChecquestmntComponent implements OnInit {
       this.fromDate = params['fromDate'];
       this.toDate = params['toDate'];
       this.fetchReportData(type, this.fromDate, this.toDate);
+      this.fetchFeecollectionReportData(type,this. fromDate, this.toDate);
+
     });
   }
 
@@ -108,14 +111,14 @@ export class ReportChecquestmntComponent implements OnInit {
         //     // Compare the two parts: first compare the numerator, then the denominator
         //     return numA - numB || denomA - denomB;
         // });
-        console.log(this.filteredData, 'aaaaaaaaaaaaaaaaaaa');
+        // console.log(this.filteredData, 'aaaaaaaaaaaaaaaaaaa');
 
-        this.dataSource.data = this.filteredData;
-        console.log(this.dataSource.data);
-        this.length = this.filteredData.length;
-        this.dataSource.paginator = this.paginator;
+        // this.dataSource.data = this.filteredData;
+        // console.log(this.dataSource.data);
+        // this.length = this.filteredData.length;
+        // this.dataSource.paginator = this.paginator;
 
-        console.log(this.filteredData);
+        // console.log(this.filteredData);
       },
       error: (error) => {
         console.error('Error fetching report data:', error);
@@ -123,10 +126,51 @@ export class ReportChecquestmntComponent implements OnInit {
     });
   }
 
+  
+  fetchFeecollectionReportData(type: string, fromDate: string, toDate: string): void {
+    const payLoad = {
+      Type: 'FeeCollectRpt',
+      FromDate: fromDate,
+      ToDate: toDate,
+    };
+    this.service.getReport(payLoad).subscribe({
+      next: (data) => {
+       
+        // this.data=data;
+         this.filteredFeecollection = data.filter((item:any) => item.TrnMode === 'CH');   
+      //    this.filteredData = this.filteredData.sort((a:any, b:any) => {
+      //     const [numA, denomA] = a.BillNo.split('/').map(Number);
+      //     const [numB, denomB] = b.BillNo.split('/').map(Number);
+          
+      //     // Compare the two parts: first compare the numerator, then the denominator
+      //     return numA - numB || denomA - denomB;
+      // });
+      // console.log(this.filteredData,"aaaaaaaaaaaaaaaaaaa")  
+
+      //   this.dataSource.data = this.filteredData
+      //   console.log( this.dataSource.data)
+      //   this.length =this.filteredData .length; 
+      //   this.dataSource.paginator = this.paginator;
+        
+      //   console.log(this.filteredData);
+      console.log('Fetched report data fee collect:', this.filteredFeecollection);
+      },
+      error: (error) => {
+        console.error('Error fetching report data:', error);
+      },
+    });
+  }
+
+
+
   getTotalAmount(): number {
     return this.filteredData.reduce((sum, item) => sum + item.Amount, 0);
   }
 
+  getFeecollectionTotalAmount(): number {
+    return this.filteredFeecollection.reduce((sum, item) => sum + item.Amount, 0);
+  }
+ 
   onPageChange(event: PageEvent) {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;

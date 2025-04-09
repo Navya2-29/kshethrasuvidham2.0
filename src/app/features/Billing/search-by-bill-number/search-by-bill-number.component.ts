@@ -780,37 +780,37 @@ return formattedDate
         pageIndex < pages.length - 1 ? 'always' : 'avoid'
       };">
             <!-- Prathista -->
-            <div style="position: absolute; left: 3.5cm; top: 3cm; max-width: 8cm;  white-space: pre-wrap; word-wrap: break-word; line-height: 1em;">${prathista}</div>
+            <div style="position: absolute; left: 4.8cm; top: 2.5cm; max-width: 8cm;  white-space: pre-wrap; word-wrap: break-word;font-size:10pt; line-height: 1em;">${prathista}</div>
             <!-- Vazhipad -->
-            <div style="position: absolute; left: 3.5cm; top: 3.5cm; max-width: 5cm; white-space: pre-wrap;">${vazhipad}</div>
-            <!-- From Date -->
-            <div style="position: absolute; left: 9cm; top: 3cm;">${this.billDate}</div>
-            <!-- Total Quantity -->
-            <div style="position: absolute; left: 9cm; top: 3.5cm;"> ${this.lastBillNo}</div>
+            <div style="position: absolute; left: 4.8cm; top: 3cm; max-width: 5cm; white-space: pre-wrap;font-size:9pt; white-space: pre-wrap;">${vazhipad}</div>
+             <!-- Bill date Date -->
+            <div style="position: absolute; left: 10.9cm; top: 2.5cm;">${this.billDate}</div>
+           <!-- bill Number -->
+            <div style="position: absolute; left: 10.9cm; top: 3cm;"> ${this.lastBillNo}</div>
              <!-- Vazhipad Date -->
-           <div style="position: absolute; left: 5cm; top: 7.3cm;">
+           <div style="position: absolute; left: 4.5cm; top: 7.2cm;">
     ${fromDate != toDate ? `${this.convertDateFormat(fromDate)} to ${this.convertDateFormat(toDate)}` : `${this.convertDateFormat(fromDate)}`}
   </div>
-  ${group.nalBy ? `<div style="position: absolute; left: 10cm; top: 9cm;">- ${group.nalBy},</div>` : ''}
-  ${group.mday ? `<div style="position: absolute; left: 10cm; top: 9.15cm;">- ${group.mday},</div>` : ''}
-  ${group.mmonth ? `<div style="position: absolute; left: 10cm; top:9.3cm;">- ${group.mmonth}</div>` : ''}
-   <div style="position: absolute; left: 3.5cm; top: 8.4cm;">User id:${this.name}  ${this.displayTrnsmode=='CR'?"Not Paid":""}</div>
-<div style="position: absolute; left: 10.5cm; top: 9cm; ; font-size: 10pt;">
+  ${group.nalBy ? `<div style="position: absolute; left: 2cm; top: 8.5cm;">- ${group.nalBy},</div>` : ''}
+  ${group.mday ? `<div style="position: absolute; left: 5cm; top: 8.5cm;">- ${group.mday},</div>` : ''}
+  ${group.mmonth ? `<div style="position: absolute; left: 8cm; top:8.5cm;">- ${group.mmonth}</div>` : ''}
+   <div style="position: absolute; left: 3.5cm; top: 8.4cm;">User:${this.name}  ${this.displayTrnsmode=='CR'?"Not Paid":""}</div>
+<div style="position: absolute; left: 2cm; top: 7.5cm; ; ">
           Duplicate Bill
         </div>
             `
   
         // Render rows in the current page
         page.forEach((item: any, rowIndex: number) => {
-          let rowTop = 5 + rowIndex * 0.7; // Adjust row spacing
+          let rowTop = 4.5 + rowIndex * 0.7; // Adjust row spacing
           const amount = item.Qty * item.Rate;
           grandTotalAmount += amount; // Add the amount to the grand total
           receiptContent += `
-            <div style="position: absolute; left: 0.5cm; top: ${rowTop}cm; max-width: 5.5cm; white-space: pre-wrap; word-wrap: break-word; line-height: 1.2em;">${item.Name}${item.Name2 ? `<div style="margin-top: 0.1mm;">${item.Name2}</div>` : ''}</div>
-            <div style="position: absolute; left: 6.9cm; top: ${rowTop}cm;">${this.getStarbyId(item.Star)}${item.Star2 ? `<div style="margin-top: 0.1mm;">${this.getStarbyId(item.Star2)}</div>` : ''}</div>
-            <div style="position: absolute; left: 9.2cm; top: ${rowTop}cm;">${item.Qty}</div>
-            <div style="position: absolute; left: 10.3cm; top: ${rowTop}cm;">${item.Rate}</div>
-            <div style="position: absolute; left: 11.5cm; top: ${rowTop}cm;">${amount.toFixed(2)}</div>
+            <div style="position: absolute; left: 2cm; top: ${rowTop}cm; max-width: 5.5cm; white-space: pre-wrap; word-wrap: break-word; line-height: 1.2em;">${item.Name}${item.Name2 ? `<div style="margin-top: 0.1mm;">${item.Name2}</div>` : ''}</div>
+            <div style="position: absolute; left: 7.8cm; top: ${rowTop}cm;">${this.getStarbyId(item.Star)}${item.Star2 ? `<div style="margin-top: 0.1mm;">${this.getStarbyId(item.Star2)}</div>` : ''}</div>
+            <div style="position: absolute; left: 10cm; top: ${rowTop}cm;">${item.Qty}</div>
+            <div style="position: absolute; left: 11cm; top: ${rowTop}cm;">${item.Rate}</div>
+            <div style="position: absolute; left: 12.5cm; top: ${rowTop}cm;">${amount.toFixed(2)}</div>
           `;
         });
         // receiptContent += `</div>`; // Close receipt page
@@ -819,7 +819,7 @@ return formattedDate
         // Add grand total at the end of the page
       // const grandTotalTop = 5 + page.length * 0.7 + 1; // Position it below the last row
       receiptContent += `
-        <div style="position: absolute; left: 10.5cm; top: 7.3cm; font-weight: bold; font-size: 15pt;">
+        <div style="position: absolute; left: 11.2cm; top: 8cm; font-weight: bold; font-size: 15pt;">
            ${grandTotalAmount.toFixed(2)}
         </div>
          

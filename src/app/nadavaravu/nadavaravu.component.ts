@@ -1,6 +1,6 @@
 import { ItemMaster } from './../models/item-master.model';
 import { Data } from './../features/Billing/search-by-bill-number/search-by-bill-number.component';
-import { Component, OnInit, Type } from '@angular/core';
+import { Component, inject, OnInit, Type } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -17,6 +17,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { CancelBillRemarkComponent } from '../features/Billing/cancel-bill-remark/cancel-bill-remark.component';
 import { TranslateService } from '@ngx-translate/core';
 import { TranslateModule } from '@ngx-translate/core';
+import { NumberToWordsPipe } from '../shared/pipe/number-to-words.pipe';
 
 @Component({
   selector: 'app-nadavaravu',
@@ -27,9 +28,12 @@ import { TranslateModule } from '@ngx-translate/core';
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
+    
   ],
   templateUrl: './nadavaravu.component.html',
   styleUrl: './nadavaravu.component.css',
+    providers:[NumberToWordsPipe]
+  
 })
 export class NadavaravuComponent implements OnInit {
   nadavaravForm: FormGroup;
@@ -60,6 +64,8 @@ export class NadavaravuComponent implements OnInit {
   lang: string | null;
   todayDate = new Date();
   duplicateBillFlag: boolean = false;
+    private numbertowordpipe=inject(NumberToWordsPipe);
+  
   constructor(
     private fb: FormBuilder,
     private service: MasterService,

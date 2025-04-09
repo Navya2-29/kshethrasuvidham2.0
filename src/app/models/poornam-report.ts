@@ -25,5 +25,8 @@ export interface ReportData {
     Reason?:string;
     vazhipad?:string;
     Canceldt?:string;
+    Address1:string;
+    Address2:string;
+    UName:string;
     // Receipt_Amt?:number
   }

@@ -214,6 +214,7 @@
               <th>{{"feecollection.Month" | translate }}</th>
             
               <th>{{"feecollection.Year" | translate}}</th>
+              <th>{{"AMOUNT" | translate }}</th>
             </tr>
             <tr *ngFor="let item of devoteeFeeeCollectiondetails;let i=index ">
               <td>{{i+1}}</td>
@@ -223,7 +224,7 @@
               <td class="left">{{item.NM_Name}}</td>
               <td class="left">{{item.Month}}</td>
               <td class="left">{{item.Year}}</td>
-              
+              <td class="right" >{{item.Amount}}</td>
             </tr>
           </table>
         </div>
@@ -233,13 +234,13 @@
   
   
 <div id="receipt" style="width: 6in; height: 4in; display: none; position: relative; font-size: 12px; font-family: Arial, sans-serif;">
-  <div style="position: absolute; left: 2cm; top: 3.9cm;">{{ feeCollctionForm.get('ItemType')?.value }}</div>
-  <div style="position: absolute; left: 10cm; top: 3.9cm;">{{ formatDateToDDMMYYYY(todayDate) }}</div>
-  <div style="position: absolute; left: 10cm; top: 4.2cm;">{{ feeCollctionForm.get('BillNo')?.value }}</div>
-  <div style="position: absolute; left: 1.6cm; top: 5.5cm;">{{ feeCollctionForm.get('Name')?.value }}<p>{{feeCollctionForm.get('Address')?.value }}</p></div>
+  <div style="position: absolute; left: 4.8cm; top: 3cm;">{{ feeCollctionForm.get('ItemType')?.value }}</div>
+  <div style="position: absolute; left: 10.9cm; top: 2.5cm;">{{ formatDateToDDMMYYYY(todayDate) }}</div>
+  <div style="position: absolute; left: 10.9cm; top: 3cm;">{{ feeCollctionForm.get('BillNo')?.value }}</div>
+  <div style="position: absolute; left: 2cm; top: 5.5cm;">{{ feeCollctionForm.get('Name')?.value }}<p>{{feeCollctionForm.get('Address')?.value }}</p></div>
   <!-- <div style="position: absolute; left: 6.9cm; top: 5cm;">{{ getStarNameById(nadavaravForm.get('Star')?.value) }}</div> -->
   <!-- <div style="position: absolute; left: 10.5cm; top: 5cm;">{{ feeCollctionForm.get('vazhipadinfo')?.value }}</div> -->
-  <div style="position: absolute; left: 12cm; top: 5.5cm;">{{ feeCollctionForm.get('Amount')?.value  }}</div>
-  <div style="position: absolute;  left: 10cm; top: 8.4cm;">{{ feeCollctionForm.get('totalAmount')?.value  }}</div>
+  <div style="position: absolute; left: 12.5cm; top: 5.5cm;">{{ feeCollctionForm.get('Amount')?.value  }}</div>
+  <div style="position: absolute;  left: 11.2cm; top: 7.1cm;">{{ feeCollctionForm.get('totalAmount')?.value  }}</div>
 </div>
   

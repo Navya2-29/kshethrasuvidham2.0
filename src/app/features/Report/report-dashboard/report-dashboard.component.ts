@@ -223,6 +223,9 @@ if(prathista || vazhipad){
     else if (reportType === 'non-members-pending-report') {
       this.newTab = window.open(`#/non-members-pending-report${queryString}`, '_blank');
     }
+    else if (reportType === 'vihidham') {
+      this.newTab = window.open(`#/report-vihidham${queryString}`, '_blank');
+    }
   }
 
     if (this.newTab) {

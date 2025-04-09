@@ -42,12 +42,15 @@
   <div class="body-print">
     <div id="pdf-content" *ngIf="filteredData.length > 0">
 
+   <div class="vazhipad-upi">
+    <h4 class="tabble-heading">{{"VAZHIPAD" | translate }}</h4>
     <table>
       <thead>
         <tr>
           <th>{{ "BILL NO" | translate }}</th>
           <th>{{ "BILLDATE" | translate }}</th>
           <th>{{ "ID" | translate }}</th>
+          <th>{{"Counter" | translate }}</th>
           <th>{{ "VAZHIPAD" | translate }}</th>
           <th>{{ "NAME" | translate }}</th>
           <th>{{ "QUANTITY" | translate }}</th>
@@ -60,6 +63,7 @@
           <td>{{ item.BillNo }}</td>
           <td>{{ item.BillDate }}</td>
           <td>{{ item.InstNo }}</td>
+          <td>{{item.CounterId}}({{item.UName}})</td>
           <td>{{ item.Vazhipad }}</td>
           <td>{{ item.Name }}</td>
           <td>{{ item.Qty }}</td>
@@ -71,7 +75,7 @@
          
         </tr>
         <tr>
-          <td colspan="7" class="total" >
+          <td colspan="8" class="total" >
             {{"Report Name.GrandTotal" | translate }}:
           </td>
           <td class="total">
@@ -84,6 +88,112 @@
        
       </tfoot>
     </table>
+   </div>
+
+
+
+    <div class="Credit Collection">
+      <h4 class="tabble-heading">{{"Credit Collection" | translate }}</h4>
+      <table>
+        <thead>
+          <tr>
+            <th>{{ "BILL NO" | translate }}</th>
+            <th>{{ "BILLDATE" | translate }}</th>
+            <th>{{ "ID" | translate }}</th>
+            <th>{{"Counter" | translate }}</th>
+           
+            <th>{{ "VAZHIPAD" | translate }}</th>
+            <th>{{ "NAME" | translate }}</th>
+            <th>{{ "QUANTITY" | translate }}</th>
+            <th>{{ "RATE" | translate }}</th>
+            <th>{{ "AMOUNT" | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of filteredCreditCollection">
+            <td>{{ item.BillNo }}</td>
+            <td>{{ item.BillDate }}</td>
+            <td>{{ item.InstNo }}</td>
+            
+            <td>{{item.CounterId}}({{item.UName}})</td>
+            <td>{{ item.Vazhipad }}</td>
+            <td>{{ item.Name }}</td>
+            <td>{{ item.Qty }}</td>
+            <td class="number">
+              {{ item.Rate | number : "1.2-2" }}
+            </td>
+            <td class="number">
+              {{ item.Amount | number : "1.2-2" }}
+            </td>
+
+            <!-- <td>{{ item.Remarks }}</td> -->
+          </tr>
+          <tr>
+            <td colspan="8" class="total">
+              {{ "Report Name.TOTAL" | translate }}:
+            </td>
+            <td class="total">
+              {{ getCreditCollectTotalAmount() | number : "1.2-2" }}
+            </td>
+            <!-- <td colspan="2"></td> -->
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="Fee collection">
+      <h4 class="tabble-heading">{{"FeeCollection" | translate }}</h4>
+      <table>
+        <thead>
+          <tr>
+            <th>{{ "BILL NO" | translate }}</th>
+            <th>{{ "BILLDATE" | translate }}</th>
+            <th>{{ "ID" | translate }}</th>
+            <th>{{"Counter" | translate }}</th>
+            <th>{{ "VAZHIPAD" | translate }}</th>
+            <th>{{ "NAME" | translate }}</th>
+            <th>{{ "QUANTITY" | translate }}</th>
+            <th>{{ "RATE" | translate }}</th>
+            <th>{{ "AMOUNT" | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of filteredFeecollection">
+            <td>{{ item.BillNo }}</td>
+            <td>{{ item.BillDate }}</td>
+            <td>{{ item.InstNo }}</td>
+            <td>{{item.CounterId}}({{item.UName}})</td> 
+            <td>{{ item.NM_Name }}({{item.Month}})</td>
+            <td>{{ item.Name }}</td>
+            <td>--</td>
+            <td class="number">
+            --
+            </td>
+            <td class="number">
+              {{ item.Amount | number : "1.2-2" }}
+            </td>
+
+            <!-- <td>{{ item.Remarks }}</td> -->
+          </tr>
+          <tr>
+            <td colspan="8" class="total">
+              {{ "Report Name.TOTAL" | translate }}:
+            </td>
+            <td class="total">
+              {{ getFeecollectionTotalAmount() | number : "1.2-2" }}
+            </td>
+            <!-- <td colspan="2"></td> -->
+          </tr>
+        </tbody>
+      </table>
+      <div>
+        <p class="grandtotal" >{{"Report Name.Total Collection" | translate}}:{{ getTotalAmount() +getCreditCollectTotalAmount() +getFeecollectionTotalAmount() +getNadavaravuTotalAmount() |number: '1.2-2' }}</p>
+      </div>
+    </div>
+
+
+
+
     </div>
     <div class="nodataFound" *ngIf="filteredData.length === 0">
       <h2></h2>

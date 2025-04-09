@@ -170,16 +170,16 @@ export class VazhipadBlockingComponent {
 
 getIdofNakshthra(star: string): number | undefined {
     const stars = this.nakshatham.find(m => m.name === star);
-    return stars ? stars.id : "";
+    return stars ? stars.id :Number("") ;
   }
 
 getIdOfDay(day: string): number | undefined {
   const days = this.toppingList.find(m => m.DayEng === day);
-  return days ? days.id : "";
+  return days ? days.id : Number("");
 }
 getIdofMonth(mmonEng: string): number | undefined {
   const month = this.mMonthList.find(m => m.mmonEng === mmonEng);
-  return month ? month.id : "";
+  return month ? month.id : Number("");
 }
 
 

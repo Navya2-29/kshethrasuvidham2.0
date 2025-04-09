@@ -14,6 +14,10 @@ export interface NadavaravReport{
     category:string;
     unit:string;
     weight:string;
+    Rate:number;
+    Vazhipad:string;
+    Address1:string;
+    
 }
 
 

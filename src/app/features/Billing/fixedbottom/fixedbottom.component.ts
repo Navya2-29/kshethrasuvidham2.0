@@ -119,14 +119,12 @@ export class FixedbottomComponent implements OnInit {
     this.logo=localStorage.getItem('Logo');
     this.name=localStorage.getItem('name');
     if(this.logo){
-     
       this.templeLogoUrl=window.location.origin + `/assets/images/${this.logo}`;
       console.log( this.templeLogoUrl,"url img")
     }
     this.currentDate = this.getCurrentDateMMYY();
     this.getLastBillNumber();
     this.loggedInUserLastBillNumber();
-
     const today = this.getFormattedDate(new Date());
     console.log(this.currentBillNumber);
     this.customerdetailsForBillingForm = this.fb.group({
@@ -153,10 +151,10 @@ export class FixedbottomComponent implements OnInit {
 
   ngOnInit(): void {
     this.getTodayCollection();
+    this.loadLogoAsBase64();
     this.totalService.totalAmount$.subscribe((amount) => {
       this.totalAmount = amount;
     });
-
     this.refreshSubscription = this.receiptPrinrservice.refreshData$.subscribe(() => {
       this.refreshData();
     });
@@ -215,6 +213,7 @@ export class FixedbottomComponent implements OnInit {
     return `${month}${year}`;
   }
 
+
   getLastBillNumber() {
     this.masterService.getLastBillNumber().subscribe({
       next: (data) => {
@@ -262,7 +261,9 @@ export class FixedbottomComponent implements OnInit {
       else if(this.printerLayOut=="dotMetrix"){
         this.printReceiptsDotmetrix(data);
       }
-     
+     else if(this.printerLayOut=="lasera5"){
+      this.laserReciptPrinter(data)
+     }
       this.getTodayCollection();
       console.log(data, 'printing details');
     });
@@ -342,18 +343,18 @@ console.log(data,"dot metrix checkingkkkkkk")
           <div style="position: absolute; left: 4.8cm; top: 2.5cm; max-width: 8cm; font-size:10pt; white-space: pre-wrap; word-wrap: break-word;">${prathista}</div>
           <!-- Vazhipad -->
           <div style="position: absolute; left: 4.8cm; top: 3cm; max-width: 5cm;font-size:9pt; white-space: pre-wrap;">${vazhipad}</div>
-          <!-- From Date -->
+          <!-- Bill date Date -->
           <div style="position: absolute; left: 10.9cm; top: 2.5cm;">${Billdate}</div>
-          <!-- Total Quantity -->
+          <!-- bill Number -->
           <div style="position: absolute; left: 10.9cm; top: 3cm;"> ${BillNo}</div>
-           <!-- Vazhipad Date -->
+           <!-- vazhipad date -->
          <div style="position: absolute; left: 4.5cm; top: 7.2cm;">
   ${fromDate != toDate ? `${this.convertDateFormat(fromDate)} to ${this.convertDateFormat(toDate)}` : `${this.convertDateFormat(fromDate)}`}
 </div>
 ${group.nalBy ? `<div style="position: absolute; left: 2cm; top: 8.5cm;">- ${group.nalBy},</div>` : ''}
 ${group.mday ? `<div style="position: absolute; left: 5cm; top: 8.5cm;">- ${group.mday},</div>` : ''}
 ${group.mmonth ? `<div style="position: absolute; left: 8cm; top:8.5cm;">- ${group.mmonth}</div>` : ''}
- <div style="position: absolute; left: 2cm; top: 7.5cm;font-size:8pt">User:${this.name}  ${Trnsmode=='CR'?"Not Paid":""}</div>
+ <div style="position: absolute; left: 2cm; top: 7.5cm;font-size:8pt">User:${this.name},${this.getTransactionType(Trnsmode)}, ${Trnsmode=='CR'?"Not Paid":""}</div>
           `
 
       // Render rows in the current page
@@ -603,21 +604,49 @@ getTransactionType(transmode: string): string {
   console.log(transmode);
   switch (transmode) {
     case 'ON':
-      return 'Bank';
-    case 'CS':
-      return 'CASH';
-    case 'MO':
-      return 'MONEY ORDER';
-    case 'UP':
-      return 'UPI';
-    case 'CH':
-      return 'CHEQUE';
-    case 'CR':
-      return 'Cash not paid';
-      
-    case 'DE':
-      return 'DEBIT';
+      if (this.lang == 'en') {
+        return 'ONLINE';
+      } else {
+        return 'ഓൺലൈൻ';
+      }
 
+    case 'CS':
+      if (this.lang == 'en') {
+        return 'CASH';
+      } else {
+        return 'ക്യാഷ്';
+      }
+    case 'MO':
+      if (this.lang == 'en') {
+        return 'MONEY ORDER';
+      } else {
+        return 'മണി ഓർഡർ';
+      }
+    case 'UP':
+      if (this.lang == 'en') {
+        return 'UPI';
+      } else {
+        return 'യുപിഐ';
+      }
+
+    case 'CH':
+      if (this.lang == 'en') {
+        return 'CHEQUE';
+      } else {
+        return 'ചെക്ക്';
+      }
+    case 'CR':
+      if (this.lang == 'en') {
+        return 'CREDIT';
+      } else {
+        return 'ക്രെഡിറ്റ്';
+      }
+    case 'DE':
+      if (this.lang == 'en') {
+        return 'DEBIT';
+      } else {
+        return 'ഡെബിറ്റ്';
+      }
     default:
       return 'OTHERS';
   }
@@ -847,7 +876,7 @@ getTransactionType(transmode: string): string {
       Instno: '',
       Instdate: today,
       InstBank: '',
-      Memberid: '1',
+      Memberid: '0',
       PaidStatus: 'Y',
       Mobile: '', 
       Address1: '',
@@ -1467,6 +1496,211 @@ getdevoteeDetailsforBiling(){
 }
 
 
+ 
+  laserReciptPrinter(data: any) {
+    console.log(data,"laser print checking");
+      const { BillNo, Billdate, vazhipadinfo ,Trnsmode} = data;
+      this.differentDateArray = [];
+      vazhipadinfo.forEach((item:any) => {
+              this.differentDateArray.push(item); 
+      });
+    
+      console.log("Same Date Array:", this.sameDateArray);
+      console.log("Different Date Array:", this.differentDateArray);
+    
+      if (this.differentDateArray.length > 0) {
+      // Group data by Prathista, Vazhipad, and From Date
+      const groupedData = this.differentDateArray.reduce((acc: any, item: any) => {
+        const key = `${item.Prethista}/${item.Vazhipad}/${item.FromDate}/${item.ToDate}`;
+        if (!acc[key]) {
+          acc[key] = { items: [], totalQty: 0, uniqueNames: new Set(), nalBy: '', mday: '', thithi: '',mmonth:'' };
+        }
+        acc[key].items.push(item);
+        acc[key].totalQty += parseInt(item.Qty, 10);
+        acc[key].uniqueNames.add(item.Name);
+    
+    
+      // Check if NalBy, Mday, or Thithi has data and store it
+      if (item.NalBy) acc[key].nalBy = item.NalBy;
+      if (item.Mday) acc[key].mday = item.Mday;
+      if (item.SearchBy) acc[key].thithi = item.SearchBy;
+      if (item.Mmonth) acc[key].mmonth = item.Mmonth;
+    
+        return acc;
+      }, {});
+    
+      const maxRowsPerPage = 6; // Maximum rows per page
+      let allReceiptsContent = '';
+      // Variable to store the total amount of all pages
+    
+      Object.keys(groupedData).forEach((key) => {
+        const group = groupedData[key];
+        const [prathista, vazhipad, fromDate,toDate] = key.split('/');
+        const items = group.items;
+        let grandTotalAmount = 0;
+        // Group items by Name to sum Qty and avoid repetition
+        const nameGroupedItems = items.reduce((nameAcc: any, item: any) => {
+          if (!nameAcc[item.Name]) {
+            nameAcc[item.Name] = {
+              ...item,
+              Qty: 0, // Initialize Qty sum
+            };
+          }
+          nameAcc[item.Name].Qty += parseInt(item.Qty, 10); // Sum Qty for the same Name
+          return nameAcc;
+        }, {});
+    
+        // Convert grouped by Name items into an array
+        const uniqueNamesItems = Object.values(nameGroupedItems);
+    
+        // Split items into pages
+        const pages = [];
+        for (let i = 0; i < uniqueNamesItems.length; i += maxRowsPerPage) {
+          pages.push(uniqueNamesItems.slice(i, i + maxRowsPerPage));
+        }
+    
+        // Render each page
+        pages.forEach((page, pageIndex) => {
+          let grandTotalAmount = 0;
+  
+          let receiptContent = `
+<div class="receipt-page" style="${pageIndex < pages.length - 1 ? 'page-break-after: always;' : ''}">
+              <!-- Header with logo and temple info -->
+              <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                <img src="${this.templeLogoUrl}" alt="Temple Logo" style="height: 60px; margin-right: 10px;">
+                <div style="font-size: 11pt;">
+                  <div style="text-align:center;"><strong>${this.templeName}</strong></div>
+                  <div style="text-align:center;">${this.templeAddress}</div>
+                 
+                </div>
+              </div>
+  
+              <!-- Receipt Header Info (Left/Right Split) -->
+              <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 10pt;">
+                <div>
+                  <div><strong>Prathista:</strong> ${prathista}</div>
+                  <div><strong>Vazhipad:</strong> ${vazhipad}</div>
+                </div>
+                <div style="text-align: right;">
+                  <div><strong>Bill No:</strong> ${BillNo}</div>
+                  <div><strong>Bill Date:</strong> ${Billdate}</div>
+                </div>
+              </div>
+  
+              <!-- Date Range -->
+              <div style="margin-bottom: 10px; font-size: 10pt;">
+                <strong>Vazhipad Date:</strong> ${fromDate != toDate ? `${this.convertDateFormat(fromDate)} to ${this.convertDateFormat(toDate)}` : `${this.convertDateFormat(fromDate)}`}<br>
+                ${group.nalBy ? `<strong>Nal By:</strong> ${group.nalBy}<br>` : ''}
+                ${group.mday ? `<strong>Mday:</strong> ${group.mday}<br>` : ''}
+                ${group.mmonth ? `<strong>Mmonth:</strong> ${group.mmonth}<br>` : ''}
+              </div>
+  
+              <!-- Table -->
+              <table style="width: 100%; border-collapse: collapse; font-size: 10pt;" border="1">
+                <thead>
+                  <tr>
+                    <th style="padding: 4px;">Name</th>
+                    <th style="padding: 4px;">Star</th>
+                    <th style="padding: 4px;">Qty</th>
+                    <th style="padding: 4px;">Rate</th>
+                    <th style="padding: 4px;">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+          `;
+  
+          page.forEach((item: any) => {
+            const amount = item.Qty * item.Rate;
+            grandTotalAmount += amount;
+  
+            receiptContent += `
+              <tr>
+                <td style="padding: 4px;">${item.Name}${item.Name2 ? `<br>${item.Name2}` : ''}</td>
+                <td style="padding: 4px;">${this.getStarbyId(item.Star)}${item.Star2 ? `<br>${this.getStarbyId(item.Star2)}` : ''}</td>
+                <td style="padding: 4px; text-align:center;">${item.Qty}</td>
+                <td style="padding: 4px; text-align:right;">${item.Rate}</td>
+                <td style="padding: 4px; text-align:right;">${amount.toFixed(2)}</td>
+              </tr>
+            `;
+          });
+  
+          receiptContent += `
+                </tbody>
+              </table>
+  
+              <div style="margin-top: 5px; font-weight: bold; text-align: right;">
+                Grand Total: ₹${grandTotalAmount.toFixed(2)}
+              </div>
+              <div style="margin-top: 5px; font-style: italic;">
+                In Words: ${this.numbertowordpipe.transform(grandTotalAmount)} Rupees
+              </div>
+            </div> <!-- End of receipt-page -->
+          `;
+  
+          allReceiptsContent += receiptContent;
+        });
+        
+    });
+    
+      const printContent = `
+      <html>
+        <head>
+        
+          <style>
+             body {
+              margin: 0;
+              padding: 0;
+              font-family: Arial, sans-serif;
+              font-size: 10pt;
+            }
+            .receipt-page {
+              position: relative;
+              width:210mm;
+              height: 148mm; 
+              margin: 0 auto;
+              padding:0 10mm;
+              box-sizing: border-box;
+              overflow: hidden;
+              page-break-after: auto;
+              border: 1px solid #ccc;
+            }
+            table, th, td {
+              border: 1px solid black;
+            }
+          </style>
+        </head>
+        <body>
+          ${allReceiptsContent}
+        </body>
+      </html>
+    `;
+      const printWindow = window.open('', '_blank', 'width=800,height=600');
+      if (printWindow) {
+        printWindow.document.open();
+        printWindow.document.write(printContent);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
+        this.resetForm()
+      }
+    }
+    
+    }
 
+
+
+
+    loadLogoAsBase64() {
+      fetch('assets/images/temple-logo.png') // this path is correct
+        .then(res => res.blob())
+        .then(blob => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            this.templeLogoUrl = reader.result as string; // Base64 encoded string
+          };
+          reader.readAsDataURL(blob);
+        });
+    }
 
 }

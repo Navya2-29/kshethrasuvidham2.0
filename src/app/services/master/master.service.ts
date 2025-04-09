@@ -230,6 +230,7 @@ this.userId=localStorage.getItem('LoginId');
       VM_SMS: obj.VM_SMS ? 'Y' : 'N',
       VM_Whatsapp: obj.VM_Whatsapp ? 'Y' : 'N',
       VM_Sales:obj.VM_Sales ? 'Y':'N',
+      VM_Donation:obj.VM_Donation?'Y':"N",
       prathistainfo: obj.prathistainfo,
     };
     console.log(payLoad,"create vmaster last data")
@@ -279,6 +280,7 @@ this.userId=localStorage.getItem('LoginId');
       VM_SMS: obj.VM_SMS ? 'Y' : 'N',
       VM_Whatsapp: obj.VM_Whatsapp ? 'Y' : 'N',
       VM_Sales:obj.VM_Sales ? 'Y':'N',
+      VM_Donation:obj.VM_Donation?"Y":"N",
       prathistainfo: obj.prathistainfo,
     };
     console.log(payLoad,"update payload");
@@ -447,13 +449,19 @@ this.userId=localStorage.getItem('LoginId');
   // vihidham master
 
   //// get list vihidham master
-  getVihidhamMaster(): Observable<any[]> {
-    return this.http.get<any[]>(
-      Constant.BASE_URL + Constant.METHODS.GET_ALL_VIHIDHAM
+  getVihidhamMaster(payLoad:any): Observable<any[]> {
+    return this.http.post<any[]>(
+      Constant.BASE_URL + Constant.METHODS.GET_MASTER,payLoad
     );
   }
 
   // create  vihidham master
+  createrateVihidhamMaster(data: any): Observable<any> {
+    return this.http.post<any>(
+      Constant.BASE_URL + Constant.METHODS.CREATE_VIHIDHAMRATE,
+      data
+    );
+  }
   createVihidhamMaster(data: any): Observable<any> {
     return this.http.post<any>(
       Constant.BASE_URL + Constant.METHODS.CREATE_VIHIDHAM,
@@ -461,17 +469,17 @@ this.userId=localStorage.getItem('LoginId');
     );
   }
 
-  // update  vihidham master
-  updateVihidhamMaster(id: string, obj: any): Observable<any> {
-    return this.http
-      .put<any>(Constant.BASE_URL + Constant.METHODS.UPDATE_VIHIDHAM + id, obj)
-      .pipe(catchError(this.errorHandler));
-  }
+  // // update  vihidham master
+  // updateVihidhamMaster(id: string, obj: any): Observable<any> {
+  //   return this.http
+  //     .put<any>(Constant.BASE_URL + Constant.METHODS.UPDATE_VIHIDHAM + id, obj)
+  //     .pipe(catchError(this.errorHandler));
+  // }
 
   // delete  vihidham master
   deleteVihidhamMaster(id: string): Observable<any> {
     return this.http
-      .delete<any>(Constant.BASE_URL + Constant.METHODS.DELETE_VIHIDHAM + id)
+      .delete<any>(Constant.BASE_URL + Constant.METHODS.CREATE_VIHIDHAM + id)
       .pipe(catchError(this.errorHandler));
   }
 

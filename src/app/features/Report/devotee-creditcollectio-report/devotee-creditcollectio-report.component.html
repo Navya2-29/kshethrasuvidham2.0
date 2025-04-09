@@ -34,7 +34,7 @@
     <div class="body-print">
       <div id="pdf-content" >
 
-        <div class="devoteecreditdata" *ngIf="data.length > 0">
+        <div class="devoteecreditdata">
           <h4 class="tabble-heading" > {{"Report Name.Member Credit Collection"| translate}} </h4>
       <table>
         <thead>
@@ -96,20 +96,14 @@
     </thead>
     <tbody>
       <tr *ngFor="let item of allCreditdata">
-        
+       
         <td>{{ item.BillDate }}</td>
         <td>{{ item.BillNo }}</td>
         <td>{{item.VazhiDate}}</td>
         <td>{{item.Vazhipad}}</td>
         <td>{{item.Name}}</td>
-        <td>{{item.MobileNo}}</td>
-       
+        <td>{{item.MobileNo}}</td> 
         <td class="number" >{{ item.Amount | number: '1.2-2'}}</td>
-        
-   
-    
-       
-        
         <!-- <td>{{ item.Remarks }}</td> -->
       </tr>
       <tr>
@@ -117,11 +111,8 @@
         <td class="total">{{ getTotalAmount() | number: '1.2-2' }}</td>
         <!-- <td colspan="2"></td> -->
       </tr>
-
     </tbody>
-   
   </table>
-
 <div>
   <p class="grandtotal" >{{"Report Name.Total Collection" | translate}}:{{ getTotalAmount() +getGrandTotal() | number: '1.2-2' }}</p>
 </div>

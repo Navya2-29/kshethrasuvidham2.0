@@ -318,49 +318,125 @@ this.ts.use(this.lang || 'en');
         <title>Print</title>
         <style>
          
+           @media print {
+            body {
+              margin: 20px 20px 20px 10px; /* top, right, bottom, left */
+            }
+
+            .page-break {
+              page-break-before: always;
+              margin-top: 30px;
+              padding-top:30px;
+            }
+          }
+
           body {
-    font-size: 16px;
-    font-family: "Times New Roman", serif;
-  }
-    
-          p,h4,h2{
+            font-family: Manjari, sans-serif;
+            margin: 20px 20px 20px 10px;
+          }
+     .templename{
           line-height:1;
-          margin-top:0;
+          margin-top:10;
+          text-align:center;
+          font-family:Manjari;
+          font-size:14px;
+          font-weight:normal;
+          margin-bottom:0;
           text-align:center;
           }
-          .templename{
-           line-height:1;
-          margin-top:0;
+          h4{
+          
+          margin-top:3px;
           text-align:center;
+           font-family:Manjari;
+          font-size:10px;
+           margin-bottom:0;
+           font-weight:bold;
           }
+          h2{
+          margin-top:5px;
+          text-align:center;
+          font-family:Manjari;
+          font-size:14px;
+          margin-bottom:0;
+          font-weight:bold;
+          }
+          p{
+           margin-top:5px;
+          text-align:center;
+          font-family:Manjari;
+          font-size:10px;
+          margin-bottom:0;
+          font-weight:normal;
+          }
+         
           hr{
           height:2px;
           background-color:gray;
           }
           .tabble-heading h3{
-  font-family: 'Times New Roman', Times, serif;
+  font-family: Manjari;
   font-weight: bold;
-  font-size: 16px;
-  margin: 8px 0 0 0;
+  font-size: 12px;
+  margin: 10px 0 10px 10px;
 }
+.tabble-heading {
+  page-break-inside: avoid;
+  break-inside: avoid;
+  margin-top: 10px;
+}
+
+
+
           table {
-            width: 100%;
+           min-width: 100%;
             border-collapse: collapse;
+            margin:5px 10px 10px 10px;
+            
           }
-          table, th, td {
+          table, th{
             border: 1px solid black;
             text-transform: uppercase;
-
+            font-size:10px;
+            font-weight:bold;
+            padding:3px;
+            font-family:Manjari;
           }
-            .number,.total{
-            text-align:right;
-            }
+
+          table, td {
+            border: 1px solid black;
+            text-transform: uppercase;
+            font-size:10px;
+            font-weight:normal;
+            padding:5px;
+            font-family:Manjari;
+            
+   vertical-align: top;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+          }
+           
           th, td {
-           padding-left:5px;
             text-align: left;
           }
+            .sino{
+            width:10%
+            }
+            .name{
+            width:40%
+            }
+            .star{
+            width:35%;
+
+            }
+            .qty{
+            width:15%
+            }
+
             #print-section{
 padding-bottom: 100px;
+margin-top:10px;
   }
         </style>
       </head>
