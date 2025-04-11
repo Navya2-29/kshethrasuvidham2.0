@@ -21,6 +21,7 @@ import { ReportDailyStmt } from '../../../models/dailytrasaction.model';
 
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PrintreportService } from '../../../shared/service/printreport.service';
+import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 
 // Fix TypeScript issues with `vfs`
 // (pdfMake as any).setVfs(pdfFonts.pdfMake.vfs);
@@ -36,28 +37,18 @@ import { PrintreportService } from '../../../shared/service/printreport.service'
     MatFormFieldModule,
     MatInputModule,
     TranslateModule,
+    SpinnerComponent
   ],
   templateUrl: './report-dailystmnt-transaction.component.html',
   styleUrls: ['./report-dailystmnt-transaction.component.css','/src/assets/styles/report.style.css']
 })
 export class ReportDailystmntTransactionComponent {
-  displayedColumns: string[] = [
-    'BillDate',
-    'Vazhipad',
-    'Qty',
-    'Rate',
-    'Amount',
-    'TrnsMode',
-  ];
-  dataSource = new MatTableDataSource<ReportDailyStmt>();
-  length = 0;
-  pageSize = 10;
-  pageSizeOptions: number[] = [10, 50, 100, 200, 300, 500, 1000];
-  pageIndex = 0;
+  
   data: ReportDailyStmt[] = [];
   fromDate: string;
   toDate: string;
   creditTransactionArray:any[];
+  loading:boolean;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   groupedData: { 
     [trnsMode: string]: { 
@@ -116,11 +107,7 @@ export class ReportDailystmntTransactionComponent {
 
 
   getCreditReport(fromdate:string,toDate:string){
-    // const nonmemberpayload = {
-    //   Type: "pendingCreditCollect",
-    //   FromDate: fromdate,
-    //   ToDate: toDate,
-    // };
+   
     const meberpayLoad ={
       Type: "CreditCollect",
       FromDate: fromdate,
@@ -132,19 +119,18 @@ export class ReportDailystmntTransactionComponent {
         console.log(this.creditTransactionArray,"crediiiii");
    
     });
-
   }
 
   getCrediTransactionTotal(){
     if(this.creditTransactionArray.length>0){
       return this.creditTransactionArray.reduce((sum, item) => sum + item.Amount, 0);
-
     }
  
   }
 
   // Call your API service to get the report data
   fetchReportData(type: string, fromDate: string, toDate: string): void {
+    this.loading=true
     const payLoad = {
       Type: type,
       FromDate: fromDate,
@@ -155,6 +141,7 @@ export class ReportDailystmntTransactionComponent {
         console.log('Fetched report data:', data);
         this.data = data;
         this.groupDataByTransactionModeAndCategory()
+        this.loading=false
         // this.data = data.sort((a: any, b: any) => {
         //   const [numA, denomA] = a.BillNo.split('/').map(Number);
         //   const [numB, denomB] = b.BillNo.split('/').map(Number);
@@ -162,9 +149,7 @@ export class ReportDailystmntTransactionComponent {
         // Compare the two parts: first compare the numerator, then the denominator
         // return numA - numB || denomA - denomB;
         // });
-        this.dataSource.data = this.data;
-        this.length = data.length;
-        this.dataSource.paginator = this.paginator;
+       
 
         console.log(this.groupedData);
       },
@@ -279,10 +264,10 @@ export class ReportDailystmntTransactionComponent {
   this.reportPrintservice.generatePDF();
   }
 
-  onPageChange(event: PageEvent) {
-    this.pageIndex = event.pageIndex;
-    this.pageSize = event.pageSize;
-  }
+  // onPageChange(event: PageEvent) {
+  //   this.pageIndex = event.pageIndex;
+  //   this.pageSize = event.pageSize;
+  // }
 
   goBack(): void {
     console.log('Going back...'); // Log to verify method execution
@@ -512,10 +497,10 @@ export class ReportDailystmntTransactionComponent {
     return wrappedText;
   }
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-  }
+  // applyFilter(event: Event) {
+  //   const filterValue = (event.target as HTMLInputElement).value;
+  //   this.dataSource.filter = filterValue.trim().toLowerCase();
+  // }
 
   formatDateToDDMMYYYY(date: string): string {
     const [year, month, day] = date.split('-');
@@ -526,9 +511,9 @@ export class ReportDailystmntTransactionComponent {
     switch (transmode) {
       case 'ON':
         if (this.lang == 'en') {
-          return 'ONLINE';
+          return 'BANK';
         } else {
-          return 'ഓൺലൈൻ';
+          return 'ബാങ്ക്';
         }
 
       case 'CS':

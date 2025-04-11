@@ -99,7 +99,8 @@
     "Description": "Description",
     "COUNTERID":"Counter Id",
     "ITEM":"Item",
-    "Endowment":"Endowment"
+    "Endowment":"Endowment",
+    "BANK":"Bank"
   },
   "OPTIONS": {
     "TIME1": "Any Time",

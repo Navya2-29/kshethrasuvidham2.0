@@ -19,6 +19,8 @@ import { MatInputModule } from '@angular/material/input';
 import puppeteer from 'puppeteer';
 import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { PrintreportService } from '../../../shared/service/printreport.service';
+import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 @Component({
   selector: 'app-report-checquestmnt',
   standalone: true,
@@ -31,6 +33,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     MatTooltipModule,
     MatFormFieldModule,
     MatInputModule,
+    SpinnerComponent,
   ],
   templateUrl: './report-checquestmnt.component.html',
   styleUrls: [
@@ -62,12 +65,16 @@ export class ReportChecquestmntComponent implements OnInit {
   templeName: string | null;
   templeAddress: string | null;
   filteredFeecollection:any[]=[];
+  loading:boolean;
   constructor(
     private route: ActivatedRoute,
     private ts: TranslateService,
     private service: ReportService,
     private router: Router,
-    private http: HttpClient
+    private http: HttpClient,
+        private reportPrintservice:PrintreportService,
+     
+
   ) {
     this.lang = localStorage.getItem('Language');
     this.templeName =
@@ -94,6 +101,7 @@ export class ReportChecquestmntComponent implements OnInit {
 
   // Call your API service to get the report data
   fetchReportData(type: string, fromDate: string, toDate: string): void {
+    this.loading=true;
     const payLoad = {
       Type: 'Cheque',
       FromDate: fromDate,
@@ -119,6 +127,7 @@ export class ReportChecquestmntComponent implements OnInit {
         // this.dataSource.paginator = this.paginator;
 
         // console.log(this.filteredData);
+        this.loading=false;
       },
       error: (error) => {
         console.error('Error fetching report data:', error);
@@ -128,6 +137,7 @@ export class ReportChecquestmntComponent implements OnInit {
 
   
   fetchFeecollectionReportData(type: string, fromDate: string, toDate: string): void {
+    this.loading=true;
     const payLoad = {
       Type: 'FeeCollectRpt',
       FromDate: fromDate,
@@ -154,6 +164,7 @@ export class ReportChecquestmntComponent implements OnInit {
         
       //   console.log(this.filteredData);
       console.log('Fetched report data fee collect:', this.filteredFeecollection);
+      this.loading=false;
       },
       error: (error) => {
         console.error('Error fetching report data:', error);
@@ -406,91 +417,93 @@ export class ReportChecquestmntComponent implements OnInit {
   // }
 
   generatePDF() {
-    const printContent = document.getElementById('print-section');
-    if (!printContent) {
-      console.error('No content found to print');
-      return;
-    }
 
-    const WindowPrt = window.open('', '', 'width=800,height=600');
+this.reportPrintservice.generatePDF();
+//     const printContent = document.getElementById('print-section');
+//     if (!printContent) {
+//       console.error('No content found to print');
+//       return;
+//     }
 
-    // Check if the print window was successfully opened
-    if (!WindowPrt) {
-      console.error(
-        'Unable to open print window. Please check pop-up blockers.'
-      );
-      return;
-    }
+//     const WindowPrt = window.open('', '', 'width=800,height=600');
 
-    WindowPrt.document.write(`
-    <html>
-      <head>
-        <title>Print</title>
-        <style>
+//     // Check if the print window was successfully opened
+//     if (!WindowPrt) {
+//       console.error(
+//         'Unable to open print window. Please check pop-up blockers.'
+//       );
+//       return;
+//     }
+
+//     WindowPrt.document.write(`
+//     <html>
+//       <head>
+//         <title>Print</title>
+//         <style>
          
-          body {
-    font-size: 16px;
-    font-family: "Times New Roman", serif;
-  }
-          h3,p,h4,h2{
-          line-height:1;
-          margin-top:0;
-          text-align:center;
-          }
-          .templename{
-           line-height:1;
-          margin-top:0;
-          text-align:center;
-          }
-          hr{
-          height:2px;
-          }
-          .number,.total{
-            text-align:right;
-            }
-          .tabble-heading h3{
-  font-family: 'Times New Roman', Times, serif;
-  font-weight: bold;
-  font-size: 16px;
-  margin: 8px 0 0 0;
-}
-          table {
-            width: 100%;
-            border-collapse: collapse;
-          }
-          table, th, td {
-            border: 1px solid black;
-            text-transform: uppercase;
+//           body {
+//     font-size: 16px;
+//     font-family: "Times New Roman", serif;
+//   }
+//           h3,p,h4,h2{
+//           line-height:1;
+//           margin-top:0;
+//           text-align:center;
+//           }
+//           .templename{
+//            line-height:1;
+//           margin-top:0;
+//           text-align:center;
+//           }
+//           hr{
+//           height:2px;
+//           }
+//           .number,.total{
+//             text-align:right;
+//             }
+//           .tabble-heading h3{
+//   font-family: 'Times New Roman', Times, serif;
+//   font-weight: bold;
+//   font-size: 16px;
+//   margin: 8px 0 0 0;
+// }
+//           table {
+//             width: 100%;
+//             border-collapse: collapse;
+//           }
+//           table, th, td {
+//             border: 1px solid black;
+//             text-transform: uppercase;
 
-          }
-            .total,number{
-            text-align:right;
-            }
-          th, td {
-           padding-left:5px;
-            text-align: left;
-          }
-            #print-section{
-padding-bottom: 100px;
-  }
+//           }
+//             .total,number{
+//             text-align:right;
+//             }
+//           th, td {
+//            padding-left:5px;
+//             text-align: left;
+//           }
+//             #print-section{
+// padding-bottom: 100px;
+//   }
        
     
-    .page-break {
-      page-break-before: always;
-    }
-          </style>
-      </head>
-      <body>${printContent.innerHTML}</body>
-    </html>
-  `);
+//     .page-break {
+//       page-break-before: always;
+//     }
+//           </style>
+//       </head>
+//       <body>${printContent.innerHTML}</body>
+//     </html>
+//   `);
 
-    WindowPrt.document.close();
-    WindowPrt.focus();
+//     WindowPrt.document.close();
+//     WindowPrt.focus();
 
-    // Make sure that the window is still valid before calling print and close
-    if (WindowPrt) {
-      WindowPrt.print();
-      WindowPrt.close();
-    }
+//     // Make sure that the window is still valid before calling print and close
+//     if (WindowPrt) {
+//       WindowPrt.print();
+//       WindowPrt.close();
+//     }
   }
 }

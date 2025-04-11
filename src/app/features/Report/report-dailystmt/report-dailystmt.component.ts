@@ -1,3 +1,4 @@
+import { SpinnerComponent } from './../../../shared/component/spinner/spinner.component';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ReportService } from '../service/report.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -21,6 +22,7 @@ import { MasterService } from '../../../services/master/master.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { PrintreportService } from '../../../shared/service/printreport.service';
 @Component({
   selector: 'app-report-dailystmt',
   standalone: true,
@@ -33,29 +35,15 @@ import html2canvas from 'html2canvas';
     MatTooltipModule,
     MatFormFieldModule,
     MatInputModule,
+    SpinnerComponent
   ],
   templateUrl: './report-dailystmt.component.html',
   styleUrls: ['./report-dailystmt.component.css','/src/assets/styles/report.style.css'],
 })
 export class ReportDailystmtComponent {
-  displayedColumns: string[] = [
-    'BillNo',
-    'BillDate',
-    'Vazhipad',
-    'Name',
-    'Star',
-    'Qty',
-    'Rate',
-    'Amount',
-    'VazhiDate',
-  ];
-  dataSource = new MatTableDataSource<ReportData>();
-  length = 0;
-  pageSize = 10;
-  pageSizeOptions: number[] = [10, 50, 100, 200, 300, 500, 1000];
-  pageIndex = 0;
+  
+  
   data: ReportData[] = [];
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
   groupedData: { [key: string]: ReportData[] } = {};
   nakshatham: any[];
   lang: string | null;
@@ -63,13 +51,15 @@ export class ReportDailystmtComponent {
   toDate: string;
   templeName: string | null;
   templeAddress: string | null;
+  loading:boolean;
   constructor(
     private route: ActivatedRoute,
     private ts: TranslateService,
     private masterService: MasterService,
     private service: ReportService,
     private router: Router,
-    private http: HttpClient
+    private reportPrintservice:PrintreportService
+    
   ) {
     this.loadStarData();
     this.lang = localStorage.getItem('Language');
@@ -94,13 +84,10 @@ export class ReportDailystmtComponent {
     });
   }
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-  }
-
+  
   // Call your API service to get the report data
   fetchReportData(type: string, fromDate: string, toDate: string): void {
+    this.loading=true;
     const payLoad = {
       Type: type,
       FromDate: fromDate,
@@ -110,10 +97,8 @@ export class ReportDailystmtComponent {
       next: (data) => {
         console.log('Fetched report data:', data);
         this.data = data;
-
-        this.dataSource.data = this.data;
-        this.length = data.length;
-        this.dataSource.paginator = this.paginator;
+this.loading=false;
+      
 
         console.log(this.groupedData);
       },
@@ -123,10 +108,10 @@ export class ReportDailystmtComponent {
     });
   }
 
-  onPageChange(event: PageEvent) {
-    this.pageIndex = event.pageIndex;
-    this.pageSize = event.pageSize;
-  }
+  // onPageChange(event: PageEvent) {
+  //   this.pageIndex = event.pageIndex;
+  //   this.pageSize = event.pageSize;
+  // }
 
   goBack(): void {
     console.log('Going back...'); // Log to verify method execution
@@ -149,104 +134,106 @@ export class ReportDailystmtComponent {
   }
 
   generatePDF() {
-    const printContent = document.getElementById('print-section');
-    if (!printContent) {
-      console.error('No content found to print');
-      return;
-    }
+this.reportPrintservice.generatePDF();
+// this.reportPrintservice.generatePDF()
+//     const printContent = document.getElementById('print-section');
+//     if (!printContent) {
+//       console.error('No content found to print');
+//       return;
+//     }
 
-    const WindowPrt = window.open('', '', 'width=800,height=600');
+//     const WindowPrt = window.open('', '', 'width=800,height=600');
 
-    // Check if the print window was successfully opened
-    if (!WindowPrt) {
-      console.error(
-        'Unable to open print window. Please check pop-up blockers.'
-      );
-      return;
-    }
+//     // Check if the print window was successfully opened
+//     if (!WindowPrt) {
+//       console.error(
+//         'Unable to open print window. Please check pop-up blockers.'
+//       );
+//       return;
+//     }
 
-    WindowPrt.document.write(`
-    <html>
-      <head>
-        <title>Print</title>
-        <style>
+//     WindowPrt.document.write(`
+//     <html>
+//       <head>
+//         <title>Print</title>
+//         <style>
          
-          body {
-    font-size: 10px;
-    font-family: "Manjari";
-    margin:5px;
-  }
-          h3,p,h4,h2{
-          line-height:1;
-          margin-top:0;
-          text-align:center;
-          font-family: "Roboto";
-          font-size:12px;
-          margin-bottom:0px;
-          }
-          .templename{
-           line-height:1;
-          margin-top:0;
-          text-align:center;
-          font-family: "Manjari";
-          font-size:12px;
-          }
-          hr{
-          height:2px;
-          }
-          .number,.total{
-            text-align:right;
-            }
-          .tabble-heading h3{
-  font-family: "Manjari;
-  font-weight: bold;
-  font-size: 16px;
-  margin: 8px 0 0 0;
-}
-          table {
-            width: 100%;
-            border-collapse: collapse;
-          }
-          table, th, td {
-            border: 1px solid black;
-            text-transform: uppercase;
-            font-family: "Manjari";
-          font-size:12px;
+//           body {
+//     font-size: 10px;
+//     font-family: "Manjari";
+//     margin:5px;
+//   }
+//           h3,p,h4,h2{
+//           line-height:1;
+//           margin-top:0;
+//           text-align:center;
+//           font-family: "Roboto";
+//           font-size:12px;
+//           margin-bottom:0px;
+//           }
+//           .templename{
+//            line-height:1;
+//           margin-top:0;
+//           text-align:center;
+//           font-family: "Manjari";
+//           font-size:12px;
+//           }
+//           hr{
+//           height:2px;
+//           }
+//           .number,.total{
+//             text-align:right;
+//             }
+//           .tabble-heading h3{
+//   font-family: "Manjari;
+//   font-weight: bold;
+//   font-size: 16px;
+//   margin: 8px 0 0 0;
+// }
+//           table {
+//             width: 100%;
+//             border-collapse: collapse;
+//           }
+//           table, th, td {
+//             border: 1px solid black;
+//             text-transform: uppercase;
+//             font-family: "Manjari";
+//           font-size:12px;
 
-          }
-            .total,number{
-            text-align:right;
-            font-family: "Manjari";
-          font-size:12px;
-            }
-          th, td {
-           padding-left:5px;
-            text-align: left;
-             font-family: "Manjari";
-          font-size:10px;
-          border:1px solid gray;
-          }
-            #print-section{
-padding-bottom: 100px;
-  }
+//           }
+//             .total,number{
+//             text-align:right;
+//             font-family: "Manjari";
+//           font-size:12px;
+//             }
+//           th, td {
+//            padding-left:5px;
+//             text-align: left;
+//              font-family: "Manjari";
+//           font-size:10px;
+//           border:1px solid gray;
+//           }
+//             #print-section{
+// padding-bottom: 100px;
+//   }
        
     
-    .page-break {
-      page-break-before: always;
-    }
-          </style>
-      </head>
-      <body>${printContent.innerHTML}</body>
-    </html>
-  `);
+//     .page-break {
+//       page-break-before: always;
+//     }
+//           </style>
+//       </head>
+//       <body>${printContent.innerHTML}</body>
+//     </html>
+//   `);
 
-    WindowPrt.document.close();
-    WindowPrt.focus();
+//     WindowPrt.document.close();
+//     WindowPrt.focus();
 
-    if (WindowPrt) {
-      WindowPrt.print();
-      WindowPrt.close();
-    }
+//     if (WindowPrt) {
+//       WindowPrt.print();
+//       WindowPrt.close();
+//     }
   }
 
 

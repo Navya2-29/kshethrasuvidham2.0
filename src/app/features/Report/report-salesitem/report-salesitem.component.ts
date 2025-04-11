@@ -17,6 +17,8 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FeeCollection } from '../../../models/feecollection.model';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { PrintreportService } from '../../../shared/service/printreport.service';
+import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 @Component({
   selector: 'app-report-salesitem',
   standalone: true,
@@ -25,154 +27,70 @@ import html2canvas from 'html2canvas';
     MatTableModule,
     MatPaginatorModule,
     HeaderComponent,
-    MatTooltipModule,MatFormFieldModule, MatInputModule,TranslateModule
-
+    MatTooltipModule,
+    MatFormFieldModule,
+    MatInputModule,
+    TranslateModule,
+    SpinnerComponent
   ],
   templateUrl: './report-salesitem.component.html',
-  styleUrls: ['./report-salesitem.component.css','/src/assets/styles/report.style.css'],
+  styleUrls: [
+    './report-salesitem.component.css',
+    '/src/assets/styles/report.style.css',
+  ],
 })
 export class ReportSalesitemComponent {
-
-  
-  displayedColumns: string[] = ['BillNo','BillDate','NM_Name', 'Name', 'Star', 'Qty', 'ItemValue','weight', 'Receipt_Amt',  'TrnMode','Remarks' ];
+  displayedColumns: string[] = [
+    'BillNo',
+    'BillDate',
+    'NM_Name',
+    'Name',
+    'Star',
+    'Qty',
+    'ItemValue',
+    'weight',
+    'Receipt_Amt',
+    'TrnMode',
+    'Remarks',
+  ];
   dataSource = new MatTableDataSource<FeeCollection>();
   length = 0;
   pageSize = 10;
-  pageSizeOptions: number[] = [10,50,100,200,300,500,1000];
+  pageSizeOptions: number[] = [10, 50, 100, 200, 300, 500, 1000];
   pageIndex = 0;
   data: FeeCollection[] = [];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   groupedData: { [key: string]: FeeCollection[] } = {};
   currentDate: string = '';
   currentPage: number = 1;
-  fromDate:string;
-  toDate:string;
+  fromDate: string;
+  toDate: string;
   groupedDatas: { [key: string]: any[] } = {};
-lang:string|null;
-templeName:string|null;
-templeAddress:string|null;
+  lang: string | null;
+  templeName: string | null;
+  templeAddress: string | null;
+  loading:boolean;
   constructor(
     private route: ActivatedRoute,
     private service: ReportService,
     private router: Router,
-    private http:HttpClient,
-    private ts: TranslateService
+    private http: HttpClient,
+    private ts: TranslateService,
+    private reportPrintservice: PrintreportService
   ) {
-this.lang=localStorage.getItem('Language');
-this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
-this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
-const userLang = navigator.language || 'en';
+    this.lang = localStorage.getItem('Language');
+    this.templeName =
+      localStorage.getItem('TempleName') || 'Default Temple Name';
+    this.templeAddress =
+      localStorage.getItem('Address') || 'Default Temple Address';
+    const userLang = navigator.language || 'en';
     const languageCode = userLang.split('-')[0];
     this.ts.setDefaultLang(languageCode);
     this.ts.use(this.lang || 'en');
-
   }
-
-  genearatePDF(){
-    const printContent = document.getElementById('print-section');
-  if (!printContent) {
-    console.error('No content found to print');
-    return;
-  }
-
-  const WindowPrt = window.open('', '', 'width=800,height=600');
-  
-  // Check if the print window was successfully opened
-  if (!WindowPrt) {
-    console.error('Unable to open print window. Please check pop-up blockers.');
-    return;
-  }
-
-  WindowPrt.document.write(`
-    <html>
-      <head>
-        <title>Print</title>
-         <style>
-          .header-print h2 h3 h4 {
-          margin:0;
-          padding:0;
-           }  
-          h3,h4,h2{
-          margin-top:0px;
-          margin-botton:0px;
-          text-align:center;
-
-          }
-        .tabble-heading{
-  margin-top: 10px;
-  margin-bottom: 0;
-  text-transform: uppercase;
-  font-family: 'Times New Roman', Times, serif;
-  font-weight: bold;
-  text-align: left;
-
-}
-  .date{
-   line-height:1;
-          margin-top:0;
-  text-align:center;
-  }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-          }
-          table, th, td {
-            border: 1px solid black;
-            text-transform: uppercase;
-
-          }
-          th, td {
-           padding-left:5px;
-            text-align: left;
-          }
-            #print-section{
-padding-bottom: 100px;
-  }
-
-
-.number{
-    text-align: right;
-    /* font-weight: bold; */
-}
-.total{
-
-    text-align: right;
-    font-weight: bold;
-    font-size: 14px;
-}
-
-.grandtotal{
-    text-align: right;
-    font-family: 'Times New Roman', Times, serif;
-    font-weight:bolder;
-    color: red;
-    font-size: 20px;
-    margin: 10px 0;
-
-
-}
-
-
-        </style>
-      </head>
-      <body>${printContent.innerHTML}</body>
-    </html>
-  `);
-
-  WindowPrt.document.close();
-  WindowPrt.focus();
-
-  // Make sure that the window is still valid before calling print and close
-  if (WindowPrt) {
-    WindowPrt.print();
-    WindowPrt.close();
-  } 
-  }
-  
-
 
   groupDataByName(data: FeeCollection[]): { [key: string]: FeeCollection[] } {
-    return data.reduce((acc:any, item:any) => {
+    return data.reduce((acc: any, item: any) => {
       if (!acc[item.Vazhipad]) {
         acc[item.Vazhipad] = [];
       }
@@ -180,23 +98,21 @@ padding-bottom: 100px;
       return acc;
     }, {} as { [key: string]: FeeCollection[] });
   }
-  
-
-
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       const type = params['type'];
-      this. fromDate = params['fromDate'];
-      this. toDate = params['toDate'];
+      this.fromDate = params['fromDate'];
+      this.toDate = params['toDate'];
       this.fetchReportData(type, this.fromDate, this.toDate);
     });
   }
 
   // Call your API service to get the report data
   fetchReportData(type: string, fromDate: string, toDate: string): void {
+    this.loading=true;
     const payLoad = {
-      Type: "SalesRpt",
+      Type: 'SalesRpt',
       FromDate: fromDate,
       ToDate: toDate,
     };
@@ -207,7 +123,7 @@ padding-bottom: 100px;
         // this.groupDataByTransactionMode(this.data); // Group the data
         this.groupedData = this.groupDataByName(this.data);
         this.dataSource.data = this.data;
-        
+        this.loading=false;
       },
       error: (error) => {
         console.error('Error fetching report data:', error);
@@ -215,14 +131,9 @@ padding-bottom: 100px;
     });
   }
 
-
-  
-
-
   goBack(): void {
     console.log('Going back...'); // Log to verify method execution
     this.router.navigate(['/getReport']);
-
 
     if (window.history.length > 1) {
       window.history.back(); // Goes back to the previous page in history
@@ -236,119 +147,109 @@ padding-bottom: 100px;
     return `${day}-${month}-${year}`;
   }
 
-  generatePDF(){
-    const printContent = document.getElementById('print-section');
-    if (!printContent) {
-      console.error('No content found to print');
-      return;
-    }
-  
-    const WindowPrt = window.open('', '', 'width=800,height=600');
-    
-    // Check if the print window was successfully opened
-    if (!WindowPrt) {
-      console.error('Unable to open print window. Please check pop-up blockers.');
-      return;
-    }
-  
-    WindowPrt.document.write(`
-      <html>
-        <head>
-          <title>Print</title>
-            <style>
-          .header-print h2 h3 h4 {
-          margin:0;
-          padding:0;
-           }  
-          h3,h4,h2{
-          margin-top:0px;
-          margin-botton:0px;
-          text-align:center;
+  generatePDF() {
+    this.reportPrintservice.generatePDF();
 
-          }
-        .tabble-heading{
-  margin-top: 10px;
-  margin-bottom: 0;
-  text-transform: uppercase;
-  font-family: 'Times New Roman', Times, serif;
-  font-weight: bold;
-  text-align: left;
+    //     const printContent = document.getElementById('print-section');
+    //     if (!printContent) {
+    //       console.error('No content found to print');
+    //       return;
+    //     }
 
-}
-  .date{
-   line-height:1;
-          margin-top:0;
-  text-align:center;
+    //     const WindowPrt = window.open('', '', 'width=800,height=600');
+
+    //     // Check if the print window was successfully opened
+    //     if (!WindowPrt) {
+    //       console.error('Unable to open print window. Please check pop-up blockers.');
+    //       return;
+    //     }
+
+    //     WindowPrt.document.write(`
+    //       <html>
+    //         <head>
+    //           <title>Print</title>
+    //             <style>
+    //           .header-print h2 h3 h4 {
+    //           margin:0;
+    //           padding:0;
+    //            }
+    //           h3,h4,h2{
+    //           margin-top:0px;
+    //           margin-botton:0px;
+    //           text-align:center;
+
+    //           }
+    //         .tabble-heading{
+    //   margin-top: 10px;
+    //   margin-bottom: 0;
+    //   text-transform: uppercase;
+    //   font-family: 'Times New Roman', Times, serif;
+    //   font-weight: bold;
+    //   text-align: left;
+
+    // }
+    //   .date{
+    //    line-height:1;
+    //           margin-top:0;
+    //   text-align:center;
+    //   }
+    //           table {
+    //             width: 100%;
+    //             border-collapse: collapse;
+    //           }
+    //           table, th, td {
+    //             border: 1px solid black;
+    //             text-transform: uppercase;
+
+    //           }
+    //           th, td {
+    //            padding-left:5px;
+    //             text-align: left;
+    //           }
+    //             #print-section{
+    // padding-bottom: 100px;
+    //   }
+
+    // .number{
+    //     text-align: right;
+    //     /* font-weight: bold; */
+    // }
+    // .total{
+
+    //     text-align: right;
+    //     font-weight: bold;
+    //     font-size: 14px;
+    // }
+
+    // .grandtotal{
+    //     text-align: right;
+    //     font-family: 'Times New Roman', Times, serif;
+    //     font-weight:bolder;
+    //     color: red;
+    //     font-size: 20px;
+    //     margin: 10px 0;
+
+    // }
+
+    //         </style>
+    //         </head>
+    //         <body>${printContent.innerHTML}</body>
+    //       </html>
+    //     `);
+
+    //     WindowPrt.document.close();
+    //     WindowPrt.focus();
+
+    //     // Make sure that the window is still valid before calling print and close
+    //     if (WindowPrt) {
+    //       WindowPrt.print();
+    //       WindowPrt.close();
+    //     }
   }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-          }
-          table, th, td {
-            border: 1px solid black;
-            text-transform: uppercase;
 
-          }
-          th, td {
-           padding-left:5px;
-            text-align: left;
-          }
-            #print-section{
-padding-bottom: 100px;
+  getTotalAmount(): number {
+    return this.data.reduce((sum, item) => sum + item.Amount, 0);
   }
-
-
-.number{
-    text-align: right;
-    /* font-weight: bold; */
-}
-.total{
-
-    text-align: right;
-    font-weight: bold;
-    font-size: 14px;
-}
-
-.grandtotal{
-    text-align: right;
-    font-family: 'Times New Roman', Times, serif;
-    font-weight:bolder;
-    color: red;
-    font-size: 20px;
-    margin: 10px 0;
-
-
-}
-
-
-        </style>
-        </head>
-        <body>${printContent.innerHTML}</body>
-      </html>
-    `);
-  
-    WindowPrt.document.close();
-    WindowPrt.focus();
-  
-    // Make sure that the window is still valid before calling print and close
-    if (WindowPrt) {
-      WindowPrt.print();
-      WindowPrt.close();
-    } 
-}
-
-
-getTotalAmount(): number {
-  return this.data.reduce((sum, item) => sum + item.Amount, 0);
-}
-  
- 
-  
-  
-  
-  
- 
-  
 
   getTransactionType(transmode: string): string {
     switch (transmode) {
@@ -357,7 +258,6 @@ getTotalAmount(): number {
       case 'CS':
         return 'CASH';
       case 'MO':
-        
         return 'MONEY ORDER';
       case 'UP':
         return 'UPI';
@@ -373,46 +273,42 @@ getTotalAmount(): number {
     }
   }
 
+  // Calculate the grand total for each transaction mode
+  getGrandTotalForTrnsMode(item: string): any {
+    const items = this.groupedData[item]; // Get items for the transaction mode
+    if (!items || items.length === 0) {
+      return 0; // No items found, return 0
+    }
+    // Calculate the total
+    const total = items.reduce((sum, item) => {
+      // Default to 0 if Rate is missing
+      return sum + item.Amount;
+    }, 0);
 
-  
- // Calculate the grand total for each transaction mode
- getGrandTotalForTrnsMode(item: string): any {
-  const items = this.groupedData[item]; // Get items for the transaction mode
-  if (!items || items.length === 0) {
-    return 0; // No items found, return 0
-  }
-// Calculate the total
-const total = items.reduce((sum, item) => {
- // Default to 0 if Rate is missing
-  return sum +item. Amount;
-}, 0);
-
-return total;
-
-}
-
-generatePDFs() {
-  const element = document.getElementById('print-section'); 
-
-  if (!element) {
-    console.error("Element not found");
-    return;
+    return total;
   }
 
-  html2canvas(element, { scale: 2 }).then(canvas => {
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF('p', 'mm', 'a4');
+  generatePDFs() {
+    const element = document.getElementById('print-section');
 
-    const imgWidth = 210; 
-    const imgHeight = (canvas.height * imgWidth) / canvas.width; 
+    if (!element) {
+      console.error('Element not found');
+      return;
+    }
 
-    pdf.addImage(imgData, 'PNG', 0, 10, imgWidth, imgHeight);
-    pdf.save('Poornam_Report.pdf'); 
-  }).catch(error => {
-    console.error("Error generating PDF:", error);
-  });
-}
+    html2canvas(element, { scale: 2 })
+      .then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
 
+        const imgWidth = 210;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-
+        pdf.addImage(imgData, 'PNG', 0, 10, imgWidth, imgHeight);
+        pdf.save('Poornam_Report.pdf');
+      })
+      .catch((error) => {
+        console.error('Error generating PDF:', error);
+      });
+  }
 }

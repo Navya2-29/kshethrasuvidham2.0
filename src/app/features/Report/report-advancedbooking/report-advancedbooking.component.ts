@@ -14,11 +14,15 @@ import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 
 import { TranslateModule } from '@ngx-translate/core';
+import { PrintreportService } from '../../../shared/service/printreport.service';
+import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 
 @Component({
   selector: 'app-report-advancedbooking',
   standalone: true,
-  imports: [CommonModule,MatTableModule,MatPaginatorModule,TranslateModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
+  imports: [CommonModule,MatTableModule,MatPaginatorModule,
+    SpinnerComponent,
+    TranslateModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
   templateUrl: './report-advancedbooking.component.html',
   styleUrls: ['./report-advancedbooking.component.css','/src/assets/styles/report.style.css'],
 })
@@ -35,9 +39,13 @@ export class ReportAdvancedbookingComponent {
   lang:string|null;
   templeName:string|null;
   templeAddress:string|null;
+  loading:boolean;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   groupedData: { [key: string]: ReportData[] } = {};
-  constructor(private route: ActivatedRoute, private ts: TranslateService, private service: ReportService,private router: Router, private http:HttpClient) {
+  constructor(private route: ActivatedRoute,
+        private reportPrintservice:PrintreportService,
+    
+    private ts: TranslateService, private service: ReportService,private router: Router, private http:HttpClient) {
     this.lang=localStorage.getItem('Language');
     this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
     this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
@@ -62,6 +70,7 @@ export class ReportAdvancedbookingComponent {
 
  // Call your API service to get the report data
   fetchReportData(type: string, fromDate: string, toDate: string): void {
+    this.loading=true;
     const payLoad = {
       Type: type,
       FromDate: fromDate,
@@ -78,6 +87,7 @@ export class ReportAdvancedbookingComponent {
       //     // Compare the two parts: first compare the numerator, then the denominator
       //     return numA - numB || denomA - denomB;
       // });
+      this.loading=false;
         this.dataSource.data = this.data
         this.length = data.length; 
         this.dataSource.paginator = this.paginator;
@@ -337,89 +347,90 @@ export class ReportAdvancedbookingComponent {
 // }
   
 generatePDF(){
-  const printContent = document.getElementById('print-section');
-  if (!printContent) {
-    console.error('No content found to print');
-    return;
-  }
+  this.reportPrintservice.generatePDF();
+//   const printContent = document.getElementById('print-section');
+//   if (!printContent) {
+//     console.error('No content found to print');
+//     return;
+//   }
 
-  const WindowPrt = window.open('', '', 'width=800,height=600');
+//   const WindowPrt = window.open('', '', 'width=800,height=600');
   
-  // Check if the print window was successfully opened
-  if (!WindowPrt) {
-    console.error('Unable to open print window. Please check pop-up blockers.');
-    return;
-  }
+//   // Check if the print window was successfully opened
+//   if (!WindowPrt) {
+//     console.error('Unable to open print window. Please check pop-up blockers.');
+//     return;
+//   }
 
-  WindowPrt.document.write(`
-    <html>
-      <head>
-        <title>Print</title>
-        <style>
+//   WindowPrt.document.write(`
+//     <html>
+//       <head>
+//         <title>Print</title>
+//         <style>
          
-          body {
-    font-size: 16px;
-    font-family: "Times New Roman", serif;
-  }
-          h3,p,h4,h2{
-          line-height:1;
-          margin-top:0;
-          text-align:center;
-          }
-          .templename{
-           line-height:1;
-          margin-top:0;
-          text-align:center;
-          }
-          hr{
-          height:2px;
-          }
-          .tabble-heading h3{
-  font-family: 'Times New Roman', Times, serif;
-  font-weight: bold;
-  font-size: 16px;
-  margin: 8px 0 0 0;
-}
-          table {
-            width: 100%;
-            border-collapse: collapse;
-          }
-          table, th, td {
-            border: 1px solid black;
-            text-transform: uppercase;
+//           body {
+//     font-size: 16px;
+//     font-family: "Times New Roman", serif;
+//   }
+//           h3,p,h4,h2{
+//           line-height:1;
+//           margin-top:0;
+//           text-align:center;
+//           }
+//           .templename{
+//            line-height:1;
+//           margin-top:0;
+//           text-align:center;
+//           }
+//           hr{
+//           height:2px;
+//           }
+//           .tabble-heading h3{
+//   font-family: 'Times New Roman', Times, serif;
+//   font-weight: bold;
+//   font-size: 16px;
+//   margin: 8px 0 0 0;
+// }
+//           table {
+//             width: 100%;
+//             border-collapse: collapse;
+//           }
+//           table, th, td {
+//             border: 1px solid black;
+//             text-transform: uppercase;
 
-          }
-            .total,.number{
-            text-align:right;
-            }
-          th, td {
-           padding-left:5px;
-            text-align: left;
-          }
-            #print-section{
-padding-bottom: 100px;
-  }
-      .qty{
-      text-align:center;
-      } 
+//           }
+//             .total,.number{
+//             text-align:right;
+//             }
+//           th, td {
+//            padding-left:5px;
+//             text-align: left;
+//           }
+//             #print-section{
+// padding-bottom: 100px;
+//   }
+//       .qty{
+//       text-align:center;
+//       } 
     
-    .page-break {
-      page-break-before: always;
-    }
-          </style>
-      </head>
-      <body>${printContent.innerHTML}</body>
-    </html>
-  `);
+//     .page-break {
+//       page-break-before: always;
+//     }
+//           </style>
+//       </head>
+//       <body>${printContent.innerHTML}</body>
+//     </html>
+//   `);
 
-  WindowPrt.document.close();
-  WindowPrt.focus();
+//   WindowPrt.document.close();
+//   WindowPrt.focus();
 
-  // Make sure that the window is still valid before calling print and close
-  if (WindowPrt) {
-    WindowPrt.print();
-    WindowPrt.close();
-  } 
+//   // Make sure that the window is still valid before calling print and close
+//   if (WindowPrt) {
+//     WindowPrt.print();
+//     WindowPrt.close();
+//   } 
 }
 
 

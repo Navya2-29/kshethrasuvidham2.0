@@ -12,6 +12,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { PrintreportService } from '../../../shared/service/printreport.service';
+import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 
 interface ConsolidatedData {
   Vazhipad: string;
@@ -20,7 +22,7 @@ interface ConsolidatedData {
 @Component({
   selector: 'app-report-offering',
   standalone: true,
-  imports: [CommonModule, MatTableModule,TranslateModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule],
+  imports: [CommonModule, MatTableModule,SpinnerComponent, TranslateModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule],
   templateUrl: './report-offering.component.html',
   styleUrls: ['./report-offering.component.css','/src/assets/styles/report.style.css'],
 })
@@ -34,13 +36,17 @@ export class ReportOfferingComponent {
   data:ReportData[]=[];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   groupedData: { [key: string]: ReportData[] } = {};
+  loading:boolean;
 fromDate:string;
 toDate:string;
 lang:string|null;
 templeName:string|null;
 templeAddress:string|null;
   consolidatedData: ConsolidatedData[] = [];
-  constructor(private route: ActivatedRoute,private ts: TranslateService, private service: ReportService,private router: Router,  private http:HttpClient) {
+  constructor(private route: ActivatedRoute,private ts: TranslateService, 
+            private reportPrintservice:PrintreportService,
+     
+    private service: ReportService,private router: Router,  private http:HttpClient) {
     this.lang=localStorage.getItem('Language');
     this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
     this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address'; 
@@ -66,6 +72,7 @@ templeAddress:string|null;
 
  // Call your API service to get the report data
   fetchReportData(type: string, fromDate: string, toDate: string): void {
+    this.loading=true;
     const payLoad = {
       Type: "Offering",
       FromDate: fromDate,
@@ -81,7 +88,7 @@ templeAddress:string|null;
         this.dataSource.data = this.consolidatedData
         this.length =this.consolidatedData.length; 
         this.dataSource.paginator = this.paginator;
-        
+        this.loading=false;
         console.log(this.groupedData);
       },
       error: (error) => {
@@ -148,104 +155,105 @@ formatDateToDDMMYYYY(date: string): string {
 
 
 generatePDF(){
-  const printContent = document.getElementById('print-section');
-  if (!printContent) {
-    console.error('No content found to print');
-    return;
-  }
+  this.reportPrintservice.generatePDF()
+//   const printContent = document.getElementById('print-section');
+//   if (!printContent) {
+//     console.error('No content found to print');
+//     return;
+//   }
 
-  const WindowPrt = window.open('', '', 'width=800,height=600');
+//   const WindowPrt = window.open('', '', 'width=800,height=600');
   
-  // Check if the print window was successfully opened
-  if (!WindowPrt) {
-    console.error('Unable to open print window. Please check pop-up blockers.');
-    return;
-  }
+//   // Check if the print window was successfully opened
+//   if (!WindowPrt) {
+//     console.error('Unable to open print window. Please check pop-up blockers.');
+//     return;
+//   }
 
-  WindowPrt.document.write(`
-    <html>
-      <head>
-        <title>Print</title>
-         <style>
-          .header-print h2 h3 h4 {
-          margin:0;
-          padding:0;
-           }  
-          h3,h4,h2{
-          margin-top:0px;
-          margin-botton:0px;
-          text-align:center;
+//   WindowPrt.document.write(`
+//     <html>
+//       <head>
+//         <title>Print</title>
+//          <style>
+//           .header-print h2 h3 h4 {
+//           margin:0;
+//           padding:0;
+//            }  
+//           h3,h4,h2{
+//           margin-top:0px;
+//           margin-botton:0px;
+//           text-align:center;
 
-          }
-        .tabble-heading{
-  margin-top: 10px;
-  margin-bottom: 0;
-  text-transform: uppercase;
-  font-family: 'Times New Roman', Times, serif;
-  font-weight: bold;
-  text-align: left;
+//           }
+//         .tabble-heading{
+//   margin-top: 10px;
+//   margin-bottom: 0;
+//   text-transform: uppercase;
+//   font-family: 'Times New Roman', Times, serif;
+//   font-weight: bold;
+//   text-align: left;
 
-}
-  .date{
-   line-height:1;
-          margin-top:0;
-  text-align:center;
-  }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-          }
-          table, th, td {
-            border: 1px solid black;
-            text-transform: uppercase;
+// }
+//   .date{
+//    line-height:1;
+//           margin-top:0;
+//   text-align:center;
+//   }
+//           table {
+//             width: 100%;
+//             border-collapse: collapse;
+//           }
+//           table, th, td {
+//             border: 1px solid black;
+//             text-transform: uppercase;
 
-          }
-          th, td {
-           padding-left:5px;
-            text-align: left;
-          }
-            #print-section{
-padding-bottom: 100px;
-  }
-
-
-.number{
-    text-align: right;
-    /* font-weight: bold; */
-}
-.total{
-
-    text-align: right;
-    font-weight: bold;
-    font-size: 14px;
-}
-
-.grandtotal{
-    text-align: right;
-    font-family: 'Times New Roman', Times, serif;
-    font-weight:bolder;
-    color: red;
-    font-size: 20px;
-    margin: 10px 0;
+//           }
+//           th, td {
+//            padding-left:5px;
+//             text-align: left;
+//           }
+//             #print-section{
+// padding-bottom: 100px;
+//   }
 
 
-}
+// .number{
+//     text-align: right;
+//     /* font-weight: bold; */
+// }
+// .total{
+
+//     text-align: right;
+//     font-weight: bold;
+//     font-size: 14px;
+// }
+
+// .grandtotal{
+//     text-align: right;
+//     font-family: 'Times New Roman', Times, serif;
+//     font-weight:bolder;
+//     color: red;
+//     font-size: 20px;
+//     margin: 10px 0;
 
 
-        </style>
-      </head>
-      <body>${printContent.innerHTML}</body>
-    </html>
-  `);
+// }
 
-  WindowPrt.document.close();
-  WindowPrt.focus();
 
-  // Make sure that the window is still valid before calling print and close
-  if (WindowPrt) {
-    WindowPrt.print();
-    WindowPrt.close();
-  } 
+//         </style>
+//       </head>
+//       <body>${printContent.innerHTML}</body>
+//     </html>
+//   `);
+
+//   WindowPrt.document.close();
+//   WindowPrt.focus();
+
+//   // Make sure that the window is still valid before calling print and close
+//   if (WindowPrt) {
+//     WindowPrt.print();
+//     WindowPrt.close();
+//   } 
 
 }
 

@@ -17,6 +17,8 @@ import { MatInputModule } from '@angular/material/input';
 import { NadavaravReport } from '../../../models/nadavarav.model';
 import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { PrintreportService } from '../../../shared/service/printreport.service';
+import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 
 @Component({
   selector: 'app-report-nadavarav',
@@ -25,7 +27,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     MatTableModule,
     MatPaginatorModule,
     HeaderComponent,
-    MatTooltipModule,MatFormFieldModule, MatInputModule,TranslateModule  ],
+    MatTooltipModule,MatFormFieldModule, MatInputModule,TranslateModule,SpinnerComponent  ],
   templateUrl: './report-nadavarav.component.html',
   styleUrls: ['./report-nadavarav.component.css','/src/assets/styles/report.style.css'],
 })
@@ -44,6 +46,7 @@ export class ReportNadavaravComponent implements  OnInit {
   currentPage: number = 1;
   fromDate:string;
   toDate:string;
+  loading:boolean;
   groupedDatas: { [key: string]: any[] } = {};
 lang:string|null;
 templeName:string|null;
@@ -53,7 +56,9 @@ templeAddress:string|null;
     private service: ReportService,
     private router: Router,
     private http:HttpClient,
-    private ts: TranslateService
+    private ts: TranslateService,
+                private reportPrintservice:PrintreportService,
+    
   ) {
 this.lang=localStorage.getItem('Language');
 this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
@@ -66,51 +71,52 @@ const userLang = navigator.language || 'en';
   }
 
   genearatePDF(){
-    const printContent = document.getElementById('print-section');
-  if (!printContent) {
-    console.error('No content found to print');
-    return;
-  }
+    this.reportPrintservice.generatePDF();
+  //   const printContent = document.getElementById('print-section');
+  // if (!printContent) {
+  //   console.error('No content found to print');
+  //   return;
+  // }
 
-  const WindowPrt = window.open('', '', 'width=800,height=600');
+  // const WindowPrt = window.open('', '', 'width=800,height=600');
   
-  // Check if the print window was successfully opened
-  if (!WindowPrt) {
-    console.error('Unable to open print window. Please check pop-up blockers.');
-    return;
-  }
+  // // Check if the print window was successfully opened
+  // if (!WindowPrt) {
+  //   console.error('Unable to open print window. Please check pop-up blockers.');
+  //   return;
+  // }
 
-  WindowPrt.document.write(`
-    <html>
-      <head>
-        <title>Print</title>
-        <style>
-          /* Add custom styles for printing if needed */
-          table {
-            width: 100%;
-            border-collapse: collapse;
-          }
-          table, th, td {
-            border: 1px solid black;
-          }
-          th, td {
-            padding: 5px;
-            text-align: left;
-          }
-        </style>
-      </head>
-      <body>${printContent.innerHTML}</body>
-    </html>
-  `);
+  // WindowPrt.document.write(`
+  //   <html>
+  //     <head>
+  //       <title>Print</title>
+  //       <style>
+  //         /* Add custom styles for printing if needed */
+  //         table {
+  //           width: 100%;
+  //           border-collapse: collapse;
+  //         }
+  //         table, th, td {
+  //           border: 1px solid black;
+  //         }
+  //         th, td {
+  //           padding: 5px;
+  //           text-align: left;
+  //         }
+  //       </style>
+  //     </head>
+  //     <body>${printContent.innerHTML}</body>
+  //   </html>
+  // `);
 
-  WindowPrt.document.close();
-  WindowPrt.focus();
+  // WindowPrt.document.close();
+  // WindowPrt.focus();
 
-  // Make sure that the window is still valid before calling print and close
-  if (WindowPrt) {
-    WindowPrt.print();
-    WindowPrt.close();
-  } 
+  // // Make sure that the window is still valid before calling print and close
+  // if (WindowPrt) {
+  //   WindowPrt.print();
+  //   WindowPrt.close();
+  // } 
   }
   groupData() {
     this.groupedDatas = this.data.reduce((acc:any, curr:any) => {
@@ -140,6 +146,7 @@ const userLang = navigator.language || 'en';
 
   // Call your API service to get the report data
   fetchReportData(type: string, fromDate: string, toDate: string): void {
+    this.loading=true;
     const payLoad = {
       Type: "NadavaravuRpt",
       FromDate: fromDate,
@@ -150,6 +157,7 @@ const userLang = navigator.language || 'en';
         console.log('Fetched report data:', data);
         this.data = data;
         this.groupDataByTransactionMode(this.data); // Group the data
+        this.loading=false;
         // this.data = data.sort((a: any, b: any) => {
         //   const [numA, denomA] = a.BillNo.split('/').map(Number);
         //   const [numB, denomB] = b.BillNo.split('/').map(Number);
@@ -212,104 +220,105 @@ const userLang = navigator.language || 'en';
   }
 
   generatePDF(){
-    const printContent = document.getElementById('print-section');
-    if (!printContent) {
-      console.error('No content found to print');
-      return;
-    }
+    this.reportPrintservice.generatePDF();
+//     const printContent = document.getElementById('print-section');
+//     if (!printContent) {
+//       console.error('No content found to print');
+//       return;
+//     }
   
-    const WindowPrt = window.open('', '', 'width=800,height=600');
+//     const WindowPrt = window.open('', '', 'width=800,height=600');
     
-    // Check if the print window was successfully opened
-    if (!WindowPrt) {
-      console.error('Unable to open print window. Please check pop-up blockers.');
-      return;
-    }
+//     // Check if the print window was successfully opened
+//     if (!WindowPrt) {
+//       console.error('Unable to open print window. Please check pop-up blockers.');
+//       return;
+//     }
   
-    WindowPrt.document.write(`
-      <html>
-        <head>
-          <title>Print</title>
-         <style>
-          .header-print h2 h3 h4 {
-          margin:0;
-          padding:0;
-           }  
-          h3,h4,h2{
-          margin-top:0px;
-          margin-botton:0px;
-          text-align:center;
+//     WindowPrt.document.write(`
+//       <html>
+//         <head>
+//           <title>Print</title>
+//          <style>
+//           .header-print h2 h3 h4 {
+//           margin:0;
+//           padding:0;
+//            }  
+//           h3,h4,h2{
+//           margin-top:0px;
+//           margin-botton:0px;
+//           text-align:center;
 
-          }
-        .tabble-heading{
-  margin-top: 10px;
-  margin-bottom: 0;
-  text-transform: uppercase;
-  font-family: 'Times New Roman', Times, serif;
-  font-weight: bold;
-  text-align: left;
+//           }
+//         .tabble-heading{
+//   margin-top: 10px;
+//   margin-bottom: 0;
+//   text-transform: uppercase;
+//   font-family: 'Times New Roman', Times, serif;
+//   font-weight: bold;
+//   text-align: left;
 
-}
-  .date{
-   line-height:1;
-          margin-top:0;
-  text-align:center;
-  }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-          }
-          table, th, td {
-            border: 1px solid black;
-            text-transform: uppercase;
+// }
+//   .date{
+//    line-height:1;
+//           margin-top:0;
+//   text-align:center;
+//   }
+//           table {
+//             width: 100%;
+//             border-collapse: collapse;
+//           }
+//           table, th, td {
+//             border: 1px solid black;
+//             text-transform: uppercase;
 
-          }
-          th, td {
-           padding-left:5px;
-            text-align: left;
-          }
-            #print-section{
-padding-bottom: 100px;
-  }
-
-
-.number{
-    text-align: right;
-    /* font-weight: bold; */
-}
-.total{
-
-    text-align: right;
-    font-weight: bold;
-    font-size: 14px;
-}
-
-.grandtotal{
-    text-align: right;
-    font-family: 'Times New Roman', Times, serif;
-    font-weight:bolder;
-    color: red;
-    font-size: 20px;
-    margin: 10px 0;
+//           }
+//           th, td {
+//            padding-left:5px;
+//             text-align: left;
+//           }
+//             #print-section{
+// padding-bottom: 100px;
+//   }
 
 
-}
+// .number{
+//     text-align: right;
+//     /* font-weight: bold; */
+// }
+// .total{
+
+//     text-align: right;
+//     font-weight: bold;
+//     font-size: 14px;
+// }
+
+// .grandtotal{
+//     text-align: right;
+//     font-family: 'Times New Roman', Times, serif;
+//     font-weight:bolder;
+//     color: red;
+//     font-size: 20px;
+//     margin: 10px 0;
 
 
-        </style>
-        </head>
-        <body>${printContent.innerHTML}</body>
-      </html>
-    `);
+// }
+
+
+//         </style>
+//         </head>
+//         <body>${printContent.innerHTML}</body>
+//       </html>
+//     `);
   
-    WindowPrt.document.close();
-    WindowPrt.focus();
+//     WindowPrt.document.close();
+//     WindowPrt.focus();
   
-    // Make sure that the window is still valid before calling print and close
-    if (WindowPrt) {
-      WindowPrt.print();
-      WindowPrt.close();
-    } 
+//     // Make sure that the window is still valid before calling print and close
+//     if (WindowPrt) {
+//       WindowPrt.print();
+//       WindowPrt.close();
+//     } 
 }
 
   

@@ -1,4 +1,6 @@
 <app-header></app-header>
+<app-spinner *ngIf="loading"></app-spinner>
+
 <div class="report-container">
   <div class="icon-container">
     <button
@@ -25,7 +27,7 @@
         <h2>
           {{ "Report Name.DAILY TEMPLE COLLECTION (COUNTER)" | translate }}
         </h2>
-        <p>
+        <p class="date">
           {{ formatDateToDDMMYYYY(fromDate) }} to
           {{ formatDateToDDMMYYYY(toDate) }}
         </p>
@@ -41,7 +43,7 @@
               <p class="user">{{"user" | translate }}: {{ user.key }}</p>
 
               <div *ngFor="let mode of user.value | keyvalue">
-                <p class="transaction">
+                <p class="transaction transactiontype">
                   {{ getTransactionType(mode.key) | translate }}
                 </p>
 
@@ -50,8 +52,8 @@
                     <tr>
                       <th>{{ "VAZHIPAD" | translate }}</th>
                       <th>{{ "QUANTITY" | translate }}</th>
-                      <th>{{ "RATE" | translate }}</th>
-                      <th>{{ "AMOUNT" | translate }}</th>
+                      <th class="number">{{ "RATE" | translate }}</th>
+                      <th class="number">{{ "AMOUNT" | translate }}</th>
                     </tr>
                   </thead>
                   <tbody>

@@ -1,4 +1,6 @@
 <app-header></app-header>
+<app-spinner *ngIf="loading"></app-spinner>
+
 <div class="report-container">
 
 <div class="icon-container">
@@ -13,7 +15,7 @@
 <div id="print-section">
   <div class="header-print">
     <h3
-      
+      class="templename"
     >
       {{ templeName }}
     </h3>
@@ -29,7 +31,7 @@
       {{ "Report Name.VAZHIPAD BOOKING CANCEL REPORT" | translate }}
     </h2>
     <p
-     
+    class="date"
     >
       {{ formatDateToDDMMYYYY(fromDate) }} to {{ formatDateToDDMMYYYY(toDate) }}
     </p>
@@ -40,7 +42,7 @@
   <div class="body-print">
     <div id="pdf-content" >
 <div class="vazhipad-cancel" *ngIf="data.length > 0">
-  <h4 class="tabble-heading" >{{"VAZHIPAD" | translate}}</h4>
+  <h3 class="tabble-heading fee" >{{"VAZHIPAD" | translate}}</h3>
 
 
     <table>
@@ -52,7 +54,7 @@
           <th>{{"NAME" | translate }}</th>
           <th>{{"QUANTITY" |translate }}</th>
           <!-- <th>{{"RATE" | translate }}</th> -->
-          <th>{{"AMOUNT" |translate}}</th> 
+          <th class="number">{{"AMOUNT" |translate}}</th> 
           <th>{{ "CANCEL DATE" | translate }}</th>
           <th>{{ "REMARKS" | translate }}</th>
         </tr>
@@ -90,7 +92,7 @@
   </div>  
   <div class="page-break"></div>
 <div class="nadavaravu-Cancel" *ngIf="nadavaravuDatat.length>0">
-  <h3 class="tabble-heading">{{"Nadavaravu" | translate }}</h3>
+  <h3 class="tabble-heading fee">{{"Nadavaravu" | translate }}</h3>
     <table>
       <thead>
         <tr>

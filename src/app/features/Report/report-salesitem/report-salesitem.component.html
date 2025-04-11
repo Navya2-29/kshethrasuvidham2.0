@@ -1,4 +1,6 @@
 <app-header></app-header>
+<app-spinner *ngIf="loading"></app-spinner>
+
 <div class="report-container">
 
 <div class="icon-container">
@@ -15,7 +17,7 @@
 <div id="print-section">
   <div class="header-print">
     <h3
-      
+    class="templename"  
     >
       {{ templeName }}
     </h3>
@@ -39,11 +41,11 @@
   <div class="body-print">
     <div id="pdf-content" *ngIf="data.length > 0">
 
-  <div
+  <div 
     *ngFor="let name of groupedData | keyvalue"
     
   >
-    <h3 class="tabble-heading" >{{ name.key }}</h3>
+    <h3 class="tabble-heading fee" >{{ name.key }}</h3>
     <table>
       <thead>
         <tr>
@@ -54,8 +56,8 @@
           <th>{{ "STAR" | translate }}</th>
 
           <th>{{ "QUANTITY" | translate }}</th>
-          <th>{{ "RATE" | translate }}</th>
-          <th>{{ "AMOUNT" | translate }}</th>
+          <th class="number">{{ "RATE" | translate }}</th>
+          <th class="number">{{ "AMOUNT" | translate }}</th>
 
           <!-- <th style="background-color: #ddd;">{{"PAYMENTMODE" | translate}}</th> -->
         </tr>

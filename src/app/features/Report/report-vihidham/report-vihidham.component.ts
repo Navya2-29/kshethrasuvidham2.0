@@ -9,7 +9,6 @@ import {
   PageEvent,
 } from '@angular/material/paginator';
 import { jsPDF } from 'jspdf';
-import { ReportData } from '../../../models/poornam-report';
 import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -17,6 +16,8 @@ import { MatInputModule } from '@angular/material/input';
 import { NadavaravReport } from '../../../models/nadavarav.model';
 import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { PrintreportService } from '../../../shared/service/printreport.service';
+import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 
 @Component({
   selector: 'app-report-vihidham',
@@ -26,97 +27,55 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     MatTableModule,
     MatPaginatorModule,
     HeaderComponent,
-    MatTooltipModule,MatFormFieldModule, MatInputModule,TranslateModule
+    MatTooltipModule,
+    MatFormFieldModule,
+    MatInputModule,
+    TranslateModule,
+    SpinnerComponent
   ],
   templateUrl: './report-vihidham.component.html',
-  styleUrls: ['./report-vihidham.component.css','/src/assets/styles/report.style.css']
+  styleUrls: [
+    './report-vihidham.component.css',
+    '/src/assets/styles/report.style.css',
+  ],
 })
 export class ReportVihidhamComponent {
-
-  displayedColumns: string[] = ['BillNo','BillDate','NM_Name', 'Name', 'Star', 'Qty', 'ItemValue','weight', 'Receipt_Amt',  'TrnMode','Remarks' ];
-  dataSource = new MatTableDataSource<NadavaravReport>();
-  length = 0;
-  pageSize = 10;
-  pageSizeOptions: number[] = [10,50,100,200,300,500,1000];
-  pageIndex = 0;
   data: NadavaravReport[] = [];
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
   groupedData: { [key: string]: NadavaravReport[] } = {};
   currentDate: string = '';
-  currentPage: number = 1;
-  fromDate:string;
-  toDate:string;
+
+  fromDate: string;
+  toDate: string;
   groupedDatas: { [key: string]: any[] } = {};
-lang:string|null;
-templeName:string|null;
-templeAddress:string|null;
-filtereddata:any[]=[]
+  lang: string | null;
+  templeName: string | null;
+  templeAddress: string | null;
+  filtereddata: any[] = [];
+  loading:boolean;
   constructor(
     private route: ActivatedRoute,
     private service: ReportService,
     private router: Router,
-    private http:HttpClient,
-    private ts: TranslateService
+    private http: HttpClient,
+    private ts: TranslateService,
+    private reportPrintservice: PrintreportService
   ) {
-this.lang=localStorage.getItem('Language');
-this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
-this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
-const userLang = navigator.language || 'en';
+    this.lang = localStorage.getItem('Language');
+    this.templeName =
+      localStorage.getItem('TempleName') || 'Default Temple Name';
+    this.templeAddress =
+      localStorage.getItem('Address') || 'Default Temple Address';
+    const userLang = navigator.language || 'en';
     const languageCode = userLang.split('-')[0];
     this.ts.setDefaultLang(languageCode);
     this.ts.use(this.lang || 'en');
-
   }
 
-  genearatePDF(){
-    const printContent = document.getElementById('print-section');
-  if (!printContent) {
-    console.error('No content found to print');
-    return;
-  }
-
-  const WindowPrt = window.open('', '', 'width=800,height=600');
-  
-  // Check if the print window was successfully opened
-  if (!WindowPrt) {
-    console.error('Unable to open print window. Please check pop-up blockers.');
-    return;
-  }
-
-  WindowPrt.document.write(`
-    <html>
-      <head>
-        <title>Print</title>
-        <style>
-          /* Add custom styles for printing if needed */
-          table {
-            width: 100%;
-            border-collapse: collapse;
-          }
-          table, th, td {
-            border: 1px solid black;
-          }
-          th, td {
-            padding: 5px;
-            text-align: left;
-          }
-        </style>
-      </head>
-      <body>${printContent.innerHTML}</body>
-    </html>
-  `);
-
-  WindowPrt.document.close();
-  WindowPrt.focus();
-
-  // Make sure that the window is still valid before calling print and close
-  if (WindowPrt) {
-    WindowPrt.print();
-    WindowPrt.close();
-  } 
+  generatePDF() {
+    this.reportPrintservice.generatePDF();
   }
   groupData() {
-    this.groupedDatas = this.data.reduce((acc:any, curr:any) => {
+    this.groupedDatas = this.data.reduce((acc: any, curr: any) => {
       const { category, NM_Name, Qty, Rate } = curr;
       if (!acc[category]) {
         acc[category] = {};
@@ -125,26 +84,26 @@ const userLang = navigator.language || 'en';
         acc[category][NM_Name] = { Qty: 0, Rate, Amount: 0 };
       }
       acc[category][NM_Name].Qty += Qty;
-      acc[category][NM_Name].Amount = acc[category][NM_Name].Rate * acc[category][NM_Name].Qty;
+      acc[category][NM_Name].Amount =
+        acc[category][NM_Name].Rate * acc[category][NM_Name].Qty;
       return acc;
     }, {});
   }
 
-
-
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       const type = params['type'];
-      this. fromDate = params['fromDate'];
-      this. toDate = params['toDate'];
+      this.fromDate = params['fromDate'];
+      this.toDate = params['toDate'];
       this.fetchReportData(type, this.fromDate, this.toDate);
     });
   }
 
   // Call your API service to get the report data
   fetchReportData(type: string, fromDate: string, toDate: string): void {
+    this.loading=true;
     const payLoad = {
-      Type: "VihidhamRpt",
+      Type: 'VihidhamRpt',
       FromDate: fromDate,
       ToDate: toDate,
     };
@@ -153,9 +112,8 @@ const userLang = navigator.language || 'en';
         console.log('Fetched report data:', data);
         this.data = data;
 
-        const fromDate = new Date(this.fromDate); // "2025-04-07"
-        const toDate = new Date(this.toDate);     // "2025-04-07"
-        
+        const fromDate = new Date(this.fromDate);
+        const toDate = new Date(this.toDate);
         // Reset time to 00:00:00 for comparison
         fromDate.setHours(0, 0, 0, 0);
         toDate.setHours(23, 59, 59, 999);
@@ -165,22 +123,24 @@ const userLang = navigator.language || 'en';
           const tDate = new Date(item.ToDate);
           fDate.setHours(0, 0, 0, 0);
           tDate.setHours(23, 59, 59, 999);
-        
+
           const isMatch = !(tDate < fromDate || fDate > toDate);
-          console.log(`FDate=${fDate.toDateString()}, ToDate=${tDate.toDateString()}, Match=${isMatch}`);
+          console.log(
+            `FDate=${fDate.toDateString()}, ToDate=${tDate.toDateString()}, Match=${isMatch}`
+          );
         });
-        this. filtereddata = this.data.filter((item:any) => {
+        this.filtereddata = this.data.filter((item: any) => {
           const fDate = new Date(item.FDate);
-  const tDate = new Date(item.ToDate);
+          const tDate = new Date(item.ToDate);
 
-  // Reset their time to ignore mismatch due to hours
-  fDate.setHours(0, 0, 0, 0);
-  tDate.setHours(23, 59, 59, 999); // include full end date
+          // Reset their time to ignore mismatch due to hours
+          fDate.setHours(0, 0, 0, 0);
+          tDate.setHours(23, 59, 59, 999); // include full end date
 
-  // Check if ranges overlap
-  return !(tDate < fromDate || fDate > toDate);
+          // Check if ranges overlap
+          return !(tDate < fromDate || fDate > toDate);
         });
-        console.log(this.filtereddata,"filtered data");
+        console.log(this.filtereddata, 'filtered data');
         this.groupDataByTransactionMode(this.filtereddata); // Group the data
         // this.data = data.sort((a: any, b: any) => {
         //   const [numA, denomA] = a.BillNo.split('/').map(Number);
@@ -189,10 +149,7 @@ const userLang = navigator.language || 'en';
         //   // Compare the two parts: first compare the numerator, then the denominator
         //   return numA - numB || denomA - denomB;
         // });
-        this.dataSource.data = this.data;
-        this.length = data.length;
-        this.dataSource.paginator = this.paginator;
-
+this.loading=false;
         console.log(this.groupedData);
       },
       error: (error) => {
@@ -201,454 +158,48 @@ const userLang = navigator.language || 'en';
     });
   }
 
-
   // Grouping function
   groupDataByTransactionMode(data: any[]): void {
- // Initialize groupedData as an empty object
- this.groupedData = data.reduce((result, item) => {
-  const category = item.Name
-  ;
+    this.groupedData = data.reduce((result, item) => {
+      const category = item.Name;
+      if (!result[category]) {
+        result[category] = [];
+      }
 
-  // If category doesn't exist, initialize it as an array
-  if (!result[category]) {
-    result[category] = [];
-  }
+      result[category].push(item);
 
-  // Push the item into the respective category array
-  result[category].push(item);
-
-  return result;
-}, {}); 
-  }
-
-  onPageChange(event: PageEvent) {
-    this.pageIndex = event.pageIndex;
-    this.pageSize = event.pageSize;
+      return result;
+    }, {});
   }
 
   goBack(): void {
-    console.log('Going back...'); // Log to verify method execution
+    console.log('Going back...');
     this.router.navigate(['/getReport']);
 
-
     if (window.history.length > 1) {
-      window.history.back(); // Goes back to the previous page in history
+      window.history.back();
     } else {
-      window.close(); // Closes the tab if it's the only page open
+      window.close();
     }
-
-
   }
   formatDateToDDMMYYYY(date: string): string {
     const [year, month, day] = date.split('-');
     return `${day}-${month}-${year}`;
   }
 
-  generatePDF(){
-    const printContent = document.getElementById('print-section');
-    if (!printContent) {
-      console.error('No content found to print');
-      return;
+  getTotalAmount(): number {
+    return this.data.reduce((sum, item) => sum + item.Qty * item.Rate, 0);
+  }
+
+  getGrandTotalForTrnsMode(item: string): any {
+    const items = this.groupedData[item];
+    if (!items || items.length === 0) {
+      return 0;
     }
-  
-    const WindowPrt = window.open('', '', 'width=800,height=600');
-    
-    // Check if the print window was successfully opened
-    if (!WindowPrt) {
-      console.error('Unable to open print window. Please check pop-up blockers.');
-      return;
-    }
-  
-    WindowPrt.document.write(`
-      <html>
-        <head>
-          <title>Print</title>
-         <style>
-          .header-print h2 h3 h4 {
-          margin:0;
-          padding:0;
-           }  
-          h3,h4,h2{
-          margin-top:0px;
-          margin-botton:0px;
-          text-align:center;
+    const total = items.reduce((sum, item) => {
+      return sum + item.Qty * item.Rate;
+    }, 0);
 
-          }
-        .tabble-heading{
-  margin-top: 10px;
-  margin-bottom: 0;
-  text-transform: uppercase;
-  font-family: 'Times New Roman', Times, serif;
-  font-weight: bold;
-  text-align: left;
-
-}
-  .date{
-   line-height:1;
-          margin-top:0;
-  text-align:center;
+    return total;
   }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-          }
-          table, th, td {
-            border: 1px solid black;
-            text-transform: uppercase;
-
-          }
-          th, td {
-           padding-left:5px;
-            text-align: left;
-          }
-            #print-section{
-padding-bottom: 100px;
-  }
-
-
-.number{
-    text-align: right;
-    /* font-weight: bold; */
-}
-.total{
-
-    text-align: right;
-    font-weight: bold;
-    font-size: 14px;
-}
-
-.grandtotal{
-    text-align: right;
-    font-family: 'Times New Roman', Times, serif;
-    font-weight:bolder;
-    color: red;
-    font-size: 20px;
-    margin: 10px 0;
-
-
-}
-
-
-        </style>
-        </head>
-        <body>${printContent.innerHTML}</body>
-      </html>
-    `);
-  
-    WindowPrt.document.close();
-    WindowPrt.focus();
-  
-    // Make sure that the window is still valid before calling print and close
-    if (WindowPrt) {
-      WindowPrt.print();
-      WindowPrt.close();
-    } 
-}
-
-  
-//   generatePDF() {
-//     const templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
-//     const templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
-//     const doc = new jsPDF();
-//     const pageWidth = doc.internal.pageSize.width;
-//     const pageHeight = doc.internal.pageSize.height;
-  
-//     const headerHeight = 33;
-//     const footerHeight = 20;
-//     const lineHeight = 8;
-//     const tableHeaderFontSize = 10;
-//     const contentFontSize = 8;
-//     const currentDate = new Date().toLocaleDateString();
-
-//     // Adjusted column widths for BillNo, Name, Vazhipad, Star, Ennam (Qty), Rate, and Amount
-//     const maxColumnWidths = [20, 40, 35, 25, 25, 25, 25]; // BillNo, Name, Vazhipad, Star, Ennam (Qty), Rate, Amount
-    
-//     let y = headerHeight; // Initial Y position after header
-//     let grandTotal = 0; // Initialize grand total
-  
-//     this.http
-//     .get('assets/fonts/malayalam/NotoSansMalayalam-Regular.ttf', {
-//       responseType: 'arraybuffer',
-//     })
-//     .subscribe(
-//       (fontData) => {
-//         const doc = new jsPDF();
-
-//         // Convert ArrayBuffer to Base64
-//         const fontBase64 = btoa(
-//           String.fromCharCode(...new Uint8Array(fontData))
-//         );
-
-//         // Add the font to jsPDF
-//         doc.addFileToVFS(
-//           'NotoSansMalayalam-Regular.ttf',
-//           fontBase64
-//         );
-//         doc.addFont(
-//           'NotoSansMalayalam-Regular.ttf',
-//           'NotoSansMalayalam',
-//           'normal'
-//         );
-
-//         // Set the custom font
-//         doc.setFont('NotoSansMalayalam');
-
-
-
-//     // Data grouped by TransactionMode (example grouping key)
-//     const groupedData = this.data.reduce((acc, current) => {
-//       const key = current.category; // Change this key if grouping by something else
-//       if (!acc[key]) {
-//         acc[key] = [];
-//       }
-//       acc[key].push(current);
-//       return acc;
-//     }, {} as { [key: string]: NadavaravReport[] });
-  
-//     // Draw Header
-//     const drawHeader = () => {
-//       doc.setFontSize(12);
-//       doc.setFont("NotoSansMalayalam", "bold");
-//       doc.text(templeName, pageWidth / 2, 12, { align: "center" });
-//       doc.setFont("NotoSansMalayalam", "normal");
-//       doc.setFontSize(10);
-//       doc.text(templeAddress, pageWidth / 2, 18, { align: "center" });
-  
-//       doc.setFontSize(10);
-//       doc.setFont("NotoSansMalayalam", "bold");
-//       doc.text("Nadavaravu Booking Report", pageWidth / 2, 27, { align: "center" });
-//   // Add current date below the report title but above the table header
-//   doc.setFontSize(10);
-//   doc.setFont("NotoSansMalayalam", "normal");
-//   doc.text(`${this.formatDateToDDMMYYYY(this.fromDate)} to ${this.formatDateToDDMMYYYY(this.toDate)}`, pageWidth / 2, 32, { align: "center" });
-//   doc.setLineWidth(0.5);
-//       doc.line(10, y, pageWidth - 10, y); // Line below header
-//       y += 3; // Space below the line
-//     };
-  
-//     // Draw Footer
-//     const drawFooter = (pageNum: number) => {
-//       doc.setFontSize(10);
-//       const footerText = `Page ${pageNum}`;
-//       doc.text(footerText, pageWidth / 2, pageHeight - footerHeight / 2, { align: "center" });
-//     };
-  
-//     // Add Table Header
-//     const drawTableHeader = () => {
-//       doc.setFontSize(tableHeaderFontSize);
-//       doc.setFont("NotoSansMalayalam", "bold");
-//       const headers = ["BillNo.", "Vazhpad", "Name", "Star", "Qty", "Price", "Amount"];
-//       let x = 10;
-//       headers.forEach((header, index) => {
-//         doc.text(header, x, y + 5);
-//         x += maxColumnWidths[index];
-//       });
-  
-//       y += lineHeight;
-//       doc.setLineWidth(0.5);
-//       doc.line(10, y, pageWidth - 10, y); // Line below the header
-//       y += 2; // Space below the line
-//     };
-  
-//     // Initialize PDF
-//     drawHeader();
-//     drawFooter(1);
-//     drawTableHeader();
-  
-//     let pageNum = 1;
-  
-//     // Render Grouped Data
-//     for (const [group, entries] of Object.entries(groupedData)) {
-//       // Check if enough space for group header, add page if not
-//       if (y + lineHeight > pageHeight - footerHeight - 20) {
-//         doc.addPage();
-//         pageNum++;
-//         y = headerHeight + 5; // Reset y position after new page
-//         drawHeader();
-//         drawFooter(pageNum);
-//         drawTableHeader();
-//       }
-  
-//       // Draw Group Header with extra spacing to avoid overlap with the table header line
-//       doc.setFontSize(12);
-//       doc.setFont("NotoSansMalayalam", "bold");
-  
-//       y += lineHeight; // Increase spacing between the group name and table header
-//       doc.text(` ${group}`, 10, y);
-//       y += lineHeight; // Additional space below group header
-  
-//       let groupTotal = 0; // Initialize group total
-  
-//       // Draw Entries in Table Format
-//       for (const entry of entries) {
-//         // Ensure Rate and Amount are numbers
-//         const rate = Number(entry.ItemValue);  // Convert Rate to number
-//         const amount = Number(entry.Receipt_Amt);  // Convert Amount to number
-  
-//         // Apply .toFixed() only after conversion to number
-//         const rateFormatted = isNaN(rate) ? '0.00' : rate.toFixed(2);  // Check if Rate is a valid number
-//         const amountFormatted = isNaN(amount) ? '0.00' : amount.toFixed(2);  // Check if Amount is a valid number
-  
-//         // Check if enough space for the row, add page if not
-//         if (y + lineHeight > pageHeight - footerHeight - 10) {
-//           doc.addPage();
-//           pageNum++;
-//           y = headerHeight + 5; // Reset y position after new page
-//           drawHeader();
-//           drawFooter(pageNum);
-//           drawTableHeader();
-//         }
-  
-//         doc.setFontSize(contentFontSize);
-//         doc.setFont("NotoSansMalayalam", "normal");
-  
-//         const row = [
-//           entry.BillNo,
-//           this.wrapText(doc, entry.NM_Name, maxColumnWidths[1] - 5), // Wrap Name text
-//           this.wrapText(doc, entry.Name, maxColumnWidths[2] - 5), // Wrap Vazhipad text
-//           entry.Star,
-//           entry.Qty,  // Ennam (Qty) data goes under Qty column
-//           rateFormatted,  // Use formatted Rate
-//           amountFormatted,  // Use formatted Amount
-//         ];
-//         let x = 10;
-  
-//         row.forEach((cell, index) => {
-//           if (index === 4 || index === 5 || index === 6) {
-//             // Right-align for Qty (Ennam), Rate, and Amount
-//             doc.text(String(cell), x + maxColumnWidths[index] - 10, y + 5, { align: "right" });
-//           } else {
-//             doc.text(String(cell), x, y + 5);  // Left-align the others
-//           }
-//           x += maxColumnWidths[index];
-//         });
-  
-//         groupTotal += amount; // Add to group total
-//         grandTotal += amount; // Add to grand total
-//         y += lineHeight;
-//       }
-  
-//       // Draw Group Total
-//       if (y + lineHeight > pageHeight - footerHeight - 10) {
-//         doc.addPage();
-//         pageNum++;
-//         y = headerHeight + 5; // Reset y position after new page
-//         drawHeader();
-//         drawFooter(pageNum);
-//         drawTableHeader();
-//       }
-  
-//       // Add group total at the end
-//       doc.setFontSize(12);
-//       doc.setFont("NotoSansMalayalam", "bold");
-//       doc.text(` Total: ${group}`, 10, y + 5); // Label for the group total
-//       doc.text(groupTotal.toFixed(2), pageWidth - 20, y + 5, { align: "right" }); // Total amount aligned to the right
-  
-//       y += lineHeight + 5; // Add space after the total for the next group or footer
-//     }
-  
-//     // Add Grand Total below the last Group Total
-//     doc.setFontSize(12);
-//     doc.setFont("NotoSansMalayalam", "bold");
-//     doc.text("Grand Total:", 10, y + 5); // Label for the grand total
-//     doc.text(grandTotal.toFixed(2), pageWidth - 20, y + 5, { align: "right" }); // Grand total aligned to the right
-  
-//     y += lineHeight + 10; // Space after the grand total
-  
-//     // Save PDF
-//     // doc.save("Nadavaravu_Report.pdf");
-//     const pdfBlob = doc.output('blob');
-//     const pdfUrl = URL.createObjectURL(pdfBlob);
-//     window.open(pdfUrl, '_blank');
-//     // doc.save('vazhipad_report_with_header_footer.pdf');
-
-
-
-//   },
-//   (error:any) => {
-//     console.error('Error loading font:', error);
-//   }
-// );
-
-
-//   }
-  
-
-
-getTotalAmount(): number {
-  return this.data.reduce((sum, item) => sum + item.Qty*item.Rate, 0);
-}
-  
-  // Helper function to wrap text for a given column width
-  wrapText(doc: jsPDF, text: string, maxWidth: number): string {
-    const words = text.split(' ');
-    let currentLine = '';
-    let wrappedText = '';
-  
-    words.forEach(word => {
-      if (doc.getTextWidth(currentLine + word) < maxWidth) {
-        currentLine += word + ' ';
-      } else {
-        wrappedText += currentLine.trim() + '\n';
-        currentLine = word + ' ';
-      }
-    });
-  
-    wrappedText += currentLine.trim();
-    return wrappedText;
-  }
-  
-  
-  
-  
-  
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-  }
-  
-  
-
-  getTransactionType(transmode: string): string {
-    switch (transmode) {
-      case 'ON':
-        return 'ONLINE';
-      case 'CS':
-        return 'CASH';
-      case 'MO':
-        
-        return 'MONEY ORDER';
-      case 'UP':
-        return 'UPI';
-      case 'CH':
-        return 'CHEQUE';
-      case 'CR':
-        return 'CREDIT';
-      case 'DE':
-        return 'DEBIT';
-
-      default:
-        return 'OTHERS';
-    }
-  }
-
-
-  
- // Calculate the grand total for each transaction mode
- getGrandTotalForTrnsMode(item: string): any {
-  const items = this.groupedData[item]; // Get items for the transaction mode
-  if (!items || items.length === 0) {
-    return 0; // No items found, return 0
-  }
-// Calculate the total
-const total = items.reduce((sum, item) => {
- // Default to 0 if Rate is missing
-  return sum +item. Qty *item.Rate;
-}, 0);
-
-return total;
-
-
-}
-
 }

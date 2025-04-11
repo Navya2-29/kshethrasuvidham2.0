@@ -8,11 +8,9 @@ import {
   MatPaginatorModule,
   PageEvent,
 } from '@angular/material/paginator';
-import { jsPDF } from 'jspdf';
-import { ReportData } from '../../../models/poornam-report';
+
 import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import html2pdf from 'html2pdf.js';
 import { HttpClient } from '@angular/common/http';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -42,28 +40,16 @@ interface GroupedData {
     MatFormFieldModule,
     MatInputModule,
     TranslateModule,
+  
   ],
   templateUrl: './report-counter-transaction.component.html',
   styleUrl: './report-counter-transaction.component.css'
 })
 export class ReportCounterTransactionComponent {
-  displayedColumns: string[] = [
-    'BillDate',
-    'Vazhipad',
-    'Qty',
-    'Rate',
-    'Amount',
-    'TrnsMode',
-  ];
-  dataSource = new MatTableDataSource<ReportDailyStmt>();
-  length = 0;
-  pageSize = 10;
-  pageSizeOptions: number[] = [10, 50, 100, 200, 300, 500, 1000];
-  pageIndex = 0;
+ 
   data: ReportDailyStmt[] = [];
   fromDate: string;
   toDate: string;
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
   groupedData: GroupedData = {};
   currentDate: string = '';
   currentPage: number = 1;
@@ -112,9 +98,7 @@ export class ReportCounterTransactionComponent {
         // this.groupDataByTransactionMode(this.data); // Group the data
         // const groupedData =this. groupByCounterAndUser(data);
         this.groupData();
-        this.dataSource.data = this.data;
-        this.length = data.length;
-        this.dataSource.paginator = this.paginator;
+        
 
         // console.log(groupedData,"dattata");
       },
@@ -207,11 +191,6 @@ export class ReportCounterTransactionComponent {
     }
   }
 
-  onPageChange(event: PageEvent) {
-    this.pageIndex = event.pageIndex;
-    this.pageSize = event.pageSize;
-  }
-
   goBack(): void {
     console.log('Going back...'); // Log to verify method execution
     this.router.navigate(['/getReport']);
@@ -226,7 +205,6 @@ export class ReportCounterTransactionComponent {
  
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
   formatDateToDDMMYYYY(date: string): string {

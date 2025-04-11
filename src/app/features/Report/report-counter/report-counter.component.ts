@@ -17,6 +17,8 @@ import { MatInputModule } from '@angular/material/input';
 import { HttpClient } from '@angular/common/http';
 import { ReportDailyStmt } from '../../../models/dailytrasaction.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { PrintreportService } from '../../../shared/service/printreport.service';
+import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 @Component({
   selector: 'app-report-counter',
   standalone: true,
@@ -24,7 +26,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     MatTableModule,
     MatPaginatorModule,
     HeaderComponent,
-    MatTooltipModule,MatFormFieldModule,TranslateModule, MatInputModule,],
+    MatTooltipModule,MatFormFieldModule,TranslateModule, MatInputModule,SpinnerComponent],
   templateUrl: './report-counter.component.html',
   styleUrls: ['./report-counter.component.css','/src/assets/styles/report.style.css'],
 })
@@ -62,13 +64,14 @@ export class ReportCounterComponent {
   lang:string|null;
   templeName:string|null;
   templeAddress:string|null;
-
+loading:boolean;
   constructor(
     private route: ActivatedRoute,
     private service: ReportService,
     private router: Router,
     private http:HttpClient,
     private ts: TranslateService,
+    private reportPrintservice:PrintreportService
   ) {
     this.counterId=localStorage.getItem('Counter')
     this.lang=localStorage.getItem('Language');
@@ -93,6 +96,7 @@ this.ts.use(this.lang || 'en');
   }
   // Call your API service to get the report data
   fetchReportData(type: string, fromDate: string, toDate: string): void {
+    this.loading=true;
     const payLoad = {
       Type: "DailyStmt",
       FromDate: fromDate,
@@ -103,6 +107,7 @@ this.ts.use(this.lang || 'en');
         console.log('Fetched report data:', data);
         this.data = data;
       this.groupData() // Group the data
+      this.loading=false;
         // this.data = data.sort((a: any, b: any) => {
         //   const [numA, denomA] = a.BillNo.split('/').map(Number);
         //   const [numB, denomB] = b.BillNo.split('/').map(Number);
@@ -219,7 +224,7 @@ getTotalForCuser(counterId: string, cuser: string): number {
     switch (transmode) {
       case 'ON':
         if (this.lang == 'en') {
-          return 'ONLINE';
+          return 'BANK';
         } else {
           return 'ഓൺലൈൻ';
         }
@@ -274,131 +279,132 @@ getTotalForCuser(counterId: string, cuser: string): number {
 
 
   generatePDF(){
-    const printContent = document.getElementById('print-section');
-    if (!printContent) {
-      console.error('No content found to print');
-      return;
-    }
+  this.reportPrintservice.generatePDF();
+//     const printContent = document.getElementById('print-section');
+//     if (!printContent) {
+//       console.error('No content found to print');
+//       return;
+//     }
   
-    const WindowPrt = window.open('', '', 'width=800,height=600');
+//     const WindowPrt = window.open('', '', 'width=800,height=600');
     
-    // Check if the print window was successfully opened
-    if (!WindowPrt) {
-      console.error('Unable to open print window. Please check pop-up blockers.');
-      return;
-    }
+//     // Check if the print window was successfully opened
+//     if (!WindowPrt) {
+//       console.error('Unable to open print window. Please check pop-up blockers.');
+//       return;
+//     }
   
-    WindowPrt.document.write(`
-      <html>
-        <head>
-          <title>Print</title>
-           <style>
+//     WindowPrt.document.write(`
+//       <html>
+//         <head>
+//           <title>Print</title>
+//            <style>
          
-          body {
-    font-size: 16px;
-    font-family: "Times New Roman", serif;
-  }
+//           body {
+//     font-size: 16px;
+//     font-family: "Times New Roman", serif;
+//   }
     
-          p,h4,h2{
-          line-height:1;
-          margin-top:0;
-          text-align:center;
-          }
-          .templename{
-           line-height:1;
-          margin-top:0;
-          text-align:center;
-          }
-          hr{
-          height:2px;
-          background-color:gray;
-          }
-          .tabble-heading h3{
-  font-family: 'Times New Roman', Times, serif;
-  font-weight: bold;
-  font-size: 16px;
-  margin: 8px 0 0 0;
-}
-          table {
-            width: 100%;
-            border-collapse: collapse;
-          }
-          table, th, td {
-            border: 1px solid black;
-            text-transform: uppercase;
+//           p,h4,h2{
+//           line-height:1;
+//           margin-top:0;
+//           text-align:center;
+//           }
+//           .templename{
+//            line-height:1;
+//           margin-top:0;
+//           text-align:center;
+//           }
+//           hr{
+//           height:2px;
+//           background-color:gray;
+//           }
+//           .tabble-heading h3{
+//   font-family: 'Times New Roman', Times, serif;
+//   font-weight: bold;
+//   font-size: 16px;
+//   margin: 8px 0 0 0;
+// }
+//           table {
+//             width: 100%;
+//             border-collapse: collapse;
+//           }
+//           table, th, td {
+//             border: 1px solid black;
+//             text-transform: uppercase;
 
-          }
-            p.counter{
-text-align: left !important;
-font-family: 'Times New Roman', Times, serif;
-margin-top: 10px;
-font-size: large;
-text-transform: uppercase;
-margin:0;
-}
-p.user{
-  text-align: left !important;
-  font-family: 'Times New Roman', Times, serif; 
-  font-size: larger;
-  color: maroon;
-  text-transform: uppercase;
-  margin:0;
-}
-p.transaction{
-  text-align: left !important;
-  font-family: 'Times New Roman', Times, serif; 
-  font-size: medium;
-  text-transform: uppercase;
-  margin:0;
+//           }
+//             p.counter{
+// text-align: left !important;
+// font-family: 'Times New Roman', Times, serif;
+// margin-top: 10px;
+// font-size: large;
+// text-transform: uppercase;
+// margin:0;
+// }
+// p.user{
+//   text-align: left !important;
+//   font-family: 'Times New Roman', Times, serif; 
+//   font-size: larger;
+//   color: maroon;
+//   text-transform: uppercase;
+//   margin:0;
+// }
+// p.transaction{
+//   text-align: left !important;
+//   font-family: 'Times New Roman', Times, serif; 
+//   font-size: medium;
+//   text-transform: uppercase;
+//   margin:0;
 
-}
-.counterTable{
-  margin: 5px 0;
+// }
+// .counterTable{
+//   margin: 5px 0;
 
-}
-h5#totalamount{
-font-family: 'Times New Roman', Times, serif;
-font-weight: bolder;
-font-size: 20px;
-margin: 0px;
+// }
+// h5#totalamount{
+// font-family: 'Times New Roman', Times, serif;
+// font-weight: bolder;
+// font-size: 20px;
+// margin: 0px;
 
-}
-h5.totalcounter{
-  font-family: 'Times New Roman', Times, serif;
-font-weight: bolder;
-font-size: 20px;
-margin: 0px;
-}
-.templename{
-text-align:center;
-}
-.grandtotal{
-text-align:right;
-}
-            .number,.total{
-            text-align:right;
-            }
-          th, td {
-           padding-left:5px;
-            text-align: left;
-          }
-            #print-section{
-padding-bottom: 100px;
-  }
-        </style>
-        </head>
-        <body>${printContent.innerHTML}</body>
-      </html>
-    `);
+// }
+// h5.totalcounter{
+//   font-family: 'Times New Roman', Times, serif;
+// font-weight: bolder;
+// font-size: 20px;
+// margin: 0px;
+// }
+// .templename{
+// text-align:center;
+// }
+// .grandtotal{
+// text-align:right;
+// }
+//             .number,.total{
+//             text-align:right;
+//             }
+//           th, td {
+//            padding-left:5px;
+//             text-align: left;
+//           }
+//             #print-section{
+// padding-bottom: 100px;
+//   }
+//         </style>
+//         </head>
+//         <body>${printContent.innerHTML}</body>
+//       </html>
+//     `);
   
-    WindowPrt.document.close();
-    WindowPrt.focus();
+//     WindowPrt.document.close();
+//     WindowPrt.focus();
   
-    // Make sure that the window is still valid before calling print and close
-    if (WindowPrt) {
-      WindowPrt.print();
-      WindowPrt.close();
-    }
+//     // Make sure that the window is still valid before calling print and close
+//     if (WindowPrt) {
+//       WindowPrt.print();
+//       WindowPrt.close();
+//     }
 
     }
     

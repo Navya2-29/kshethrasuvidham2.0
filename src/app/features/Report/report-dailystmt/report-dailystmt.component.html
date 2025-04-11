@@ -1,4 +1,6 @@
 <app-header></app-header>
+<app-spinner *ngIf="loading"></app-spinner>
+
 <div class="report-container">
   <div class="icon-container">
     <button
@@ -17,7 +19,7 @@
   </div>
   <div id="print-section">
     <div class="header-print">
-      <h3>
+      <h3 class="templename">
         {{ templeName }}
       </h3>
       <h4>
@@ -31,10 +33,11 @@
         {{ formatDateToDDMMYYYY(fromDate) }} to
         {{ formatDateToDDMMYYYY(toDate) }}
       </p>
-<hr/>
+<hr>
+</div>
       <div  class="body-print">
-        <div id="pdf-content" *ngIf="data.length > 0">
-        <table >
+        <div id="pdf-content" *ngIf="data.length>0" >
+        <table>
           <thead>
             <tr>
               <th>{{"Report Name.Bill Date" | translate}}</th>
@@ -55,10 +58,10 @@
               <th>
                 {{ "QUANTITY" | translate }}
               </th>
-              <th>
+              <th class="number">
                 {{ "RATE" | translate }}
               </th>
-              <th>
+              <th class="number">
                 {{ "AMOUNT" | translate }}
               </th>
             </tr>
@@ -103,10 +106,10 @@
       <div class="nodataFound" *ngIf="data.length === 0">
         <h2></h2>
       </div>
-      
-      </div>
       <hr/>
-    </div>
+      </div>
+   
+  
    
   </div>
 </div>

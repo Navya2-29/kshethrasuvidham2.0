@@ -16,6 +16,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { PrintreportService } from '../../../shared/service/printreport.service';
+import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 @Component({
   selector: 'app-report-money-order',
   standalone: true,
@@ -27,7 +29,8 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     MatTooltipModule,
     MatFormFieldModule,
     MatInputModule,
-    TranslateModule 
+    TranslateModule ,
+    SpinnerComponent
   ],
   templateUrl: './report-money-order.component.html',
   styleUrls: ['./report-money-order.component.css','/src/assets/styles/report.style.css'],
@@ -59,12 +62,15 @@ export class ReportMoneyOrderComponent {
   templeAddress:string|null;
   filteredCreditCollection:any[]=[];
   filteredFeecollection:any[]=[];
+  loading:boolean;
   constructor(
     private route: ActivatedRoute,
     private service: ReportService,
     private router: Router,
     private http: HttpClient,
-     private ts: TranslateService
+     private ts: TranslateService,
+    private reportPrintservice:PrintreportService,
+     
   ) {
 
     this.lang=localStorage.getItem('Language');
@@ -89,6 +95,7 @@ export class ReportMoneyOrderComponent {
 
   // Call your API service to get the report data
   fetchReportData(type: string, fromDate: string, toDate: string): void {
+    this.loading=true;
     const payLoad = {
       Type: 'MoneyOrder',
       FromDate: fromDate,
@@ -99,6 +106,7 @@ export class ReportMoneyOrderComponent {
         console.log('Fetched report data:', data);
         this.data = data;
         this.filteredData = this.data.filter((item) => item.TrnsMode === 'MO');
+        this.loading=false;
         // this.filteredData = this.filteredData.sort((a: any, b: any) => {
         //   const [numA, denomA] = a.BillNo.split('/').map(Number);
         //   const [numB, denomB] = b.BillNo.split('/').map(Number);
@@ -123,6 +131,7 @@ export class ReportMoneyOrderComponent {
 
 
   fetchCreditcollectionReportData(type: string, fromDate: string, toDate: string): void {
+    this.loading=true;
     const payLoad = {
       Type: 'CreditCollect',
       FromDate: fromDate,
@@ -133,7 +142,7 @@ export class ReportMoneyOrderComponent {
         // this.data=data;
          this.filteredCreditCollection = data.filter((item:any) => item.TrnMode === 'MO');   
          console.log('Fetched report data: credit collect', this.filteredCreditCollection);
-
+this.loading=false;
       },
       error: (error) => {
         console.error('Error fetching report data:', error);
@@ -463,90 +472,93 @@ export class ReportMoneyOrderComponent {
   }
 
 generatePDF(){
-  const printContent = document.getElementById('print-section');
-  if (!printContent) {
-    console.error('No content found to print');
-    return;
-  }
+  this.reportPrintservice.generatePDF()
 
-  const WindowPrt = window.open('', '', 'width=800,height=600');
+
+//   const printContent = document.getElementById('print-section');
+//   if (!printContent) {
+//     console.error('No content found to print');
+//     return;
+//   }
+
+//   const WindowPrt = window.open('', '', 'width=800,height=600');
   
-  // Check if the print window was successfully opened
-  if (!WindowPrt) {
-    console.error('Unable to open print window. Please check pop-up blockers.');
-    return;
-  }
+//   // Check if the print window was successfully opened
+//   if (!WindowPrt) {
+//     console.error('Unable to open print window. Please check pop-up blockers.');
+//     return;
+//   }
 
-  WindowPrt.document.write(`
-    <html>
-      <head>
-        <title>Print</title>
-       <style>
+//   WindowPrt.document.write(`
+//     <html>
+//       <head>
+//         <title>Print</title>
+//        <style>
          
-          body {
-    font-size: 16px;
-    font-family: "Times New Roman", serif;
-  }
-          h3,p,h4,h2{
-          line-height:1;
-          margin-top:0;
-          text-align:center;
-          }
-          .templename{
-           line-height:1;
-          margin-top:0;
-          text-align:center;
-          }
-          hr{
-          height:2px;
-          }
-          .number,.total{
-            text-align:right;
-            }
-          .tabble-heading h3{
-  font-family: 'Times New Roman', Times, serif;
-  font-weight: bold;
-  font-size: 16px;
-  margin: 8px 0 0 0;
-}
-          table {
-            width: 100%;
-            border-collapse: collapse;
-          }
-          table, th, td {
-            border: 1px solid black;
-            text-transform: uppercase;
+//           body {
+//     font-size: 16px;
+//     font-family: "Times New Roman", serif;
+//   }
+//           h3,p,h4,h2{
+//           line-height:1;
+//           margin-top:0;
+//           text-align:center;
+//           }
+//           .templename{
+//            line-height:1;
+//           margin-top:0;
+//           text-align:center;
+//           }
+//           hr{
+//           height:2px;
+//           }
+//           .number,.total{
+//             text-align:right;
+//             }
+//           .tabble-heading h3{
+//   font-family: 'Times New Roman', Times, serif;
+//   font-weight: bold;
+//   font-size: 16px;
+//   margin: 8px 0 0 0;
+// }
+//           table {
+//             width: 100%;
+//             border-collapse: collapse;
+//           }
+//           table, th, td {
+//             border: 1px solid black;
+//             text-transform: uppercase;
 
-          }
-            .total,number{
-            text-align:right;
-            }
-          th, td {
-           padding-left:5px;
-            text-align: left;
-          }
-            #print-section{
-padding-bottom: 100px;
-  }
+//           }
+//             .total,number{
+//             text-align:right;
+//             }
+//           th, td {
+//            padding-left:5px;
+//             text-align: left;
+//           }
+//             #print-section{
+// padding-bottom: 100px;
+//   }
        
     
-    .page-break {
-      page-break-before: always;
-    }
-          </style>
-      </head>
-      <body>${printContent.innerHTML}</body>
-    </html>
-  `);
+//     .page-break {
+//       page-break-before: always;
+//     }
+//           </style>
+//       </head>
+//       <body>${printContent.innerHTML}</body>
+//     </html>
+//   `);
 
-  WindowPrt.document.close();
-  WindowPrt.focus();
+//   WindowPrt.document.close();
+//   WindowPrt.focus();
 
-  // Make sure that the window is still valid before calling print and close
-  if (WindowPrt) {
-    WindowPrt.print();
-    WindowPrt.close();
-  } 
+//   // Make sure that the window is still valid before calling print and close
+//   if (WindowPrt) {
+//     WindowPrt.print();
+//     WindowPrt.close();
+//   } 
 
 }
 

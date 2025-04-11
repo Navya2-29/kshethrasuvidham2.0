@@ -17,6 +17,8 @@ import { MatInputModule } from '@angular/material/input';
 import { HttpClient } from '@angular/common/http';
 import { ReportDailyStmt } from '../../../models/dailytrasaction.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { PrintreportService } from '../../../shared/service/printreport.service';
+import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 @Component({
   selector: 'app-donation-report',
   standalone: true,
@@ -26,7 +28,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     MatPaginatorModule,
     HeaderComponent,
     MatTooltipModule,MatFormFieldModule,TranslateModule, MatInputModule,
-
+SpinnerComponent
   ],
   templateUrl: './donation-report.component.html',
   styleUrls: ['./donation-report.component.css','/src/assets/styles/report.style.css'],
@@ -55,7 +57,7 @@ export class DonationReportComponent {
   data: ReportDailyStmt[] = [];
   fromDate:string;
   toDate:string;
-
+loading:boolean;
   currentDate: string = '';
 
   counterId:string | null;
@@ -69,6 +71,7 @@ export class DonationReportComponent {
     private router: Router,
     private http:HttpClient,
     private ts: TranslateService,
+    private reportPrintservice:PrintreportService
   ) {
     this.counterId=localStorage.getItem('Counter')
     this.lang=localStorage.getItem('Language');
@@ -93,6 +96,7 @@ this.ts.use(this.lang || 'en');
   }
   // Call your API service to get the report data
   fetchReportData(type: string, fromDate: string, toDate: string): void {
+    this.loading=true;
     const payLoad = {
       Type: "DonationRpt",
       FromDate: fromDate,
@@ -105,6 +109,7 @@ this.ts.use(this.lang || 'en');
        
         this.dataSource.data = this.data;
         this.length = data.length;
+        this.loading=false;
        
       },
       error: (error) => {
@@ -172,87 +177,88 @@ this.ts.use(this.lang || 'en');
 
 
   generatePDF(){
-    const printContent = document.getElementById('print-section');
-    if (!printContent) {
-      console.error('No content found to print');
-      return;
-    }
+    this.reportPrintservice.generatePDF();
+//     const printContent = document.getElementById('print-section');
+//     if (!printContent) {
+//       console.error('No content found to print');
+//       return;
+//     }
   
-    const WindowPrt = window.open('', '', 'width=800,height=600');
+//     const WindowPrt = window.open('', '', 'width=800,height=600');
     
-    // Check if the print window was successfully opened
-    if (!WindowPrt) {
-      console.error('Unable to open print window. Please check pop-up blockers.');
-      return;
-    }
+//     // Check if the print window was successfully opened
+//     if (!WindowPrt) {
+//       console.error('Unable to open print window. Please check pop-up blockers.');
+//       return;
+//     }
   
-    WindowPrt.document.write(`
-      <html>
-        <head>
-          <title>Print</title>
-          <style>
+//     WindowPrt.document.write(`
+//       <html>
+//         <head>
+//           <title>Print</title>
+//           <style>
          
-          body {
-    font-size: 16px;
-    font-family: "Times New Roman", serif;
-  }
-          h3,p,h4,h2{
-          line-height:1;
-          margin-top:0;
-          text-align:center;
-          }
-          .templename{
-           line-height:1;
-          margin-top:0;
-          text-align:center;
-          }
-          hr{
-          height:2px;
-          }
-          .tabble-heading h3{
-  font-family: 'Times New Roman', Times, serif;
-  font-weight: bold;
-  font-size: 16px;
-  margin: 8px 0 0 0;
-}
-          table {
-            width: 100%;
-            border-collapse: collapse;
-          }
-          table, th, td {
-            border: 1px solid black;
-            text-transform: uppercase;
+//           body {
+//     font-size: 16px;
+//     font-family: "Times New Roman", serif;
+//   }
+//           h3,p,h4,h2{
+//           line-height:1;
+//           margin-top:0;
+//           text-align:center;
+//           }
+//           .templename{
+//            line-height:1;
+//           margin-top:0;
+//           text-align:center;
+//           }
+//           hr{
+//           height:2px;
+//           }
+//           .tabble-heading h3{
+//   font-family: 'Times New Roman', Times, serif;
+//   font-weight: bold;
+//   font-size: 16px;
+//   margin: 8px 0 0 0;
+// }
+//           table {
+//             width: 100%;
+//             border-collapse: collapse;
+//           }
+//           table, th, td {
+//             border: 1px solid black;
+//             text-transform: uppercase;
 
-          }
-            .total,number{
-            text-align:right;
-            }
-          th, td {
-           padding-left:5px;
-            text-align: left;
-          }
-            #print-section{
-padding-bottom: 100px;
-  }
+//           }
+//             .total,number{
+//             text-align:right;
+//             }
+//           th, td {
+//            padding-left:5px;
+//             text-align: left;
+//           }
+//             #print-section{
+// padding-bottom: 100px;
+//   }
        
     
-    .page-break {
-      page-break-before: always;
-    }
-          </style>
-        </head>
-        <body>${printContent.innerHTML}</body>
-      </html>
-    `);
+//     .page-break {
+//       page-break-before: always;
+//     }
+//           </style>
+//         </head>
+//         <body>${printContent.innerHTML}</body>
+//       </html>
+//     `);
   
-    WindowPrt.document.close();
-    WindowPrt.focus();
+//     WindowPrt.document.close();
+//     WindowPrt.focus();
   
-    // Make sure that the window is still valid before calling print and close
-    if (WindowPrt) {
-      WindowPrt.print();
-      WindowPrt.close();
-    }
+//     // Make sure that the window is still valid before calling print and close
+//     if (WindowPrt) {
+//       WindowPrt.print();
+//       WindowPrt.close();
+//     }
 
     }
     

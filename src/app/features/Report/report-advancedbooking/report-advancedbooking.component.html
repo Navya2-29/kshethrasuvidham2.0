@@ -1,4 +1,6 @@
 <app-header></app-header>
+<app-spinner *ngIf="loading"></app-spinner>
+
 <div class="report-container">
 <div class="icon-container">
   <button mat-icon-button matTooltip="Back to previous page" (click)="goBack()">
@@ -11,7 +13,7 @@
 <div id="print-section">
   <div class="header-print">
     <h3
-      
+    class="templename"  
     >
       {{ templeName }}
     </h3>
@@ -64,10 +66,10 @@
           <th >
             {{ "QUANTITY" | translate }}
           </th>
-          <th >
+          <th class="number">
             {{ "RATE" | translate }}
           </th>
-          <th >
+          <th class="number">
             {{ "AMOUNT" | translate }}
           </th>
         </tr>

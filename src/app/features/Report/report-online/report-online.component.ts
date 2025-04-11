@@ -14,10 +14,12 @@ import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { PrintreportService } from '../../../shared/service/printreport.service';
+import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 @Component({
   selector: 'app-report-online',
   standalone: true,
-  imports: [CommonModule,MatTableModule,TranslateModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
+  imports: [CommonModule,MatTableModule,SpinnerComponent, TranslateModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
   templateUrl: './report-online.component.html',
   styleUrls: ['./report-online.component.css','/src/assets/styles/report.style.css'],
 })
@@ -41,7 +43,10 @@ export class ReportOnlineComponent {
   filteredNadavaravu:any[]=[];
   filteredCreditCollection:any[]=[];
   filteredFeecollection:any[]=[];
-  constructor(private route: ActivatedRoute, private ts: TranslateService, private service: ReportService,private router: Router, private http:HttpClient) {
+  loading:boolean;
+  constructor(private route: ActivatedRoute,
+        private reportPrintservice:PrintreportService,
+     private ts: TranslateService, private service: ReportService,private router: Router, private http:HttpClient) {
 
     this.lang=localStorage.getItem('Language');
     this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
@@ -66,6 +71,7 @@ export class ReportOnlineComponent {
 
  // Call your API service to get the report data
   fetchReportData(type: string, fromDate: string, toDate: string): void {
+    this.loading=true;
     const payLoad = {
       Type: 'Online',
       FromDate: fromDate,
@@ -76,6 +82,7 @@ export class ReportOnlineComponent {
         console.log('Fetched report data:', data);
         this.data=data;
          this.filteredData = this.data.filter(item => item.TrnsMode === 'ON');   
+         this.loading=false;
       //    this.filteredData = this.filteredData.sort((a:any, b:any) => {
       //     const [numA, denomA] = a.BillNo.split('/').map(Number);
       //     const [numB, denomB] = b.BillNo.split('/').map(Number);
@@ -85,10 +92,10 @@ export class ReportOnlineComponent {
       // });
       console.log(this.filteredData,"aaaaaaaaaaaaaaaaaaa")  
 
-        this.dataSource.data = this.filteredData
-        console.log( this.dataSource.data)
-        this.length =this.filteredData .length; 
-        this.dataSource.paginator = this.paginator;
+        // this.dataSource.data = this.filteredData
+        // console.log( this.dataSource.data)
+        // this.length =this.filteredData .length; 
+        // this.dataSource.paginator = this.paginator;
         
         console.log(this.filteredData);
       },
@@ -100,6 +107,7 @@ export class ReportOnlineComponent {
 
 
   fetchNadavaravuReportData(type: string, fromDate: string, toDate: string): void {
+    this.loading=true;
     const payLoad = {
       Type: 'NadavaravuRpt',
       FromDate: fromDate,
@@ -113,7 +121,7 @@ export class ReportOnlineComponent {
       
          console.log('Fetched report data:nadavaravu',  this.filteredNadavaravu);
         // this.length =this.filteredData .length; 
-       
+       this.loading=false;
       },
       error: (error) => {
         console.error('Error fetching report data:', error);
@@ -123,6 +131,7 @@ export class ReportOnlineComponent {
 
 
   fetchCreditcollectionReportData(type: string, fromDate: string, toDate: string): void {
+    this.loading=true;
     const payLoad = {
       Type: 'CreditCollect',
       FromDate: fromDate,
@@ -133,7 +142,7 @@ export class ReportOnlineComponent {
         // this.data=data;
          this.filteredCreditCollection = data.filter((item:any) => item.TrnMode === 'ON');   
          console.log('Fetched report data: credit collect', this.filteredCreditCollection);
-
+this.loading=false;
       },
       error: (error) => {
         console.error('Error fetching report data:', error);
@@ -142,6 +151,7 @@ export class ReportOnlineComponent {
   }
 
   fetchFeecollectionReportData(type: string, fromDate: string, toDate: string): void {
+    this.loading=true;
     const payLoad = {
       Type: 'FeeCollectRpt',
       FromDate: fromDate,
@@ -168,6 +178,7 @@ export class ReportOnlineComponent {
         
       //   console.log(this.filteredData);
       console.log('Fetched report data fee collect:', this.filteredFeecollection);
+      this.loading=false;
       },
       error: (error) => {
         console.error('Error fetching report data:', error);
@@ -450,90 +461,91 @@ export class ReportOnlineComponent {
 
     
 generatePDF(){
-  const printContent = document.getElementById('print-section');
-  if (!printContent) {
-    console.error('No content found to print');
-    return;
-  }
+  this.reportPrintservice.generatePDF();
+//   const printContent = document.getElementById('print-section');
+//   if (!printContent) {
+//     console.error('No content found to print');
+//     return;
+//   }
 
-  const WindowPrt = window.open('', '', 'width=800,height=600');
+//   const WindowPrt = window.open('', '', 'width=800,height=600');
   
-  // Check if the print window was successfully opened
-  if (!WindowPrt) {
-    console.error('Unable to open print window. Please check pop-up blockers.');
-    return;
-  }
+//   // Check if the print window was successfully opened
+//   if (!WindowPrt) {
+//     console.error('Unable to open print window. Please check pop-up blockers.');
+//     return;
+//   }
 
-  WindowPrt.document.write(`
-    <html>
-      <head>
-        <title>Print</title>
-        <style>
+//   WindowPrt.document.write(`
+//     <html>
+//       <head>
+//         <title>Print</title>
+//         <style>
          
-          body {
-    font-size: 16px;
-    font-family: "Times New Roman", serif;
-  }
-          h3,p,h4,h2{
-          line-height:1;
-          margin-top:0;
-          text-align:center;
-          }
-          .templename{
-           line-height:1;
-          margin-top:0;
-          text-align:center;
-          }
-          hr{
-          height:2px;
-          }
-          .number,.total{
-            text-align:right;
-            }
-          .tabble-heading h3{
-  font-family: 'Times New Roman', Times, serif;
-  font-weight: bold;
-  font-size: 16px;
-  margin: 8px 0 0 0;
-}
-          table {
-            width: 100%;
-            border-collapse: collapse;
-          }
-          table, th, td {
-            border: 1px solid black;
-            text-transform: uppercase;
+//           body {
+//     font-size: 16px;
+//     font-family: "Times New Roman", serif;
+//   }
+//           h3,p,h4,h2{
+//           line-height:1;
+//           margin-top:0;
+//           text-align:center;
+//           }
+//           .templename{
+//            line-height:1;
+//           margin-top:0;
+//           text-align:center;
+//           }
+//           hr{
+//           height:2px;
+//           }
+//           .number,.total{
+//             text-align:right;
+//             }
+//           .tabble-heading h3{
+//   font-family: 'Times New Roman', Times, serif;
+//   font-weight: bold;
+//   font-size: 16px;
+//   margin: 8px 0 0 0;
+// }
+//           table {
+//             width: 100%;
+//             border-collapse: collapse;
+//           }
+//           table, th, td {
+//             border: 1px solid black;
+//             text-transform: uppercase;
 
-          }
-            .total,number{
-            text-align:right;
-            }
-          th, td {
-           padding-left:5px;
-            text-align: left;
-          }
-            #print-section{
-padding-bottom: 100px;
-  }
+//           }
+//             .total,number{
+//             text-align:right;
+//             }
+//           th, td {
+//            padding-left:5px;
+//             text-align: left;
+//           }
+//             #print-section{
+// padding-bottom: 100px;
+//   }
        
     
-    .page-break {
-      page-break-before: always;
-    }
-          </style>
-      </head>
-      <body>${printContent.innerHTML}</body>
-    </html>
-  `);
+//     .page-break {
+//       page-break-before: always;
+//     }
+//           </style>
+//       </head>
+//       <body>${printContent.innerHTML}</body>
+//     </html>
+//   `);
 
-  WindowPrt.document.close();
-  WindowPrt.focus();
+//   WindowPrt.document.close();
+//   WindowPrt.focus();
 
-  // Make sure that the window is still valid before calling print and close
-  if (WindowPrt) {
-    WindowPrt.print();
-    WindowPrt.close();
-  } 
+//   // Make sure that the window is still valid before calling print and close
+//   if (WindowPrt) {
+//     WindowPrt.print();
+//     WindowPrt.close();
+//   } 
 
 }
 

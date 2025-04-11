@@ -15,12 +15,14 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
+import { PrintreportService } from '../../../shared/service/printreport.service';
+import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 
 
 @Component({
   selector: 'app-report-cancel',
   standalone: true,
-  imports: [CommonModule,MatTableModule,TranslateModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
+  imports: [CommonModule,MatTableModule,SpinnerComponent, TranslateModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
   templateUrl: './report-cancel.component.html',
   styleUrls: ['./report-cancel.component.css','/src/assets/styles/report.style.css' ]
 })
@@ -41,7 +43,11 @@ export class ReportCancelComponent {
   lang:string|null;
   templeName:string|null;
   templeAddress:string|null;
-  constructor(private route: ActivatedRoute,private ts: TranslateService, private service: ReportService,private router: Router,private http:HttpClient) {
+  loading:boolean;
+  constructor(private route: ActivatedRoute,
+    private reportPrintservice:PrintreportService,
+    
+    private ts: TranslateService, private service: ReportService,private router: Router,private http:HttpClient) {
     this.lang=localStorage.getItem('Language');
     this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
     this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
@@ -68,6 +74,7 @@ ngOnInit() {
 // }
 // / Call your API service to get the report data
   fetchReportData(type: string, fromDate: string, toDate: string): void {
+    this.loading=true;
     const payLoad = {
       Type: 'CancelRpt',
       FromDate: fromDate,
@@ -91,7 +98,7 @@ ngOnInit() {
         console.log( this.dataSource.data)
         this.length =this.filteredData .length; 
         this.dataSource.paginator = this.paginator;
-        
+        this.loading=false;
         console.log(this.data);
       },
       error: (error) => {
@@ -103,6 +110,7 @@ ngOnInit() {
 
 
   fetchNadavaravuCancelReportData( fromDate: string, toDate: string): void {
+    this.loading=true;
     const payLoad = {
       Type: 'CancelRptNadavaravu',
       FromDate: fromDate,
@@ -121,7 +129,7 @@ ngOnInit() {
       //     return numA - numB || denomA - denomB;
       // });
       console.log(this.filteredData,"aaaaaaaaaaaaaaaaaaa")  
-
+this.loading=false;
         this.dataSource.data = this.data
         console.log( this.dataSource.data)
         this.length =this.filteredData .length; 
@@ -407,91 +415,92 @@ formatDateToDDMMYYYY(date: string): string {
 
 
 generatePDF(){
+this.reportPrintservice.generatePDF();
 
-  const printContent = document.getElementById('print-section');
-  if (!printContent) {
-    console.error('No content found to print');
-    return;
-  }
+//   const printContent = document.getElementById('print-section');
+//   if (!printContent) {
+//     console.error('No content found to print');
+//     return;
+//   }
 
-  const WindowPrt = window.open('', '', 'width=800,height=600');
+//   const WindowPrt = window.open('', '', 'width=800,height=600');
   
-  // Check if the print window was successfully opened
-  if (!WindowPrt) {
-    console.error('Unable to open print window. Please check pop-up blockers.');
-    return;
-  }
+//   // Check if the print window was successfully opened
+//   if (!WindowPrt) {
+//     console.error('Unable to open print window. Please check pop-up blockers.');
+//     return;
+//   }
 
-  WindowPrt.document.write(`
-    <html>
-      <head>
-        <title>Print</title>
-        <style>
+//   WindowPrt.document.write(`
+//     <html>
+//       <head>
+//         <title>Print</title>
+//         <style>
          
-          body {
-    font-size: 16px;
-    font-family: "Times New Roman", serif;
-  }
-          h3,p,h4,h2{
-          line-height:1;
-          margin-top:0;
-          text-align:center;
-          }
-          .templename{
-           line-height:1;
-          margin-top:0;
-          text-align:center;
-          }
-          hr{
-          height:2px;
-          }
-          .tabble-heading{
-  margin-top: 10px;
-  font-size: 18px;
-  font-weight: bold;
-  font-family: 'Times New Roman', Times, serif;
-  text-transform: uppercase;
-  color: rgb(8, 8, 49);
-  text-align:left;
-}
-          table {
-            width: 100%;
-            border-collapse: collapse;
-          }
-          table, th, td {
-            border: 1px solid black;
-            text-transform: uppercase;
+//           body {
+//     font-size: 16px;
+//     font-family: "Times New Roman", serif;
+//   }
+//           h3,p,h4,h2{
+//           line-height:1;
+//           margin-top:0;
+//           text-align:center;
+//           }
+//           .templename{
+//            line-height:1;
+//           margin-top:0;
+//           text-align:center;
+//           }
+//           hr{
+//           height:2px;
+//           }
+//           .tabble-heading{
+//   margin-top: 10px;
+//   font-size: 18px;
+//   font-weight: bold;
+//   font-family: 'Times New Roman', Times, serif;
+//   text-transform: uppercase;
+//   color: rgb(8, 8, 49);
+//   text-align:left;
+// }
+//           table {
+//             width: 100%;
+//             border-collapse: collapse;
+//           }
+//           table, th, td {
+//             border: 1px solid black;
+//             text-transform: uppercase;
 
-          }
-            .total,number{
-            text-align:right;
-            }
-          th, td {
-           padding-left:5px;
-            text-align: left;
-          }
-            #print-section{
-padding-bottom: 100px;
-  }
+//           }
+//             .total,number{
+//             text-align:right;
+//             }
+//           th, td {
+//            padding-left:5px;
+//             text-align: left;
+//           }
+//             #print-section{
+// padding-bottom: 100px;
+//   }
        
     
-    .page-break {
-      page-break-before: always;
-    }
-          </style>
-      </head>
-      <body>${printContent.innerHTML}</body>
-    </html>
-  `);
+//     .page-break {
+//       page-break-before: always;
+//     }
+//           </style>
+//       </head>
+//       <body>${printContent.innerHTML}</body>
+//     </html>
+//   `);
 
-  WindowPrt.document.close();
-  WindowPrt.focus();
+//   WindowPrt.document.close();
+//   WindowPrt.focus();
 
-  // Make sure that the window is still valid before calling print and close
-  if (WindowPrt) {
-    WindowPrt.print();
-    WindowPrt.close();
-  } 
+//   // Make sure that the window is still valid before calling print and close
+//   if (WindowPrt) {
+//     WindowPrt.print();
+//     WindowPrt.close();
+//   } 
 }
 
 getTotalAmount(): number {

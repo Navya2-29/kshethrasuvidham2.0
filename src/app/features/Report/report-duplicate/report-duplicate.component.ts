@@ -14,10 +14,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { PrintreportService } from '../../../shared/service/printreport.service';
+import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 @Component({
   selector: 'app-report-duplicate',
   standalone: true,
-  imports: [CommonModule,TranslateModule,MatTableModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
+  imports: [CommonModule,TranslateModule, MatTableModule,SpinnerComponent, MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
   templateUrl: './report-duplicate.component.html',
   styleUrls: ['./report-duplicate.component.css','/src/assets/styles/report.style.css'],
 })
@@ -38,7 +40,10 @@ export class ReportDuplicateComponent {
   lang:string|null;
   templeName:string|null;
   templeAddress:string|null;
-  constructor(private route: ActivatedRoute, private ts: TranslateService, private service: ReportService,private router: Router, private http:HttpClient) {
+  loading:boolean;
+  constructor(private route: ActivatedRoute,
+    private reportPrintservice:PrintreportService,
+    private ts: TranslateService, private service: ReportService,private router: Router, private http:HttpClient) {
     this.lang=localStorage.getItem('Language');
     this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
     this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address'; 
@@ -58,6 +63,7 @@ export class ReportDuplicateComponent {
   }
 
   fetchReportData(type: string, fromDate: string, toDate: string): void {
+    this.loading=true;
     const payLoad = {
       Type: 'DuplicateCount',
       FromDate: fromDate,
@@ -67,7 +73,8 @@ export class ReportDuplicateComponent {
       next: (data) => {
         console.log('Fetched report data:', data);
         this.data=data;
-        this.dataSource.data = this.data
+        this.dataSource.data = this.data;
+        this.loading=false;
         console.log( this.dataSource.data)
         this.length =this.data .length; 
         this.dataSource.paginator = this.paginator;
@@ -109,89 +116,90 @@ export class ReportDuplicateComponent {
 
 
 generatePDF() {
-  const printContent = document.getElementById('print-section');
-  if (!printContent) {
-    console.error('No content found to print');
-    return;
-  }
+this.reportPrintservice.generatePDF();
+//   const printContent = document.getElementById('print-section');
+//   if (!printContent) {
+//     console.error('No content found to print');
+//     return;
+//   }
 
-  const printWindow = window.open('', '', 'width=800,height=600');
+//   const printWindow = window.open('', '', 'width=800,height=600');
 
-  if (!printWindow) {
-    console.error('Unable to open print window. Please check pop-up blockers.');
-    return;
-  }
+//   if (!printWindow) {
+//     console.error('Unable to open print window. Please check pop-up blockers.');
+//     return;
+//   }
 
-  printWindow.document.write(`
-    <html>
-      <head>
-        <title>Print</title>
-         <style>
+//   printWindow.document.write(`
+//     <html>
+//       <head>
+//         <title>Print</title>
+//          <style>
          
-          body {
-    font-size: 16px;
-    font-family: "Times New Roman", serif;
-  }
-          h3,p,h4,h2{
-          line-height:1;
-          margin-top:0;
-          text-align:center;
-          }
-          .templename{
-           line-height:1;
-          margin-top:0;
-          text-align:center;
-          }
-          hr{
-          height:2px;
-          }
-          .number,.total{
-            text-align:right;
-            }
-          .tabble-heading h3{
-  font-family: 'Times New Roman', Times, serif;
-  font-weight: bold;
-  font-size: 16px;
-  margin: 8px 0 0 0;
-}
-          table {
-            width: 100%;
-            border-collapse: collapse;
-          }
-          table, th, td {
-            border: 1px solid black;
-            text-transform: uppercase;
+//           body {
+//     font-size: 16px;
+//     font-family: "Times New Roman", serif;
+//   }
+//           h3,p,h4,h2{
+//           line-height:1;
+//           margin-top:0;
+//           text-align:center;
+//           }
+//           .templename{
+//            line-height:1;
+//           margin-top:0;
+//           text-align:center;
+//           }
+//           hr{
+//           height:2px;
+//           }
+//           .number,.total{
+//             text-align:right;
+//             }
+//           .tabble-heading h3{
+//   font-family: 'Times New Roman', Times, serif;
+//   font-weight: bold;
+//   font-size: 16px;
+//   margin: 8px 0 0 0;
+// }
+//           table {
+//             width: 100%;
+//             border-collapse: collapse;
+//           }
+//           table, th, td {
+//             border: 1px solid black;
+//             text-transform: uppercase;
 
-          }
-            .total,number{
-            text-align:right;
-            }
-          th, td {
-           padding-left:5px;
-            text-align: left;
-          }
-            #print-section{
-padding-bottom: 100px;
-  }
+//           }
+//             .total,number{
+//             text-align:right;
+//             }
+//           th, td {
+//            padding-left:5px;
+//             text-align: left;
+//           }
+//             #print-section{
+// padding-bottom: 100px;
+//   }
        
     
-    .page-break {
-      page-break-before: always;
-    }
-          </style>
-      </head>
-      <body>
-        ${printContent.innerHTML}
-      </body>
-    </html>
-  `);
+//     .page-break {
+//       page-break-before: always;
+//     }
+//           </style>
+//       </head>
+//       <body>
+//         ${printContent.innerHTML}
+//       </body>
+//     </html>
+//   `);
 
-  printWindow.document.close();
-  printWindow.focus();
+//   printWindow.document.close();
+//   printWindow.focus();
 
-  printWindow.print();
+//   printWindow.print();
 
-  printWindow.close();
+//   printWindow.close();
 }
 
 getTotalAmount(): number {

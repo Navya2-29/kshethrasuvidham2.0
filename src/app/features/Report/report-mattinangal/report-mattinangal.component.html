@@ -1,4 +1,6 @@
 <app-header></app-header>
+<app-spinner *ngIf="loading"></app-spinner>
+
 <div class="report-container">
 
 <div class="icon-container">
@@ -17,7 +19,7 @@
 
   <div class="header-print">
     <h3
-     
+     class="templename"
     >
       {{ templeName }}
     </h3>
@@ -52,9 +54,9 @@
           <th >{{ "STAR" | translate }}</th>
           <!--  -->
           <th >{{ "QUANTITY" | translate }}</th>
-          <th >{{ "RATE" | translate }}</th>
+          <th class="number" >{{ "RATE" | translate }}</th>
           <!--  -->
-          <th >{{ "AMOUNT" | translate }}</th>
+          <th class="number">{{ "AMOUNT" | translate }}</th>
           <!-- <th style="background-color: #ddd;">{{"PAYMENTMODE" | translate}}</th> -->
         </tr>
         
@@ -72,7 +74,7 @@
           </td>
           <td>{{ item.Star || "N/A" }}</td>
           <td>{{ item.Qty }}</td>
-          <td>{{ item.Rate }}</td>
+          <td class="number">{{ item.Rate |number:"1.2-2" }}</td>
 
           <td class="number">
             {{ item.Amount | number : "1.2-2" }}

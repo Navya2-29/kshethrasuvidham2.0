@@ -1,4 +1,6 @@
 <app-header></app-header>
+<app-spinner *ngIf="loading"></app-spinner>
+
 <div class="report-container">
 
 <div class="icon-container">
@@ -15,7 +17,7 @@
 <div id="print-section">
   <div class="header-print" >
     <h3
-     
+     class="templename"
     >
       {{ templeName }}
     </h3>
@@ -45,7 +47,7 @@
     *ngFor="let category of groupedData | keyvalue"
     
   >
-    <h3 class="tabble-heading">{{ category.key | titlecase }}</h3>
+    <h3 class="tabble-heading fee feetable">{{ category.key | titlecase }}</h3>
     <table >
       <thead>
         <tr>
@@ -56,7 +58,7 @@
           <th >{{ "STAR" | translate }}</th>
           <th >{{ "QUANTITY" | translate }}</th>
 
-          <th >{{ "AMOUNT" | translate }}</th>
+          <th class="number">{{ "AMOUNT" | translate }}</th>
         </tr>
       </thead>
       <tbody>

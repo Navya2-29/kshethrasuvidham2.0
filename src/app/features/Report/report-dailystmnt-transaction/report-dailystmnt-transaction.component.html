@@ -1,4 +1,5 @@
 <app-header></app-header>
+<app-spinner *ngIf="loading"></app-spinner>
 <div class="report-container">
   <div class="icon-container">
     <button
@@ -35,7 +36,7 @@
         <ng-container *ngIf="data.length>0">
         
         <div *ngFor="let mode of groupedData | keyvalue">
-          <p class="transaction">
+          <p class="transaction tabble-heading">
             {{ getTransactionType(mode.key) | translate }}
           </p>
 
@@ -47,8 +48,8 @@
                 <tr>
                   <th>{{ "VAZHIPAD" | translate }}</th>
                   <th>{{ "QUANTITY" | translate }}</th>
-                  <th>{{ "RATE" | translate }}</th>
-                  <th>{{ "AMOUNT" | translate }}</th>
+                  <th class="number">{{ "RATE" | translate }}</th>
+                  <th class="number">{{ "AMOUNT" | translate }}</th>
                 </tr>
               </thead>
               <tbody>

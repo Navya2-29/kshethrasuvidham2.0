@@ -1,4 +1,6 @@
 <app-header></app-header>
+<app-spinner *ngIf="loading"></app-spinner>
+
 <div class="report-container">
 
 <div class="icon-container">
@@ -13,7 +15,7 @@
 <div id="print-section">
   <div  class="header-print">
     <h3
-     
+     class="templename"
     >
       {{ templeName }}
     </h3>
@@ -51,7 +53,7 @@
               <!-- <th>{{ "NAME" | translate }}</th> -->
               <th>{{"Report Name.MOBILE NO" | translate}}</th>        <!-- <th>{{"QUANTITY" | translate }}</th>
                <th>{{"RATE" | translate }}</th> -->
-              <th>{{ "AMOUNT" | translate }}</th>
+              <th class="number">{{ "AMOUNT" | translate }}</th>
              
             </tr>
           </thead>
@@ -95,7 +97,7 @@
         <!-- <th>{{ "NAME" | translate }}</th> -->
         <th>{{"Report Name.MOBILE NO" | translate}}</th>        <!-- <th>{{"QUANTITY" | translate }}</th>
          <th>{{"RATE" | translate }}</th> -->
-        <th>{{ "AMOUNT" | translate }}</th>
+        <th class="number">{{ "AMOUNT" | translate }}</th>
       </tr>
     </thead>
     <tbody>
@@ -142,7 +144,7 @@
         <th>{{ "NAME" | translate }}</th>
         <th>{{"Report Name.MOBILE NO" | translate}}</th>        <!-- <th>{{"QUANTITY" | translate }}</th>
          <th>{{"RATE" | translate }}</th> -->
-        <th>{{ "AMOUNT" | translate  }}</th>
+        <th class="number">{{ "AMOUNT" | translate  }}</th>
       </tr>
     </thead>
     <tbody>

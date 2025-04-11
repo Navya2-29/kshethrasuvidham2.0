@@ -14,6 +14,8 @@ import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 // import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { PrintreportService } from '../../../shared/service/printreport.service';
+import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 interface ConsolidatedData {
   Vazhipad: string;
   TotalQty: number; // Renamed for clarity
@@ -23,31 +25,29 @@ interface ConsolidatedData {
 @Component({
   selector: 'app-report-vazhipadwise',
   standalone: true,
-  imports: [CommonModule,MatTableModule,MatPaginatorModule,HeaderComponent,TranslateModule,MatTooltipModule,MatFormFieldModule, MatInputModule],
+  imports: [CommonModule,
+    SpinnerComponent,
+    MatTableModule,MatPaginatorModule,HeaderComponent,TranslateModule,MatTooltipModule,MatFormFieldModule, MatInputModule],
   templateUrl: './report-vazhipadwise.component.html',
   styleUrls: ['./report-vazhipadwise.component.css','/src/assets/styles/report.style.css'],
 })
 export class ReportVazhipadwiseComponent {
- displayedColumns: string[] = ['SINo','VAZHIPAD',  'QUANTITY', ];
-  dataSource = new MatTableDataSource<ConsolidatedData>();
-  length = 0;
-  pageSize = 10;
-  pageSizeOptions: number[] = [10,50,100,200,300,500,1000];
-  pageIndex = 0;
+ 
+
   data:ReportData[]=[];
   groupedData: { [key: string]: ReportData[] } = {};
-
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  // groupedData: { [key: string]: ReportData[] } = {};
+  loading:boolean;
 fromDate:string;
 toDate:string;
 prathista:string;
 vazhipad:string;
-  consolidatedData: ConsolidatedData[] = [];
   lang:string|null;
   templeName:string|null;
   templeAddress:string|null;
-  constructor(private route: ActivatedRoute, private ts: TranslateService, private service: ReportService,private router: Router,  private http:HttpClient) {
+  constructor(private route: ActivatedRoute, private ts: TranslateService, 
+        private reportPrintservice: PrintreportService
+    ,
+    private service: ReportService,private router: Router,  private http:HttpClient) {
 
     this.lang=localStorage.getItem('Language');
     this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
@@ -72,6 +72,7 @@ vazhipad:string;
 
  // Call your API service to get the report data
   fetchReportData( fromDate: string, toDate: string): void {
+    this.loading=true;
     const payLoad = {
       Type: "vazhipad",
       FromDate: fromDate,
@@ -87,9 +88,7 @@ vazhipad:string;
        
       // this.consolidateData()
       this.groupedData = this.groupByVazhipad(data);
-        this.dataSource.data = this.consolidatedData
-        this.length =this.consolidatedData.length; 
-        this.dataSource.paginator = this.paginator;
+        this.loading=false;
         
         console.log(this.groupedData);
       },
@@ -114,10 +113,7 @@ vazhipad:string;
     return entries.reduce((total, entry) => total + (entry.Amount || 0), 0);
   }
 
-  onPageChange(event: PageEvent) {
-    this.pageIndex = event.pageIndex;
-    this.pageSize = event.pageSize;
-  }
+ 
   
   goBack(): void {
     console.log('Going back...'); // Log to verify method execution
@@ -161,10 +157,6 @@ vazhipad:string;
   // }
 
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-  }
    
 formatDateToDDMMYYYY(date: string): string {
   const [year, month, day] = date.split('-');
@@ -373,99 +365,7 @@ getTotalAmount(): number {
 } 
 
 generatePDF(){
-  const printContent = document.getElementById('print-section');
-  if (!printContent) {
-    console.error('No content found to print');
-    return;
-  }
-
-  const WindowPrt = window.open('', '', 'width=800,height=600');
-  
-  // Check if the print window was successfully opened
-  if (!WindowPrt) {
-    console.error('Unable to open print window. Please check pop-up blockers.');
-    return;
-  }
-
-  WindowPrt.document.write(`
-    <html>
-      <head>
-        <title>Print</title>
-         <style>
-         
-          body {
-    font-size: 16px;
-    font-family: "Times New Roman", serif;
-  }
-          p,h4,h2{
-          line-height:1;
-          margin-top:0;
-          text-align:center;
-          }
-          .templename{
-           line-height:1;
-          margin-top:0;
-          text-align:center;
-          }
-          hr{
-          height:2px;
-          }
-          .number,.total{
-            text-align:right;
-            }
-          .tabble-heading h3{
-  font-family: 'Times New Roman', Times, serif;
-  font-weight: bold;
-  font-size: 16px;
-  margin: 8px 0 0 0;
-}
-          table {
-            width: 100%;
-            border-collapse: collapse;
-          }
-          table, th, td {
-            border: 1px solid black;
-            text-transform: uppercase;
-
-          }
-            .total,number{
-            text-align:right;
-            }
-          th, td {
-           padding-left:5px;
-            text-align: left;
-          }
-            #print-section{
-padding-bottom: 100px;
-  }
-       .grandtotal{
-       text-align:right;
-       margin-top:10px
-       }
-    
-    .page-break {
-      page-break-before: always;
-    }
-      .tabble-heading h3{
-      text-align:left;
-      }
-      .qty{
-      text-align:center
-      }
-          </style>
-      </head>
-      <body>${printContent.innerHTML}</body>
-    </html>
-  `);
-
-  WindowPrt.document.close();
-  WindowPrt.focus();
-
-  // Make sure that the window is still valid before calling print and close
-  if (WindowPrt) {
-    WindowPrt.print();
-    WindowPrt.close();
-  } 
+ this.reportPrintservice.generatePDF()
 
 }
   

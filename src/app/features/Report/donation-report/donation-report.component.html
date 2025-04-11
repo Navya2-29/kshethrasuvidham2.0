@@ -1,4 +1,6 @@
 <app-header></app-header>
+<app-spinner *ngIf="loading"></app-spinner>
+
 <div class="report-container">
   <div class="icon-container">
     <button
@@ -16,7 +18,7 @@
     <div class="header-print">
       <div>
         <h3
-          
+        class="templename"  
         >
           {{ templeName }}
         </h3>
@@ -26,7 +28,7 @@
           {{ templeAddress }}
         </h4>
         <h2>
-          {{ "Report Name.DONATION REPORT" | translate }}
+          {{ "Report Name.DONATION REPORTS" | translate }}
         </h2>
         <p
          class="date"
@@ -50,8 +52,8 @@
               <th>{{"NAME" | translate }}</th>
               <!-- <th>{{"STAR" | translate }}</th> -->
               <!-- <th>{{ "QUANTITY" | translate }}</th> -->
-              <th>{{ "RATE" | translate }}</th>
-              <th>{{ "AMOUNT" | translate }}</th>
+              <th class="number">{{ "RATE" | translate }}</th>
+              <th class="number">{{ "AMOUNT" | translate }}</th>
             </tr>
           </thead>
           <tbody>

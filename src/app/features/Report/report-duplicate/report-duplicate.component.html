@@ -1,4 +1,6 @@
 <app-header></app-header>
+<app-spinner *ngIf="loading"></app-spinner>
+
 <div class="report-container">
   <div class="icon-container">
     <button
@@ -14,7 +16,7 @@
   </div>
   <div id="print-section">
     <div class="header-print">
-      <h3  
+      <h3 class="templename"
       >
         {{ templeName }}
       </h3>
@@ -30,7 +32,7 @@
         {{ "Report Name.report-duplicate" | translate }}
       </h2>
       <p
-        
+       class="date" 
       >
         {{ formatDateToDDMMYYYY(fromDate) }} to
         {{ formatDateToDDMMYYYY(toDate) }}

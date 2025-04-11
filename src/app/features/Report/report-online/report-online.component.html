@@ -1,4 +1,6 @@
 <app-header></app-header>
+<app-spinner *ngIf="loading"></app-spinner>
+
 <div class="report-container">
 
 <div class="icon-container">
@@ -16,7 +18,7 @@
 <div id="print-section">
   <div class="header-print">
     <h3
-      
+     class="templename" 
     >
       {{ templeName }}
     </h3>
@@ -50,11 +52,13 @@
               <th>{{ "BILL NO" | translate }}</th>
               <th>{{ "BILLDATE" | translate }}</th>
               <th>{{ "ID" | translate }}</th>
+              <th>{{"Counter" | translate }}</th>
+
               <th>{{ "VAZHIPAD" | translate }}</th>
               <th>{{ "NAME" | translate }}</th>
               <th>{{ "QUANTITY" | translate }}</th>
-              <th>{{ "RATE" | translate }}</th>
-              <th>{{ "AMOUNT" | translate }}</th>
+              <th class="number">{{ "RATE" | translate }}</th>
+              <th class="number">{{ "AMOUNT" | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -62,6 +66,8 @@
               <td>{{ item.BillNo }}</td>
               <td>{{ item.BillDate }}</td>
               <td>{{ item.InstNo }}</td>
+              <td>{{item.CounterId}}({{item.UName}})</td> 
+
               <td>{{ item.Vazhipad }}</td>
               <td>{{ item.Name }}</td>
               <td>{{ item.Qty }}</td>
@@ -73,7 +79,7 @@
              
             </tr>
             <tr>
-              <td colspan="7" class="total">
+              <td colspan="8" class="total">
                 {{"Report Name.GrandTotal" | translate }}:
               </td>
               <td style="font-weight: bold; text-align: right">
@@ -147,8 +153,8 @@
             <th>{{ "VAZHIPAD" | translate }}</th>
             <th>{{ "NAME" | translate }}</th>
             <th>{{ "QUANTITY" | translate }}</th>
-            <th>{{ "RATE" | translate }}</th>
-            <th>{{ "AMOUNT" | translate }}</th>
+            <th class="number">{{ "RATE" | translate }}</th>
+            <th class="number">{{ "AMOUNT" | translate }}</th>
           </tr>
         </thead>
         <tbody>
@@ -157,7 +163,7 @@
             <td>{{ item.BillDate }}</td>
             <td>{{ item.InstNo }}</td>
             
-            <td>{{item.CounterId}}</td>
+            <td>{{item.CounterId}}({{item.UName}})</td> 
             <td>{{ item.Vazhipad }}</td>
             <td>{{ item.Name }}</td>
             <td>{{ item.Qty }}</td>
@@ -195,8 +201,8 @@
             <th>{{ "VAZHIPAD" | translate }}</th>
             <th>{{ "NAME" | translate }}</th>
             <th>{{ "QUANTITY" | translate }}</th>
-            <th>{{ "RATE" | translate }}</th>
-            <th>{{ "AMOUNT" | translate }}</th>
+            <th class="number">{{ "RATE" | translate }}</th>
+            <th class="number">{{ "AMOUNT" | translate }}</th>
           </tr>
         </thead>
         <tbody>
@@ -204,7 +210,7 @@
             <td>{{ item.BillNo }}</td>
             <td>{{ item.BillDate }}</td>
             <td>{{ item.InstNo }}</td>
-            <td>{{item.CounterId}}</td> 
+            <td>{{item.CounterId}}({{item.UName}})</td> 
             <td>{{ item.NM_Name }}({{item.Month}})</td>
             <td>{{ item.Name }}</td>
             <td>--</td>
