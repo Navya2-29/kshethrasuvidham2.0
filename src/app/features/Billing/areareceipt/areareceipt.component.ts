@@ -1,3 +1,4 @@
+import { ReportService } from './../../Report/service/report.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 
@@ -132,6 +133,7 @@ export class AreareceiptComponent implements OnInit {
   private eventService = inject(TotalAmountService);
   private notification = inject(ToastrService);
   private receiptPrintService = inject(ReceiptPrintService);
+  private reportService=inject(ReportService);
   constructor(
     private fb: FormBuilder,
     public dialog: MatDialog,
@@ -233,6 +235,10 @@ export class AreareceiptComponent implements OnInit {
       VM_Receipt: [{ disabled: true, value: '' }],
       dateToSet: [''],
       noOfLimit:[''],
+      maxLimit: [0],
+    alreadyBooked: [0],
+    errorMessage: [''],
+
       seasonalDates: this.fb.group({
         fromDate: [''],
         toDate: [''],
@@ -756,7 +762,7 @@ export class AreareceiptComponent implements OnInit {
         selectedRow.get('VM_Receipt')?.setValue(res[0].VM_Receipt);
         selectedRow.get('ratechange')?.setValue(res[0].VM_Rate_Change);
         selectedRow.get('VTime')?.setValue(res[0].VM_Time);
-        selectedRow.get('noOfLimit')?.setValue(res[0].VM_MaxNo)
+        selectedRow.get('maxLimit')?.setValue(res[0].VM_MaxNo)
         this.selectedVazhipadPrathistaDetails(vazhipadcode, index);
         this.setVazhipadDate(index);
       });
@@ -874,11 +880,81 @@ export class AreareceiptComponent implements OnInit {
               });
           }
         }
+        const maxlimitqty=selectedRow.get('maxLimit')?.value;
+        console.log(maxlimitqty,"maxqty")
+     if(Number(maxlimitqty)>0){
+       this.getAlreadybookedvazhipadQty(index);
+     }
+        
       },
       error: (err) => {
         console.log('error in getting prathishta');
       },
     });
+  }
+
+  getAlreadybookedvazhipadQty(index:number){
+    const selectedRow = this.vazhipadinfo.at(index) as FormGroup;
+  const payLoad={
+   
+      Type: "VazhipadLimit",
+      FromDate: selectedRow.get("VazhipadDate")?.value,
+      ToDate:selectedRow.get("VazhipadDate")?.value,
+      PMId:selectedRow.get("PMid")?.value,
+      VazhId:selectedRow.get("Vazhid")?.value
+    
+
+
+  }
+  console.log(payLoad,"vazhipadwise qty already booked ")
+    this.reportService.getVazhipadWiseReport(payLoad).subscribe({
+      next:(data)=>{
+        console.log(data);
+        const qty=data[0].qty
+        if(qty>0){
+          selectedRow.get("alreadyBooked")?.setValue(qty);
+          this.validateQtyAndSetError(index);
+        }
+      }
+    })
+  }
+
+  validateQtyAndSetError(index: number) {
+    const formArray = this.vazhipadinfo.controls;
+    const currentGroup = formArray[index] as FormGroup;
+    const currentVazhipad = currentGroup.get('Vazhid')?.value;
+    const maxLimit = currentGroup.get('maxLimit')?.value;
+    const alreadyBooked = currentGroup.get('alreadyBooked')?.value;
+    const currentQty = +currentGroup.get('Qty')?.value || 0;
+  
+    // Sum qty of same vazhipad in all rows
+    let totalQty = alreadyBooked;
+    formArray.forEach((group, i) => {
+      if (i !== index && group.get('Vazhid')?.value === currentVazhipad) {
+        totalQty += +group.get('Qty')?.value || 0;
+      }
+    });
+  
+    totalQty += currentQty;
+  
+    if (totalQty > maxLimit) {
+      // const errorMsg = `Qty exceeds available limit. Max: ${maxLimit}, Already booked: ${alreadyBooked}`;
+
+      currentGroup.get('Qty')?.setErrors({ exceed: true });
+      // const ailabilty=
+      currentGroup.get('errorMessage')?.setValue(`Qty exceeds available limit. Max: ${maxLimit}, Already booked: ${totalQty}`);
+      const errorMsg =currentGroup.get('errorMessage')?.value;
+      this.notification.error(errorMsg, 'Invalid Quantity');
+      // return false;
+    } else {
+      currentGroup.get('Qty')?.setErrors(null);
+      currentGroup.get('errorMessage')?.setValue('');
+    }
+  }
+
+
+  onQtyChange(index: number) {
+    this.validateQtyAndSetError(index);
   }
 
   // opne multiday open dialog box
@@ -1053,8 +1129,10 @@ console.log(data,"multaday booked details prathsta name check");
 
   // api data send
   sendDataToApi(data: any) {
+    console.log(data,"send to api dataaaaaaaaaaaaaaaaaaaa to qty check");
     let isFormValid = true; // Initialize form validity
     let multidayRowIndices: number[] = [];
+    this.validateAllVazhipadQty();
     // Iterate through each form group (row) in the vazhipadinfo FormArray
     this.vazhipadinfo.controls.forEach((row, index) => {
       row.markAllAsTouched();
@@ -1157,6 +1235,68 @@ console.log(data,"multaday booked details prathsta name check");
       this.prnitConfirmDialog(formattedData);
     }
   }
+
+  validateAllVazhipadQty() {
+    const vazhipadArray = this.form.get('vazhipadinfo') as FormArray;
+  
+    // Step 1: Group entries by (Vazhid, PMid, VazhipadDate)
+    const groupedEntries: { [key: string]: { indexes: number[], totalQty: number, maxLimit: number } } = {};
+  
+    vazhipadArray.controls.forEach((row, index) => {
+      const vazhid = row.get('Vazhid')?.value;
+      const pmid = row.get('PMid')?.value;
+      const date = row.get('VazhipadDate')?.value;
+      const qty = row.get('Qty')?.value;
+      const maxLimit = row.get('maxLimit')?.value;
+  
+      const key = `${vazhid}_${pmid}_${date}`;
+  
+      if (!groupedEntries[key]) {
+        groupedEntries[key] = { indexes: [], totalQty: 0, maxLimit };
+      }
+  
+      groupedEntries[key].indexes.push(index);
+      groupedEntries[key].totalQty += qty;
+    });
+  
+    // Step 2: For each group, call API once and validate all related rows
+    Object.keys(groupedEntries).forEach((key) => {
+      const [vazhid, pmid, date] = key.split('_');
+      const group = groupedEntries[key];
+  
+      const payload = {
+        Type: "VazhipadLimit",
+        FromDate: date,
+        ToDate: date,
+        PMId: pmid,
+        VazhId: vazhid
+      };
+  
+      this.reportService.getVazhipadWiseReport(payload).subscribe((res: any) => {
+        const alreadyBooked = res[0].qty ?? 0;
+        const totalQty = group.totalQty;
+  
+        if (alreadyBooked + totalQty > group.maxLimit) {
+          group.indexes.forEach((i) => {
+            vazhipadArray.at(i).get('Qty')?.setErrors({ exceedLimit: true });
+          });
+  
+          this.notification.error(
+            `Total Qty exceeds limit for Vazhipad ID ${vazhid}. Limit: ${group.maxLimit}, Already Booked: ${alreadyBooked}, Entered: ${totalQty}`
+          );
+        } else {
+          group.indexes.forEach((i) => {
+            vazhipadArray.at(i).get('Qty')?.setErrors(null);
+          });
+        }
+      });
+    });
+  }
+
+
+
+
+
 
   private getCurrentDateMMYY(): string {
     const now = new Date();
@@ -1549,18 +1689,18 @@ console.log(data,"multaday booked details prathsta name check");
       keyboardEvent.preventDefault();
 
       // Check if the time between two Enter key presses is within the threshold for double press
-      if (currentTime - this.lastEnterTime < this.doubleEnterThreshold) {
-        // If double Enter is detected, add a new row
-        this.addRow(rowIndex);
-      }
+      // if (currentTime - this.lastEnterTime < this.doubleEnterThreshold) {
+      //   // If double Enter is detected, add a new row
+      //   this.addRow(rowIndex);
+      // }
 
       // Update the last Enter press time
-      this.lastEnterTime = currentTime;
+      // this.lastEnterTime = currentTime;
 
       // Reset the lastEnterTime after the double press threshold (optional)
-      setTimeout(() => {
-        this.lastEnterTime = 0; // Reset to allow another detection of double Enter later
-      }, this.doubleEnterThreshold);
+      // setTimeout(() => {
+      //   this.lastEnterTime = 0; // Reset to allow another detection of double Enter later
+      // }, this.doubleEnterThreshold);
 
       // Get all form elements within the row
       const rowFormElements = Array.from(
@@ -1583,6 +1723,14 @@ console.log(data,"multaday booked details prathsta name check");
 
       // Get the current element
       const currentElement = rowFormElements[currentIndex];
+      
+      if (currentElement && currentElement.getAttribute('formControlName') == 'VTime') {
+        // If the user pressed Enter on the 'vtime' field, add a new row
+        console.log('Enter key pressed on vtime field. Adding new row...');
+        this.addRow(rowIndex); // Add a new row function should be defined elsewhere in your code
+        return; // Exit the function to prevent moving to the next field
+      }
+      
       // Check if the current element has a value (if it's empty, show red border)
       if (
         currentElement instanceof HTMLInputElement ||
@@ -1917,44 +2065,7 @@ console.log(data,"multaday booked details prathsta name check");
       }
     });
   }
-  validateQty(rowIndex: number) {
-    const row = this.vazhipadinfo.at(rowIndex).value;
-    const currentQty = +row.qty;
-    const bookedQty = +row.bookedQty;
-    const maxLimit = +row.noOfLimit;
-    const selectedVazhipad = row.vazhipad;
-    const selectedDate = row.vazhipadDate;
-  
-    // Sum qty of all previous rows with same vazhipad and same date
-    let sumQty = currentQty + bookedQty;
-  
-    this.vazhipadinfo.controls.forEach((ctrl, i) => {
-      if (i !== rowIndex) {
-        const r = ctrl.value;
-        if (r.vazhipad === selectedVazhipad && r.vazhipadDate === selectedDate) {
-          sumQty += +r.qty;
-        }
-      }
-    });
-  
-    const isValid = sumQty <= maxLimit;
-  
-    const formRow = this.vazhipadinfo.at(rowIndex);
-    formRow.get('qty')?.setErrors(isValid ? null : { maxLimitExceeded: true });
-  
-    if (!isValid) {
-      this.notification.error('Total quantity exceeds max limit for this vazhipad on selected date');
-    }
-  
-    return isValid;
-  }
-
-  onQtyChange(rowIndex: number) {
-    const isValid = this.validateQty(rowIndex);
-    if (isValid) {
-      this.createRow();
-    }
-  }
+ 
 
 
 }

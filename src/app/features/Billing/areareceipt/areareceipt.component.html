@@ -200,7 +200,8 @@
                     id="Prethista-{{i}}" 
                     (keydown)="navigateToNext($event, i, 'Rate')" 
                     style="font-weight:800;"
-                   
+                    (input)="onQtyChange(i)"
+                    [ngClass]="{'error-border': row.get('qty')?.errors}"
                   />
                   
                 </td>
@@ -229,6 +230,7 @@
                   />
                   <input
                   type="date"
+                  (input)="getAlreadybookedvazhipadQty(i)"
                   class="form-control sps"
                   formControlName="VazhipadDate"
                  [readOnly]="row.get('VM_Receipt')?.value==='Y'"
