@@ -517,13 +517,13 @@ private cdr: ChangeDetectorRef
         const receipt = res[0].VM_Receipt;
         this.VM_MaxNo=res[0].VM_MaxNo;
         console.log(this.VM_MaxNo,"vVM_MaxNo value")
-        if(this.VM_MaxNo>0){
-          this.form.get("NoOfDays")?.setValue(this.VM_MaxNo);
-        }else{
-          this.calculateTotalAmount();
-        }
+        // if(this.VM_MaxNo>0){
+        //   this.form.get("NoOfDays")?.setValue(this.VM_MaxNo);
+        // }else{
+          
+        // }
         
-        
+        this.calculateTotalAmount();
         this.masterservice
           .getVazhipadByCodeForDiety(vazhipadcode)
           .subscribe((data: any) => {

@@ -11,6 +11,7 @@ import { NotificationService } from '../../../services/notification/notification
 import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { error } from 'pdf-lib';
+import { switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-member-master',
@@ -229,6 +230,7 @@ if(member.VazhId!=0 && member.Amount>0 ){
   })
 }
 this.masterservice.getMaster(payLoad).subscribe({
+  
   next: (data) => {
     if (data && Array.isArray(data)) { // Ensure data is defined and an array
       this.memberDetails = data;
@@ -260,60 +262,105 @@ this.masterservice.getMaster(payLoad).subscribe({
 }
 
 
-onUpdate(data:any){
-  this.editFlag=false
+// onUpdate(data:any){
+//   this.editFlag=false
 
+//   this.previousRelativeDetails = [...this.relativesDetails.value];
+
+
+//   if(data){
+//     const deletePayLoad={
+//       Type:"DevoteeDetails",
+//       Id:this.memberId
+//     }
+//     this.masterservice.deleteMaster(deletePayLoad).subscribe({
+//       next:(data)=>{
+//         console.log(data) ;
+//       },
+//     error:(err)=>{
+//       console.log(err)
+//     }
+//     }
+//   )
+//   }
+//   const payLoad = {
+//     DevoteeName: data.name,
+//     Email: data.email,
+//     Mobile: data.mobile,
+//     MID: this.memberId,
+//     Cuser: this.userId,
+//     Address: data.address1,
+//     Amount:data.Amount?data.Amount:"0",
+//     VazhId:data.VazhId?data.VazhId:"0",
+//     Type: "UPDATE",
+    
+//     DevoteeDetails:this.previousRelativeDetails.map((relative: any) => ({
+//       ...relative,
+//       MID: this.memberId // Assigning MID to each relative dynamically
+//     })),
+
+//   }
+//   console.log(payLoad, "paylod")
+//   this.masterservice.AddDevoteeMaster(payLoad).subscribe({
+//     next: (data) => {
+//       console.log(data)
+//       if (data.RespStatus === "U") {
+//         this.notification.showSuccess("Devotee details updated successfully")
+//         this.resetForm();
+//         this.getDevoteeMaster()
+//       }
+//     },error:(err)=>{
+//       console.log(err);
+//     }
+//   })
+
+// }
+onUpdate(data: any) {
+  this.editFlag = false;
   this.previousRelativeDetails = [...this.relativesDetails.value];
 
+  if (data) {
+    const deletePayload = {
+      Type: "DevoteeDetails",
+      Id: this.memberId
+    };
 
-  if(data){
-    const deletePayLoad={
-      Type:"DevoteeDetails",
-      Id:this.memberId
-    }
-    this.masterservice.deleteMaster(deletePayLoad).subscribe({
-      next:(data)=>{
-        console.log(data) ;
+    const updatePayload = {
+      DevoteeName: data.name,
+      Email: data.email,
+      Mobile: data.mobile,
+      MID: this.memberId,
+      Cuser: this.userId,
+      Address: data.address1,
+      Amount: data.Amount ? data.Amount : "0",
+      VazhId: data.VazhId ? data.VazhId : "0",
+      Type: "UPDATE",
+      DevoteeDetails: this.previousRelativeDetails.map((relative: any) => ({
+        ...relative,
+        MID: this.memberId
+      }))
+    };
+
+    this.masterservice.deleteMaster(deletePayload).pipe(
+      switchMap(() => {
+        console.log("Delete successful. Now updating...");
+        return this.masterservice.AddDevoteeMaster(updatePayload);
+      })
+    ).subscribe({
+      next: (res:any) => {
+        console.log("Update response:", res);
+        if (res.RespStatus === "U") {
+          this.notification.showSuccess("Devotee details updated successfully");
+          this.resetForm();
+          this.getDevoteeMaster();
+        }
       },
-    error:(err)=>{
-      console.log(err)
-    }
-    }
-  )
-  }
-  const payLoad = {
-    DevoteeName: data.name,
-    Email: data.email,
-    Mobile: data.mobile,
-    MID: this.memberId,
-    Cuser: this.userId,
-    Address: data.address1,
-    Amount:data.Amount?data.Amount:"0",
-    VazhId:data.VazhId?data.VazhId:"0",
-    Type: "UPDATE",
-    
-    DevoteeDetails:this.previousRelativeDetails.map((relative: any) => ({
-      ...relative,
-      MID: this.memberId // Assigning MID to each relative dynamically
-    })),
-
-  }
-  console.log(payLoad, "paylod")
-  this.masterservice.AddDevoteeMaster(payLoad).subscribe({
-    next: (data) => {
-      console.log(data)
-      if (data.RespStatus === "U") {
-        this.notification.showSuccess("Devotee details updated successfully")
-        this.resetForm();
-        this.getDevoteeMaster()
+      error: (err) => {
+        console.error("Error during delete or update:", err);
       }
-    },error:(err)=>{
-      console.log(err);
-    }
-  })
-
+    });
+  }
 }
-
 
 resetForm() {
   this.memeberForm.reset();

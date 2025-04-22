@@ -150,7 +150,7 @@ export class PmasterComponent implements OnInit {
   // submit pmasterform
   onSubmit() {
     this.loading = true;
-    console.log(this.pmasterForm.value);
+    console.log(this.pmasterForm.value,"imahe value checking");
     if (this.pmasterForm.valid) {
       this.masterService.createPmaster(this.pmasterForm.value).subscribe({
         next: (res) => {

@@ -1,11 +1,11 @@
 
 <app-header></app-header>
-<!-- <app-spinner></app-spinner> -->
+<app-spinner *ngIf="loading"></app-spinner>
 <div class="amster">
     <div class="container">
      <div class="card-body outlook" style="background:white;">
             <div class="posback">
-                <a routerLink="/dashboard" class="back">&nbsp;&nbsp;<mat-icon title="Edit" style="color:white;">arrow_back_ios</mat-icon></a>
+                <a (click)="gotoDashBoard()" class="back">&nbsp;&nbsp;<mat-icon title="Edit" style="color:white;">arrow_back_ios</mat-icon></a>
                 <h1 class="tname">{{templeName}}</h1>
             </div>
             <div class="master">
@@ -14,7 +14,7 @@
                     <form [formGroup]="vihidhamMasterForm">
                     <table class="table">
                         <tr>
-                           <td> Code<input type="text" formControlName="vazhipad_code"  class="form-control sps" placeholder="Enter vazhipad Code"> </td>
+                           <td> Code<input type="text" [readOnly]="updateFlag" formControlName="vazhipad_code"  class="form-control sps" placeholder="Enter vazhipad Code"> </td>
                            <td></td>
                            <!-- <td> SI No<input type="text"  class="form-control sps" > </td> -->
                          </tr>
@@ -36,7 +36,7 @@
                     <tr>
                       <td colspan="3"> Vihidham Type
                         
-                        <select name="" id=""  formControlName="vihidham_type"  [disabled]="updateFlag" class="form-control" style="width:100%" >
+                        <select name="" id=""  formControlName="vihidham_type"   class="form-control" style="width:100%" >
                           <option value="">select type </option>
                           <option *ngFor="let type of filteredCmaster" [value]="type.VC_ID" >{{type.VC_Name}}</option>
                         </select>
@@ -65,10 +65,10 @@
                 </div>
                 <div class="col-md-8 search">
                   <div style="display:flex;" class="search-container mt-3">
-                    <input type="text" class="form-control sps search-input" 
-                      placeholder="search by Code or Name" style="width:36%;" >
+                    <input type="text" class="form-control sps search-input" (input)="onSearch()"
+                      placeholder="Search by Vihidham type" style="width:36%;" [(ngModel)]="searchQuery" >
                     <!-- <button class="btn btn-primary" (click)="onSearch(searchQuery)">Search</button> -->
-                    <mat-icon class="search-icon" >search</mat-icon>
+                    <mat-icon class="search-icon" (click)="onSearch()" >search</mat-icon>
                   </div>
                     <div class="fixitems prathishta">
                         <table class="table">
@@ -88,7 +88,7 @@
                                 <!-- <td style="background-color: #87b6f3;"><input type="Checkbox" style="vertical-align: middle;width:12px;" checked></td> -->
                               <td style="text-align:left;">{{getVazhipadNameById(data.VazhId)}}</td>
                               <td style="text-align:left;">{{data.VC_Name}}</td>
-                              <td >{{data.Rate}}-{{data.VR_ID}}</td>
+                              <td >{{data.Rate}}</td>
                               <td>{{data.FDate | date:'dd-MM-yyyy' }}</td>
                               <td>{{data.ToDate  | date:'dd-MM-yyyy' }}</td>
                               

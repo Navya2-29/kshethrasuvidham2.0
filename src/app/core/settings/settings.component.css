@@ -513,3 +513,31 @@ mat-option {
     border-radius: 0.25em;
     font-size: 0.875em;
   }
+
+  .file-upload-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+  }
+
+  .file-upload-wrapper input[type="file"] {
+    width: 100%;
+    padding-right: 50px; /* space for the button */
+  }
+
+  .close-button-inside {
+    position: absolute;
+    top: 25%;
+    right: 0px;
+    
+    /* transform: translateY(-50%); */
+    background: transparent;
+    border: none;
+    color: #dc3545;
+    background-color: #e2dcdc;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0;
+    width: 25px;
+    height: 25px;
+  }

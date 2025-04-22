@@ -50,7 +50,7 @@ import { MultidayitemsComponent } from '../multidayitems/multidayitems.component
 import { MultidaybookeddetailsComponent } from '../multidaybookeddetails/multidaybookeddetails.component';
 import { NumberDirective } from '../../../shared/directives/number/number.directive';
 import { ReceiptPrintService } from '../../../shared/service/receipt-print.service';
-import { NgxPrintModule } from 'ngx-print';
+// import { NgxPrintModule } from 'ngx-print';
 import { ConfirmationDialogComponent } from '../../../shared/component/confirmation-dialog/confirmation-dialog.component';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -232,6 +232,7 @@ export class AreareceiptComponent implements OnInit {
       allowedDays: this.fb.array([]),
       VM_Receipt: [{ disabled: true, value: '' }],
       dateToSet: [''],
+      noOfLimit:[''],
       seasonalDates: this.fb.group({
         fromDate: [''],
         toDate: [''],
@@ -741,6 +742,7 @@ export class AreareceiptComponent implements OnInit {
     this.masterservice
       .getVazhipadeByCode(vazhipadcode)
       .subscribe((res: any) => {
+        console.log(res,"nazhipad fetch data")
         const selectedRow = this.vazhipadinfo.at(index) as FormGroup;
 
         if (res[0].VM_Amt != 0) {
@@ -754,6 +756,7 @@ export class AreareceiptComponent implements OnInit {
         selectedRow.get('VM_Receipt')?.setValue(res[0].VM_Receipt);
         selectedRow.get('ratechange')?.setValue(res[0].VM_Rate_Change);
         selectedRow.get('VTime')?.setValue(res[0].VM_Time);
+        selectedRow.get('noOfLimit')?.setValue(res[0].VM_MaxNo)
         this.selectedVazhipadPrathistaDetails(vazhipadcode, index);
         this.setVazhipadDate(index);
       });
@@ -947,7 +950,7 @@ console.log(data,"multaday booked details prathsta name check");
       Vazhipad: data.Vazhipad,
       Vazhid: data.Vazhid,
       Prethista: data.Prethista,
-      Qty: singlevazhipadmultiday > 0 ? 1 : data.Qty * result.length,
+      Qty:  data.Qty * result.length,
       Rate: data.Rate,
       VazhipadDate: this.datePipe.transform(startDate, 'yyyy-MM-dd') || '',
       TotalAmt: this.totalAmount,
@@ -1914,4 +1917,44 @@ console.log(data,"multaday booked details prathsta name check");
       }
     });
   }
+  validateQty(rowIndex: number) {
+    const row = this.vazhipadinfo.at(rowIndex).value;
+    const currentQty = +row.qty;
+    const bookedQty = +row.bookedQty;
+    const maxLimit = +row.noOfLimit;
+    const selectedVazhipad = row.vazhipad;
+    const selectedDate = row.vazhipadDate;
+  
+    // Sum qty of all previous rows with same vazhipad and same date
+    let sumQty = currentQty + bookedQty;
+  
+    this.vazhipadinfo.controls.forEach((ctrl, i) => {
+      if (i !== rowIndex) {
+        const r = ctrl.value;
+        if (r.vazhipad === selectedVazhipad && r.vazhipadDate === selectedDate) {
+          sumQty += +r.qty;
+        }
+      }
+    });
+  
+    const isValid = sumQty <= maxLimit;
+  
+    const formRow = this.vazhipadinfo.at(rowIndex);
+    formRow.get('qty')?.setErrors(isValid ? null : { maxLimitExceeded: true });
+  
+    if (!isValid) {
+      this.notification.error('Total quantity exceeds max limit for this vazhipad on selected date');
+    }
+  
+    return isValid;
+  }
+
+  onQtyChange(rowIndex: number) {
+    const isValid = this.validateQty(rowIndex);
+    if (isValid) {
+      this.createRow();
+    }
+  }
+
+
 }

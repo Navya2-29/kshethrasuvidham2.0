@@ -1,6 +1,6 @@
 import { NgPluralCase } from '@angular/common';
 export const Constant = {
-  BASE_URL: 'http://api.suvidham.in/api/KshetramAPI/',
+  BASE_URL: 'http:///api.suvidham.in/api/KshetramAPI/',
   // BASE_URL:'https://api.lacsindore.in/api/KshetramAPI/',
 
   // BASE_URL: 'https://panchiyammaapi.suvidham.in/api/KshetramAPI/',
@@ -8,7 +8,7 @@ export const Constant = {
   // BASE_URL:'https://api.oolamparaganapthy.in/api/KshetramAPI/',
   // BASE_URL:'https://api.egmoreayyappantempleapms.in/api/KshetramAPI/',
   // BASE_URL:'https://api.pisharikavukollam.in/api/KshetramAPI/',
-
+  // BASE_URL:'https://api.vadakkevilakam.in/api/KshetramAPI/',
   
   METHODS: {
     // master view

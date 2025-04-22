@@ -310,7 +310,7 @@ this.groupDataByPrathistaAndVazhipad()
   onProceed() {
     console.log('Proceed button clicked');
     // Set the bill data in the service
-    // thi/s.printService.setBillData(this.duplicatebilldata);
+    // this.printService.setBillData(this.duplicatebilldata);
 
     // Emit the event to notify PrintComponent
     // this.printService.triggerProceedEvent();
@@ -340,7 +340,10 @@ this.groupDataByPrathistaAndVazhipad()
 
   printDuplicateBill(){
     if(this.printerType=='dotMetrix'){
-      this.printReceiptsDotmetrix()
+      this.printReceiptsDotmetrix();
+    }
+    else if(this.printerType=='thermal'){
+      this.printReceiptsThermal();
     }
 
   }
@@ -499,6 +502,214 @@ this.groupDataByPrathistaAndVazhipad()
     }
   }
 
+
+  printReceiptsThermal(){
+   
+    this.differentDateArray = [];
+    
+    
+    // Iterate through the vazhipadinfo array and split based on the condition
+    this.duplicatebilldata.forEach((item:any) => {
+      
+            this.differentDateArray.push(item); // Add to differentDateArray if FromDate != ToDate
+      
+    });
+    
+    // Output the arrays
+    // console.log("Same Date Array:", this.sameDateArray);
+    console.log("Different Date Array:", this.differentDateArray);
+  
+  
+  if (this.differentDateArray.length > 0) {
+    // Group data by Prathista, Vazhipad, and From Date
+    const groupedData = this.differentDateArray.reduce((acc: any, item: any) => {
+      const key = `${item.Prathista}/${item.Vazhipad}/${item.Fdate}/${item.Tdate}`;
+      if (!acc[key]) {
+        acc[key] = { items: [], totalQty: 0, uniqueNames: new Set(), nalBy: '', mday: '', thithi: '',mmonth:'' };
+      }
+      acc[key].items.push(item);
+      acc[key].totalQty += parseInt(item.Qty, 10);
+      acc[key].uniqueNames.add(item.Name);
+  
+  
+    // Check if NalBy, Mday, or Thithi has data and store it
+    if (item.NalBy) acc[key].nalBy = item.NalBy;
+    if (item.MDay) acc[key].mday = item.MDay;
+    if (item.SearchBy) acc[key].thithi = item.SearchBy;
+    if (item.MMonth) acc[key].mmonth = item.MMonth;
+  
+      return acc;
+    }, {});
+  
+    const maxRowsPerPage = 4; // Maximum rows per page
+    let allReceiptsContent = '';
+    // Variable to store the total amount of all pages
+  
+    Object.keys(groupedData).forEach((key) => {
+      const group = groupedData[key];
+      const [prathista, vazhipad, fromDate,toDate] = key.split('/');
+      const items = group.items;
+      let grandTotalAmount = 0;
+      // Group items by Name to sum Qty and avoid repetition
+      const nameGroupedItems = items.reduce((nameAcc: any, item: any) => {
+        if (!nameAcc[item.Name]) {
+          nameAcc[item.Name] = {
+            ...item,
+            Qty: 0, // Initialize Qty sum
+          };
+        }
+        nameAcc[item.Name].Qty += parseInt(item.Qty, 10); // Sum Qty for the same Name
+        return nameAcc;
+      }, {});
+  
+      // Convert grouped by Name items into an array
+      const uniqueNamesItems = Object.values(nameGroupedItems);
+  
+      // Split items into pages
+      const pages = [];
+      for (let i = 0; i < uniqueNamesItems.length; i += maxRowsPerPage) {
+        pages.push(uniqueNamesItems.slice(i, i + maxRowsPerPage));
+      }
+  
+      // Render each page
+      pages.forEach((page, pageIndex) => {
+        let receiptContent = `
+          <div class="receipt-page">
+            <div class="receipt-header">${this.templeName}</div>
+            <div class="receipt-sub-header">${this.templeAddress}</div>
+            <hr>
+            <div class="receipt-content">Bill Date:${this.billDate}</div>
+            <div class="receipt-content">Bill No: ${this.lastBillNo}</div>
+            <div class="receipt-content">Prathista: ${prathista}</div>
+            <div class="receipt-content">Vazhipad: ${vazhipad}</div>
+        `;
+
+        // Render rows in the current page
+        page.forEach((item: any) => {
+          const amount = item.Qty * item.Rate;
+          grandTotalAmount += amount; // Add the amount to the grand total
+          receiptContent += `
+            <div class="receipt-content">Name: ${item.Name}</div>
+            ${item.Name2 ? `<div class="receipt-content">Name2: ${item.Name2}</div>` : ''}
+            <div class="receipt-content">Star: ${this.getStarbyId(item.Star)}</div>
+            ${item.Star2 ? `<div class="receipt-content">Star2: ${this.getStarbyId(item.Star2)}</div>` : ''}
+          `;
+        });
+
+        // Add grand total and other details
+        receiptContent += `
+            <div class="receipt-total">Rate: ${group.rate}</div>
+            <div class="receipt-total">Total Qty: ${group.totalQty}</div>
+            <div class="receipt-total">Total Amount: ${grandTotalAmount.toFixed(2)}</div>
+            <div class="receipt-content">Vazhipad Date: 
+              ${fromDate !== toDate ? `${this.convertDateFormat(fromDate)} to ${this.convertDateFormat(toDate)}` : `${this.convertDateFormat(fromDate)}`}
+            </div>
+            ${group.nalBy ? `<div class="receipt-footer">- ${group.nalBy}</div>` : ''}
+            ${group.mday ? `<div class="receipt-footer">- ${group.mday}</div>` : ''}
+            ${group.mmonth ? `<div class="receipt-footer">- ${group.mmonth}</div>` : ''}
+            <div class="receipt-footer">
+              User ID: ${this.name} ${this.displayTrnsmode == 'CR' ? "Not Paid" : ""}
+            </div>
+          </div> <!-- Close receipt-page -->
+        `;
+        allReceiptsContent += receiptContent;
+      });
+  });
+  
+  
+  
+    //   });
+    // });
+  
+   
+    const printContent = `
+    <html>
+      <head>
+      
+         <style>
+            body {
+              margin: 10px;
+              padding: 0;
+              font-family: Arial, sans-serif;
+              font-size: 10pt;
+              font-weight: bold;
+              text-align: left;
+            }
+
+            .receipt-page {
+              position: relative;
+              width: 80mm;;
+              height: auto;
+              margin: 0 auto;
+              padding: 10px;
+              overflow: hidden;
+              page-break-after: auto;
+              border: 1px dashed #000;
+            }
+
+            .receipt-header {
+              font-size: 14pt;
+              font-weight: bold;
+              text-align: center;
+              margin-bottom: 5px;
+            }
+
+            .receipt-sub-header {
+              font-size: 12pt;
+              text-align: center;
+              margin-bottom: 5px;
+            }
+
+            hr {
+              border: 0;
+              border-top: 1px solid black;
+              margin: 5px 0;
+            }
+
+            .receipt-content {
+              text-align: left;
+              font-size: 9pt;
+              margin-bottom: 3px;
+            }
+
+            .receipt-total {
+              margin-top: 10px;
+              font-weight: bold;
+              font-size: 11pt;
+              border-top: 1px solid #000;
+              padding-top: 5px;
+              text-align: left;
+            }
+
+            .receipt-footer {
+              font-size: 9pt;
+              margin-top: 10px;
+              font-style: italic;
+              text-align: left;
+            }
+          </style>
+      </head>
+      <body>
+        ${allReceiptsContent}
+      </body>
+    </html>
+  `;
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    if (printWindow) {
+      printWindow.document.open();
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+      printWindow.close();
+      // this.resetForm()
+    }
+  }
+
+
+
+
+  }
   
 
 

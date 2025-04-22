@@ -9,6 +9,7 @@ import {
   AbstractControl,
   FormBuilder,
   FormGroup,
+  FormsModule,
   ReactiveFormsModule,
   ValidationErrors,
   Validators,
@@ -20,6 +21,7 @@ import { DuplicatecheckService } from '../../../services/duplicateCheckValidator
 import { CommonModule } from '@angular/common';
 import { NotificationService } from '../../../services/notification/notification.service';
 import { debounceTime, switchMap } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-vihidham-master',
@@ -32,6 +34,7 @@ import { debounceTime, switchMap } from 'rxjs';
     MatButtonModule,
     MatInputModule,
     ReactiveFormsModule,
+    FormsModule
   ],
   templateUrl: './vihidham-master.component.html',
   styleUrl: './vihidham-master.component.css',
@@ -60,7 +63,7 @@ export class VihidhamMasterComponent {
   private duplicateCheck = inject(DuplicatecheckService);
 
   templeName: string | null;
-  constructor(private notification: NotificationService) {
+  constructor(private notification: NotificationService , private router:Router) {
     this.templeName = localStorage.getItem('TempleName');
     this.userId = localStorage.getItem('LoginId');
     this.today = new Date().toISOString().substring(0, 10);
@@ -163,6 +166,8 @@ export class VihidhamMasterComponent {
           this.filteredVihidhamMaster = this.vihidhamMaster;
           this.loading = false;
         }
+        this.loading = false;
+
       },
       error: (error) => {
         console.log(error);
@@ -305,19 +310,16 @@ export class VihidhamMasterComponent {
   }
 
   // search functionality by name and code
-  onSearch(searchQuery: string) {
+  onSearch() {
     if (!this.searchQuery.trim()) {
       this.filteredVihidhamMaster = this.vihidhamMaster;
     } else {
       this.filteredVihidhamMaster = this.vihidhamMaster.filter((data) => {
-        console.log(data);
         return (
-          data.vihidham_name
-            .toLowerCase()
-            .includes(this.searchQuery.toLowerCase()) ||
-          data.vihidham_code
+          data.VC_Name
             .toLowerCase()
             .includes(this.searchQuery.toLowerCase())
+          
         );
       });
     }
@@ -426,6 +428,9 @@ export class VihidhamMasterComponent {
     
     
   }
+  gotoDashBoard() {
+    this.router.navigate(['/dashboard']);
+  } 
 
   getVazhipadmaster(){
   

@@ -393,23 +393,23 @@ ${group.mmonth ? `<div style="position: absolute; left: 8cm; top:8.5cm;">- ${gro
     <head>
     
       <style>
-        body {
-          margin: 0;
-          padding: 0;
-          font-family: Arial, sans-serif;;
-          font-size: 10pt;
-          font-weight: bold;
-        }
-        .receipt-page {
-          position: relative;
-          width: 6in;
-          height: 4in;
-          margin: 0 auto;
-          padding: 0;
-          overflow: hidden;
-          page-break-after: auto;
-        }
-      </style>
+          body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            font-size: 10pt;
+            font-weight: bold;
+          }
+          .receipt-page {
+            position: relative;
+            width: 6in;
+            height: 4in;
+            margin: 0 auto;
+            padding: 0;
+            overflow: hidden;
+            page-break-after: auto;
+          }
+        </style>
     </head>
     <body>
       ${allReceiptsContent}

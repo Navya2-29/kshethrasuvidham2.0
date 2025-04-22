@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ViewChild } from '@angular/core';
 import { HeaderComponent } from '../layout/header/header.component';
 import { SpinnerComponent } from '../../shared/component/spinner/spinner.component';
 import { Router, TitleStrategy } from '@angular/router';
@@ -38,6 +38,11 @@ export class SettingsComponent {
   templeName: string | null;
   templeDetails: Settings | null = null;
   billType: string = '';
+   @ViewChild('fileInput') fileInput: any;
+   imagePreview: string | ArrayBuffer | null = null;
+   errorMessage: string = '';
+   fileInputMessageFlag: boolean = true;
+
   private formBuilder = inject(FormBuilder);
   private masterService = inject(MasterService);
   private notification = inject(ToastrService);
@@ -60,6 +65,7 @@ export class SettingsComponent {
   }
 
   updateSettings() {
+    this.loading=true;
     if (this.settingsForm.valid) {
       console.log(this.settingsForm.value);
 
@@ -69,7 +75,7 @@ export class SettingsComponent {
         Address: this.settingsForm.value.templeAddress,
         Phone: this.settingsForm.value.phone,
         Email: this.settingsForm.value.email,
-        logo: 'temple-logo.png',
+        logo: this.settingsForm.value.logo,
         Language: this.settingsForm.value.language,
         Counter: String(this.settingsForm.value.Counter),
         Printer: this.settingsForm.value.printer,
@@ -81,6 +87,7 @@ export class SettingsComponent {
           if (data.RespStatus === 'U') {
             this.notification.success('Temple details updated successfully!');
             this.changeSettings();
+            this.loading=false;
           }
         },
         error: (err) => {
@@ -97,6 +104,7 @@ export class SettingsComponent {
   }
 
   getTempleDetails() {
+    this.loading=true;
     this.masterService.settingsData().subscribe((data) => {
       console.log(data, 'settings');
       this.templeDetails = data[0];
@@ -106,18 +114,20 @@ export class SettingsComponent {
           templeAddress: this.templeDetails.Address,
           language: this.templeDetails.Language,
           printer: this.templeDetails.Printer,
-          // logo:this.templeDetails.logo,
+          logo:this.templeDetails.logo,
           Counter: this.templeDetails.Counter,
           phone: this.templeDetails.phone,
           email: this.templeDetails.email,
         });
+        this.imagePreview = this.templeDetails.logo;
       }
+      this.loading=false;
     });
   }
   changeSettings() {
     this.getTempleDetails();
     localStorage.setItem('Language', this.templeDetails?.Language || '');
-    localStorage.setItem('Language', this.templeDetails?.Language || '');
+    // localStorage.setItem('Language', this.templeDetails?.Language || '');
   }
 
   unLockBillNumber() {
@@ -142,4 +152,70 @@ export class SettingsComponent {
       this.notification.error('Please select Bill type to unLock ');
     }
   }
+  previewImage(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.fileInputMessageFlag = false;
+
+      // Check if the file type is PNG
+      if (file.type !== 'image/png') {
+        this.errorMessage = 'Only PNG images are allowed.';
+        this.imagePreview = null;
+        this.fileInput.nativeElement.value = '';
+        this.fileInputMessageFlag = true;
+        return;
+      }
+      // diamension check
+      const maxSizeInBytes = 2 * 1024 * 1024; // 2MB
+      if (file.size > maxSizeInBytes) {
+        this.errorMessage = 'File size should not exceed 2MB.';
+        this.imagePreview = null;
+        this.fileInput.nativeElement.value = '';
+        this.fileInputMessageFlag = true;
+        return;
+      }
+
+      const img = new Image();
+      img.onload = () => {
+        const maxWidth = 1920;
+        const maxHeight = 1920;
+        if (img.width > maxWidth || img.height > maxHeight) {
+          this.errorMessage = `Image dimensions should not exceed ${maxWidth}x${maxHeight} pixels.`;
+          this.imagePreview = null;
+          this.fileInput.nativeElement.value = '';
+          this.fileInputMessageFlag = true;
+        } else {
+          this.errorMessage = '';
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const base64Image = e.target?.result as string;
+            console.log(base64Image);
+            this.imagePreview = base64Image;
+            this.settingsForm.patchValue({ logo: base64Image });
+          };
+          reader.readAsDataURL(file);
+        }
+        URL.revokeObjectURL(img.src); // Clean up the object URL
+      };
+
+      img.src = URL.createObjectURL(file);
+    } else {
+      this.errorMessage = 'No file selected.';
+      this.imagePreview = null;
+      this.fileInputMessageFlag = true;
+    }
+  }
+
+// cancel uploded image only
+removeImagePreview() {
+  this.fileInput.nativeElement.value = '';
+  this.fileInputMessageFlag = true;
+  this.imagePreview = '';
+  this.errorMessage = '';
+  this.settingsForm.patchValue({ logo: '' });
+}
+
+
+
+
 }

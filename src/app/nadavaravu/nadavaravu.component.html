@@ -345,3 +345,38 @@
 </div>
 
 <!-- end of nadavaravu gramasamudayam -->
+
+<div id="thermalreceipt" style="width: 6in; height: 4in; display: none; position: relative; font-size: 12px; font-family: Arial, sans-serif;">
+  <!-- <div style="position: absolute; left: 2.1cm; top: 3.8cm;">{{ itemName }}</div> -->
+  <div class="receipt-header">{{templeName}}</div>
+  <div class="receipt-sub-header">{{templeAddress}}</div>
+  <hr>
+  <div class="receipt-content">{{"BILLDATE" | translate}}: {{ todayDate | date: 'dd-MM-yyyy' }}</div>
+  <div class="receipt-content">{{"BILL NO" | translate }}:{{ nadavaravForm.get('BillNo')?.value }}</div>
+  <!-- <div class="receipt-content">{{"PRATHISTA"}}: </div> -->
+  <div class="receipt-content">{{"VAZHIPAD" | translate}}:{{ itemName }} </div>
+
+  <div class="receipt-content">{{"NAME" | translate}}:{{ nadavaravForm.get('Name')?.value }}<p>{{nadavaravForm.get('Address')?.value }}</p></div>
+  <div class="receipt-content">{{"STAR" | translate }}:{{ getStarNameById(nadavaravForm.get('Star')?.value) }}</div>
+  <div class="receipt-content">{{"QTY" | translate}}:{{ nadavaravForm.get('Qty')?.value }}</div>
+  <div class="receipt-total">{{"AMOUNT" | translate}}:{{ nadavaravForm.get('ReceiptAmount')?.value}}</div>
+  <hr>
+</div>
+
+<div id="thermalduplicatereceipt" style="width: 6in; height: 4in; display: none; position: relative; font-size: 12px; font-family: Arial, sans-serif;">
+  <!-- <div style="position: absolute; left: 2.1cm; top: 3.8cm;">{{ itemName }}</div> -->
+  <div class="receipt-header">{{templeName}}</div>
+  <div class="receipt-sub-header">{{templeAddress}}</div>
+  <hr>
+  <div class="receipt-content">{{"BILLDATE" | translate}}: {{ dupliacteBillData?.Billdate | date : "dd-MM-YYYY" }}</div>
+  <div class="receipt-content">{{"BILL NO" | translate }}:{{ dupliacteBillData?.BillNo }}</div>
+  <!-- <div class="receipt-content">Prathista: </div> -->
+  <div class="receipt-content">{{"VAZHIPAD" | translate }}: {{getItemById(dupliacteBillData?.NM_Id) }}</div>
+
+  <div class="receipt-content">{{"NAME" | translate }}:{{ dupliacteBillData?.Name }}</div>
+  <div class="receipt-content">{{"STAR" | translate }}:{{getStarNameById(dupliacteBillData?.Star) }}</div>
+  <div class="receipt-content">{{"QTY" | translate}}:{{dupliacteBillData?.Qty }}</div>
+
+  <div class="receipt-total">{{"AMOUNT" | translate}}:{{ dupliacteBillData?.Receipt_Amt}}</div>
+  <hr>
+</div>

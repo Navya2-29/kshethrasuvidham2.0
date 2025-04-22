@@ -549,13 +549,14 @@
               <tbody
                 *ngIf="!showNoRecordsMessage && Vmaster && Vmaster.length > 0"
               >
-                <tr *ngFor="let data of filteredVmaster; let i = index">
+                <tr *ngFor="let data of filteredVmaster; let i = index" [ngClass]="{'text-red': data.VM_Blocking === 'Y'}">
                   <td style="text-align: left; padding-left: 10px">
                     {{ data.VM_Code }}
                   </td>
                   <td
                     style="text-align: left; padding-left: 10px; width: 40%"
                     class="wrap-text"
+                    
                   >
                     {{ data.VM_Name }}-{{ data.VM_RName }}
                   </td>

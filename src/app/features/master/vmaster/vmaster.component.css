@@ -18,6 +18,9 @@
     background-image:url('/assets/images/login-bg.jpg');background-position: center;background-size: cover;
 
 }
+.text-red{
+  color: red;
+}
 
 .content{
     width:100%;
