@@ -89,7 +89,7 @@
           </table>
         </div>
 
-        <div class="Nadavaravu">
+        <div class="Nadavaravu" *ngIf="filteredNadavaravu.length>0">
           <h4 class="tabble-heading">{{"Nadavaravu" | translate }}</h4>
           <table>
             <thead>
@@ -109,7 +109,7 @@
               <tr *ngFor="let item of filteredNadavaravu">
                 <td>{{ item.BillNo }}</td>
                 <td>{{ item.BillDate }}</td>
-                <td>{{ item.InstNo }}</td>
+                <td>{{ item.Remarks }}</td>
                 <td>{{item.CounterId}}({{item.UName}})</td> 
                 <td><span *ngIf="this.lang!='en'">{{ item.NM_RName }}</span><span *ngIf="this.lang=='en'" >{{ item.NM_Name}}</span></td>
                 <td>{{ item.Name }}</td>
@@ -135,7 +135,7 @@
             </tbody>
           </table>
         </div>
-        <div class="Credit Collection">
+        <div class="Credit Collection" *ngIf="filteredCreditCollection.length>0">
           <h4 class="tabble-heading">{{"Credit Collection" | translate }}</h4>
           <table>
             <thead>
@@ -156,7 +156,7 @@
               <tr *ngFor="let item of filteredCreditCollection">
                 <td>{{ item.BillNo }}</td>
                 <td>{{ item.BillDate }}</td>
-                <td>{{ item.InstNo }}</td>
+                <td>{{ item.Remarks }}</td>
                 
                 <td>{{item.CounterId}}({{item.UName}})</td> 
                 <td>{{ item.Vazhipad }}</td>
@@ -184,7 +184,7 @@
           </table>
         </div>
 
-        <div class="Fee collection">
+        <div class="Fee collection" *ngIf="filteredFeecollection.length>0">
           <h4 class="tabble-heading">{{"FeeCollection" | translate }}</h4>
           <table>
             <thead>
@@ -193,7 +193,7 @@
                 <th>{{ "BILLDATE" | translate }}</th>
                 <th>{{ "ID" | translate }}</th>
                 <th>{{"Counter" | translate }}</th>
-                <th>{{ "VAZHIPAD" | translate }}</th>
+                <th>{{ "feecollection.Month" | translate }}</th>
                 <th>{{ "NAME" | translate }}</th>
                 <th>{{ "QUANTITY" | translate }}</th>
                 <th class="number">{{ "RATE" | translate }}</th>
@@ -206,7 +206,7 @@
                 <td>{{ item.BillDate }}</td>
                 <td>{{ item.InstNo }}</td>
                 <td>{{item.CounterId}}({{item.UName}})</td>  
-                <td>{{ item.NM_Name }}({{item.Month}})</td>
+                <td>{{lang=='en'? item.NM_Name:item.NM_RName }}({{item.Month}})</td>
                 <td>{{ item.Name }}</td>
                 <td>--</td>
                 <td class="number">
@@ -232,8 +232,6 @@
           <div>
             <p class="grandtotal" >{{"Report Name.Total Collection" | translate}}:{{ getTotalAmount() +getCreditCollectTotalAmount() +getFeecollectionTotalAmount() +getNadavaravuTotalAmount() |number: '1.2-2' }}</p>
           </div>
-
-
         </div>
       </div>
       <div class="nodataFound" *ngIf="filteredData.length === 0">

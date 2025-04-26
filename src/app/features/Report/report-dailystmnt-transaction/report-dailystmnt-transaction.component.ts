@@ -101,15 +101,10 @@ export class ReportDailystmntTransactionComponent {
       this.fetchReportData(type, this.fromDate, this.toDate);
       this.getCreditReport(this.fromDate, this.toDate);
     });
-
-    
   }
-
-
   getCreditReport(fromdate:string,toDate:string){
-   
     const meberpayLoad ={
-      Type: "CreditCollect",
+      Type: "CreditPending",
       FromDate: fromdate,
       ToDate: toDate,
     }

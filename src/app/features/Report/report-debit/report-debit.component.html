@@ -94,7 +94,7 @@
 
 
 
-    <div class="Credit Collection">
+    <div class="Credit Collection" *ngIf="filteredCreditCollection.length>0">
       <h4 class="tabble-heading">{{"Credit Collection" | translate }}</h4>
       <table>
         <thead>
@@ -115,7 +115,7 @@
           <tr *ngFor="let item of filteredCreditCollection">
             <td>{{ item.BillNo }}</td>
             <td>{{ item.BillDate }}</td>
-            <td>{{ item.InstNo }}</td>
+            <td>{{ item.Remarks }}</td>
             
             <td>{{item.CounterId}}({{item.UName}})</td>
             <td>{{ item.Vazhipad }}</td>
@@ -143,7 +143,7 @@
       </table>
     </div>
 
-    <div class="Fee collection">
+    <div class="Fee collection" *ngIf="filteredFeecollection.length>0" >
       <h4 class="tabble-heading">{{"FeeCollection" | translate }}</h4>
       <table>
         <thead>

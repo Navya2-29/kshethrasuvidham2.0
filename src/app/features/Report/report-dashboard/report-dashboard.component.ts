@@ -226,6 +226,12 @@ if(prathista || vazhipad){
     else if (reportType === 'vihidham') {
       this.newTab = window.open(`#/report-vihidham${queryString}`, '_blank');
     }
+    else if (reportType === 'billregister') {
+      this.newTab = window.open(`#/report-billregister${queryString}`, '_blank');
+    }
+    else if (reportType === 'Dayend') {
+      this.newTab = window.open(`#/report-Dayend${queryString}`, '_blank');
+    }
   }
 
     if (this.newTab) {

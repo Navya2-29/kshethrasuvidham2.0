@@ -15,7 +15,10 @@ table {
     background:white;
     color:#135796;
   }
-
+  .is-invalid {
+    border: 1px solid red !important;
+    box-shadow: 0 0 4px red;
+  }
   .proceed {
     background: #046ef8;;
     color:white;

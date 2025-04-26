@@ -28,5 +28,7 @@ export interface ReportData {
     Address1:string;
     Address2:string;
     UName:string;
+    TrnStatus:string;
+    TotalAmount:number;
     // Receipt_Amt?:number
   }

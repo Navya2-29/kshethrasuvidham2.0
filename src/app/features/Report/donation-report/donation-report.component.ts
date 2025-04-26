@@ -57,7 +57,7 @@ export class DonationReportComponent {
   data: ReportDailyStmt[] = [];
   fromDate:string;
   toDate:string;
-loading:boolean;
+  loading:boolean;
   currentDate: string = '';
 
   counterId:string | null;
@@ -117,13 +117,6 @@ this.ts.use(this.lang || 'en');
       },
     });
   }
-
-
-
-
-
-  
-
   goBack(): void {
     console.log('Going back...'); // Log to verify method execution
     this.router.navigate(['/getReport']);
@@ -133,9 +126,6 @@ this.ts.use(this.lang || 'en');
     } else {
       window.close(); // Closes the tab if it's the only page open
     }
-
-
-
   }
 
 

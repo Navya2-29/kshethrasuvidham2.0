@@ -133,7 +133,7 @@ export class AreareceiptComponent implements OnInit {
   private eventService = inject(TotalAmountService);
   private notification = inject(ToastrService);
   private receiptPrintService = inject(ReceiptPrintService);
-  private reportService=inject(ReportService);
+  private reportService = inject(ReportService);
   constructor(
     private fb: FormBuilder,
     public dialog: MatDialog,
@@ -194,8 +194,6 @@ export class AreareceiptComponent implements OnInit {
   }
 
   createRow(): FormGroup {
-
-
     const row = this.fb.group({
       Slno: [''],
       Vazhipad: ['', [Validators.required, this.vazhipadValidator.bind(this)]],
@@ -234,11 +232,10 @@ export class AreareceiptComponent implements OnInit {
       allowedDays: this.fb.array([]),
       VM_Receipt: [{ disabled: true, value: '' }],
       dateToSet: [''],
-      noOfLimit:[''],
+      noOfLimit: [''],
       maxLimit: [0],
-    alreadyBooked: [0],
-    errorMessage: [''],
-
+      alreadyBooked: [0],
+      errorMessage: [''],
       seasonalDates: this.fb.group({
         fromDate: [''],
         toDate: [''],
@@ -348,7 +345,7 @@ export class AreareceiptComponent implements OnInit {
     const inputField = event.target as HTMLInputElement;
     if (inputField.value.trim().length > 0) {
       setTimeout(() => {
-        inputField.select();  
+        inputField.select();
       }, 0);
     }
   }
@@ -366,39 +363,36 @@ export class AreareceiptComponent implements OnInit {
       this.vazhipadinfo.length > 0 &&
       !this.vazhipadinfo.at(this.vazhipadinfo.length - 1).valid
     ) {
-
-
-
       for (let i = 0; i < this.vazhipadinfo.length; i++) {
         const row = this.vazhipadinfo.at(i) as FormGroup;
-      // const row = this.vazhipadinfo.at(index) as FormGroup;
+        // const row = this.vazhipadinfo.at(index) as FormGroup;
 
-      if (row.invalid) {
-        if (row.get('Vazhipad')?.errors?.['required']) {
-          this.notification.success('Please select a vazhipad');
-        } else if (row.get('Vazhipad')?.errors?.['invalidVazhipad']) {
-          this.notification.success('Please select a Valid vazhipad');
-        } else if (row.get('Name')?.errors?.['required']) {
-          this.notification.success('Please enter the Name');
-        } else if (row.get('Star')?.errors?.['required']) {
-          this.notification.success('Please select a Star');
-        } else if (row.get('Prethista')?.errors?.['required']) {
-          this.notification.success('Please select a Prethista');
-        } else if (row.get('Qty')?.errors?.['required']) {
-          this.notification.success('Please select a Qty');
-        } else if (row.get('Rate')?.errors?.['required']) {
-          this.notification.success('Please select a Rate');
-        } else if (row.get('Rate')?.errors?.['pattern']) {
-          this.notification.success('Enter a valid rate');
-        } else if (row.get('Rate')?.errors?.['zeroRate']) {
-          this.notification.success('Rate cannot be zero');
-        } else if (row.get('VazhipadDate')?.errors?.['required']) {
-          this.notification.success('Please select a VazhipadDate');
+        if (row.invalid) {
+          if (row.get('Vazhipad')?.errors?.['required']) {
+            this.notification.success('Please select a vazhipad');
+          } else if (row.get('Vazhipad')?.errors?.['invalidVazhipad']) {
+            this.notification.success('Please select a Valid vazhipad');
+          } else if (row.get('Name')?.errors?.['required']) {
+            this.notification.success('Please enter the Name');
+          } else if (row.get('Star')?.errors?.['required']) {
+            this.notification.success('Please select a Star');
+          } else if (row.get('Prethista')?.errors?.['required']) {
+            this.notification.success('Please select a Prethista');
+          } else if (row.get('Qty')?.errors?.['required']) {
+            this.notification.success('Please select a Qty');
+          } else if (row.get('Rate')?.errors?.['required']) {
+            this.notification.success('Please select a Rate');
+          } else if (row.get('Rate')?.errors?.['pattern']) {
+            this.notification.success('Enter a valid rate');
+          } else if (row.get('Rate')?.errors?.['zeroRate']) {
+            this.notification.success('Rate cannot be zero');
+          } else if (row.get('VazhipadDate')?.errors?.['required']) {
+            this.notification.success('Please select a VazhipadDate');
+          }
+
+          return; // Stop adding new row if current row is invalid
         }
-
-        return; // Stop adding new row if current row is invalid
       }
-    }
     }
 
     const currentRow = this.vazhipadinfo.at(index) as FormGroup;
@@ -505,9 +499,7 @@ export class AreareceiptComponent implements OnInit {
 
   setupStarAutocomplete(index: number): void {
     const row = this.vazhipadinfo.at(index) as FormGroup;
-
     const control = row.get('starName');
-
     control?.valueChanges
       .pipe(
         startWith(''),
@@ -558,9 +550,7 @@ export class AreareceiptComponent implements OnInit {
 
   setupPrathistaAutocomplete(index: number): void {
     const row = this.vazhipadinfo.at(index) as FormGroup;
-
     const control = row.get('Prethista');
-
     control?.valueChanges
       .pipe(
         startWith(''),
@@ -702,7 +692,6 @@ export class AreareceiptComponent implements OnInit {
     const selectedStar = event.option.value;
     const selectedRow = this.vazhipadinfo.at(index) as FormGroup;
     selectedRow.get('Star')?.setValue(selectedStar);
-
     if (this.lang == 'en') {
       this.selectedStarData = this.nakshatham.find(
         (item) => item.SM_Name == selectedStar
@@ -712,7 +701,6 @@ export class AreareceiptComponent implements OnInit {
         (item) => item.SM_RName === selectedStar
       );
     }
-
     if (this.selectedStarData) {
       selectedRow.get('Star')?.setValue(this.selectedStarData.SM_Id.toString());
     } else {
@@ -748,7 +736,7 @@ export class AreareceiptComponent implements OnInit {
     this.masterservice
       .getVazhipadeByCode(vazhipadcode)
       .subscribe((res: any) => {
-        console.log(res,"nazhipad fetch data")
+        console.log(res, 'nazhipad fetch data');
         const selectedRow = this.vazhipadinfo.at(index) as FormGroup;
 
         if (res[0].VM_Amt != 0) {
@@ -762,7 +750,7 @@ export class AreareceiptComponent implements OnInit {
         selectedRow.get('VM_Receipt')?.setValue(res[0].VM_Receipt);
         selectedRow.get('ratechange')?.setValue(res[0].VM_Rate_Change);
         selectedRow.get('VTime')?.setValue(res[0].VM_Time);
-        selectedRow.get('maxLimit')?.setValue(res[0].VM_MaxNo)
+        selectedRow.get('maxLimit')?.setValue(res[0].VM_MaxNo);
         this.selectedVazhipadPrathistaDetails(vazhipadcode, index);
         this.setVazhipadDate(index);
       });
@@ -880,12 +868,11 @@ export class AreareceiptComponent implements OnInit {
               });
           }
         }
-        const maxlimitqty=selectedRow.get('maxLimit')?.value;
-        console.log(maxlimitqty,"maxqty")
-     if(Number(maxlimitqty)>0){
-       this.getAlreadybookedvazhipadQty(index);
-     }
-        
+        const maxlimitqty = selectedRow.get('maxLimit')?.value;
+        console.log(maxlimitqty, 'maxqty');
+        if (Number(maxlimitqty) > 0) {
+          this.getAlreadybookedvazhipadQty(index);
+        }
       },
       error: (err) => {
         console.log('error in getting prathishta');
@@ -893,30 +880,26 @@ export class AreareceiptComponent implements OnInit {
     });
   }
 
-  getAlreadybookedvazhipadQty(index:number){
+  getAlreadybookedvazhipadQty(index: number) {
     const selectedRow = this.vazhipadinfo.at(index) as FormGroup;
-  const payLoad={
-   
-      Type: "VazhipadLimit",
-      FromDate: selectedRow.get("VazhipadDate")?.value,
-      ToDate:selectedRow.get("VazhipadDate")?.value,
-      PMId:selectedRow.get("PMid")?.value,
-      VazhId:selectedRow.get("Vazhid")?.value
-    
-
-
-  }
-  console.log(payLoad,"vazhipadwise qty already booked ")
+    const payLoad = {
+      Type: 'VazhipadLimit',
+      FromDate: selectedRow.get('VazhipadDate')?.value,
+      ToDate: selectedRow.get('VazhipadDate')?.value,
+      PMId: selectedRow.get('PMid')?.value,
+      VazhId: selectedRow.get('Vazhid')?.value,
+    };
+    console.log(payLoad, 'vazhipadwise qty already booked ');
     this.reportService.getVazhipadWiseReport(payLoad).subscribe({
-      next:(data)=>{
+      next: (data) => {
         console.log(data);
-        const qty=data[0].qty
-        if(qty>0){
-          selectedRow.get("alreadyBooked")?.setValue(qty);
+        const qty = data[0].qty;
+        if (qty > 0) {
+          selectedRow.get('alreadyBooked')?.setValue(qty);
           this.validateQtyAndSetError(index);
         }
-      }
-    })
+      },
+    });
   }
 
   validateQtyAndSetError(index: number) {
@@ -926,7 +909,7 @@ export class AreareceiptComponent implements OnInit {
     const maxLimit = currentGroup.get('maxLimit')?.value;
     const alreadyBooked = currentGroup.get('alreadyBooked')?.value;
     const currentQty = +currentGroup.get('Qty')?.value || 0;
-  
+
     // Sum qty of same vazhipad in all rows
     let totalQty = alreadyBooked;
     formArray.forEach((group, i) => {
@@ -934,16 +917,20 @@ export class AreareceiptComponent implements OnInit {
         totalQty += +group.get('Qty')?.value || 0;
       }
     });
-  
+
     totalQty += currentQty;
-  
+
     if (totalQty > maxLimit) {
       // const errorMsg = `Qty exceeds available limit. Max: ${maxLimit}, Already booked: ${alreadyBooked}`;
 
       currentGroup.get('Qty')?.setErrors({ exceed: true });
       // const ailabilty=
-      currentGroup.get('errorMessage')?.setValue(`Qty exceeds available limit. Max: ${maxLimit}, Already booked: ${totalQty}`);
-      const errorMsg =currentGroup.get('errorMessage')?.value;
+      currentGroup
+        .get('errorMessage')
+        ?.setValue(
+          `Qty exceeds available limit. Max: ${maxLimit}, Already booked: ${totalQty}`
+        );
+      const errorMsg = currentGroup.get('errorMessage')?.value;
       this.notification.error(errorMsg, 'Invalid Quantity');
       // return false;
     } else {
@@ -952,9 +939,14 @@ export class AreareceiptComponent implements OnInit {
     }
   }
 
-
   onQtyChange(index: number) {
-    this.validateQtyAndSetError(index);
+    const formArray = this.vazhipadinfo.controls;
+    const currentGroup = formArray[index] as FormGroup;
+    const maxLimit = currentGroup.get('maxLimit')?.value;
+    console.log(maxLimit,"qtychange maxlimit max>0")
+    if (maxLimit > 0) {
+      this.validateQtyAndSetError(index);
+    }
   }
 
   // opne multiday open dialog box
@@ -1006,10 +998,9 @@ export class AreareceiptComponent implements OnInit {
   ): void {
     console.log(result, 'multiday filtering');
     const row = this.vazhipadinfo.at(rowIndex) as FormGroup;
-
     let lastIndex = result.length - 1;
     const data = result[0];
-console.log(data,"multaday booked details prathsta name check");
+    console.log(data, 'multaday booked details prathsta name check');
     //  data.VazhipadDate is a Date object
     const startDate = new Date(data.VazhipadDate); // This should be the start date
     const endDate = new Date(result[lastIndex].VazhipadDate); // This should be the end date
@@ -1026,7 +1017,7 @@ console.log(data,"multaday booked details prathsta name check");
       Vazhipad: data.Vazhipad,
       Vazhid: data.Vazhid,
       Prethista: data.Prethista,
-      Qty:  data.Qty * result.length,
+      Qty: data.Qty * result.length,
       Rate: data.Rate,
       VazhipadDate: this.datePipe.transform(startDate, 'yyyy-MM-dd') || '',
       TotalAmt: this.totalAmount,
@@ -1118,6 +1109,7 @@ console.log(data,"multaday booked details prathsta name check");
     };
   }
 
+
   formatDate(dateString: any): string {
     const date = new Date(dateString);
     return `${date.getDate().toString().padStart(2, '0')}-${(
@@ -1129,7 +1121,7 @@ console.log(data,"multaday booked details prathsta name check");
 
   // api data send
   sendDataToApi(data: any) {
-    console.log(data,"send to api dataaaaaaaaaaaaaaaaaaaa to qty check");
+    console.log(data, 'send to api dataaaaaaaaaaaaaaaaaaaa to qty check');
     let isFormValid = true; // Initialize form validity
     let multidayRowIndices: number[] = [];
     this.validateAllVazhipadQty();
@@ -1238,65 +1230,68 @@ console.log(data,"multaday booked details prathsta name check");
 
   validateAllVazhipadQty() {
     const vazhipadArray = this.form.get('vazhipadinfo') as FormArray;
-  
+
     // Step 1: Group entries by (Vazhid, PMid, VazhipadDate)
-    const groupedEntries: { [key: string]: { indexes: number[], totalQty: number, maxLimit: number } } = {};
-  
+    const groupedEntries: {
+      [key: string]: { indexes: number[]; totalQty: number; maxLimit: number };
+    } = {};
+
     vazhipadArray.controls.forEach((row, index) => {
+      if (this.multidayBooking[index]) {
+        return;
+      }
+
       const vazhid = row.get('Vazhid')?.value;
       const pmid = row.get('PMid')?.value;
       const date = row.get('VazhipadDate')?.value;
       const qty = row.get('Qty')?.value;
       const maxLimit = row.get('maxLimit')?.value;
-  
+
       const key = `${vazhid}_${pmid}_${date}`;
-  
+
       if (!groupedEntries[key]) {
         groupedEntries[key] = { indexes: [], totalQty: 0, maxLimit };
       }
-  
+
       groupedEntries[key].indexes.push(index);
       groupedEntries[key].totalQty += qty;
     });
-  
+
     // Step 2: For each group, call API once and validate all related rows
     Object.keys(groupedEntries).forEach((key) => {
       const [vazhid, pmid, date] = key.split('_');
       const group = groupedEntries[key];
-  
+
       const payload = {
-        Type: "VazhipadLimit",
+        Type: 'VazhipadLimit',
         FromDate: date,
         ToDate: date,
         PMId: pmid,
-        VazhId: vazhid
+        VazhId: vazhid,
       };
-  
-      this.reportService.getVazhipadWiseReport(payload).subscribe((res: any) => {
-        const alreadyBooked = res[0].qty ?? 0;
-        const totalQty = group.totalQty;
-  
-        if (alreadyBooked + totalQty > group.maxLimit) {
-          group.indexes.forEach((i) => {
-            vazhipadArray.at(i).get('Qty')?.setErrors({ exceedLimit: true });
-          });
-  
-          this.notification.error(
-            `Total Qty exceeds limit for Vazhipad ID ${vazhid}. Limit: ${group.maxLimit}, Already Booked: ${alreadyBooked}, Entered: ${totalQty}`
-          );
-        } else {
-          group.indexes.forEach((i) => {
-            vazhipadArray.at(i).get('Qty')?.setErrors(null);
-          });
-        }
-      });
+
+      this.reportService
+        .getVazhipadWiseReport(payload)
+        .subscribe((res: any) => {
+          const alreadyBooked = res[0].qty ?? 0;
+          const totalQty = group.totalQty;
+
+          if (alreadyBooked + totalQty > group.maxLimit) {
+            group.indexes.forEach((i) => {
+              vazhipadArray.at(i).get('Qty')?.setErrors({ exceedLimit: true });
+            });
+
+            this.notification.error(
+              `Total Qty exceeds limit for Vazhipad ID ${vazhid}. Limit: ${group.maxLimit}, Already Booked: ${alreadyBooked}, Entered: ${totalQty}`
+            );
+          } else {
+            group.indexes.forEach((i) => {
+              vazhipadArray.at(i).get('Qty')?.setErrors(null);
+            });
+          }
+        });
     });
   }
-
-
-
-
-
 
   private getCurrentDateMMYY(): string {
     const now = new Date();
@@ -1723,14 +1718,17 @@ console.log(data,"multaday booked details prathsta name check");
 
       // Get the current element
       const currentElement = rowFormElements[currentIndex];
-      
-      if (currentElement && currentElement.getAttribute('formControlName') == 'VTime') {
+
+      if (
+        currentElement &&
+        currentElement.getAttribute('formControlName') == 'VTime'
+      ) {
         // If the user pressed Enter on the 'vtime' field, add a new row
         console.log('Enter key pressed on vtime field. Adding new row...');
         this.addRow(rowIndex); // Add a new row function should be defined elsewhere in your code
         return; // Exit the function to prevent moving to the next field
       }
-      
+
       // Check if the current element has a value (if it's empty, show red border)
       if (
         currentElement instanceof HTMLInputElement ||
@@ -1875,11 +1873,10 @@ console.log(data,"multaday booked details prathsta name check");
       }
     }
 
-    // Handle ArrowUp (Up Arrow Key)
+    //Handle ArrowUp (Up Arrow Key)  
     if (keyboardEvent.key === 'ArrowUp') {
       console.log('up arrow pressed');
       keyboardEvent.preventDefault(); // Prevent default behavior
-
       // Move to the previous row
       const prevRow = document.querySelector(`#row-${rowIndex - 1}`);
       if (prevRow) {
@@ -2065,7 +2062,4 @@ console.log(data,"multaday booked details prathsta name check");
       }
     });
   }
- 
-
-
 }

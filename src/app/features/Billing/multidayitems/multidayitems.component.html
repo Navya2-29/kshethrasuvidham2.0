@@ -40,17 +40,8 @@
   </div>
 
   <div class="container" >
-
-   
-
-
-
     <div class="row">
       <div class="vazhipad-details" class="col-md-6">
-
-       
-
-
         <form [formGroup]="form" (keydown.enter)="$event.preventDefault()">
           <div class="col-md-6">
          
@@ -205,7 +196,9 @@
                           formControlName="Qty"
                           [min]="1"
                           appNumber
-                         
+                         (input)="qtyChange()"
+                         [ngClass]="{'is-invalid': form.get('Qty')?.invalid}"
+
                         />
                       </td>
                       <td>
@@ -237,7 +230,7 @@
                    </table>
               <div>
                 
-                <button mat-icon-button (click)="addDevotee()" style="font-size: 36px; " [disabled]="VM_MaxNo>0">
+                <button mat-icon-button (click)="addDevotee()" style="font-size: 36px;" [disabled]="VM_MaxNo>0">
                   <mat-icon style="font-size: 30px; color: blue;">add_comment</mat-icon>
                 </button>
               </div>
@@ -382,7 +375,6 @@
                   <option value="">-{{"Select" |translate}}-</option>
                   <ng-container *ngIf="lang=='en'">
                     <option *ngFor="let month of malayalamMonthList " [value]="month.mmonEng"> {{month.mmonEng}}</option>
-
                   </ng-container>
                   <ng-container  *ngIf="lang!='en'" >
                     <option *ngFor="let month of malayalamMonthList " [value]="month.mmonEng"> {{month.mmon}}</option>
@@ -481,7 +473,6 @@
   </div>
 
 </mat-dialog-content>
-
 <mat-dialog-actions class="menuend">
   <button mat-button [mat-dialog-close]="true" class="close" (click)="cancel()">Cancel</button>
   <button mat-button class="proceed" (click)="onSubmit()" >Proceed</button>

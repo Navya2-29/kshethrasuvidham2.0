@@ -31,7 +31,7 @@ import {
   MatAutocompleteModule,
   MatAutocompleteSelectedEvent,
 } from '@angular/material/autocomplete';
-import { lastValueFrom, map, Observable, of, startWith } from 'rxjs';
+import { forkJoin, lastValueFrom, map, Observable, of, startWith } from 'rxjs';
 import { MatInputModule } from '@angular/material/input';
 import { MasterService } from '../../../services/master/master.service';
 import { NotificationService } from '../../../services/notification/notification.service';
@@ -39,6 +39,7 @@ import { multiDayFilter } from '../../../models/multidayFilter.model';
 import { TranslateService } from '@ngx-translate/core';
 import { UpperCaseDirective } from '../../../shared/directives/upper-case.directive';
 import { BillingViaMobilenumberComponent } from '../billing-via-mobilenumber/billing-via-mobilenumber.component';
+import { ReportService } from '../../Report/service/report.service';
 
 @Component({
   selector: 'app-multidayitems',
@@ -119,6 +120,7 @@ export class MultidayitemsComponent implements OnInit {
     public dialogRef: MatDialogRef<MultidayitemsComponent>,
     private datePipe: DatePipe,
     private ts: TranslateService,
+    private reportService:ReportService,
     @Inject(MAT_DIALOG_DATA) public data: { Name: string,Star:string ,MID:string}[],
 private cdr: ChangeDetectorRef
   ) {
@@ -160,7 +162,7 @@ private cdr: ChangeDetectorRef
       booking: [{ disabled: true, value: '' }],
       ratechange: [{ disabled: true, value: '' }],
       VM_Receipt: [{ disabled: true, value: '' }],
-      // VM_MaxNo:[],
+      VM_MaxNo:[0],
       devotees: this.fb.array([this.createDevotee()]),
     });
     this.devotees = this.form.get('devotees') as FormArray;
@@ -291,6 +293,9 @@ private cdr: ChangeDetectorRef
     this.form.get('NoOfDays')?.valueChanges.subscribe((value) => {
       this.getmultidayfilterData();
     });
+    // this.form.get('Vazhipad')?.valueChanges.subscribe((value) => {
+    //   this.qtyChange();
+    // });
 
    
 
@@ -518,9 +523,9 @@ private cdr: ChangeDetectorRef
         this.VM_MaxNo=res[0].VM_MaxNo;
         console.log(this.VM_MaxNo,"vVM_MaxNo value")
         // if(this.VM_MaxNo>0){
-        //   this.form.get("NoOfDays")?.setValue(this.VM_MaxNo);
+          this.form.get("VM_MaxNo")?.setValue(this.VM_MaxNo);
         // }else{
-          
+        //   this.form.get("VM_MaxNo")?.setValue(0);
         // }
         
         this.calculateTotalAmount();
@@ -544,6 +549,7 @@ private cdr: ChangeDetectorRef
                 this.form.get('PMid')?.setValue(defaultPrathishtaId);
               }
             }
+            this.qtyChange()
           });
       });
   }
@@ -948,11 +954,19 @@ console.log(this.updatedDayList);
         this.updatedDayList = dayList.map((item: any) => ({
           ...item,
           selected: true, // Set the initial value to true for all dates
+          disabled:false
         }));
+console.log(this.updatedDayList,"updated list to validate qty");
+if(this.form.get('Vazhid')?.value && this.form.get('PMid')?.value && +this.form.get('VM_MaxNo')?.value>0 ){
+  this.validateallvazhipaddatewithqty(this.updatedDayList);
+
+}
+
+
         console.log(this.multiDayList, 'day listtttttttttttttttttttt');
         this.multiDayList = [...this.updatedDayList];
         console.log(this.multiDayList, 'day listtttttttttttttttttttt after selct added');
-        this
+        // this
         this.validateVazhipadDate()
         //finding end date
         if (this.multiDayList.length > 0) {
@@ -969,7 +983,6 @@ console.log(this.updatedDayList);
         }
       },
     });
-   
   }
 
   onSearchClick() {
@@ -1163,9 +1176,7 @@ console.log(this.updatedDayList);
 
 
   getNameAndStarByMobilenumber(){
-
     console.log(this.mobileNumber,"mobile number data");
-   
    console.log(this.memberDevoteeCheck,"dsssssssssssssss");
     if(this.mobileNumber){
      // this.masterService.getMaster
@@ -1217,7 +1228,6 @@ openBillingDialog(mobileNumber: any) {
 
   getStarIdByNames(starName: string): number | null {
     const searchField = this.lang == 'en' ? 'SM_NameEng' : 'SM_Name';
-
     const star = this.nakshatham.find(n => n[searchField] === starName);
     return star ? star.id : null; // Return ID if found, otherwise return null
   }
@@ -1270,16 +1280,14 @@ openBillingDialog(mobileNumber: any) {
       }
     }, 0);
   }
+
 handleEnterOnStar(event: Event, index: number): void {
   event.preventDefault(); // Prevent default behavior
-
   console.log("Pressed Enter on Star input at index:", index);
   console.log("Current number of devotees:", this.devotees.length);
-
   if (index === this.devotees.length - 1) {
     console.log("Adding new devotee...");
     this.addDevotee(); // Create new row
-
     // Wait for the DOM update
     setTimeout(() => {
       this.cdr.detectChanges(); // Ensure Angular detects changes
@@ -1301,12 +1309,8 @@ handleEnterOnStar(event: Event, index: number): void {
   }
 }
 
-
-
-
 handleArrowKeys(event: any, index: number, field: string): void {
   event.preventDefault(); // Prevents default scrolling behavior
-
   if (event.key === 'ArrowLeft') {
     if (field === 'Name' && index === 0) {
       // Move focus to Time input if the first Name input is focused
@@ -1347,6 +1351,78 @@ moveFocusToTime(): void {
       this.timeInput.nativeElement.focus();
     }
   }, 0);
+}
+
+qtyChange(){
+  const maxqty=this.form.get('VM_MaxNo')?.value;
+  const pmid=this.form.get('PMid')?.value;
+  const vazhId=this.form.get('Vazhid')?.value;
+if(maxqty>0 && pmid && vazhId ){
+  this.validateallvazhipaddatewithqty(this.updatedDayList);
+}
+}
+
+validateallvazhipaddatewithqty(updatedDayList: any[]) {
+  const userQty = +this.form.get('Qty')?.value;
+  const maxqty = +this.form.get('VM_MaxNo')?.value;
+  const pmid = this.form.get('PMid')?.value;
+  const vazhId = this.form.get('Vazhid')?.value;
+
+  // If maxqty is 0, consider all dates valid, skip validation
+  if (maxqty === 0) {
+    updatedDayList.forEach((item) => {
+      item.selected = true;
+      item.disabled = false;
+    });
+    this.form.get('Qty')?.setErrors(null);
+    this.form.get('OTM')?.setErrors(null);
+    return;
+  }
+
+  const requests = updatedDayList.map((item) => {
+    const edate1 = item.edate1;
+    const payLoad = {
+      Type: "VazhipadLimit",
+      FromDate: edate1,
+      ToDate: edate1,
+      PMId: pmid,
+      VazhId: vazhId
+    };
+
+    return this.reportService.getVazhipadWiseReport(payLoad).pipe(
+      map((res: any) => {
+        const alreadyBookedQty = res[0]?.qty ?? 0;
+        const totalRequested = userQty + alreadyBookedQty;
+
+        if (totalRequested > maxqty) {
+          item.selected = false;
+          item.disabled = true;
+
+          const available = maxqty - alreadyBookedQty;
+          this.notification.showError(
+            `On ${item.disdate}, only ${available} available. You requested ${userQty}.`
+          );
+          return false; // Invalid
+        } else {
+          item.selected = true;
+          item.disabled = false;
+          return true; // Valid
+        }
+      })
+    );
+  });
+
+  forkJoin(requests).subscribe((validityResults: boolean[]) => {
+    const atLeastOneValid = validityResults.includes(true);
+
+    if (!atLeastOneValid) {
+      this.form.get('Qty')?.setErrors({ noValidDates: true });
+      // this.form.get('OTM')?.setErrors({ noValidDates: true });
+    } else {
+      this.form.get('Qty')?.setErrors(null);
+      // this.form.get('OTM')?.setErrors(null);
+    }
+  });
 }
 
 

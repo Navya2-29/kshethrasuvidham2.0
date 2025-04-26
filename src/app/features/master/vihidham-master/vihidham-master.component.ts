@@ -235,7 +235,7 @@ export class VihidhamMasterComponent {
     this.updateFlag = true;
     this.Id = data.VR_ID;
     this.vihidhamMasterForm.patchValue({
-      vazhipad_code: data.VC_Code,
+      vazhipad_code: this.getVazhipadBycode(data.VazhId),
       vihidham_type: data.VC_ID,
       vihidham_rate: data.Rate,
       FromDate:this.formatDate(data.FDate) ,
@@ -256,8 +256,6 @@ export class VihidhamMasterComponent {
   onUpdate(updatedata: VihidhamMaster) {
     this.loading = true;
     if (this.vihidhamMasterForm.valid) {
-
-
       const payLoad = {
         Type: 'UPDATE',
         VRId: this.Id.toString(),
@@ -463,5 +461,9 @@ export class VihidhamMasterComponent {
   getVazhipadNameById(id:any){
     const match = this.Vmaster.find((v: any) => v.VM_Id === id);
     return match ? match.VM_Name : 'N/A';
+  }
+  getVazhipadBycode(id:any){
+    const match = this.Vmaster.find((v: any) => v.VM_Id === id);
+    return match ? match.VM_Code : 'N/A';
   }
 }

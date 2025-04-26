@@ -130,7 +130,14 @@ this.loading=false;
   }
   
   getGrandTotal(): number {
-    return this.data.reduce((sum, item) => sum + item.Qty * item.Rate, 0);
+    return this.data
+      .filter(item => item.TrnsMode !== 'CR' && item.TrnStatus !== 'C' ) // exclude 'CR' entries
+      .reduce((total, item) => total + (item.Amount), 0);
+  }
+
+  
+  isRedText(item: any): boolean {
+    return item.TrnsMode === 'CR' || item.TrnStatus === 'C';
   }
 
   generatePDF() {
@@ -282,4 +289,82 @@ this.reportPrintservice.generatePDF();
       },
     });
   }
+
+  getTransactionType(transmode: string): string {
+    switch (transmode) {
+      case 'ON':
+        if (this.lang == 'en') {
+          return 'BANK';
+        } else {
+          return 'ബാങ്ക്';
+        }
+
+      case 'CS':
+        if (this.lang == 'en') {
+          return 'CASH';
+        } else {
+          return 'ക്യാഷ്';
+        }
+      case 'MO':
+        if (this.lang == 'en') {
+          return 'MONEY ORDER';
+        } else {
+          return 'മണി ഓർഡർ';
+        }
+      case 'UP':
+        if (this.lang == 'en') {
+          return 'UPI';
+        } else {
+          return 'യുപിഐ';
+        }
+
+      case 'CH':
+        if (this.lang == 'en') {
+          return 'CHEQUE';
+        } else {
+          return 'ചെക്ക്';
+        }
+      case 'CR':
+        if (this.lang == 'en') {
+          return 'CREDIT';
+        } else {
+          return 'ക്രെഡിറ്റ്';
+        }
+      case 'DE':
+        if (this.lang == 'en') {
+          return 'DEBIT';
+        } else {
+          return 'ഡെബിറ്റ്';
+        }
+      default:
+        return 'OTHERS';
+    }
+  }
+
+
+  gettransactionstatus(status:string){
+    switch (status) {
+      case 'C':
+        if (this.lang == 'en') {
+          return 'cancelled';
+        } else {
+          return 'ക്യാൻസെൽഡ്';
+        }
+
+      case 'S':
+        if (this.lang == 'en') {
+          return '';
+        } else {
+          return '';
+        }
+      
+      default:
+        return '';
+    }
+
+
+
+
+  }
+
 }

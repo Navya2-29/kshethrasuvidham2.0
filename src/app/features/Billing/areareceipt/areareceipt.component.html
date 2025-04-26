@@ -6,7 +6,7 @@
         <mat-icon>arrow_back</mat-icon>
       </button> -->
       <div>
-        <form [formGroup]="form">
+        <form [formGroup]="form"> 
           <table class="table">
             <thead>
               <tr style="background: #203b5e; color: white" >
@@ -99,8 +99,7 @@
                     </p>
                   </mat-option>
                 </ng-container>
-                </mat-autocomplete>
-                 
+                </mat-autocomplete> 
                 </td>
                 <td>
                   <input
@@ -116,16 +115,13 @@
                   />
                 </td>
                 <td>
-                  <!-- <select
-                 
+                  <!--<select
                     formControlName="Star"
                     class="form-control"
                     style="width: 100%; height: 30.6px"
-                   
                   >
                   <option value=" ">Select</option>
                   <option *ngFor="let nakshtra of nakshatham " [value]="nakshtra.id"> {{nakshtra.SM_NameEng}}</option>
-                
                   </select> -->
 
                   <input
@@ -146,7 +142,6 @@
                   #str="matAutocomplete"
                   class="large-autocomplete-panel"
                   (optionSelected)="onStarSelect($event, i)"
-                 
                 >
 
                 <ng-container *ngIf="lang=='en'">
@@ -166,11 +161,9 @@
                 <p style="margin-bottom: 0px;padding-bottom: 0px;font-size: 10px;line-height: normal;font-weight:800;">{{option.SM_Id}}-{{ option.SM_RName }}</p>
                 </mat-option>
                 </ng-container>
-                 
                 </mat-autocomplete>
                 </td>
-
-<!-- for cahnging prathista -->
+                <!-- for cahnging prathista -->
                 <td>
                   <select
                   *ngIf="!multidayBooking[i]"

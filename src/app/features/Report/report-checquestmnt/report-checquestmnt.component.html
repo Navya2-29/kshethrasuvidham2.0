@@ -90,7 +90,7 @@
 
 </div>
 
-<div class="Fee collection">
+<div class="Fee collection" *ngIf="filteredFeecollection.length>0" >
   <h4 class="tabble-heading">{{"FeeCollection" | translate }}</h4>
   <table>
     <thead>
@@ -123,7 +123,7 @@
      
         
         
-        <td>{{ item.NM_Name }}({{item.Month}})</td>
+        <td>{{ lang=='en'? item.NM_Name:item.NM_RName }}({{item.Month}})</td>
         <td>{{ item.Name }}</td>
         <!-- <td>--</td> -->
         <!-- <td class="number">

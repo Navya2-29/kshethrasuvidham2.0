@@ -131,7 +131,9 @@
     "MATTINAM REPORT":"Miscellaneous Report",
     "FEE COLLECTION REPORT":"Fee Collection Report",
     "Credit Collection":"Credit Collection Report",
-    "VIHIDHAM REPORT":"Vihidham Report"
+    "VIHIDHAM REPORT":"Vihidham Report",
+    "Bill Register":"Bill Register",
+    "Dayend":"Day End"
   },
 
   "Report Name": {

@@ -161,7 +161,7 @@ this.ts.use(this.lang || 'en');
     this.service.getReport(payLoad).subscribe({
       next: (data) => {
         console.log('Fetched report data:', data);
-        this.data = data;
+        // this.data = data;
        this.loading=false;
         this.length = data.length;
        

@@ -1,3 +1,4 @@
+import { ReportDayendComponent } from './features/Report/report-dayend/report-dayend.component';
 import { DevoteeMasterComponent } from './features/master/devotee-master/devotee-master.component';
 import { ReportDailystmtComponent } from './features/Report/report-dailystmt/report-dailystmt.component';
 import { ReportDashboardComponent } from './features/Report/report-dashboard/report-dashboard.component';
@@ -61,6 +62,7 @@ import { ReportNonMemberPendingCreditComponent } from './features/Report/report-
 import { EndowmentBillingComponent } from './features/Billing/endowment-billing/endowment-billing.component';
 import { VihidhamCateogryMasterComponent } from './features/master/vihidham-cateogry-master/vihidham-cateogry-master.component';
 import { ReportVihidhamComponent } from './features/Report/report-vihidham/report-vihidham.component';
+import { ReportBillingRegisterComponent } from './features/Report/report-billing-register/report-billing-register.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -194,6 +196,8 @@ export const routes: Routes = [
   {path:"non-members-pending-report",component: ReportNonMemberPendingCreditComponent},
   {path:"endowment",component:EndowmentBillingComponent},
   {path:'report-vihidham',component:ReportVihidhamComponent},
+  {path:'report-billregister',component:ReportBillingRegisterComponent},
+  {path:"report-Dayend",component:ReportDayendComponent},
   {path:"Home",component: HomeComponent},
 
   {
