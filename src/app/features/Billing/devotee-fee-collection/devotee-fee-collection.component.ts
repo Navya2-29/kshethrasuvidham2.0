@@ -27,6 +27,7 @@ export class DevoteeFeeCollectionComponent implements OnInit {
   feeCollctionForm: FormGroup;
   loginId: string | null;
   counterId: string | null;
+  name: string | null;
   itemList: any[];
   formattedDate:any;
   lockTableLastbillNumber: number;
@@ -71,6 +72,7 @@ printerLayOut:string |null;
     this.templeName = localStorage.getItem('TempleName');
     this.templeAddress = localStorage.getItem('Address');
     this.loginId = localStorage.getItem('LoginId')
+    this.name=localStorage.getItem('name');
     this.billNumberFormatDate = this.getCurrentDateMMYY();
     this. today=new Date();
     this. formattedDate = this.today.toISOString().split('T')[0];
@@ -532,5 +534,59 @@ this.masterService.getMaster(payLoad).subscribe((data)=>{
     return '';
   
   }
+
+
+  getTransactionType(transmode: string): string {
+    console.log(transmode);
+    switch (transmode) {
+      case 'ON':
+        if (this.lang == 'en') {
+          return 'ONLINE';
+        } else {
+          return 'ഓൺലൈൻ';
+        }
+  
+      case 'CS':
+        if (this.lang == 'en') {
+          return 'CASH';
+        } else {
+          return 'ക്യാഷ്';
+        }
+      case 'MO':
+        if (this.lang == 'en') {
+          return 'MONEY ORDER';
+        } else {
+          return 'മണി ഓർഡർ';
+        }
+      case 'UP':
+        if (this.lang == 'en') {
+          return 'UPI';
+        } else {
+          return 'യുപിഐ';
+        }
+  
+      case 'CH':
+        if (this.lang == 'en') {
+          return 'CHEQUE';
+        } else {
+          return 'ചെക്ക്';
+        }
+      case 'CR':
+        if (this.lang == 'en') {
+          return 'CREDIT';
+        } else {
+          return 'ക്രെഡിറ്റ്';
+        }
+      case 'DE':
+        if (this.lang == 'en') {
+          return 'DEBIT';
+        } else {
+          return 'ഡെബിറ്റ്';
+        }
+      default:
+        return 'OTHERS';
+    }
+  }
+
 
 }

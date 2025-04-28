@@ -14,4 +14,7 @@ import { SpinnerComponent } from '../../../shared/component/spinner/spinner.comp
 })
 export class ReportDayendComponent {
 
+
+
+  
 }

@@ -1,4 +1,4 @@
-import { Component, Inject, TemplateRef, ViewChild } from '@angular/core';
+import { Component, inject, Inject, TemplateRef, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import {
@@ -24,6 +24,7 @@ import { CancelBillRemarkComponent } from '../cancel-bill-remark/cancel-bill-rem
 import { NotificationService } from '../../../services/notification/notification.service';
 import { MatSelectModule } from '@angular/material/select';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { NumberToWordsPipe } from '../../../shared/pipe/number-to-words.pipe';
 
 export interface Data {
   vazhipad: string;
@@ -79,6 +80,7 @@ interface GroupedData {
   ],
   templateUrl: './search-by-bill-number.component.html',
   styleUrl: './search-by-bill-number.component.css',
+   providers:[NumberToWordsPipe]
 })
 export class SearchByBillNumberComponent {
   displayedColumns: string[] = [
@@ -133,6 +135,7 @@ export class SearchByBillNumberComponent {
   changeByValue:string;
   // editName:string;
   // editstar:string;
+  private numbertowordpipe=inject(NumberToWordsPipe);
   constructor(
     public dialogRef: MatDialogRef<SearchByBillNumberComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -578,8 +581,9 @@ this.groupDataByPrathistaAndVazhipad()
             <div class="receipt-header">${this.templeName}</div>
             <div class="receipt-sub-header">${this.templeAddress}</div>
             <hr>
-            <div class="receipt-content">Bill Date:${this.billDate}</div>
-            <div class="receipt-content">Bill No: ${this.lastBillNo}</div>
+             <div class="receipt-content">Bill No: ${this.lastBillNo}</div>
+            <div class="receipt-content">Date:${this.billDate}</div>
+           
             <div class="receipt-content">Prathista: ${prathista}</div>
             <div class="receipt-content">Vazhipad: ${vazhipad}</div>
         `;
@@ -598,9 +602,12 @@ this.groupDataByPrathistaAndVazhipad()
 
         // Add grand total and other details
         receiptContent += `
-            <div class="receipt-total">Rate: ${group.rate}</div>
-            <div class="receipt-total">Total Qty: ${group.totalQty}</div>
-            <div class="receipt-total">Total Amount: ${grandTotalAmount.toFixed(2)}</div>
+            <div class="receipt">Rate: ${group.rate}</div>
+            <div class="receipt">Total Qty: ${group.totalQty}</div>
+            <div class="receipt-total">Total Amount: ${grandTotalAmount.toFixed(2)}
+            <p> ${this.numbertowordpipe.transform(grandTotalAmount)}<span> Rupees</span></p>
+            </div>
+           <hr>
             <div class="receipt-content">Vazhipad Date: 
               ${fromDate !== toDate ? `${this.convertDateFormat(fromDate)} to ${this.convertDateFormat(toDate)}` : `${this.convertDateFormat(fromDate)}`}
             </div>
@@ -608,8 +615,16 @@ this.groupDataByPrathistaAndVazhipad()
             ${group.mday ? `<div class="receipt-footer">- ${group.mday}</div>` : ''}
             ${group.mmonth ? `<div class="receipt-footer">- ${group.mmonth}</div>` : ''}
             <div class="receipt-footer">
-              User ID: ${this.name} ${this.displayTrnsmode == 'CR' ? "Not Paid" : ""}
+              User: ${this.name} 
             </div>
+            <div class="receipt-footer">
+              Payment Mode:  ${this.getTransactionType(this.displayTrnsmode)}, ${this.displayTrnsmode=='CR'?"Not Paid":""}
+
+            </div>
+             <div class="receipt-footer">
+               <p>Duplicate Bill<p>
+            </div>
+
           </div> <!-- Close receipt-page -->
         `;
         allReceiptsContent += receiptContent;
@@ -648,16 +663,19 @@ this.groupDataByPrathistaAndVazhipad()
             }
 
             .receipt-header {
-              font-size: 14pt;
+              font-size: 12pt;
               font-weight: bold;
               text-align: center;
-              margin-bottom: 5px;
+              margin-bottom: 3px;
+               font-family:Manjari;
             }
 
             .receipt-sub-header {
-              font-size: 12pt;
+              font-size: 8pt;
               text-align: center;
               margin-bottom: 5px;
+              font-weight: normal;
+              font-family:Manjari;
             }
 
             hr {
@@ -1005,8 +1023,8 @@ return formattedDate
   ${group.nalBy ? `<div style="position: absolute; left: 2cm; top: 8.5cm;">- ${group.nalBy},</div>` : ''}
   ${group.mday ? `<div style="position: absolute; left: 5cm; top: 8.5cm;">- ${group.mday},</div>` : ''}
   ${group.mmonth ? `<div style="position: absolute; left: 8cm; top:8.5cm;">- ${group.mmonth}</div>` : ''}
-   <div style="position: absolute; left: 3.5cm; top: 8.4cm;">User:${this.name}  ${this.displayTrnsmode=='CR'?"Not Paid":""}</div>
-<div style="position: absolute; left: 2cm; top: 7.5cm; ; ">
+   <div style="position: absolute; left: 2cm; top: 7.5cm;font-size:8pt">User:${this.name}  ${this.displayTrnsmode=='CR'?"Not Paid":""}</div>
+<div style="position: absolute; left: 2cm; top: 8.5cm; ; ">
           Duplicate Bill
         </div>
             `
@@ -1030,10 +1048,12 @@ return formattedDate
         // Add grand total at the end of the page
       // const grandTotalTop = 5 + page.length * 0.7 + 1; // Position it below the last row
       receiptContent += `
-        <div style="position: absolute; left: 11.2cm; top: 8cm; font-weight: bold; font-size: 15pt;">
+        <div style="position: absolute; left: 11.2cm; top: 7.1cm; font-weight: bold; font-size: 15pt;">
            ${grandTotalAmount.toFixed(2)}
         </div>
-         
+          <div style="position: absolute; left: 3cm; top: 8cm; font-weight: bold; font-size: 9pt;">
+         ${this.numbertowordpipe.transform(grandTotalAmount)}<span>Rupees</span>
+      </div>
       </div>`; // Close receipt page
       allReceiptsContent += receiptContent;
     });

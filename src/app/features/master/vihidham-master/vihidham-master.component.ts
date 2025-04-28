@@ -201,6 +201,7 @@ export class VihidhamMasterComponent {
         next: (res) => {
           console.log(res);
           this.loading = false;
+          this.getVihidhamMaster();
           this.openSnackBar(
             ' vihidham Details created sussess fully',
             'close',

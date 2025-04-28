@@ -80,7 +80,7 @@
       <div *ngIf="data.length > 0">
         <p class="grandtotal">
           {{ "Report Name.Total for" | translate }}:{{
-            getTotalAmount() | number : "1.2-2"
+            getOverallGrandTotal() | number : "1.2-2"
           }}
         </p>
       </div>

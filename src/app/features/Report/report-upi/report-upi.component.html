@@ -114,8 +114,8 @@
                 <td><span *ngIf="this.lang!='en'">{{ item.NM_RName }}</span><span *ngIf="this.lang=='en'" >{{ item.NM_Name}}</span></td>
                 <td>{{ item.Name }}</td>
                 <td>{{ item.Qty }}</td>
-                <td >
-                  {{ item.Rate?item.Rate:"Nil"  }}
+                <td class="number" >
+                  {{ item.Rate?item.Rate:'--' }}
                 </td>
                 <td class="number">
                   {{ item.Receipt_Amt | number : "1.2-2" }}
@@ -195,7 +195,7 @@
                 <th>{{"Counter" | translate }}</th>
                 <th>{{ "feecollection.Month" | translate }}</th>
                 <th>{{ "NAME" | translate }}</th>
-                <th>{{ "QUANTITY" | translate }}</th>
+                <th class="number">{{ "QUANTITY" | translate }}</th>
                 <th class="number">{{ "RATE" | translate }}</th>
                 <th class="number">{{ "AMOUNT" | translate }}</th>
               </tr>
@@ -208,7 +208,7 @@
                 <td>{{item.CounterId}}({{item.UName}})</td>  
                 <td>{{lang=='en'? item.NM_Name:item.NM_RName }}({{item.Month}})</td>
                 <td>{{ item.Name }}</td>
-                <td>--</td>
+                <td class="number">--</td>
                 <td class="number">
                 --
                 </td>

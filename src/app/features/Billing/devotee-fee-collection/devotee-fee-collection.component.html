@@ -141,6 +141,7 @@
                   type="text"
                   class="form-control sps"
                   [placeholder]="'feecollection.UPI ID/ Cheque ID' | translate"
+                  formControlName="Instano"
                 />
               </td>
               <td>
@@ -238,10 +239,11 @@
   <div style="position: absolute; left: 10.9cm; top: 2.5cm;">{{ formatDateToDDMMYYYY(todayDate) }}</div>
   <div style="position: absolute; left: 10.9cm; top: 3cm;">{{ feeCollctionForm.get('BillNo')?.value }}</div>
   <div style="position: absolute; left: 2cm; top: 5.5cm;">{{ feeCollctionForm.get('Name')?.value }}<p>{{feeCollctionForm.get('Address')?.value }}</p></div>
-  <!-- <div style="position: absolute; left: 6.9cm; top: 5cm;">{{ getStarNameById(nadavaravForm.get('Star')?.value) }}</div> -->
+  
   <!-- <div style="position: absolute; left: 10.5cm; top: 5cm;">{{ feeCollctionForm.get('vazhipadinfo')?.value }}</div> -->
   <div style="position: absolute; left: 12.5cm; top: 5.5cm;">{{ feeCollctionForm.get('Amount')?.value  }}</div>
   <div style="position: absolute;  left: 11.2cm; top: 7.1cm;">{{ feeCollctionForm.get('totalAmount')?.value  }}</div>
+  <div style="position: absolute; left: 2cm; top: 7.5cm;font-size:8pt">User:{{ name}},{{getTransactionType(feeCollctionForm.get('TransMode')?.value)}}</div>
 </div>
   
 <div id="thermalreceipt" style="width: 6in; height: 4in; display: none; position: relative; font-size: 12px; font-family: Arial, sans-serif;">

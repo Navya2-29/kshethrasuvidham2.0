@@ -187,8 +187,14 @@ this.loading=false;
     return `${day}-${month}-${year}`;
   }
 
-  getTotalAmount(): number {
-    return this.data.reduce((sum, item) => sum + item.Qty * item.Rate, 0);
+  getOverallGrandTotal(): number {
+    let grandTotal = 0;
+    for (const category in this.groupedData) {
+      if (this.groupedData.hasOwnProperty(category)) {
+        grandTotal += this.getGrandTotalForTrnsMode(category);
+      }
+    }
+    return grandTotal;
   }
 
   getGrandTotalForTrnsMode(item: string): any {

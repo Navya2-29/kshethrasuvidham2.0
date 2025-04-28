@@ -602,6 +602,7 @@ export class AreareceiptComponent implements OnInit {
 
   getAllvazhipad() {
     this.masterservice.getAllActiveVazhipad().subscribe((data) => {
+      console.log(data )
       this.VMList = data.map((item) => ({
         VM_Id: item.VM_Id,
         VM_Name: item.VM_Name,
@@ -871,6 +872,7 @@ export class AreareceiptComponent implements OnInit {
         const maxlimitqty = selectedRow.get('maxLimit')?.value;
         console.log(maxlimitqty, 'maxqty');
         if (Number(maxlimitqty) > 0) {
+          console.log("check for maxqty validation");
           this.getAlreadybookedvazhipadQty(index);
         }
       },
@@ -882,6 +884,7 @@ export class AreareceiptComponent implements OnInit {
 
   getAlreadybookedvazhipadQty(index: number) {
     const selectedRow = this.vazhipadinfo.at(index) as FormGroup;
+    let currentQty=selectedRow.get('Qty')?.value
     const payLoad = {
       Type: 'VazhipadLimit',
       FromDate: selectedRow.get('VazhipadDate')?.value,
@@ -894,6 +897,7 @@ export class AreareceiptComponent implements OnInit {
       next: (data) => {
         console.log(data);
         const qty = data[0].qty;
+        console.log(qty ,"already booked")
         if (qty > 0) {
           selectedRow.get('alreadyBooked')?.setValue(qty);
           this.validateQtyAndSetError(index);
@@ -913,7 +917,7 @@ export class AreareceiptComponent implements OnInit {
     // Sum qty of same vazhipad in all rows
     let totalQty = alreadyBooked;
     formArray.forEach((group, i) => {
-      if (i !== index && group.get('Vazhid')?.value === currentVazhipad) {
+      if (i !== index && group.get('Vazhid')?.value == currentVazhipad) {
         totalQty += +group.get('Qty')?.value || 0;
       }
     });
@@ -922,20 +926,24 @@ export class AreareceiptComponent implements OnInit {
 
     if (totalQty > maxLimit) {
       // const errorMsg = `Qty exceeds available limit. Max: ${maxLimit}, Already booked: ${alreadyBooked}`;
-
+console.log(totalQty,)
       currentGroup.get('Qty')?.setErrors({ exceed: true });
-      // const ailabilty=
+      let availabilty=maxLimit-alreadyBooked
       currentGroup
         .get('errorMessage')
         ?.setValue(
-          `Qty exceeds available limit. Max: ${maxLimit}, Already booked: ${totalQty}`
+          `Qty exceeds available limit. Max: ${maxLimit},Already booked:${alreadyBooked} Available qty: ${availabilty}`
         );
       const errorMsg = currentGroup.get('errorMessage')?.value;
       this.notification.error(errorMsg, 'Invalid Quantity');
       // return false;
+      this.form.setErrors({ invalidQty: true });
     } else {
       currentGroup.get('Qty')?.setErrors(null);
       currentGroup.get('errorMessage')?.setValue('');
+      if (!this.vazhipadinfo.controls.some((control: AbstractControl) => (control as FormGroup).get('Qty')?.hasError('exceed'))) {
+        this.form.setErrors(null);  // Clear invalidQty error
+      }
     }
   }
 
@@ -1125,6 +1133,10 @@ export class AreareceiptComponent implements OnInit {
     let isFormValid = true; // Initialize form validity
     let multidayRowIndices: number[] = [];
     this.validateAllVazhipadQty();
+    if (this.form.hasError('invalidQty')) {
+      this.notification.error('Please fix the quantity errors before submitting');
+      return; // Stop the form submission
+    }
     // Iterate through each form group (row) in the vazhipadinfo FormArray
     this.vazhipadinfo.controls.forEach((row, index) => {
       row.markAllAsTouched();
@@ -1244,9 +1256,11 @@ export class AreareceiptComponent implements OnInit {
       const vazhid = row.get('Vazhid')?.value;
       const pmid = row.get('PMid')?.value;
       const date = row.get('VazhipadDate')?.value;
-      const qty = row.get('Qty')?.value;
-      const maxLimit = row.get('maxLimit')?.value;
-
+      const qty = +row.get('Qty')?.value || 0;
+            const maxLimit = +row.get('maxLimit')?.value || 0;
+      if (!vazhid || !pmid || !date) {
+        return; // Missing important fields
+      }
       const key = `${vazhid}_${pmid}_${date}`;
 
       if (!groupedEntries[key]) {
@@ -1261,6 +1275,16 @@ export class AreareceiptComponent implements OnInit {
     Object.keys(groupedEntries).forEach((key) => {
       const [vazhid, pmid, date] = key.split('_');
       const group = groupedEntries[key];
+
+ // ✅ If maxLimit is 0 or less, skip validation
+ if (!group.maxLimit || group.maxLimit <= 0) {
+  group.indexes.forEach((i) => {
+    const control = vazhipadArray.at(i).get('Qty');
+    control?.setErrors(null); // Clear any previous errors if any
+  });
+  return; // Skip API call
+}
+
 
       const payload = {
         Type: 'VazhipadLimit',
@@ -1282,12 +1306,14 @@ export class AreareceiptComponent implements OnInit {
             });
 
             this.notification.error(
-              `Total Qty exceeds limit for Vazhipad ID ${vazhid}. Limit: ${group.maxLimit}, Already Booked: ${alreadyBooked}, Entered: ${totalQty}`
+              `Total Qty exceeds limit for Vazhipad ID ${this.getVazhipadByid(vazhid)}. Limit: ${group.maxLimit}, Already Booked: ${alreadyBooked}, Entered: ${totalQty}`
             );
+            this.form.setErrors({ invalidQty: true });
           } else {
             group.indexes.forEach((i) => {
               vazhipadArray.at(i).get('Qty')?.setErrors(null);
             });
+            this.form.setErrors(null); 
           }
         });
     });
@@ -2061,5 +2087,12 @@ export class AreareceiptComponent implements OnInit {
         this.handleMultiDayBookingResult(finalArray, rowIndex, VM_MaxNo);
       }
     });
+  }
+
+  getVazhipadByid(id:any){
+// this.VMList.find()
+const vazhipad = this.VMList.find(v => v.VM_Id == id);
+  return vazhipad ? vazhipad.VM_Name :id ;
+
   }
 }

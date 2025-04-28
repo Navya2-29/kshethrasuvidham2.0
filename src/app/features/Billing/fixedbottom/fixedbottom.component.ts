@@ -380,7 +380,7 @@ ${group.mmonth ? `<div style="position: absolute; left: 8cm; top:8.5cm;">- ${gro
          ${grandTotalAmount.toFixed(2)}
       </div>
        <div style="position: absolute; left: 3cm; top: 8cm; font-weight: bold; font-size: 9pt;">
-         ${this.numbertowordpipe.transform(grandTotalAmount)}<span>Rupees</span>
+         ${this.numbertowordpipe.transform(grandTotalAmount)} <span> Rupees</span>
       </div>
       
     </div>`; // Close receipt page
@@ -1349,6 +1349,12 @@ printReceiptsThermal(data: any) {
             <div class="receipt-total">Rate: ${group.rate}</div>
             <div class="receipt-total">Total Qty: ${group.totalQty}</div>
             <div class="receipt-total">Total Amount: ${grandTotalAmount.toFixed(2)}</div>
+            <div>    
+             
+         ${this.numbertowordpipe.transform(grandTotalAmount)}<span>Rupees</span>
+      
+            
+            </div>
             <div class="receipt-content">Vazhipad Date: 
               ${fromDate !== toDate ? `${this.convertDateFormat(fromDate)} to ${this.convertDateFormat(toDate)}` : `${this.convertDateFormat(fromDate)}`}
             </div>
@@ -1356,8 +1362,12 @@ printReceiptsThermal(data: any) {
             ${group.mday ? `<div class="receipt-footer">- ${group.mday}</div>` : ''}
             ${group.mmonth ? `<div class="receipt-footer">- ${group.mmonth}</div>` : ''}
             <div class="receipt-footer">
-              User ID: ${this.name} ${Trnsmode == 'CR' ? "Not Paid" : ""}
+              User: ${this.name} 
             </div>
+             <div class="receipt-footer">
+              Payment Mode:  ${this.getTransactionType(Trnsmode)}, ${Trnsmode=='CR'?"Not Paid":""}
+            </div>
+           
           </div> <!-- Close receipt-page -->
         `;
         allReceiptsContent += receiptContent;
