@@ -6,8 +6,6 @@
       <mat-icon>arrow_back</mat-icon>
     </button> -->
     <div class="row">
-     
-
       <div class="col-md-5 fixitems"  > 
         <h2 style="margin-bottom: 0;">{{"FeeCollection"|translate }}</h2>
         <div > <form [formGroup]="feeCollctionForm">
@@ -238,14 +236,24 @@
   <div style="position: absolute; left: 4.8cm; top: 3cm;">{{getItemNameById( feeCollctionForm.get('ItemType')?.value) }}</div>
   <div style="position: absolute; left: 10.9cm; top: 2.5cm;">{{ formatDateToDDMMYYYY(todayDate) }}</div>
   <div style="position: absolute; left: 10.9cm; top: 3cm;">{{ feeCollctionForm.get('BillNo')?.value }}</div>
-  <div style="position: absolute; left: 2cm; top: 5.5cm;">{{ feeCollctionForm.get('Name')?.value }}<p>{{feeCollctionForm.get('Address')?.value }}</p></div>
-  
+  <div style="position: absolute; left: 2cm; top: 5cm;">{{ feeCollctionForm.get('Name')?.value }}<p>{{feeCollctionForm.get('Address')?.value }}</p>
+  <p>
+    Months Selected:{{ receiptMonthYear }}
+ </p>
+  </div>
   <!-- <div style="position: absolute; left: 10.5cm; top: 5cm;">{{ feeCollctionForm.get('vazhipadinfo')?.value }}</div> -->
-  <div style="position: absolute; left: 12.5cm; top: 5.5cm;">{{ feeCollctionForm.get('Amount')?.value  }}</div>
+  <div style="position: absolute; left: 12.5cm; top: 5cm;">{{ feeCollctionForm.get('Amount')?.value  }}</div>
   <div style="position: absolute;  left: 11.2cm; top: 7.1cm;">{{ feeCollctionForm.get('totalAmount')?.value  }}</div>
   <div style="position: absolute; left: 2cm; top: 7.5cm;font-size:8pt">User:{{ name}},{{getTransactionType(feeCollctionForm.get('TransMode')?.value)}}</div>
 </div>
   
+
+
+
+
+
+
+
 <div id="thermalreceipt" style="width: 6in; height: 4in; display: none; position: relative; font-size: 12px; font-family: Arial, sans-serif;">
   <div class="receipt-header">{{templeName}}</div>
   <div class="receipt-sub-header">{{templeAddress}}</div>
@@ -256,13 +264,14 @@
   <div class="receipt-content">{{getItemNameById(feeCollctionForm.get('ItemType')?.value )}} </div> 
 
   <div class="receipt-content">{{"NAME" | translate}}: {{ feeCollctionForm.get('Name')?.value }}<p>{{feeCollctionForm.get('Address')?.value }}</p></div>
-  
+  <div  class="receipt-content">{{"AMOUNT" | translate}}:{{ feeCollctionForm.get('Amount')?.value  }}</div>
+
   <!-- <div class="receipt-content">Star: ${this.getStarbyId(item.Star)}</div> -->
   <!-- <div style="position: absolute; left: 10.9cm; top: 2.5cm;">{{ today | date: 'dd-MM-yyyy' }}</div>
   <div style="position: absolute; left: 10.9cm; top: 3cm;">{{ CreditForm.get('BillNo')?.value }}</div> -->
   <!-- <div style="position: absolute; left: 2cm; top: 5.5cm;">{{ CreditForm.get('Name')?.value }}<p>{{CreditForm.get('Address')?.value }}</p></div> -->
   <!-- <hr> -->
-  <div class="receipt-total">{{"AMOUNT" | translate}}:{{feeCollctionForm.get('Amount')?.value}}</div>
+  <div class="receipt-total">{{"Report Name.total" | translate}}:{{feeCollctionForm.get('totalAmount')?.value}}</div>
   <!-- <div class="receipt-total">Total Qty: ${group.totalQty}</div> -->
    <hr>
  

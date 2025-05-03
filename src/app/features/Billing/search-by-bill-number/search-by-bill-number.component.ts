@@ -597,12 +597,13 @@ this.groupDataByPrathistaAndVazhipad()
             ${item.Name2 ? `<div class="receipt-content">Name2: ${item.Name2}</div>` : ''}
             <div class="receipt-content">Star: ${this.getStarbyId(item.Star)}</div>
             ${item.Star2 ? `<div class="receipt-content">Star2: ${this.getStarbyId(item.Star2)}</div>` : ''}
+            <div class="receipt-content">Rate: ${item.Rate.toFixed(2)}</div>
           `;
         });
 
         // Add grand total and other details
         receiptContent += `
-            <div class="receipt">Rate: ${group.rate}</div>
+            
             <div class="receipt">Total Qty: ${group.totalQty}</div>
             <div class="receipt-total">Total Amount: ${grandTotalAmount.toFixed(2)}
             <p> ${this.numbertowordpipe.transform(grandTotalAmount)}<span> Rupees</span></p>

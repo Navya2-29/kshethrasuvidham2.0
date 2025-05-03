@@ -60,6 +60,7 @@ export class CreditcollectionComponent {
   lastBillnumber: number;
   currentBillNumber: string;
   theLastBillNo: string;
+  name: string | null;
   fnameCtrl = new FormControl('');
   totalAmount: string;
   filteredData: any[] = [];
@@ -91,6 +92,8 @@ export class CreditcollectionComponent {
     this.role = localStorage.getItem('Role');
     this.CounterId = localStorage.getItem('counterId');
     this.printerLayOut=localStorage.getItem('Printer');
+    this.name=localStorage.getItem('name');
+
     this.CreditForm = this.fb.group({
       BillNo: ['', [Validators.required]],
       Name: ['', [Validators.required]],
@@ -481,5 +484,55 @@ printThermlRecipt(){
     console.error('Failed to open print window!');
   }
 }
+getTransactionType(transmode: string): string {
+  console.log(transmode);
+  switch (transmode) {
+    case 'ON':
+      if (this.lang == 'en') {
+        return 'ONLINE';
+      } else {
+        return 'ഓൺലൈൻ';
+      }
 
+    case 'CS':
+      if (this.lang == 'en') {
+        return 'CASH';
+      } else {
+        return 'ക്യാഷ്';
+      }
+    case 'MO':
+      if (this.lang == 'en') {
+        return 'MONEY ORDER';
+      } else {
+        return 'മണി ഓർഡർ';
+      }
+    case 'UP':
+      if (this.lang == 'en') {
+        return 'UPI';
+      } else {
+        return 'യുപിഐ';
+      }
+
+    case 'CH':
+      if (this.lang == 'en') {
+        return 'CHEQUE';
+      } else {
+        return 'ചെക്ക്';
+      }
+    case 'CR':
+      if (this.lang == 'en') {
+        return 'CREDIT';
+      } else {
+        return 'ക്രെഡിറ്റ്';
+      }
+    case 'DE':
+      if (this.lang == 'en') {
+        return 'DEBIT';
+      } else {
+        return 'ഡെബിറ്റ്';
+      }
+    default:
+      return 'OTHERS';
+  }
+}
 }

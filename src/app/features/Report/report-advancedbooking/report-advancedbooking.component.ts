@@ -34,12 +34,15 @@ export class ReportAdvancedbookingComponent {
   pageSizeOptions: number[] = [10,50,100,200,300,500,1000];
   pageIndex = 0;
   data:ReportData[]=[];
+  filteredData: ReportData[]=[];
+
   fromDate:string;
   toDate:string;
   lang:string|null;
   templeName:string|null;
   templeAddress:string|null;
   loading:boolean;
+  searchText: string = '';
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   groupedData: { [key: string]: ReportData[] } = {};
   constructor(private route: ActivatedRoute,
@@ -65,6 +68,16 @@ export class ReportAdvancedbookingComponent {
       this.fetchReportData(type, this.fromDate, this.toDate);
     });
   }
+  onSearch(event: Event): void {
+    const value = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.searchText = value;
+  
+    this.filteredData = this.data.filter(item =>
+      (item.BillDate + ' ' + item.BillNo + ' ' + item.VazhiDate + ' ' +
+       item.Vazhipad + ' ' + item.Name + ' ' + item.Star + ' ' + item.Qty +
+       ' ' + item.Rate).toLowerCase().includes(this.searchText)
+    );
+  }
 
 
 
@@ -80,6 +93,7 @@ export class ReportAdvancedbookingComponent {
       next: (data) => {
         console.log('Fetched report data:', data);
         this.data=data;
+        this.filteredData=this.data;
       //   this.data = data.sort((a:any, b:any) => {
       //     const [numA, denomA] = a.BillNo.split('/').map(Number);
       //     const [numB, denomB] = b.BillNo.split('/').map(Number);
@@ -435,7 +449,7 @@ generatePDF(){
 
 
 getGrandTotal(): number {
-  return this.data.reduce((sum, item) => sum + item.Qty * item.Rate, 0);
+  return this.filteredData.reduce((sum, item) => sum + item.Qty * item.Rate, 0);
 }
 
 

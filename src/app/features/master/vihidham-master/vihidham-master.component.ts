@@ -202,10 +202,8 @@ export class VihidhamMasterComponent {
           console.log(res);
           this.loading = false;
           this.getVihidhamMaster();
-          this.openSnackBar(
-            ' vihidham Details created sussess fully',
-            'close',
-            'success-snackbar'
+          this.notification.showSuccess(
+            'Vihidham Details created sussessfully',
           );
 
           this.onReset();
@@ -273,12 +271,12 @@ export class VihidhamMasterComponent {
         .subscribe((res: any) => {
           this.loading = false;
           if(res){
-            this.openSnackBar(
-              ' Prathishta Details updated sussess fully',
-              'close',
-              'success-snackbar'
+            this.notification.showSuccess(
+              'Vihidham Details updated sussessfully',
+              
             );
-            this.getVihidhamMaster()
+            this.getVihidhamMaster();
+            this.onReset();
             console.log(res);
           }
           
@@ -299,10 +297,10 @@ export class VihidhamMasterComponent {
     this.masterService.deleteMaster(payLoad).subscribe((res) => {
       console.log(res);
       this.loading = false;
-      this.openSnackBar(
+      this.notification.showSuccess(
         ' vihidham Details deleted successfully',
-        'close',
-        'success-snackbar'
+        
+        
       );
       this.getVihidhamMaster();
     });

@@ -31,7 +31,7 @@ export class NumberDirective {
     }
 
     // Restrict length to a maximum of 5 digits
-    if (inputValue.length >= 5 && !this.controlKeys.includes(event.key)) {
+    if (inputValue.length >= 10 && !this.controlKeys.includes(event.key)) {
       event.preventDefault();
       this.notification.showError("Maximum length reached");
     }
@@ -51,7 +51,7 @@ export class NumberDirective {
 
     // Check if pasted value is valid and not exceeding the length
     const isInvalid = clipboardData.split('').some(char => !this.allowedKeys.includes(char));
-    if (isInvalid || clipboardData.length > 5) {
+    if (isInvalid || clipboardData.length > 10) {
       event.preventDefault();
       this.notification.showError("Pasting invalid input is not allowed");
     }
@@ -69,8 +69,8 @@ export class NumberDirective {
     }
 
     // Check if length exceeds maximum
-    if (inputValue.length > 5) {
-      this.el.nativeElement.value = inputValue.slice(0, 5); // Trim to max length
+    if (inputValue.length > 10) {
+      this.el.nativeElement.value = inputValue.slice(0, 10); // Trim to max length
       this.notification.showError('Maximum length reached');
     }
   }

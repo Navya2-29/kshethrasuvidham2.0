@@ -171,7 +171,7 @@ this.groupedData = data.map((item:any) => {
   
   getGrandTotal(): number {
     return this.data
-      .filter(item => item.TrnsMode !== 'CR' && item.TrnStatus !== 'C' ) // exclude 'CR' entries
+      .filter(item => item.TrnStatus !== 'C' ) // exclude 'CR' entries
       .reduce((total, item) => total + (item.Amount), 0);
   }
 

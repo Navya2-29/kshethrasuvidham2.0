@@ -356,7 +356,6 @@ ${group.mday ? `<div style="position: absolute; left: 5cm; top: 8.5cm;">- ${grou
 ${group.mmonth ? `<div style="position: absolute; left: 8cm; top:8.5cm;">- ${group.mmonth}</div>` : ''}
  <div style="position: absolute; left: 2cm; top: 7.5cm;font-size:8pt">User:${this.name},${this.getTransactionType(Trnsmode)}, ${Trnsmode=='CR'?"Not Paid":""}</div>
           `
-
       // Render rows in the current page
       page.forEach((item: any, rowIndex: number) => {
         let rowTop = 4.5 + rowIndex * 0.7; // Adjust row spacing
@@ -1260,6 +1259,8 @@ groupDataByVazhipadDate(vazhipadinfo: any[]) {
 
 
 printReceiptsThermal(data: any) {
+  const imageUrl = window.location.origin + '/assets/images/header_banner.png';
+
   const { BillNo, Billdate, vazhipadinfo, Trnsmode } = data;
   this.differentDateArray = [];
   vazhipadinfo.forEach((item: any) => {
@@ -1323,6 +1324,7 @@ printReceiptsThermal(data: any) {
       pages.forEach((page, pageIndex) => {
         let receiptContent = `
           <div class="receipt-page">
+          <div><img src="${imageUrl}" alt="logo" style="width: 60px; height: 60px;"/></div>
             <div class="receipt-header">${this.templeName}</div>
             <div class="receipt-sub-header">${this.templeAddress}</div>
             <hr>
@@ -1337,10 +1339,10 @@ printReceiptsThermal(data: any) {
           const amount = item.Qty * item.Rate;
           grandTotalAmount += amount; // Add the amount to the grand total
           receiptContent += `
-            <div class="receipt-content">Name: ${item.Name}</div>
-            ${item.Name2 ? `<div class="receipt-content">Name2: ${item.Name2}</div>` : ''}
-            <div class="receipt-content">Star: ${this.getStarbyId(item.Star)}</div>
-            ${item.Star2 ? `<div class="receipt-content">Star2: ${this.getStarbyId(item.Star2)}</div>` : ''}
+            <div class="receipt-contents">Name: ${item.Name}</div>
+            ${item.Name2 ? `<div class="receipt-contents">Name2: ${item.Name2}</div>` : ''}
+            <div class="receipt-contents">Star: ${this.getStarbyId(item.Star)}</div>
+            ${item.Star2 ? `<div class="receipt-contents">Star2: ${this.getStarbyId(item.Star2)}</div>` : ''}
           `;
         });
 
@@ -1355,7 +1357,7 @@ printReceiptsThermal(data: any) {
       
             
             </div>
-            <div class="receipt-content">Vazhipad Date: 
+            <div class="receipt-contents">Vazhipad Date: 
               ${fromDate !== toDate ? `${this.convertDateFormat(fromDate)} to ${this.convertDateFormat(toDate)}` : `${this.convertDateFormat(fromDate)}`}
             </div>
             ${group.nalBy ? `<div class="receipt-footer">- ${group.nalBy}</div>` : ''}
@@ -1382,9 +1384,9 @@ printReceiptsThermal(data: any) {
             body {
               margin: 10px;
               padding: 0;
-              font-family: Arial, sans-serif;
-              font-size: 10pt;
-              font-weight: bold;
+              
+             
+              
               text-align: left;
             }
 
@@ -1397,31 +1399,46 @@ printReceiptsThermal(data: any) {
               overflow: hidden;
               page-break-after: auto;
               border: 1px dashed #000;
+              font-family:Roboto;
             }
 
             .receipt-header {
-              font-size: 14pt;
+              font-size: 13pt;
               font-weight: bold;
               text-align: center;
-              margin-bottom: 5px;
+              margin-bottom: 2px;
+              font-family:Manjari;
             }
 
             .receipt-sub-header {
-              font-size: 12pt;
+              font-size: 9pt;
               text-align: center;
               margin-bottom: 5px;
+              font-family:Manjari;
+              font-weight: bold;
             }
 
             hr {
               border: 0;
               border-top: 1px solid black;
-              margin: 5px 0;
+              margin: 5px 0px;
             }
 
             .receipt-content {
               text-align: left;
-              font-size: 9pt;
-              margin-bottom: 3px;
+              font-size: 12pt;
+              margin-bottom: 5px;
+              margin-top:10px;
+              margin-top:5px;
+              font-family:Manjari;
+              font-weight: bold;
+            }
+               .receipt-contents {
+              text-align: left;
+              font-size: 10pt;
+              margin-bottom: 5px;
+              margin-top:10px;
+              font-family:Manjari;
             }
 
             .receipt-total {
@@ -1435,7 +1452,7 @@ printReceiptsThermal(data: any) {
 
             .receipt-footer {
               font-size: 9pt;
-              margin-top: 10px;
+              margin-top: 3px;
               font-style: italic;
               text-align: left;
             }

@@ -3,12 +3,15 @@
 
 <div class="report-container">
 <div class="icon-container">
+  <input type="text" class="styled-search" placeholder="Search report..." (input)="onSearch($event)" />
+
   <button mat-icon-button matTooltip="Back to previous page" (click)="goBack()">
     <span class="material-icons">arrow_back</span>
   </button>
   <button mat-icon-button matTooltip="Make PDF" (click)="generatePDF()">
     <span class="material-icons">print</span>
   </button>
+  <!-- <input type="text" placeholder="Search report..." (input)="onSearch($event)" /> -->
 </div>
 <div id="print-section">
   <div class="header-print">
@@ -76,7 +79,7 @@
       </thead>
       <tbody>
         <tr
-          *ngFor="let item of data"
+          *ngFor="let item of filteredData"
           
         >
           <td >
@@ -117,7 +120,7 @@
         </tr>
       </tbody>
     </table></div>
-    <div class="nodataFound" *ngIf="data.length === 0">
+    <div class="nodataFound" *ngIf="filteredData.length === 0">
       <h2></h2>
     </div>
     <hr />

@@ -23,7 +23,7 @@ import { NotificationService } from '../../../services/notification/notification
 })
 export class DevoteeFeeCollectionComponent implements OnInit {
   lang: string | null;
-  toppings = new FormControl('');
+  toppings = new FormControl([]);
   feeCollctionForm: FormGroup;
   loginId: string | null;
   counterId: string | null;
@@ -55,6 +55,7 @@ todayDate:any;
 templeName: string | null = '';
 templeAddress: string | null = '';
 printerLayOut:string |null;
+receiptMonthYear: string = '';
   constructor(
     private ts: TranslateService,
     private masterService: MasterService,
@@ -236,7 +237,7 @@ this.getBillNumber()
 
     const payLoad = {
       Memberid: formData.MemberId.toString(),
-      BillNo: this.generatedCurrentBillnumber,
+      BillNo: formData.BillNo,
       ItemType: formData.ItemType,
       Trnsmode: formData.TransMode,
       
@@ -259,6 +260,8 @@ this.getBillNumber()
         }
         this.masterService.getMaster(payLoad).subscribe((data)=>{
           console.log(data,"updatebillnumber");
+          this.prepareReceiptData();
+
          this. printFeeCollection();
          this.getBillNumberforFeecollection();
          this.Reset()
@@ -291,7 +294,7 @@ Reset(){
     vazhipadInfo:''
   });
   (this.feeCollctionForm.get('vazhipadInfo') as FormArray).clear();
-  this.toppings.reset();
+  this.toppings.reset([]);
 }
   getBillNumberforFeecollection(){
     const payLoad = {
@@ -310,6 +313,25 @@ Reset(){
 
   }
 
+  prepareReceiptData() {
+    let selectedMonths = this.toppings.value; // can be string or array
+    const selectedYear = this.feeCollctionForm.get('Year')?.value; // selected year
+  
+    // If only one month is selected, convert it to array
+    if (typeof selectedMonths === 'string') {
+      selectedMonths = [selectedMonths];
+    }
+  
+    if (selectedMonths && selectedMonths.length > 0 && selectedYear) {
+      this.receiptMonthYear = selectedMonths
+        .map((month: string) => `${month} ${selectedYear}`)
+        .join(', ');
+    } else {
+      this.receiptMonthYear = 'No months selected';
+    }
+  }
+  
+
   printFeeCollection() {
     if(this.printerLayOut=="laser"){
       // this.printReciept();
@@ -317,6 +339,7 @@ Reset(){
       // this.printReciept();
     }
     else if(this.printerLayOut=="thermal"){
+      this.prepareReceiptData();
       this.printThermlRecipt();
     }
     else if(this.printerLayOut=="dotMetrix"){
