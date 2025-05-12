@@ -151,7 +151,11 @@ this.groupedData = data.map((item:any) => {
       .filter(item => item.TrnsMode === mode && item.TrnStatus !== 'C')
       .reduce((acc, item) => acc + (item.TotalAmount || 0), 0);
   }
-
+  getColumnTotalforCsansMo(){
+    return this.billRegisterData
+    .filter(item => (item.TrnsMode === 'CS' ||item.TrnsMode === 'MO' ) && item.TrnStatus !== 'C')
+    .reduce((acc, item) => acc + (item.TotalAmount || 0), 0);
+  }
 
   goBack(): void {
     console.log('Going back...'); // Log to verify method execution
@@ -171,7 +175,8 @@ this.groupedData = data.map((item:any) => {
   
   getGrandTotal(): number {
     return this.data
-      .filter(item => item.TrnStatus !== 'C' ) // exclude 'CR' entries
+    .filter(item => !(item.TrnStatus === 'C' || item.TrnsMode === 'CR'))
+    // exclude 'CR' entries
       .reduce((total, item) => total + (item.Amount), 0);
   }
 
@@ -305,8 +310,12 @@ this.reportPrintservice.generatePDF();
       console.error("Error generating PDF:", error);
     });
   }
+
+
   getStarbyId(id: string) {
+    
     console.log(id, 'star id');
+
     if (this.lang == 'en') {
       const star = this.nakshatham.find((item) => item.id == id);
       return star ? star.SM_NameEng : '';
@@ -331,6 +340,8 @@ this.reportPrintservice.generatePDF();
       },
     });
   }
+
+
 
   getTransactionType(transmode: string): string {
     switch (transmode) {
@@ -381,6 +392,7 @@ this.reportPrintservice.generatePDF();
       default:
         return 'OTHERS';
     }
+
   }
 
 
@@ -405,5 +417,7 @@ this.reportPrintservice.generatePDF();
     }
 
   }
+
+
 
 }

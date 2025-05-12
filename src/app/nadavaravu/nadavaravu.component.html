@@ -344,10 +344,11 @@
  <div style="position: absolute; left: 10.9cm; top: 2.5cm;">{{ dupliacteBillData?.Billdate | date : "dd-MM-YYYY" }}</div>
   <div style="position: absolute; left: 10.9cm; top: 3cm;">{{ dupliacteBillData?.BillNo }}</div>
   <div style="position: absolute; left: 2cm; top: 5cm;">{{ dupliacteBillData?.Name }}
-    <!-- <p style="font-family:Manjari;margin-bottom: 0;font-family:Manjari;margin-top: 0px;padding-top: 0px;padding-bottom: 0px;" >{{nadavaravForm.get('Address')?.value }}</p>
+   
+    <!-- <p style="font-family:Manjari;margin-bottom: 0;font-family:Manjari;margin-top: 0px;padding-top: 0px;padding-bottom: 0px;" >{{nadavaravForm.get('Address')?.value }}</p> -->
 
-    <p style="font-family:Manjari;margin-bottom: 0;font-family:Manjari;margin-top: 0px;padding-top: 0px;padding-bottom: 0px;">{{"Weight" | translate}}:{{nadavaravForm.get('weight')?.value }}</p>
-  <p style="font-family:Manjari;margin-bottom: 0;font-family:Manjari;margin-top: 0px;padding-top: 0px;padding-bottom: 0px;">{{"unit" | translate}}:{{nadavaravForm.get('unit')?.value }}</p> -->
+     <p style="font-family:Manjari;margin-bottom: 0;font-family:Manjari;margin-top: 0px;padding-top: 0px;padding-bottom: 0px;">{{"Weight" | translate}}:{{dupliacteBillData?.weight }}</p>
+  <p style="font-family:Manjari;margin-bottom: 0;font-family:Manjari;margin-top: 0px;padding-top: 0px;padding-bottom: 0px;">{{"unit" | translate}}:{{dupliacteBillData?.unit }}</p> 
 
   </div>
   <div style="position: absolute; left: 7.8cm; top: 5cm;">{{getStarNameById(dupliacteBillData?.Star) }}</div>

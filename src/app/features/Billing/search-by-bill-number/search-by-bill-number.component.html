@@ -40,8 +40,7 @@
                 <th mat-header-cell *matHeaderCellDef>{{"NAME" | translate}}
                 <td mat-cell *matCellDef="let row">
                   <!-- <ng-container  else viewName"> -->
-                   <p><input 
-                    
+                   <p><input  
                     matInput
                     [readonly]="!row.isEditing" 
                     class="form-control"
@@ -188,7 +187,6 @@
      ></div>
     <div   *ngIf="updateTransMode.get('Trnsmode')?.value ==='CR'" ><label>{{"PLACEHOLDER.PHONE" | translate }}</label> <input matInput class="form-control" formControlName="MobileNo"  [placeholder]="'PLACEHOLDER.MOBILENUMBER' | translate"
       [class.is-invalid]="updateTransMode.get('MobileNo')?.invalid && updateTransMode.get('MobileNo')?.touched"
-
      ></div>
 
     <!-- Dropdown for selecting an option -->
@@ -312,8 +310,8 @@ class="proceed"
             <th style="font-size:10pt;">{{"QUANTITY" | translate}}</th>
             <th style="font-size:10pt;">{{"RATE" | translate}}</th>
             <th style="font-size:10pt;">{{"AMOUNT" | translate }}</th>
-          </tr>
-        
+            <th style="font-size:10pt;">{{"TIME" | translate }}</th>
+          </tr>    
         <tbody>
           <tr *ngFor="let entry of gropedData[prathista][vazhipad]" style="border-bottom:.25px solid silver;">
             <td style="font-size:10pt;vertical-align:middle;">{{entry.VazhipadDate | date:"dd-MM-yyyy"}}</td>
@@ -322,6 +320,8 @@ class="proceed"
             <td style="font-size:10pt;text-align:center;vertical-align:middle;">{{entry.Qty}}</td>
             <td style="font-size:10pt;text-align:right;vertical-align:middle;">{{ entry.Rate }}</td>
             <td style="font-size:10pt;text-align:right;vertical-align:middle;">{{ entry.Amount }}</td>
+            <td style="font-size:10pt;text-align:right;vertical-align:middle;">{{ entry.VTime }}</td>
+
           </tr>
           <!-- Total Row -->
           <tr style="border-top:1px solid gray;border-bottom:1px solid gray">
@@ -333,7 +333,9 @@ class="proceed"
       
         <div class="billbottom" style="margin-top:9px;display:flex;justify-content: space-between;">
           <div>
+            
             <span style="font-size:9pt;">{{"user" | translate}}: </span><span style="font-size:9pt;text-transform: capitalize;">{{this.name}}</span>
+
           </div>
           <div>
             <span style="font-size:9pt;">{{"Counter" | translate}}: </span> <span style="font-size:9pt;text-transform: capitalize;">{{counterId}}</span>

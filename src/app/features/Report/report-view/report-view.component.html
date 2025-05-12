@@ -37,49 +37,40 @@
     <!-- PDF Container -->
     <div class="body-print">
       <div id="pdf-content" *ngIf="data.length > 0">
-        <div
-          *ngFor="let group of groupedData | keyvalue"
-          class="tabble-heading"
-        >
-          <h3>{{ group.key }}</h3>
-          <table>
-            <thead>
-              <tr>
-                <th class="sino">
-                  {{ "Report Name.SINO" | translate }}
-                </th>
-                <th class="name">
-                  {{ "NAME" | translate }}
-                </th >
-                <th class=star>
-                  {{ "STAR" | translate }}
-                </th>
-                <th class="qty" >
-                  {{ "QUANTITY" | translate }}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let entry of group.value; let i = index">
-                <td class="sino">{{ i + 1 }}</td>
-                <td class="name">
-                  {{ entry.Name }}
-                </td>
-                <td class="star">
-                  {{ entry.Star }}
-                </td>
-                <td class="qty">
-                  {{ entry.Qty }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <div *ngFor="let timeGroup of groupedData | keyvalue ;let i = index" class="tabble-heading" class="tabble-heading" [ngStyle]="i > 0 ? { 'page-break-before': 'always' } : {}">
+          <!-- First Level: VTime -->
+        <p class="transaction tabble-heading"><u>{{ getTimeForBill(timeGroup.key) }}</u></p>
+    
+          <!-- Second Level: Vazhipad-Prathista -->
+          <div *ngFor="let subGroup of timeGroup.value | keyvalue">
+           <p class="category">{{ subGroup.key }}</p>
+    
+            <table>
+              <thead>
+                <tr>
+                  <th class="sino">{{ "Report Name.SINO" | translate }}</th>
+                  <th class="name">{{ "NAME" | translate }}</th>
+                  <th class="star">{{ "STAR" | translate }}</th>
+                  <th class="qty">{{ "QUANTITY" | translate }}</th>
+                  <th>{{ "PLACEHOLDER.ADDRESS" | translate }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let entry of subGroup.value; let i = index">
+                  <td class="sino">{{ i + 1 }}</td>
+                  <td class="name">{{ entry.Name }}</td>
+                  <td class="star">{{ entry.Star }}</td>
+                  <td class="qty">{{ entry.Qty }}</td>
+                  <td>
+                    <p class="address">{{ entry.Address1 }}</p>
+                    <p class="address">{{ entry.Address2 }}</p>
+                    <p class="address">{{ entry.MobileNo }}</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
-      <div class="nodataFound" *ngIf="data.length === 0">
-        <h2></h2>
-      </div>
-      <hr />
-    </div>
   </div>
 </div>

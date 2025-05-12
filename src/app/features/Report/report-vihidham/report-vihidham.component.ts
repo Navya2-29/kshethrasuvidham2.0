@@ -149,7 +149,7 @@ export class ReportVihidhamComponent {
         //   // Compare the two parts: first compare the numerator, then the denominator
         //   return numA - numB || denomA - denomB;
         // });
-this.loading=false;
+        this.loading=false;
         console.log(this.groupedData);
       },
       error: (error) => {
@@ -159,18 +159,38 @@ this.loading=false;
   }
 
   // Grouping function
-  groupDataByTransactionMode(data: any[]): void {
-    this.groupedData = data.reduce((result, item) => {
-      const category = item.Name;
-      if (!result[category]) {
-        result[category] = [];
-      }
+ groupDataByTransactionMode(data: any[]): void {
+  this.groupedData = data.reduce((acc, item) => {
+    // Convert date strings to Date objects for comparison
+    const evazDate = new Date(item.Evazdate);
+    const fromDate = new Date(item.FDate);
+    const toDate = new Date(item.ToDate);
 
-      result[category].push(item);
+    // Filter: Only include item if Evazdate is within FDate and ToDate
+    if (evazDate < fromDate || evazDate > toDate) {
+      return acc; // Skip this item
+    }
 
-      return result;
-    }, {});
-  }
+    const name = item.Name;
+
+    if (!acc[name]) {
+      acc[name] = [];
+    }
+
+    const existing = acc[name].find((i: any) => i.Vazhipad === item.Vazhipad && i.Rate === item.Rate);
+
+    if (existing) {
+      existing.Qty += item.Qty;
+    } else {
+      acc[name].push({ ...item }); // create a new entry
+    }
+
+    return acc;
+  }, {});
+}
+
+  
+
 
   goBack(): void {
     console.log('Going back...');
@@ -182,10 +202,13 @@ this.loading=false;
       window.close();
     }
   }
+
+
   formatDateToDDMMYYYY(date: string): string {
     const [year, month, day] = date.split('-');
     return `${day}-${month}-${year}`;
   }
+
 
   getOverallGrandTotal(): number {
     let grandTotal = 0;
@@ -196,6 +219,7 @@ this.loading=false;
     }
     return grandTotal;
   }
+  
 
   getGrandTotalForTrnsMode(item: string): any {
     const items = this.groupedData[item];
@@ -208,4 +232,6 @@ this.loading=false;
 
     return total;
   }
+
+
 }

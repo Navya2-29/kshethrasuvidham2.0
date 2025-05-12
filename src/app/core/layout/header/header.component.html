@@ -1,65 +1,188 @@
-
 <div class="">
   <!-- <div style="width:40px;text-align: center; margin-top:10px;height:50px;background:maroon;position:fixed;top:0;border-radius:50%;align-items:center;justify-conter:center;display:flex;color:white;">
     Back
     </div> -->
   <div class="">
-    
-    <div class="" style="display:flex;justify-content: space-between;border:0px solid red;width:100%;align-items:center;padding-left:20px;padding-right:20px;background-image:url('assets/images/banner.png');background-size:cover;height:100px;background-position:center;">
+    <div
+      class=""
+      style="
+        display: flex;
+        justify-content: space-between;
+        border: 0px solid red;
+        width: 100%;
+        align-items: center;
+        padding-left: 20px;
+        padding-right: 20px;
+        background-image: url('assets/images/banner.png');
+        background-size: cover;
+        height: 100px;
+        background-position: center;
+      "
+    >
       <div class="back">
-        <div style="width:45px;">
-          <a (click)="goBack()"><img src="assets/images/back.png" style="width:100%;"></a>
+        <div style="width: 45px">
+          <a (click)="goBack()"
+            ><img src="assets/images/back.png" style="width: 100%"
+          /></a>
         </div>
         <div>
-          <div class="counter" style=" text-align: center;color: white;font-weight: bold;">
-            Counter : {{ counterId }}  <!-- This will display the value of counterId -->
-            </div>
-            <div class="card top">
-              <app-menu></app-menu>
-            </div>
-         </div>
-         <div style="width:200px;">
-          <a href="https://kshethrasuvidham.com/" target="blank"><img src="assets/images/logo.jpg" style="width:100%;"></a>
+          <div
+            class="counter"
+            style="text-align: center; color: white; font-weight: bold"
+          >
+            Counter : {{ counterId }}
+            <!-- This will display the value of counterId -->
+          </div>
+          <div class="card top">
+            <app-menu></app-menu>
+          </div>
+          <div
+            style="display: flex; align-items: center; justify-content: center"
+          >
+            <span style="color: white">Version 1.0</span>
+          </div>
         </div>
-        <div style="margin-right:45px;margin-left:15px;padding-top:11.7px;">
-          <h3 style="color:white">Version 1.0</h3>
+        <div style="width: 145px">
+          <a routerlink="/Home"><img [src]="logo" style="width: 100%;height: 100px;"  /></a>
         </div>
-        <div style="padding-left:15px;padding-right:15px;padding-top:10px;border:1px solid white;display:flex;align-items:center;justify-content: center;background:white;border-radius:9px;box-shadow:0px 0px 10px rgb(15, 15, 15) inset;">
-          <h1 style="font-weight:800;font-size:18pt;">Temple Management Software | <span style="font-size:10pt;">Copyright &#x40; 2025 <a href="https://kshethrasuvidham.com/" target="blank">Cubix Software Solutions</a></span></h1>
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+          "
+        >
+          <h1 style="font-weight: 500; font-size: 18pt; color: orange">
+            {{ templeName }}
+          </h1>
         </div>
       </div>
-      
-      <div class="">
-        
+
+      <div style="display: flex; flex-direction: row; align-items: center">
+        <div
+          style="
+            background: white;
+            width: 250px;
+            margin-right: 10px;
+            height: 80px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 9px;
+            border: 1px solid rgb(228, 228, 228);
+            box-shadow: 0px 0px 15px rgb(20, 20, 20) inset;
+            display: flex;
+            flex-direction: row;
+            column-gap: 5px;
+          "
+        >
+          <div
+            style="
+              width: 125px;
+              border: 1px solid white;
+              padding: 0px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              box-shadow: 0px 0px 15px black;
+            "
+          >
+            <p style="font-size: 9pt; text-align: center; font-weight: 600">
+              {{today}}<br />
+              <span
+                style="
+                  font-size: 9pt;
+                  font-family: Anek Malayalam;
+                  text-align: center;
+                  color: maroon;
+                "
+                >{{day}}</span
+              >
+            </p>
+          </div>
+          <div
+            style="
+              width: 125px;
+              border: 1px solid white;
+              padding: 0px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              box-shadow: 0px 0px 15px black;
+            "
+          >
+            <p
+              style="
+                font-size: 9pt;
+                font-family: Anek Malayalam;
+                text-align: center;
+                font-weight: 600;
+              "
+            >
+              {{mdate}}<br />
+              <span
+                style="
+                  font-size: 9pt;
+                  font-family: Anek Malayalam;
+                  text-align: center;
+                  color: maroon;
+                "
+                >{{nal}}</span
+              >
+            </p>
+          </div>
+          <!-- <div style="width:100px;border:1px solid white;padding:0px;display:flex;align-items:center;justify-content: center;box-shadow: 0px 0px 15px black;">
+                <p style="font-size:9pt;font-family:Anek Malayalam;text-align:center;font-weight:600;">രാഹു:<br> <span style="color:maroon;">10:30 - 12:00</span></p>
+            </div> -->
+        </div>
+        <div style="width: 200px; margin-right: 10px">
+          <a href="https://kshethrasuvidham.com/" target="blank"
+            ><img
+              src="assets/images/logo.jpg"
+              style="width: 100%; border-radius: 9px"
+          /></a>
+        </div>
         <div class="username">
           <div class="logid">
             <span class="logidin"></span>
           </div>
-          
-          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu" style="background:#ffffff;color:black;padding:0px;width:50px;height:50px;" >
-            <mat-icon style="color:#6206ca;padding:0px;font-size:22px;">supervisor_account</mat-icon> 
+
+          <button
+            mat-icon-button
+            [matMenuTriggerFor]="menu"
+            aria-label="Example icon-button with a menu"
+            style="
+              background: #ffffff;
+              color: black;
+              padding: 0px;
+              width: 50px;
+              height: 50px;
+            "
+          >
+            <mat-icon style="color: #6206ca; padding: 0px; font-size: 22px"
+              >supervisor_account</mat-icon
+            >
           </button>
           <mat-menu #menu="matMenu">
             <button mat-menu-item>
               <mat-icon>supervisor_account</mat-icon>
-              <span>{{userName}}</span>
+              <span>{{ userName }}</span>
             </button>
-            <button mat-menu-item (click)="openChangepasswordDialog()"> 
+            <button mat-menu-item (click)="openChangepasswordDialog()">
               <mat-icon>settings</mat-icon>
               <span>Change Password</span>
             </button>
-            <button mat-menu-item (click)="logout()"> 
+            <button mat-menu-item (click)="logout()">
               <mat-icon>logout</mat-icon>
               <span>Logout</span>
             </button>
-          </mat-menu>    
+          </mat-menu>
         </div>
       </div>
     </div>
+
+    <!-- <div style="background:#6206ca;padding:9px;display:flex;align-items:center;justify-content: center;height:100px;border-radius:27px 27px 0px 0px;">
+      <h1 style="text-align:center;font-size:22.5pt;color:#ffffff;">പത്മനാഭസ്വാമി ക്ഷേത്രം</h1>
+    </div> -->
   </div>
 </div>
-
-
-
-
- 

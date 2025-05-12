@@ -13,6 +13,7 @@ import { CouterPopupComponent } from '../../couter-popup/couter-popup.component'
 import { AuthService } from '../../auth/service/auth.service';
 import { TranslateService } from '@ngx-translate/core';
 import { TranslateModule } from '@ngx-translate/core';
+import { HeaderComponent } from '../header/header.component';
 @Component({
   selector: 'app-front',
   standalone: true,
@@ -23,7 +24,8 @@ import { TranslateModule } from '@ngx-translate/core';
     MatButtonModule,
     RouterModule,
     CommonModule,
-    TranslateModule
+    TranslateModule,
+    HeaderComponent,
   ],
   templateUrl: './front.component.html',
   styleUrl: './front.component.css',

@@ -1,3 +1,4 @@
+import { VihidhamlistComponent } from './features/Report/vihidhamlist/vihidhamlist.component';
 import { ReportDayendComponent } from './features/Report/report-dayend/report-dayend.component';
 import { DevoteeMasterComponent } from './features/master/devotee-master/devotee-master.component';
 import { ReportDailystmtComponent } from './features/Report/report-dailystmt/report-dailystmt.component';
@@ -199,7 +200,7 @@ export const routes: Routes = [
   {path:'report-billregister',component:ReportBillingRegisterComponent},
   {path:"report-Dayend",component:ReportDayendComponent},
   {path:"Home",component: HomeComponent},
-
+  {path:'vihiham-list',component:VihidhamlistComponent},
   {
     path: '**',
     pathMatch: 'full',

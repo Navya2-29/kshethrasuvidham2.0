@@ -18,6 +18,7 @@ export interface ReportData {
     Cuser?:string;
     Remarks?:string;
     ct?:string;
+    VTime:string;
     MobileNo?:string;
     NM_Name?:string;
     NM_RName?:string;

@@ -91,7 +91,7 @@
           </td>
           <td>{{item.VazhiDate}}</td>
           <td >
-            {{ item.Vazhipad }}
+            {{ item.Vazhipad }}({{getTimeForBill(item.VTime)}})
           </td>
           <td >{{ item.Name }}
             <br *ngIf="item.Address1" ><i>{{ item.Address1 }}</i>

@@ -948,7 +948,7 @@ private cdr: ChangeDetectorRef
         console.log(data);
         const dayList = Array.isArray(data) ? data : [data];
         this.updatedDayList = Array.isArray(data) ? data : [data];
-console.log(this.updatedDayList);
+        console.log(this.updatedDayList);
         // this.multiDayList = Array.isArray(data) ? data : [data];
 
         this.updatedDayList = dayList.map((item: any) => ({
@@ -956,11 +956,10 @@ console.log(this.updatedDayList);
           selected: true, // Set the initial value to true for all dates
           disabled:false
         }));
-console.log(this.updatedDayList,"updated list to validate qty");
-if(this.form.get('Vazhid')?.value && this.form.get('PMid')?.value && +this.form.get('VM_MaxNo')?.value>0 ){
-  this.validateallvazhipaddatewithqty(this.updatedDayList);
-
-}
+    console.log(this.updatedDayList,"updated list to validate qty");
+    if(this.form.get('Vazhid')?.value && this.form.get('PMid')?.value && +this.form.get('VM_MaxNo')?.value>0 ){
+    this.validateallvazhipaddatewithqty(this.updatedDayList);
+    }
 
 
         console.log(this.multiDayList, 'day listtttttttttttttttttttt');

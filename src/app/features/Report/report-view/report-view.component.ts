@@ -8,7 +8,7 @@ import {
   MatPaginatorModule,
   PageEvent,
 } from '@angular/material/paginator';
-import { ReportData } from '../../../models/poornam-report';
+// import { ReportData } from '../../../models/poornam-report';
 import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { HttpClient } from '@angular/common/http';
@@ -19,6 +19,18 @@ import html2canvas from 'html2canvas';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 import { PrintreportService } from '../../../shared/service/printreport.service';
+interface ReportData {
+  VTime: number;
+  Vazhipad: string;
+  Prathista: string;
+  Name: string;
+  Star: string;
+  Qty: number;
+  Address1: string;
+  Address2: string;
+  MobileNo: string;
+  // ...other fields
+}
 @Component({
   selector: 'app-report-view',
   standalone: true,
@@ -43,8 +55,7 @@ export class ReportViewComponent implements OnInit {
   loading: boolean;
   data: ReportData[] = [];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  groupedData: { [key: string]: ReportData[] } = {};
-  fromDate: string;
+  groupedData: { [vtime: string]: { [vazhipadPrathista: string]: ReportData[] } } = {};  fromDate: string;
   toDate: string;
   lang: string | null;
   templeName: string | null;
@@ -97,7 +108,12 @@ export class ReportViewComponent implements OnInit {
         //     return numA - numB || denomA - denomB;
         // });
 
-        this.groupedData = this.groupByVazhipad(data);
+        // this.groupedData = this.groupByVazhipad(data);
+        const groupedByVtime = this.groupByVtime(data);
+      
+        // Then group by Vazhipad and Prathista within each vtime group
+        this.groupedData = this.groupByVazhipadAndPrathista(groupedByVtime);
+
         this.loading=false;
         console.log(this.groupedData);
       },
@@ -118,6 +134,42 @@ export class ReportViewComponent implements OnInit {
     }, {} as { [key: string]: ReportData[] });
   }
 
+  groupByVtime(data: ReportData[]): { [key: string]: ReportData[] } {
+    return data.reduce((acc, current) => {
+      const key = current.VTime; // Assuming vtime is the field you want to group by
+      if (!acc[key]) {
+        acc[key] = [];
+      }
+      acc[key].push(current);
+      return acc;
+    }, {} as { [key: string]: ReportData[] });
+  }
+
+  groupByVazhipadAndPrathista(
+    groupedByVtime: { [vtime: string]: ReportData[] }
+  ): { [vtime: string]: { [vazhipadKey: string]: ReportData[] } } {
+    const result: { [vtime: string]: { [vazhipadKey: string]: ReportData[] } } = {};
+  
+    for (const vtimeKey in groupedByVtime) {
+      if (groupedByVtime.hasOwnProperty(vtimeKey)) {
+        const items = groupedByVtime[vtimeKey];
+        result[vtimeKey] = items.reduce(
+          (acc: { [vazhipadKey: string]: ReportData[] }, current) => {
+            const key = `${current.Vazhipad}-${current.Prathista}`;
+            if (!acc[key]) {
+              acc[key] = [];
+            }
+            acc[key].push(current);
+            return acc;
+          },
+          {}
+        );
+      }
+    }
+  
+    return result;
+  }
+  
   formatDateToDDMMYYYY(date: string): string {
     const [year, month, day] = date.split('-');
     return `${day}/${month}/${year}`;
@@ -135,6 +187,40 @@ export class ReportViewComponent implements OnInit {
       window.close();
     }
   }
+
+  getTimeForBill(time:any){    
+    switch (time.toString()) {
+      case '0':
+        if (this.lang =='en') {
+          return 'Any Time';
+        } else {
+          return 'എപ്പോൾ വേണമെങ്കിലും';
+        }
+  
+      case '1':
+        if (this.lang == 'en') {
+          return 'Morning';
+        } else {
+          return 'രാവിലെ';
+        }
+      case '2':
+        if (this.lang == 'en') {
+          return 'Evening';
+        } else {
+          return 'വൈകുന്നേരം';
+        }
+      case '3':
+        if (this.lang == 'en') {
+          return 'Night';
+        } else {
+          return 'രാത്രി';
+        }
+      default:
+        return 'OTHERS';
+    }
+      
+  }
+
 
   generatePDF() {
    this.reportPrintservice.generatePDF();

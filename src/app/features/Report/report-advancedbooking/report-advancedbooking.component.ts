@@ -74,8 +74,8 @@ export class ReportAdvancedbookingComponent {
   
     this.filteredData = this.data.filter(item =>
       (item.BillDate + ' ' + item.BillNo + ' ' + item.VazhiDate + ' ' +
-       item.Vazhipad + ' ' + item.Name + ' ' + item.Star + ' ' + item.Qty +
-       ' ' + item.Rate).toLowerCase().includes(this.searchText)
+       item.Vazhipad + ' ' + item.Name + ' ' + item.Star + ' ' + item.Qty +' '+ item.MobileNo+''+item.Address1+''
+        + item.Rate +item.Address2+'').toLowerCase().includes(this.searchText)
     );
   }
 
@@ -471,7 +471,38 @@ wrapText(doc: jsPDF, text: string, maxWidth: number): string {
   return wrappedText;
 }
   
+getTimeForBill(time:any){    
+  switch (time.toString()) {
+    case '0':
+      if (this.lang =='en') {
+        return 'Any Time';
+      } else {
+        return 'എപ്പോൾ വേണമെങ്കിലും';
+      }
 
+    case '1':
+      if (this.lang == 'en') {
+        return 'Morning';
+      } else {
+        return 'രാവിലെ';
+      }
+    case '2':
+      if (this.lang == 'en') {
+        return 'Evening';
+      } else {
+        return 'വൈകുന്നേരം';
+      }
+    case '3':
+      if (this.lang == 'en') {
+        return 'Night';
+      } else {
+        return 'രാത്രി';
+      }
+    default:
+      return 'OTHERS';
+  }
+    
+}
 
 
 }

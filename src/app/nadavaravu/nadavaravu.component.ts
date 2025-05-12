@@ -299,7 +299,7 @@ export class NadavaravuComponent implements OnInit {
       // console.log(data);
       this.nadavaravData = data;
       this.filteredData = this.nadavaravData;
-      // console.log(this.filteredData, 'all nadavaravu data');
+      console.log(this.filteredData, 'all nadavaravu data');
     });
   }
 

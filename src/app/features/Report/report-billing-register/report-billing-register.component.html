@@ -56,7 +56,7 @@
                 {{"Credit" | translate}}
               </th>
               <th class="number">
-                {{"ഡെബിറ്റ്" | translate }}
+                {{"Debit" | translate }}
               </th>
               <th class="number">
                 {{"Online" | translate}}
@@ -76,7 +76,7 @@
                 {{ item.BillNo }}
               </td>
               
-              <td class="number" [ngStyle]="isRedText(item) ? {'color': 'red'} : {}">  {{ item.TrnsMode === 'CS' ? item.TotalAmount.toFixed(2) || 0 : 0 | number: '1.2-2' }}
+              <td class="number" [ngStyle]="isRedText(item) ? {'color': 'red'} : {}">  {{  item.TrnsMode === 'CS' ? item.TotalAmount.toFixed(2) || 0 : 0 | number: '1.2-2' }}
               </td>
               <td class="number" [ngStyle]="isRedText(item) ? {'color': 'red'} : {}">
                 {{ item.TrnsMode === 'UP' ? item.TotalAmount.toFixed(2) || 0 : 0 | number: '1.2-2' }}
@@ -94,7 +94,7 @@
                 {{ item.TrnsMode === 'ON' ? item.TotalAmount.toFixed(2) || 0 : 0 | number: '1.2-2' }}
               </td>
               <td class="number" [ngStyle]="isRedText(item) ? {'color': 'red'} : {}">
-                {{item.TotalAmount ?item.TotalAmount.toFixed(2) :0 | number : "1.2-2"}}
+                <span>{{item.TrnsMode === 'CR'?'-':''}}</span>  {{item.TotalAmount ?item.TotalAmount.toFixed(2) :0 | number : "1.2-2"}}
               </td>
             </tr>
             <tr>
@@ -102,7 +102,7 @@
                 {{"Report Name.GrandTotal" | translate }} 
               </td>
               <td class="total">
-                {{ getColumnTotal('CS') | number:'1.2-2' }}
+                {{ getColumnTotalforCsansMo() | number:'1.2-2' }}
               </td>
               <td class="total">
                 {{ getColumnTotal('UP') | number:'1.2-2' }}
@@ -111,7 +111,7 @@
                 {{ getColumnTotal('CH') | number:'1.2-2' }}
               </td>
               <td class="total">
-                {{ getColumnTotal('CR') | number:'1.2-2' }}
+                {{'-'+ getColumnTotal('CR') | number:'1.2-2' }}
               </td>
               <td class="total">
                 {{ getColumnTotal('DE') | number:'1.2-2' }}

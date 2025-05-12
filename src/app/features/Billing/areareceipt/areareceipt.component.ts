@@ -45,7 +45,7 @@ import { MobserachbtnComponent } from '../../../mobserachbtn/mobserachbtn.compon
 import { MultidayComponent } from '../multiday/multiday.component';
 import { MasterService } from '../../../services/master/master.service';
 import { TotalAmountService } from '../../../shared/service/total-amount.service';
-import { Observable, Subscription, map, of, startWith } from 'rxjs';
+import { Observable, Subscription, catchError, forkJoin, map, of, startWith } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MultidayitemsComponent } from '../multidayitems/multidayitems.component';
 import { MultidaybookeddetailsComponent } from '../multidaybookeddetails/multidaybookeddetails.component';
@@ -211,7 +211,7 @@ export class AreareceiptComponent implements OnInit {
         ],
       ],
       Amount: [''],
-      VazhipadDate: ['', [Validators.required]],
+      VazhipadDate: ['', [Validators.required,this.minDateValidator()]],
       TotalAmt: [this.totalAmount],
       VTime: ['0', [Validators.required]],
       Name2: [''],
@@ -388,7 +388,9 @@ export class AreareceiptComponent implements OnInit {
             this.notification.success('Rate cannot be zero');
           } else if (row.get('VazhipadDate')?.errors?.['required']) {
             this.notification.success('Please select a VazhipadDate');
-          }
+          }else if (row.get('VazhipadDate')?.errors?.['minDate']) {
+  this.notification.success('Vazhipad date cannot be in the past');
+}
 
           return; // Stop adding new row if current row is invalid
         }
@@ -448,6 +450,23 @@ export class AreareceiptComponent implements OnInit {
     console.log(date, 'aaaaaaaaaaaaaaaaa');
     return this.datePipe.transform(date, 'dd-MM-yyyy') || '';
   }
+
+
+minDateValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    if (!control.value) return null;
+
+    const enteredDate = new Date(control.value);
+    const today = new Date();
+
+    // Reset time for accurate date-only comparison
+    today.setHours(0, 0, 0, 0);
+    enteredDate.setHours(0, 0, 0, 0);
+
+    return enteredDate >= today ? null : { minDate: true };
+  };
+}
+
 
   setupAutocomplete(index: number): void {
     const row = this.vazhipadinfo.at(index) as FormGroup;
@@ -1128,15 +1147,16 @@ console.log(totalQty,)
   }
 
   // api data send
-  sendDataToApi(data: any) {
+ async sendDataToApi(data: any) {
     console.log(data, 'send to api dataaaaaaaaaaaaaaaaaaaa to qty check');
     let isFormValid = true; // Initialize form validity
     let multidayRowIndices: number[] = [];
-    this.validateAllVazhipadQty();
-    if (this.form.hasError('invalidQty')) {
-      this.notification.error('Please fix the quantity errors before submitting');
-      return; // Stop the form submission
-    }
+   const isQtyValid = await this.validateAllVazhipadQty(); // ✅ Wait for quantity check
+
+  if (!isQtyValid) {
+    this.notification.error('Please fix the quantity errors before submitting');
+    return;
+  }
     // Iterate through each form group (row) in the vazhipadinfo FormArray
     this.vazhipadinfo.controls.forEach((row, index) => {
       row.markAllAsTouched();
@@ -1163,7 +1183,11 @@ console.log(totalQty,)
           this.notification.success('Rate cannot be zero');
         } else if (row.get('VazhipadDate')?.errors?.['required']) {
           this.notification.success('Please select a VazhipadDate');
-        }
+        }else if (row.get('VazhipadDate')?.errors?.['minDate']) {
+}
+else if (row.get('Qty')?.errors?.['invalidQty']) {
+  this.notification.success('Should add the valid number of qty');
+}
         return;
       } else {
         if (this.multidayBooking[index]) {
@@ -1240,84 +1264,168 @@ console.log(totalQty,)
     }
   }
 
-  validateAllVazhipadQty() {
-    const vazhipadArray = this.form.get('vazhipadinfo') as FormArray;
+  validateAllVazhipadQty(): Promise<boolean> {
+  const vazhipadArray = this.form.get('vazhipadinfo') as FormArray;
+  const groupedEntries: {
+    [key: string]: { indexes: number[]; totalQty: number; maxLimit: number };
+  } = {};
 
-    // Step 1: Group entries by (Vazhid, PMid, VazhipadDate)
-    const groupedEntries: {
-      [key: string]: { indexes: number[]; totalQty: number; maxLimit: number };
-    } = {};
+  vazhipadArray.controls.forEach((row, index) => {
+    if (this.multidayBooking[index]) return;
 
-    vazhipadArray.controls.forEach((row, index) => {
-      if (this.multidayBooking[index]) {
-        return;
-      }
+    const vazhid = row.get('Vazhid')?.value;
+    const pmid = row.get('PMid')?.value;
+    const date = row.get('VazhipadDate')?.value;
+    const qty = +row.get('Qty')?.value || 0;
+    const maxLimit = +row.get('maxLimit')?.value || 0;
+    if (!vazhid || !pmid || !date) return;
 
-      const vazhid = row.get('Vazhid')?.value;
-      const pmid = row.get('PMid')?.value;
-      const date = row.get('VazhipadDate')?.value;
-      const qty = +row.get('Qty')?.value || 0;
-            const maxLimit = +row.get('maxLimit')?.value || 0;
-      if (!vazhid || !pmid || !date) {
-        return; // Missing important fields
-      }
-      const key = `${vazhid}_${pmid}_${date}`;
+    const key = `${vazhid}_${pmid}_${date}`;
 
-      if (!groupedEntries[key]) {
-        groupedEntries[key] = { indexes: [], totalQty: 0, maxLimit };
-      }
+    if (!groupedEntries[key]) {
+      groupedEntries[key] = { indexes: [], totalQty: 0, maxLimit };
+    }
 
-      groupedEntries[key].indexes.push(index);
-      groupedEntries[key].totalQty += qty;
-    });
-
-    // Step 2: For each group, call API once and validate all related rows
-    Object.keys(groupedEntries).forEach((key) => {
-      const [vazhid, pmid, date] = key.split('_');
-      const group = groupedEntries[key];
-
- // ✅ If maxLimit is 0 or less, skip validation
- if (!group.maxLimit || group.maxLimit <= 0) {
-  group.indexes.forEach((i) => {
-    const control = vazhipadArray.at(i).get('Qty');
-    control?.setErrors(null); // Clear any previous errors if any
+    groupedEntries[key].indexes.push(index);
+    groupedEntries[key].totalQty += qty;
   });
-  return; // Skip API call
+
+  const validations = Object.keys(groupedEntries).map((key) => {
+    const [vazhid, pmid, date] = key.split('_');
+    const group = groupedEntries[key];
+
+    if (!group.maxLimit || group.maxLimit <= 0) {
+      group.indexes.forEach((i) => {
+        vazhipadArray.at(i).get('Qty')?.setErrors(null);
+      });
+      return of(true); // Skip
+    }
+
+    const payload = {
+      Type: 'VazhipadLimit',
+      FromDate: date,
+      ToDate: date,
+      PMId: pmid,
+      VazhId: vazhid,
+    };
+
+    return this.reportService.getVazhipadWiseReport(payload).pipe(
+      map((res: any) => {
+        const alreadyBooked = res[0]?.qty ?? 0;
+        const totalQty = group.totalQty;
+        const exceeded = alreadyBooked + totalQty > group.maxLimit;
+
+        if (exceeded) {
+          group.indexes.forEach((i) => {
+            vazhipadArray.at(i).get('Qty')?.setErrors({ exceedLimit: true });
+          });
+
+          this.notification.error(
+            `Qty exceeds limit for ${this.getVazhipadByid(vazhid)}. Limit: ${group.maxLimit}, Already: ${alreadyBooked}, Entered: ${totalQty}`
+          );
+        } else {
+          group.indexes.forEach((i) => {
+            vazhipadArray.at(i).get('Qty')?.setErrors(null);
+          });
+        }
+
+        return !exceeded;
+      }),
+      catchError(() => of(true)) // Ignore error
+    );
+  });
+
+  return forkJoin(validations.length ? validations : [of(true)]).toPromise().then((results: any) => {
+  const hasErrors = results.includes(false);
+  if (hasErrors) {
+    this.form.setErrors({ invalidQty: true });
+    return false;
+  } else {
+    this.form.setErrors(null);
+    return true;
+  }
+});
 }
 
 
-      const payload = {
-        Type: 'VazhipadLimit',
-        FromDate: date,
-        ToDate: date,
-        PMId: pmid,
-        VazhId: vazhid,
-      };
+//   validateAllVazhipadQty() {
+//     const vazhipadArray = this.form.get('vazhipadinfo') as FormArray;
 
-      this.reportService
-        .getVazhipadWiseReport(payload)
-        .subscribe((res: any) => {
-          const alreadyBooked = res[0].qty ?? 0;
-          const totalQty = group.totalQty;
+//     // Step 1: Group entries by (Vazhid, PMid, VazhipadDate)
+//     const groupedEntries: {
+//       [key: string]: { indexes: number[]; totalQty: number; maxLimit: number };
+//     } = {};
 
-          if (alreadyBooked + totalQty > group.maxLimit) {
-            group.indexes.forEach((i) => {
-              vazhipadArray.at(i).get('Qty')?.setErrors({ exceedLimit: true });
-            });
+//     vazhipadArray.controls.forEach((row, index) => {
+//       if (this.multidayBooking[index]) {
+//         return;
+//       }
 
-            this.notification.error(
-              `Total Qty exceeds limit for Vazhipad ID ${this.getVazhipadByid(vazhid)}. Limit: ${group.maxLimit}, Already Booked: ${alreadyBooked}, Entered: ${totalQty}`
-            );
-            this.form.setErrors({ invalidQty: true });
-          } else {
-            group.indexes.forEach((i) => {
-              vazhipadArray.at(i).get('Qty')?.setErrors(null);
-            });
-            this.form.setErrors(null); 
-          }
-        });
-    });
-  }
+//       const vazhid = row.get('Vazhid')?.value;
+//       const pmid = row.get('PMid')?.value;
+//       const date = row.get('VazhipadDate')?.value;
+//       const qty = +row.get('Qty')?.value || 0;
+//             const maxLimit = +row.get('maxLimit')?.value || 0;
+//       if (!vazhid || !pmid || !date) {
+//         return; // Missing important fields
+//       }
+//       const key = `${vazhid}_${pmid}_${date}`;
+
+//       if (!groupedEntries[key]) {
+//         groupedEntries[key] = { indexes: [], totalQty: 0, maxLimit };
+//       }
+
+//       groupedEntries[key].indexes.push(index);
+//       groupedEntries[key].totalQty += qty;
+//     });
+
+//     // Step 2: For each group, call API once and validate all related rows
+//     Object.keys(groupedEntries).forEach((key) => {
+//       const [vazhid, pmid, date] = key.split('_');
+//       const group = groupedEntries[key];
+
+//  // ✅ If maxLimit is 0 or less, skip validation
+//  if (!group.maxLimit || group.maxLimit <= 0) {
+//   group.indexes.forEach((i) => {
+//     const control = vazhipadArray.at(i).get('Qty');
+//     control?.setErrors(null); // Clear any previous errors if any
+//   });
+//   return; // Skip API call
+// }
+
+
+//       const payload = {
+//         Type: 'VazhipadLimit',
+//         FromDate: date,
+//         ToDate: date,
+//         PMId: pmid,
+//         VazhId: vazhid,
+//       };
+
+//       this.reportService
+//         .getVazhipadWiseReport(payload)
+//         .subscribe((res: any) => {
+//           const alreadyBooked = res[0].qty ?? 0;
+//           const totalQty = group.totalQty;
+
+//           if (alreadyBooked + totalQty > group.maxLimit) {
+//             group.indexes.forEach((i) => {
+//               vazhipadArray.at(i).get('Qty')?.setErrors({ exceedLimit: true });
+//             });
+
+//             this.notification.error(
+//               `Total Qty exceeds limit for Vazhipad ID ${this.getVazhipadByid(vazhid)}. Limit: ${group.maxLimit}, Already Booked: ${alreadyBooked}, Entered: ${totalQty}`
+//             );
+//             this.form.setErrors({ invalidQty: true });
+//           } else {
+//             group.indexes.forEach((i) => {
+//               vazhipadArray.at(i).get('Qty')?.setErrors(null);
+//             });
+//             this.form.setErrors(null); 
+//           }
+//         });
+//     });
+//   }
 
   private getCurrentDateMMYY(): string {
     const now = new Date();

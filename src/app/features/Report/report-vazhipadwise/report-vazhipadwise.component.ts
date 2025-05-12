@@ -45,7 +45,7 @@ vazhipad:string;
   templeName:string|null;
   templeAddress:string|null;
   constructor(private route: ActivatedRoute, private ts: TranslateService, 
-        private reportPrintservice: PrintreportService
+    private reportPrintservice: PrintreportService
     ,
     private service: ReportService,private router: Router,  private http:HttpClient) {
 

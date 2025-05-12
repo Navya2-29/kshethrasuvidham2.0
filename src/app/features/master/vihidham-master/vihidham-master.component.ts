@@ -68,9 +68,9 @@ export class VihidhamMasterComponent {
     this.userId = localStorage.getItem('LoginId');
     this.today = new Date().toISOString().substring(0, 10);
     this.vihidhamMasterForm = this.formBuilder.group({
-      vazhipad_code: ['', Validators.required],
+      vazhipad_code: ['',],
       vazhipad_name: ['', Validators.required],
-      vazhipad_rate: ['', Validators.required],
+      vazhipad_rate: ['',],
       vihidham_type: ['', Validators.required],
       vihidham_rate: ['', Validators.required],
       FromDate: [this.today, Validators.required],
@@ -83,31 +83,31 @@ export class VihidhamMasterComponent {
     this.getVihidhamMaster();
     this.getcmaster();
     this.getVazhipadmaster();
-    this.vihidhamMasterForm
-      .get('vazhipad_code')!
-      .valueChanges.pipe(
-        debounceTime(300),
-        switchMap((code) => this.masterService.getVazhipadeByCode(code))
-      )
-      .subscribe((response: any) => {
-        if (response.length > 0) {
-          this.vihidhamMasterForm
-            .get('vazhipad_name')
-            ?.setValue(response[0].VM_Name);
-          this.vihidhamMasterForm
-            .get('vazhipad_rate')
-            ?.setValue(response[0].VM_Amt);
-          this.VM_Id = response[0].VM_Id;
-          console.log(response);
-          console.log(this.VM_Id);
-        } else if (this.vihidhamMasterForm.get('vazhipad_code')?.value === '') {
-          this.vihidhamMasterForm.get('vazhipad_name')?.setValue('');
-          this.vihidhamMasterForm.get('vazhipad_rate')?.setValue('');
-        } else {
-          this.notification.showError('Vazhipad is not exist for code');
-          this.vihidhamMasterForm.get('vazhipad_name')?.setValue('');
-        }
-      });
+    // this.vihidhamMasterForm
+    //   .get('vazhipad_code')!
+    //   .valueChanges.pipe(
+    //     debounceTime(300),
+    //     switchMap((code) => this.masterService.getVazhipadeByCode(code))
+    //   )
+    //   .subscribe((response: any) => {
+    //     if (response.length > 0) {
+    //       this.vihidhamMasterForm
+    //         .get('vazhipad_name')
+    //         ?.setValue(response[0].VM_Name);
+    //       this.vihidhamMasterForm
+    //         .get('vazhipad_rate')
+    //         ?.setValue(response[0].VM_Amt);
+    //       this.VM_Id = response[0].VM_Id;
+    //       console.log(response);
+    //       console.log(this.VM_Id);
+    //     } else if (this.vihidhamMasterForm.get('vazhipad_code')?.value === '') {
+    //       this.vihidhamMasterForm.get('vazhipad_name')?.setValue('');
+    //       this.vihidhamMasterForm.get('vazhipad_rate')?.setValue('');
+    //     } else {
+    //       this.notification.showError('Vazhipad is not exist for code');
+    //       this.vihidhamMasterForm.get('vazhipad_name')?.setValue('');
+    //     }
+      // });
 
     // this.toppings.valueChanges.subscribe((selectedDays:any) => {
     //   this.updateDayInfo(selectedDays);
@@ -190,7 +190,7 @@ export class VihidhamMasterComponent {
         Type: 'INSERT',
         VRId: '',
         VCId: data.vihidham_type,
-        VazhId: this.VM_Id.toString(),
+        VazhId: data.vazhipad_name.toString(),
         Rate: data.vihidham_rate,
         FromDate: this.formatDateToDDMMYYYY(data.FromDate),
         ToDate: this.formatDateToDDMMYYYY(data.ToDate),
@@ -222,7 +222,14 @@ export class VihidhamMasterComponent {
   // resetting form controls
   onReset() {
     this.loading = true;
-    this.vihidhamMasterForm.reset();
+    this.vihidhamMasterForm.reset({
+       vazhipad_name: "",
+      
+      vihidham_type: '',
+      vihidham_rate: '',
+      FromDate: this.today,
+      ToDate: this.today,
+    });
     this.updateFlag = false;
     this.loading = false;
   }
@@ -234,7 +241,7 @@ export class VihidhamMasterComponent {
     this.updateFlag = true;
     this.Id = data.VR_ID;
     this.vihidhamMasterForm.patchValue({
-      vazhipad_code: this.getVazhipadBycode(data.VazhId),
+      vazhipad_name: data.VazhId,
       vihidham_type: data.VC_ID,
       vihidham_rate: data.Rate,
       FromDate:this.formatDate(data.FDate) ,
@@ -259,7 +266,7 @@ export class VihidhamMasterComponent {
         Type: 'UPDATE',
         VRId: this.Id.toString(),
         VCId: updatedata.vihidham_type,
-        VazhId: this.VM_Id.toString(),
+        VazhId: updatedata.vazhipad_name,
         Rate: updatedata.vihidham_rate,
         FromDate: this.formatDateToDDMMYYYY(updatedata.FromDate),
         ToDate: this.formatDateToDDMMYYYY(updatedata.ToDate),
@@ -456,6 +463,11 @@ export class VihidhamMasterComponent {
   //     this.notification.showSuccess(' Vazhipad Details deleted successfully');
   //   });
   // }
+  gotoVihidhamPrintPage(){
+    this.router.navigate(['vihiham-list'])
+
+  }
+
 
   getVazhipadNameById(id:any){
     const match = this.Vmaster.find((v: any) => v.VM_Id === id);

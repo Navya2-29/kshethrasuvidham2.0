@@ -48,6 +48,7 @@ interface Entry {
   Amount: number;
   VazhipadDate:string;
   Qty:number;
+  VTime:number;
 }
 
 interface GroupedData {
@@ -507,7 +508,8 @@ this.groupDataByPrathistaAndVazhipad()
 
 
   printReceiptsThermal(){
-   
+     const imageUrl = window.location.origin + '/assets/images/temple-logo.png';
+
     this.differentDateArray = [];
     
     
@@ -578,11 +580,14 @@ this.groupDataByPrathistaAndVazhipad()
       pages.forEach((page, pageIndex) => {
         let receiptContent = `
           <div class="receipt-page">
+          <div style="text-align: center;"><img src="${imageUrl}" alt="logo" style="width: 60px; height: 60px;align-item:center;"/></div>
+
             <div class="receipt-header">${this.templeName}</div>
             <div class="receipt-sub-header">${this.templeAddress}</div>
             <hr>
-             <div class="receipt-content">Bill No: ${this.lastBillNo}</div>
-            <div class="receipt-content">Date:${this.billDate}</div>
+          <div class="receipt-content receipt-contentbill">Date:${this.billDate}</div>
+
+             <div class="receipt-content ">Bill No: ${this.lastBillNo}</div>
            
             <div class="receipt-content">Prathista: ${prathista}</div>
             <div class="receipt-content">Vazhipad: ${vazhipad}</div>
@@ -603,28 +608,29 @@ this.groupDataByPrathistaAndVazhipad()
 
         // Add grand total and other details
         receiptContent += `
-            
-            <div class="receipt">Total Qty: ${group.totalQty}</div>
+            <div class="receipt-rq">Total Qty: ${group.totalQty}</div>
             <div class="receipt-total">Total Amount: ${grandTotalAmount.toFixed(2)}
             <p> ${this.numbertowordpipe.transform(grandTotalAmount)}<span> Rupees</span></p>
             </div>
-           <hr>
-            <div class="receipt-content">Vazhipad Date: 
+          
+            <div class="receipt-content-vd">Vazhipad Date: 
               ${fromDate !== toDate ? `${this.convertDateFormat(fromDate)} to ${this.convertDateFormat(toDate)}` : `${this.convertDateFormat(fromDate)}`}
             </div>
             ${group.nalBy ? `<div class="receipt-footer">- ${group.nalBy}</div>` : ''}
             ${group.mday ? `<div class="receipt-footer">- ${group.mday}</div>` : ''}
             ${group.mmonth ? `<div class="receipt-footer">- ${group.mmonth}</div>` : ''}
-            <div class="receipt-footer">
+            <div class="receipt-footer-ut">
               User: ${this.name} 
             </div>
-            <div class="receipt-footer">
+            <div class="receipt-footer-ut">
               Payment Mode:  ${this.getTransactionType(this.displayTrnsmode)}, ${this.displayTrnsmode=='CR'?"Not Paid":""}
 
             </div>
              <div class="receipt-footer">
                <p>Duplicate Bill<p>
             </div>
+            <div><p>www.cubixsystems.com</p></div>
+
 
           </div> <!-- Close receipt-page -->
         `;
@@ -646,9 +652,9 @@ this.groupDataByPrathistaAndVazhipad()
             body {
               margin: 10px;
               padding: 0;
-              font-family: Arial, sans-serif;
-              font-size: 10pt;
-              font-weight: bold;
+              
+             
+              
               text-align: left;
             }
 
@@ -660,49 +666,89 @@ this.groupDataByPrathistaAndVazhipad()
               padding: 10px;
               overflow: hidden;
               page-break-after: auto;
-              border: 1px dashed #000;
+              // border: 1px dashed #000;
+              
             }
 
             .receipt-header {
               font-size: 12pt;
               font-weight: bold;
               text-align: center;
-              margin-bottom: 3px;
-               font-family:Manjari;
+              margin-bottom: 2px;
+              font-family:Manjari;
             }
 
             .receipt-sub-header {
               font-size: 8pt;
               text-align: center;
               margin-bottom: 5px;
-              font-weight: normal;
               font-family:Manjari;
+              // font-weight: bold;
             }
 
             hr {
               border: 0;
-              border-top: 1px solid black;
-              margin: 5px 0;
+              border-top: 1px dashed black;
+              margin: 8px 0px;
             }
+              .receipt-contentbill{
+              margin-top:10px;
+              }
 
             .receipt-content {
               text-align: left;
-              font-size: 9pt;
-              margin-bottom: 3px;
+              font-size: 12pt;
+              margin-bottom: 5px;
+              margin-top:10px;
+              margin-top:5px;
+              font-family:Manjari;
+              font-weight: bold;
+            }
+              .receipt-content-vd{
+              text-align: left;
+              font-size: 12pt;
+              margin-bottom: 10px;
+              margin-top:10px;
+              
+              font-family:Manjari;
+              font-weight: bold;
+              }
+               .receipt-contents {
+              text-align: left;
+              font-size: 10pt;
+              
+              margin-top:10px;
+              font-family:Manjari;
             }
 
             .receipt-total {
-              margin-top: 10px;
+              margin-top: 10px 0px;
+               margin-bottom: 10px 0px;
               font-weight: bold;
-              font-size: 11pt;
+              font-size: 12pt;
               border-top: 1px solid #000;
-              padding-top: 5px;
+              border-bottom: 1px dashed #000;
+              padding-bottom: 10px;
+              padding-top: 10px;
               text-align: left;
             }
-
+           .receipt-rq{
+            margin-top: 10px;
+              font-weight: bold;
+              font-size: 11pt;
+              
+              // padding-top: 5px;
+              text-align: left;
+            }
+              .receipt-footer-ut{
+              font-size: 9pt;
+              margin-top: 2px;
+              font-style: italic;
+              text-align: left;
+              }
             .receipt-footer {
               font-size: 9pt;
-              margin-top: 10px;
+              margin-top: 3px;
               font-style: italic;
               text-align: left;
             }
@@ -718,9 +764,14 @@ this.groupDataByPrathistaAndVazhipad()
       printWindow.document.open();
       printWindow.document.write(printContent);
       printWindow.document.close();
-      printWindow.focus();
-      printWindow.print();
-      printWindow.close();
+     printWindow.onload = () => {
+        setTimeout(() => {
+          printWindow.focus();
+          printWindow.print();
+          printWindow.close();
+          // this.resetForm();
+        }, 500); // small delay to ensure image is loaded
+      };
       // this.resetForm()
     }
   }
@@ -1010,51 +1061,55 @@ return formattedDate
         pageIndex < pages.length - 1 ? 'always' : 'avoid'
       };">
             <!-- Prathista -->
-            <div style="position: absolute; left: 4.8cm; top: 2.5cm; max-width: 8cm;  white-space: pre-wrap; word-wrap: break-word;font-size:10pt; line-height: 1em;">${prathista}</div>
+            <div style="position: absolute; left: 3cm; top: 3.75cm; max-width: 8cm;  white-space: pre-wrap; word-wrap: break-word;font-size:10pt; line-height: 1em;">${prathista}</div>
             <!-- Vazhipad -->
-            <div style="position: absolute; left: 4.8cm; top: 3cm; max-width: 5cm; white-space: pre-wrap;font-size:9pt; white-space: pre-wrap;">${vazhipad}</div>
+            <div style="position: absolute; left: 3cm; top: 4.2cm; max-width: 5cm; white-space: pre-wrap;font-size:9pt; white-space: pre-wrap;">${vazhipad}</div>
              <!-- Bill date Date -->
-            <div style="position: absolute; left: 10.9cm; top: 2.5cm;">${this.billDate}</div>
+            <div style="position: absolute; left: 10.9cm; top: 3.75cm;">${this.billDate}</div>
            <!-- bill Number -->
-            <div style="position: absolute; left: 10.9cm; top: 3cm;"> ${this.lastBillNo}</div>
+            <div style="position: absolute; left: 10.9cm; top: 4.2cm;"> ${this.lastBillNo}</div>
              <!-- Vazhipad Date -->
-           <div style="position: absolute; left: 4.5cm; top: 7.2cm;">
+           <div style="position: absolute; left: 5.5cm; top: 9cm;">
     ${fromDate != toDate ? `${this.convertDateFormat(fromDate)} to ${this.convertDateFormat(toDate)}` : `${this.convertDateFormat(fromDate)}`}
   </div>
-  ${group.nalBy ? `<div style="position: absolute; left: 2cm; top: 8.5cm;">- ${group.nalBy},</div>` : ''}
-  ${group.mday ? `<div style="position: absolute; left: 5cm; top: 8.5cm;">- ${group.mday},</div>` : ''}
-  ${group.mmonth ? `<div style="position: absolute; left: 8cm; top:8.5cm;">- ${group.mmonth}</div>` : ''}
+  ${group.nalBy ? `<div style="position: absolute; left: 5.5cm; top: 8cm;font-size:6pt">- ${group.nalBy},</div>` : ''}
+  ${group.mday ? `<div style="position: absolute; left: 5.5cm; top: 8.3cm;font-size:6pt">- ${group.mday},</div>` : ''}
+  ${group.mmonth ? `<div style="position: absolute; left: 5.5cm; top:8.5cm;font-size:6pt">- ${group.mmonth}</div>` : ''}
    <div style="position: absolute; left: 2cm; top: 7.5cm;font-size:8pt">User:${this.name}  ${this.displayTrnsmode=='CR'?"Not Paid":""}</div>
-<div style="position: absolute; left: 2cm; top: 8.5cm; ; ">
+<div style="position: absolute; left: 2cm; top: 8.5cm;font-size:7pt; ">
           Duplicate Bill
         </div>
             `
   
         // Render rows in the current page
         page.forEach((item: any, rowIndex: number) => {
-          let rowTop = 4.5 + rowIndex * 0.7; // Adjust row spacing
+          let rowTop = 5.4 + rowIndex * 0.7; // Adjust row spacing
           const amount = item.Qty * item.Rate;
           grandTotalAmount += amount; // Add the amount to the grand total
           receiptContent += `
-            <div style="position: absolute; left: 2cm; top: ${rowTop}cm; max-width: 5.5cm; white-space: pre-wrap; word-wrap: break-word; line-height: 1.2em;">${item.Name}${item.Name2 ? `<div style="margin-top: 0.1mm;">${item.Name2}</div>` : ''}</div>
-            <div style="position: absolute; left: 7.8cm; top: ${rowTop}cm;">${this.getStarbyId(item.Star)}${item.Star2 ? `<div style="margin-top: 0.1mm;">${this.getStarbyId(item.Star2)}</div>` : ''}</div>
-            <div style="position: absolute; left: 10cm; top: ${rowTop}cm;">${item.Qty}</div>
-            <div style="position: absolute; left: 11cm; top: ${rowTop}cm;">${item.Rate}</div>
-            <div style="position: absolute; left: 12.5cm; top: ${rowTop}cm;">${amount.toFixed(2)}</div>
-          `;
+            <div style="position: absolute; left: 2.7cm; font-size:9pt;font-weight:bold; top: ${rowTop}cm; max-width: 5.5cm; white-space: pre-wrap; word-wrap: break-word; line-height: 1.2em;">${item.Name}${item.Name2 ? `<div style="margin-top: 0.1mm;">${item.Name2}</div>` : ''}</div>
+            <div style="position: absolute; left: 8.4cm;font-size:8pt; top: ${rowTop}cm;">${this.getStarbyId(item.Star)}${item.Star2 ? `<div style="margin-top: 0.1mm;">${this.getStarbyId(item.Star2)}</div>` : ''}</div>
+            <div style="position: absolute; left: 10.8cm; top: ${rowTop}cm;">${item.Qty}</div>
+            <div style="position: absolute;  left: 11.6cm; top: ${rowTop}cm;">${item.Rate}</div>
+            <div style="position: absolute;  left: 13cm; top: ${rowTop}cm;">${amount.toFixed(2)}</div>
+             <div style="position: absolute; left: 11cm; top: 9cm;font-size:8pt;">${this.getTimeForBill(item.VTime)}</div>
+
+            `;
         });
         // receiptContent += `</div>`; // Close receipt page
         // allReceiptsContent += receiptContent;
   
         // Add grand total at the end of the page
       // const grandTotalTop = 5 + page.length * 0.7 + 1; // Position it below the last row
+      // <div style="position: absolute; left: 3cm; top: 8cm; font-weight: bold; font-size: 9pt;">
+      //    ${this.numbertowordpipe.transform(grandTotalAmount)}<span>Rupees</span>
+      // </div>
+     
       receiptContent += `
-        <div style="position: absolute; left: 11.2cm; top: 7.1cm; font-weight: bold; font-size: 15pt;">
+        <div style="position: absolute; left: 10.5cm; top: 8.3cm; font-weight: bold; font-size: 12pt;">
            ${grandTotalAmount.toFixed(2)}
         </div>
-          <div style="position: absolute; left: 3cm; top: 8cm; font-weight: bold; font-size: 9pt;">
-         ${this.numbertowordpipe.transform(grandTotalAmount)}<span>Rupees</span>
-      </div>
+      //   
       </div>`; // Close receipt page
       allReceiptsContent += receiptContent;
     });
@@ -1399,7 +1454,8 @@ if(this.displayTrnsmode!=editedTransmodeValue){
         Rate: item.Rate,
         Amount: item.Amount,
         VazhipadDate:item.EvazDate,
-        Qty:item.Qty
+        Qty:item.Qty,
+        VTime:item.VTime,
 
       });
   
@@ -1419,6 +1475,58 @@ if(this.displayTrnsmode!=editedTransmodeValue){
     return obj ? Object.keys(obj) : [];
   }
 
+ getTimeForBill(time:any){
+     
+    switch (time.toString()) {
+      case '0':
+        if (this.lang == 'en') {
+          return 'Any Time';
+        } else {
+          return 'എപ്പോൾ വേണമെങ്കിലും';
+        }
+
+      case '1':
+        if (this.lang == 'en') {
+          return 'Morning';
+        } else {
+          return 'രാവിലെ';
+        }
+      case '2':
+        if (this.lang == 'en') {
+          return 'Evening';
+        } else {
+          return 'വൈകുന്നേരം';
+        }
+      case '3':
+        if (this.lang == 'en') {
+          return 'Night';
+        } else {
+          return 'രാത്രി';
+        }
+
+      case 'CH':
+        if (this.lang == 'en') {
+          return 'CHEQUE';
+        } else {
+          return 'ചെക്ക്';
+        }
+      case 'CR':
+        if (this.lang == 'en') {
+          return 'CREDIT';
+        } else {
+          return 'ക്രെഡിറ്റ്';
+        }
+      case 'DE':
+        if (this.lang == 'en') {
+          return 'DEBIT';
+        } else {
+          return 'ഡെബിറ്റ്';
+        }
+      default:
+        return 'OTHERS';
+    }
+      
+}
 
 
 
