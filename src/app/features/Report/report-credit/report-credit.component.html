@@ -82,7 +82,7 @@
 
 
       </div>
-      <div class="page-break"></div>
+      <div class="page-break"*ngIf="membercreditdata.length > 0"></div>
 
 <div class="non-memberpending" *ngIf="nonmembercreditdata.length > 0">
   <h4 class="tabble-heading" >  {{"Report Name.Devotee due/credit" | translate}} </h4>
@@ -129,7 +129,7 @@
 
 
 </div>
-<div class="page-break"></div>
+<div class="page-break" *ngIf="nonmembercreditdata.length > 0"></div>
 
 
 <div class="alldue" *ngIf="data.length > 0">

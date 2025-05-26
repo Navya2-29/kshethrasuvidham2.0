@@ -15,6 +15,8 @@ import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MasterService } from '../../../services/master/master.service';
 import { forkJoin } from 'rxjs';
+import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
+import { PrintreportService } from '../../../shared/service/printreport.service';
 @Component({
   selector: 'app-members-list',
   standalone: true,
@@ -23,6 +25,7 @@ import { forkJoin } from 'rxjs';
     MatTableModule,
     MatPaginatorModule,
     HeaderComponent,
+    SpinnerComponent,
     MatTooltipModule,MatFormFieldModule,TranslateModule, MatInputModule,
   ],
   templateUrl: './members-list.component.html',
@@ -32,7 +35,7 @@ export class MembersListComponent {
  
   
   data: MembersReport[] = [];
- 
+loading:boolean=false; 
 
   currentDate: string = '';
 
@@ -41,13 +44,15 @@ export class MembersListComponent {
   templeName:string|null;
   templeAddress:string|null;
   nakshatham: any[];
+  VMList: any[] = [];
   constructor(
     private route: ActivatedRoute,
     private service: ReportService,
     private router: Router,
     private http:HttpClient,
     private ts: TranslateService,
-    private masterService:MasterService
+    private masterService:MasterService,
+    private reportPrintservice:PrintreportService
   ) {
     this.counterId=localStorage.getItem('Counter')
     this.lang=localStorage.getItem('Language');
@@ -61,11 +66,13 @@ this.ts.use(this.lang || 'en');
 
   ngOnInit(): void { 
       this.fetchReportData();
-     this. loadStarData()
+     this. loadStarData();
+     this.getAllvazhipad()
   }
   
   // Call your API service to get the report data
   fetchReportData(): void {
+    this.loading=true;
     const payLoad = {
       Type: "DevoteeMaster",
      Code:""
@@ -101,6 +108,7 @@ this.ts.use(this.lang || 'en');
         }));
   
         console.log('Merged Data:', this.data);
+        this.loading=false;
       },
       error: (error) => {
         console.error('Error fetching additional data:', error);
@@ -191,58 +199,32 @@ this.ts.use(this.lang || 'en');
 
 
   generatePDF(){
-    const printContent = document.getElementById('print-section');
-    if (!printContent) {
-      console.error('No content found to print');
-      return;
-    }
-  
-    const WindowPrt = window.open('', '', 'width=800,height=600');
-    
-    // Check if the print window was successfully opened
-    if (!WindowPrt) {
-      console.error('Unable to open print window. Please check pop-up blockers.');
-      return;
-    }
-  
-    WindowPrt.document.write(`
-      <html>
-        <head>
-          <title>Print</title>
-          <style>
-            /* Add custom styles for printing if needed */
-            body{
-            margin-top:30px;
-            }
-            h4,h5{
-            margin-top:0;
-            }
-            h1{
-            margin-top:10px;
-            }
-            table {
-              width: 100%;
-              border-collapse: collapse;
-            }
-            table, th, td {
-              border: 1px solid black;
-            }
-            th, td {
-              padding: 5px;
-              text-align: center;
-            }
-          </style>
-        </head>
-        <body>${printContent.innerHTML}</body>
-      </html>
-    `);
-  
-    WindowPrt.document.close();
-    WindowPrt.focus();
-    // Make sure that the window is still valid before calling print and close
-    if (WindowPrt) {
-      WindowPrt.print();
-      WindowPrt.close();
-    }
+   this.reportPrintservice.generatePDF();
 }
+
+ getAllvazhipad() {
+    this.masterService.getAllActiveVazhipad().subscribe((data) => {
+      this.VMList = data.map((item) => ({
+        VM_Id: item.VM_Id,
+        VM_Name: item.VM_Name,
+        VM_Code: item.VM_Code,
+        VM_RName: item.VM_RName,
+      }));
+    });
+  }
+getVazhipadNAmeById(vazhipadId:any){
+   if(this.lang=='en'){
+  let matchedVm = this.VMList.find(item => item.VM_Id ==vazhipadId);
+  
+  return matchedVm?matchedVm.VM_Name:""
+  
+ 
+  }else if(this.lang=='ml'){
+   let matchedVm = this.VMList.find(item => item.VM_Id ==vazhipadId);
+  
+   return matchedVm?matchedVm.VM_RName:""
+  
+}
+}
+
 }

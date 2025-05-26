@@ -146,27 +146,29 @@
 
 <div id="receipt" style="width: 6in; height: 4in; display: none; position: relative; font-size: 12px; font-family: Arial, sans-serif;">
     <!-- <div style="position: absolute; left: 2.1cm; top: 3.8cm;">{{ itemName }}</div> -->
-    <div style="position: absolute; left: 10.9cm; top: 2.5cm;">{{ today | date: 'dd-MM-yyyy' }}</div>
-    <div style="position: absolute; left: 10.9cm; top: 3cm;">{{ CreditForm.get('BillNo')?.value }}</div>
-    <div style="position: absolute; left: 2cm; top: 5.5cm;">{{ CreditForm.get('Name')?.value }}<p>{{CreditForm.get('Address')?.value }}</p></div>
+    <div style="position: absolute; left: 10.1cm; top: 3.8cm;">{{ today | date: 'dd-MM-yyyy' }}</div>
+    <div style="position: absolute; left: 10.1cm; top: 4.3cm;">{{ CreditForm.get('BillNo')?.value }}</div>
+    <div style="position: absolute; left: 1.8cm; top: 6.1cm;">{{ CreditForm.get('Name')?.value }}<p>{{CreditForm.get('Address')?.value }}</p></div>
     <!-- <div style="position: absolute; left: 6.9cm; top: 5cm;">{{ CreditForm }}</div> -->
     <!-- <div style="position: absolute; left: 10.5cm; top: 5cm;">{{ CreditForm.get('Qty')?.value }}</div> -->
-    <div style="position: absolute; left: 12.5cm; top: 5.5cm;">{{ CreditForm.get('Amount')?.value  }}</div>
-    <div style="position: absolute;  left: 11.2cm; top: 7.1cm;">{{ CreditForm.get('Amount')?.value  }}</div>
-    <div style="position: absolute; left: 2cm; top: 7.5cm;font-size:8pt">User:{{ name}},{{getTransactionType( CreditForm.get('TrnsMode')?.value)}}</div>
+    <div style="position: absolute; left: 12.2cm; top: 6.1cm;">{{ CreditForm.get('Amount')?.value  }}</div>
+    <div style="position: absolute;  left:10cm; top: 8.4cm;">{{ CreditForm.get('Amount')?.value  }}</div>
+    <div style="position: absolute; left: 2cm; top: 8.4cm;font-size:8pt">User:{{ name}},({{getTransactionType( CreditForm.get('TrnsMode')?.value)}})(CNTR:{{CounterId}})</div>
 
   </div>
 
 
   <div id="thermalreceipt" style="width: 6in; height: 4in; display: none; position: relative; font-size: 12px; font-family: Arial, sans-serif;">
     <!-- <div style="position: absolute; left: 2.1cm; top: 3.8cm;">{{ itemName }}</div> -->
+    <div style="text-align: center;"><img [src]=logo  alt="logo" style="width: 60px; height: 60px;"/></div>
+
     <div class="receipt-header">{{templeName}}</div>
     <div class="receipt-sub-header">{{templeAddress}}</div>
     <hr>
     <div class="receipt-content">{{"BILLDATE" | translate}}: {{ today | date: 'dd-MM-yyyy' }}</div>
     <div class="receipt-content">{{"BILL NO" | translate}}:{{ CreditForm.get('BillNo')?.value }}</div>
-    <div class="receipt-content">{{"PRATHISTA" | translate}}: </div>
-    <div class="receipt-content">{{"VAZHIPAD" | translate}}: </div>
+    <!-- <div class="receipt-content">{{"PRATHISTA" | translate}}: </div>
+    <div class="receipt-content">{{"VAZHIPAD" | translate}}: </div> -->
 
     <div class="receipt-content">{{"NAME" | translate }}: {{ CreditForm.get('Name')?.value }}<p>{{CreditForm.get('Address')?.value }}</p></div>
     
@@ -174,14 +176,40 @@
     <!-- <div style="position: absolute; left: 10.9cm; top: 2.5cm;">{{ today | date: 'dd-MM-yyyy' }}</div>
     <div style="position: absolute; left: 10.9cm; top: 3cm;">{{ CreditForm.get('BillNo')?.value }}</div> -->
     <!-- <div style="position: absolute; left: 2cm; top: 5.5cm;">{{ CreditForm.get('Name')?.value }}<p>{{CreditForm.get('Address')?.value }}</p></div> -->
-  
+
     <div class="receipt-total">{{"AMOUNT" |translate}}: {{ CreditForm.get('Amount')?.value  }}</div>
     <!-- <div class="receipt-total">Total Qty: ${group.totalQty}</div> -->
-
-    <hr>
+    <!-- <hr> -->
     <!-- <div style="position: absolute; left: 12.5cm; top: 5.5cm;">{{ CreditForm.get('Amount')?.value  }}</div> -->
     <!-- <div style="position: absolute;  left: 11.2cm; top: 7.1cm;">{{ CreditForm.get('Amount')?.value  }}</div> -->
-   
+   <div class="receipt-footer-ut" style="font-size: 9pt;
+              margin-top: 2px;
+              font-style: italic;
+              text-align: left;">
+              User: {{name}} 
+            </div>
+            <div class="receipt-footer-ut" style="font-size: 9pt;
+              margin-top: 2px;
+              font-style: italic;
+              text-align: left;">
+              Payment Mode:  {{getTransactionType( CreditForm.get('TrnsMode')?.value)}}
+
+            </div>
+            <div class="receipt-footer-ut" style="font-size: 9pt;
+              margin-top: 2px;
+              font-style: italic;
+              text-align: left;">
+              Counter:{{CounterId}}
+
+            </div>
+            <!-- <div class="receipt-footer-ut" style="font-size: 9pt;
+              margin-top: 2px;
+              font-style: italic;
+              text-align: left;">
+             Duplicate bill
+
+            </div> -->
+          <div><p>www.cubixsystems.com</p></div>
   </div>
   
   <div id="a5laser" style="width: 6in; height: 4in; display: none; position: relative; font-size: 12px; font-family: Arial, sans-serif;">
@@ -192,11 +220,9 @@
           <img src="" alt="Temple Logo" style="height: 60px; margin-right: 10px;">
           <div style="font-size: 11pt;">
             <div style="text-align:center;"><strong>{{templeName}}</strong></div>
-            <div style="text-align:center;">{{templeAddress}}</div>
-           
+            <div style="text-align:center;">{{templeAddress}}</div> 
           </div>
         </div>
-
         <!-- Receipt Header Info (Left/Right Split) -->
         <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 10pt;">
           <div>

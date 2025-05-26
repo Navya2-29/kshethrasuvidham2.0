@@ -37,7 +37,12 @@ export class PrintreportService {
               page-break-before: always;
               margin-top: 10px;
               padding-top:10px;
+
             }
+              #print-section{
+              margin: 20px 20px 20px 10px;
+              padding:10px;
+              }
           }
 
           body {
@@ -97,6 +102,13 @@ export class PrintreportService {
   text-align:left;
   margin-left:10px;
 }
+  .tabble-headings {
+  // page-break-inside: avoid;
+  // break-inside: avoid;
+  margin-top: 10px;
+  text-align:left;
+  margin-left:10px;
+}
           table {
            min-width: 100%;
             border-collapse: collapse;
@@ -145,7 +157,7 @@ export class PrintreportService {
 
             #print-section{
 padding-bottom: 100px;
-margin-top:10px;
+margin:20px 10px;
   }
 p.transaction{
     margin-left:10px;
@@ -161,7 +173,30 @@ p.transaction{
  page-break-inside: avoid;
   break-inside: avoid;
 }
+  p.transactions{
+    margin-left:10px;
+    
+      font-family:Manjari;
 
+    font-size: 11px;
+    text-decoration: underline;
+    font-weight: bold;
+    margin-bottom:0px;
+    
+    
+//  page-break-inside: avoid;
+//   break-inside: avoid;
+}
+p.member{
+text-align:left;
+margin-bottom:0px;
+margin-top:0px;
+}
+h4.member{
+text-align:left;
+margin-bottom:0px;
+margin-top:0px;
+}
 p.transactiontype{
  margin-left:10px;
  page-break-inside: avoid;
@@ -212,6 +247,11 @@ p.category{
   margin-bottom: 0px;
   margin-top:0px;
 }
+  td.bold{
+  font-weight:bold;
+  font-size:12px;
+  }
+ 
 h5.totalcounter {
   /* font-family: "Times New Roman", Times, serif; */
   font-family: Manjari;

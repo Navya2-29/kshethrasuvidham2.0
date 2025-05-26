@@ -1,4 +1,4 @@
-<app-header></app-header>
+<app-header class="app-header"></app-header>
 <div class="report-container">
   <app-spinner *ngIf="loading"></app-spinner>
 
@@ -37,32 +37,32 @@
     <!-- PDF Container -->
     <div class="body-print">
       <div id="pdf-content" *ngIf="data.length > 0">
-        <div *ngFor="let timeGroup of groupedData | keyvalue ;let i = index" class="tabble-heading" class="tabble-heading" [ngStyle]="i > 0 ? { 'page-break-before': 'always' } : {}">
+        <div *ngFor="let timeGroup of groupedData | keyvalue ;let i = index" class="tabble-headings" [ngStyle]="i> 0 ? { 'page-break-before': 'always' } : {}" >
           <!-- First Level: VTime -->
-        <p class="transaction tabble-heading"><u>{{ getTimeForBill(timeGroup.key) }}</u></p>
+        <p class="transactions tabble-heading"><u>{{ getTimeForBill(timeGroup.key) }}</u></p>
     
           <!-- Second Level: Vazhipad-Prathista -->
-          <div *ngFor="let subGroup of timeGroup.value | keyvalue">
+          <div class="" *ngFor="let subGroup of timeGroup.value | keyvalue">
            <p class="category">{{ subGroup.key }}</p>
     
             <table>
               <thead>
                 <tr>
                   <th class="sino">{{ "Report Name.SINO" | translate }}</th>
-                  <th class="name">{{ "NAME" | translate }}</th>
-                  <th class="star">{{ "STAR" | translate }}</th>
-                  <th class="qty">{{ "QUANTITY" | translate }}</th>
-                  <th>{{ "PLACEHOLDER.ADDRESS" | translate }}</th>
+                  <th class="name"  >{{ "NAME" | translate }}</th>
+                  <th class="star"  >{{ "STAR" | translate }}</th>
+                  <th class="qty" >{{ "QUANTITY" | translate }}</th>
+                  <th class="address" >{{ "PLACEHOLDER.ADDRESS" | translate }}</th>
                 </tr>
               </thead>
               <tbody>
                 <tr *ngFor="let entry of subGroup.value; let i = index">
-                  <td class="sino">{{ i + 1 }}</td>
-                  <td class="name">{{ entry.Name }}</td>
-                  <td class="star">{{ entry.Star }}</td>
-                  <td class="qty">{{ entry.Qty }}</td>
-                  <td>
-                    <p class="address">{{ entry.Address1 }}</p>
+                  <td class="sino" data-label="sino">{{ i + 1 }}</td>
+                  <td class="name bold" data-label="Name" >{{ entry.Name }}</td>
+                  <td class="star bold" data-label="star">{{ entry.Star }}</td>
+                  <td class="qty" data-label="qty">{{ entry.Qty }}</td>
+                  <td data-label="address">
+                    <p class="address" >{{ entry.Address1 }}</p>
                     <p class="address">{{ entry.Address2 }}</p>
                     <p class="address">{{ entry.MobileNo }}</p>
                   </td>

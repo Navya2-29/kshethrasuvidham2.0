@@ -24,4 +24,5 @@ export interface MembersReport {
     Rate?:number;
     TrnMode?:string;
     additionalData?: AdditionalDetails[];
+    VazhId:number;
   }

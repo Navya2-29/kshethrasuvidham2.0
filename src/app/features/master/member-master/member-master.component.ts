@@ -378,6 +378,10 @@ resetForm() {
   printMemberslist(){
     this.router.navigate(["members-list"])
   }
+   printEndowmentlist(){
+    this.router.navigate(["endowment-register"])
+  }
+ 
 
 
   getAllActivevazhipad(){
@@ -391,6 +395,7 @@ resetForm() {
         console.log(this.vmActivelist);
       });
   }
+  
   onEndowmentChange() {
     this.toggleEndowmentFields();
   }

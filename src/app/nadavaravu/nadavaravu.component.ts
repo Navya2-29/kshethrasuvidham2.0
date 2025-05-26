@@ -575,13 +575,13 @@ printthermalNadavaravuRecipt(){
       <html>
         <head>
           <title>Print Receipt</title>
-            <style>
-            body {
+             <style>
+             body {
               margin: 10px;
               padding: 0;
-              font-family: Arial, sans-serif;
-              font-size: 10pt;
-              font-weight: bold;
+              
+             font-family:Manjari;
+              
               text-align: left;
             }
 
@@ -593,48 +593,96 @@ printthermalNadavaravuRecipt(){
               padding: 10px;
               overflow: hidden;
               page-break-after: auto;
-              border: 1px dashed #000;
+              // border: 1px dashed #000;
+              
             }
 
             .receipt-header {
-              font-size: 14pt;
+              font-size: 12pt;
               font-weight: bold;
               text-align: center;
-              margin-bottom: 5px;
+              margin-bottom: 2px;
+              font-family:Manjari;
             }
 
             .receipt-sub-header {
-              font-size: 12pt;
+              font-size: 6pt;
               text-align: center;
               margin-bottom: 5px;
+              font-family:Manjari;
+              // font-weight: bold;
             }
 
             hr {
               border: 0;
-              border-top: 1px solid black;
-              margin: 5px 0;
+              border-top: 1px dashed black;
+              margin: 8px 0px;
             }
+              .receipt-contentbill{
+              margin-top:10px;
+              }
 
             .receipt-content {
               text-align: left;
-              font-size: 9pt;
-              margin-bottom: 3px;
+              font-size: 10pt;
+              margin-bottom: 5px;
+              margin-top:10px;
+              margin-top:5px;
+              font-family:Manjari;
+              font-weight: bold;
+            }
+              .receipt-content-vd{
+              text-align: left;
+              font-size: 12pt;
+              margin-bottom: 10px;
+              margin-top:10px;
+              
+              font-family:Manjari;
+              font-weight: bold;
+              }
+              .receipt-contents {
+              text-align: left;
+              font-size: 10pt;
+              
+              margin-top:10px;
+              font-family:Manjari;
             }
 
             .receipt-total {
-              margin-top: 10px;
+              margin-top: 10px 0px;
+               margin-bottom: 10px 0px;
               font-weight: bold;
-              font-size: 11pt;
+              font-size: 12pt;
               border-top: 1px solid #000;
-              padding-top: 5px;
+              border-bottom: 1px dashed #000;
+              padding-bottom: 10px;
+              padding-top: 10px;
               text-align: left;
             }
-
-            .receipt-footer {
+           .receipt-rq{
+            margin-top: 10px;
+              font-weight: bold;
+              font-size: 11pt;
+              
+              // padding-top: 5px;
+              text-align: left;
+            }
+              .receipt-footer-ut{
               font-size: 9pt;
-              margin-top: 10px;
+              margin-top: 2px;
               font-style: italic;
               text-align: left;
+              }
+            .receipt-footer {
+              font-size: 9pt;
+              margin-top: 3px;
+              font-style: italic;
+              text-align: left;
+            }
+            .nd{
+            font-size: 18pt;
+            font-weight:bold;
+
             }
           </style>
         </head>
@@ -719,12 +767,12 @@ printthermalNadavaravuRecipt(){
         <head>
           <title>Print Receipt</title>
            <style>
-            body {
+             body {
               margin: 10px;
               padding: 0;
-              font-family: Arial, sans-serif;
-              font-size: 10pt;
-              font-weight: bold;
+              
+             font-family:Manjari;
+              
               text-align: left;
             }
 
@@ -735,49 +783,97 @@ printthermalNadavaravuRecipt(){
               margin: 0 auto;
               padding: 10px;
               overflow: hidden;
-              // page-break-after: auto;
-              border: 1px dashed #000;
+              page-break-after: auto;
+              // border: 1px dashed #000;
+              
             }
 
             .receipt-header {
-              font-size: 14pt;
+              font-size: 12pt;
               font-weight: bold;
               text-align: center;
-              margin-bottom: 5px;
+              margin-bottom: 2px;
+              font-family:Manjari;
             }
 
             .receipt-sub-header {
-              font-size: 12pt;
+              font-size: 6pt;
               text-align: center;
               margin-bottom: 5px;
+              font-family:Manjari;
+              // font-weight: bold;
             }
 
             hr {
               border: 0;
-              border-top: 1px solid black;
-              margin: 5px 0;
+              border-top: 1px dashed black;
+              margin: 8px 0px;
             }
+              .receipt-contentbill{
+              margin-top:10px;
+              }
 
             .receipt-content {
               text-align: left;
-              font-size: 9pt;
-              margin-bottom: 3px;
+              font-size: 10pt;
+              margin-bottom: 5px;
+              margin-top:10px;
+              margin-top:5px;
+              font-family:Manjari;
+              font-weight: bold;
+            }
+              .receipt-content-vd{
+              text-align: left;
+              font-size: 12pt;
+              margin-bottom: 10px;
+              margin-top:10px;
+              
+              font-family:Manjari;
+              font-weight: bold;
+              }
+              .receipt-contents {
+              text-align: left;
+              font-size: 10pt;
+              
+              margin-top:10px;
+              font-family:Manjari;
             }
 
             .receipt-total {
-              margin-top: 10px;
+              margin-top: 10px 0px;
+               margin-bottom: 10px 0px;
               font-weight: bold;
-              font-size: 11pt;
+              font-size: 12pt;
               border-top: 1px solid #000;
-              padding-top: 5px;
+              border-bottom: 1px dashed #000;
+              padding-bottom: 10px;
+              padding-top: 10px;
               text-align: left;
             }
-
-            .receipt-footer {
+           .receipt-rq{
+            margin-top: 10px;
+              font-weight: bold;
+              font-size: 11pt;
+              
+              // padding-top: 5px;
+              text-align: left;
+            }
+              .receipt-footer-ut{
               font-size: 9pt;
-              margin-top: 10px;
+              margin-top: 2px;
               font-style: italic;
               text-align: left;
+              }
+            .receipt-footer {
+              font-size: 9pt;
+              margin-top: 3px;
+              font-style: italic;
+              text-align: left;
+            }
+            .nd{
+            font-size: 18pt;
+            font-weight:bold;
+
             }
           </style>
         </head>

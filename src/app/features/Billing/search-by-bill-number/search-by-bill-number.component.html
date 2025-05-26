@@ -320,7 +320,7 @@ class="proceed"
             <td style="font-size:10pt;text-align:center;vertical-align:middle;">{{entry.Qty}}</td>
             <td style="font-size:10pt;text-align:right;vertical-align:middle;">{{ entry.Rate }}</td>
             <td style="font-size:10pt;text-align:right;vertical-align:middle;">{{ entry.Amount }}</td>
-            <td style="font-size:10pt;text-align:right;vertical-align:middle;">{{ entry.VTime }}</td>
+            <td style="font-size:10pt;text-align:right;vertical-align:middle;">{{ getTimeForBill( entry.VTime) }}</td>
 
           </tr>
           <!-- Total Row -->
@@ -328,6 +328,9 @@ class="proceed"
             <td colspan="5" style="text-align: left;font-size:10pt;color:maroon;"><b>{{"Report Name.TOTAL" | translate }}</b></td>
             <td style="font-size:11pt;text-align:right;color:maroon"><b>{{ calculateTotalAmount(gropedData[prathista][vazhipad]) }}</b></td>
           </tr>
+           <!-- <tr style="border-top:1px solid gray;border-bottom:1px solid gray">
+            <td colspan="2"> {{ calculateTotalAmount(gropedData[prathista][vazhipad]) }}</td>
+           </tr> -->
         </tbody>
       </table>
       

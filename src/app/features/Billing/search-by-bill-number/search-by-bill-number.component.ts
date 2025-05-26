@@ -25,7 +25,6 @@ import { NotificationService } from '../../../services/notification/notification
 import { MatSelectModule } from '@angular/material/select';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NumberToWordsPipe } from '../../../shared/pipe/number-to-words.pipe';
-
 export interface Data {
   vazhipad: string;
   name: string;
@@ -77,6 +76,7 @@ interface GroupedData {
     MatFormFieldModule,
     TranslateModule,
     ReactiveFormsModule,
+    
 
   ],
   templateUrl: './search-by-bill-number.component.html',
@@ -530,7 +530,7 @@ this.groupDataByPrathistaAndVazhipad()
     const groupedData = this.differentDateArray.reduce((acc: any, item: any) => {
       const key = `${item.Prathista}/${item.Vazhipad}/${item.Fdate}/${item.Tdate}`;
       if (!acc[key]) {
-        acc[key] = { items: [], totalQty: 0, uniqueNames: new Set(), nalBy: '', mday: '', thithi: '',mmonth:'' };
+        acc[key] = { items: [], totalQty: 0, uniqueNames: new Set(), nalBy: '', mday: '', thithi: '',mmonth:'',VTime:'' };
       }
       acc[key].items.push(item);
       acc[key].totalQty += parseInt(item.Qty, 10);
@@ -542,7 +542,7 @@ this.groupDataByPrathistaAndVazhipad()
     if (item.MDay) acc[key].mday = item.MDay;
     if (item.SearchBy) acc[key].thithi = item.SearchBy;
     if (item.MMonth) acc[key].mmonth = item.MMonth;
-  
+  if(item.VTime) acc[key].VTime = item.VTime;
       return acc;
     }, {});
   
@@ -616,11 +616,20 @@ this.groupDataByPrathistaAndVazhipad()
             <div class="receipt-content-vd">Vazhipad Date: 
               ${fromDate !== toDate ? `${this.convertDateFormat(fromDate)} to ${this.convertDateFormat(toDate)}` : `${this.convertDateFormat(fromDate)}`}
             </div>
-            ${group.nalBy ? `<div class="receipt-footer">- ${group.nalBy}</div>` : ''}
-            ${group.mday ? `<div class="receipt-footer">- ${group.mday}</div>` : ''}
-            ${group.mmonth ? `<div class="receipt-footer">- ${group.mmonth}</div>` : ''}
+            ${group.VTime ? `
+    <div class="receipt-content-vd">Vazhipad Time: 
+      ${this.getTimeForBill(group.VTime)}
+    </div>
+  ` : ''}
+            ${group.thithi ? `<div class="receipt-footer">Thhithi : ${group.thithi}</div>` : ''}
+            ${group.nalBy ? `<div class="receipt-footer">Star: ${group.nalBy}</div>` : ''}
+            ${group.mday ? `<div class="receipt-footer">Day: ${group.mday}</div>` : ''}
+            ${group.mmonth ? `<div class="receipt-footer">Month: ${group.mmonth}</div>` : ''}
             <div class="receipt-footer-ut">
               User: ${this.name} 
+            </div>
+             <div class="receipt-footer-ut">
+              Counter:${this.counterId}
             </div>
             <div class="receipt-footer-ut">
               Payment Mode:  ${this.getTransactionType(this.displayTrnsmode)}, ${this.displayTrnsmode=='CR'?"Not Paid":""}
@@ -679,7 +688,7 @@ this.groupDataByPrathistaAndVazhipad()
             }
 
             .receipt-sub-header {
-              font-size: 8pt;
+              font-size: 6pt;
               text-align: center;
               margin-bottom: 5px;
               font-family:Manjari;
@@ -1061,38 +1070,39 @@ return formattedDate
         pageIndex < pages.length - 1 ? 'always' : 'avoid'
       };">
             <!-- Prathista -->
-            <div style="position: absolute; left: 3cm; top: 3.75cm; max-width: 8cm;  white-space: pre-wrap; word-wrap: break-word;font-size:10pt; line-height: 1em;">${prathista}</div>
+            <div style="position: absolute; left: 2cm; top: 3.8cm; max-width: 8cm;  white-space: pre-wrap; word-wrap: break-word;font-size:9pt;">${prathista}</div>
             <!-- Vazhipad -->
-            <div style="position: absolute; left: 3cm; top: 4.2cm; max-width: 5cm; white-space: pre-wrap;font-size:9pt; white-space: pre-wrap;">${vazhipad}</div>
+            <div style="position: absolute; left: 2cm; top: 4.3cm; max-width: 5cm; white-space: pre-wrap;font-size:9pt; white-space: pre-wrap;">${vazhipad}</div>
              <!-- Bill date Date -->
-            <div style="position: absolute; left: 10.9cm; top: 3.75cm;">${this.billDate}</div>
+            <div style="position: absolute; left: 10.1cm; top: 3.8cm;">${this.billDate}</div>
            <!-- bill Number -->
-            <div style="position: absolute; left: 10.9cm; top: 4.2cm;"> ${this.lastBillNo}</div>
+            <div style="position: absolute; left: 10.1cm; top: 4.3cm;"> ${this.lastBillNo}</div>
              <!-- Vazhipad Date -->
-           <div style="position: absolute; left: 5.5cm; top: 9cm;">
+           <div style="position: absolute; left: 5.2cm; top: 9.3cm;font-size:9pt;">
     ${fromDate != toDate ? `${this.convertDateFormat(fromDate)} to ${this.convertDateFormat(toDate)}` : `${this.convertDateFormat(fromDate)}`}
   </div>
   ${group.nalBy ? `<div style="position: absolute; left: 5.5cm; top: 8cm;font-size:6pt">- ${group.nalBy},</div>` : ''}
   ${group.mday ? `<div style="position: absolute; left: 5.5cm; top: 8.3cm;font-size:6pt">- ${group.mday},</div>` : ''}
   ${group.mmonth ? `<div style="position: absolute; left: 5.5cm; top:8.5cm;font-size:6pt">- ${group.mmonth}</div>` : ''}
-   <div style="position: absolute; left: 2cm; top: 7.5cm;font-size:8pt">User:${this.name}  ${this.displayTrnsmode=='CR'?"Not Paid":""}</div>
-<div style="position: absolute; left: 2cm; top: 8.5cm;font-size:7pt; ">
+  ${group.thithi ? `<div style="position: absolute; left: 5.5cm; top: 8cm;font-size:6pt">- ${group.thithi},</div>` : ''}
+   <div style="position: absolute; left: 2cm; top: 8.4cm;font-size:8pt">User:${this.name},(${this.getTransactionType(this.displayTrnsmode)})  ${this.displayTrnsmode=='CR'?"(Not Paid)":""}(CNTR:${this.counterId})</div>
+<div style="position: absolute; left: 2cm; top: 8.7cm;font-size:7pt; ">
           Duplicate Bill
         </div>
             `
   
         // Render rows in the current page
         page.forEach((item: any, rowIndex: number) => {
-          let rowTop = 5.4 + rowIndex * 0.7; // Adjust row spacing
+          let rowTop = 5.6 + rowIndex * 0.5; // Adjust row spacing
           const amount = item.Qty * item.Rate;
           grandTotalAmount += amount; // Add the amount to the grand total
           receiptContent += `
-            <div style="position: absolute; left: 2.7cm; font-size:9pt;font-weight:bold; top: ${rowTop}cm; max-width: 5.5cm; white-space: pre-wrap; word-wrap: break-word; line-height: 1.2em;">${item.Name}${item.Name2 ? `<div style="margin-top: 0.1mm;">${item.Name2}</div>` : ''}</div>
-            <div style="position: absolute; left: 8.4cm;font-size:8pt; top: ${rowTop}cm;">${this.getStarbyId(item.Star)}${item.Star2 ? `<div style="margin-top: 0.1mm;">${this.getStarbyId(item.Star2)}</div>` : ''}</div>
-            <div style="position: absolute; left: 10.8cm; top: ${rowTop}cm;">${item.Qty}</div>
-            <div style="position: absolute;  left: 11.6cm; top: ${rowTop}cm;">${item.Rate}</div>
-            <div style="position: absolute;  left: 13cm; top: ${rowTop}cm;">${amount.toFixed(2)}</div>
-             <div style="position: absolute; left: 11cm; top: 9cm;font-size:8pt;">${this.getTimeForBill(item.VTime)}</div>
+            <div style="position: absolute; left: 1.8cm; font-size:9pt;font-weight:bold; top: ${rowTop}cm; max-width: 5.5cm; white-space: pre-wrap; word-wrap: break-word; line-height: 1.2em;">${item.Name}${item.Name2 ? `<div style="margin-top: 0.1mm;">${item.Name2}</div>` : ''}</div>
+            <div style="position: absolute; left: 7.8cm;font-size:8pt;font-weight:bold; top: ${rowTop}cm;">${this.getStarbyId(item.Star)}${item.Star2 ? `<div style="margin-top: 0.1mm;">${this.getStarbyId(item.Star2)}</div>` : ''}</div>
+            <div style="position: absolute; left: 10.2cm;font-size:9pt; top: ${rowTop}cm;">${item.Qty}</div>
+            <div style="position: absolute;  left: 11cm;font-size:9pt; top: ${rowTop}cm;">${item.Rate}</div>
+            <div style="position: absolute;  left: 12.2cm;font-size:9pt; top: ${rowTop}cm;">${amount.toFixed(2)}</div>
+             <div style="position: absolute; left: 10.5cm; top: 9.3cm;font-size:8pt;font-weight:bold;">${this.getTimeForBill(item.VTime)}</div>
 
             `;
         });
@@ -1106,7 +1116,7 @@ return formattedDate
       // </div>
      
       receiptContent += `
-        <div style="position: absolute; left: 10.5cm; top: 8.3cm; font-weight: bold; font-size: 12pt;">
+        <div style="position: absolute; left: 10cm; top: 8.4cm; font-weight: bold; font-size: 12pt;">
            ${grandTotalAmount.toFixed(2)}
         </div>
       //   

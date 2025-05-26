@@ -759,6 +759,13 @@ this.userId=localStorage.getItem('LoginId');
       payLoad
     );
   }
+    updateLastEndowmentBillNumber(currentbillnumber: any): Observable<any[]> {
+    const payLoad = { Type: 'UpdateBillNoEndowment', code: currentbillnumber };
+    return this.http.post<any>(
+      Constant.BASE_URL + Constant.METHODS.SEARCHBYMOBILENUMBER,
+      payLoad
+    );
+  }
 
   getSeasonalVazhipadDateCheck(vid: string) {
     const payLoad = { Type: 'SeasonalCheck', Code: vid };

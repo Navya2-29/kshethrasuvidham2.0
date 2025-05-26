@@ -215,6 +215,29 @@ removeImagePreview() {
   this.settingsForm.patchValue({ logo: '' });
 }
 
+clearAllBrowserData(){
+   localStorage.setItem('loggedIn', 'false');
+    localStorage.removeItem('name');
+    localStorage.removeItem('Role');
+    localStorage.removeItem('alertmsg');
+    localStorage.removeItem('LoginId');
+    localStorage.removeItem('username');
+    localStorage.removeItem('password');
+    
+    localStorage.removeItem('counterId');
+    localStorage.removeItem('Address');
+    localStorage.removeItem('Counter');
+    localStorage.removeItem('Days');
+localStorage.removeItem('Language');
+localStorage.removeItem('Logo');
+localStorage.removeItem('Printer');
+localStorage.removeItem('TempleName');
+localStorage.removeItem('TempleName');
+
+
+
+}
+
 
 
 

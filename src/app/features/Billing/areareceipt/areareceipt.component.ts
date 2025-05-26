@@ -248,6 +248,7 @@ export class AreareceiptComponent implements OnInit {
     row.get('Rate')?.valueChanges.subscribe(() => this.updateAmount(row));
     row.get('VazhipadDate')?.valueChanges.subscribe(() => {
       this.checkVazhipadDate(row);
+      // this.validateAllVazhipadQty();
     });
     return row;
   }
@@ -943,7 +944,7 @@ minDateValidator(): ValidatorFn {
 
     totalQty += currentQty;
 
-    if (totalQty > maxLimit) {
+    if (totalQty > maxLimit && maxLimit!=0 ) {
       // const errorMsg = `Qty exceeds available limit. Max: ${maxLimit}, Already booked: ${alreadyBooked}`;
 console.log(totalQty,)
       currentGroup.get('Qty')?.setErrors({ exceed: true });

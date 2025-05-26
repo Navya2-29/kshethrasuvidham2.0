@@ -1,6 +1,13 @@
 import { MasterService } from './../../../services/master/master.service';
 import { ToastrService } from 'ngx-toastr';
-import { AfterViewInit, Component, ElementRef, HostListener, Renderer2, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  HostListener,
+  Renderer2,
+  ViewChild,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -24,13 +31,11 @@ import { ChangePasswordComponent } from '../../auth/change-password/change-passw
     MatButtonModule,
     RouterModule,
     CommonModule,
-    
   ],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.css'
+  styleUrl: './home.component.css',
 })
 export class HomeComponent {
-
   hide: boolean = true;
   loading: boolean = false;
   errorMessage = '';
@@ -40,8 +45,9 @@ export class HomeComponent {
   Role: string | null;
   countercount: number;
   allowedContercount: number | null;
-  storedDate:any;
-  Days:number;
+  storedDate: any;
+  Days: number;
+    alreadyenterdCunter: any;
   // passwordChangeDate:number | null;
   constructor(
     private http: HttpClient,
@@ -49,127 +55,153 @@ export class HomeComponent {
     private service: MasterService,
     private notification: ToastrService
   ) {
+    this.alreadyenterdcounterid();
+
     this.templeName = localStorage.getItem('TempleName');
     this.logo = localStorage.getItem('Logo');
     // this.Role = localStorage.getItem('Role');
 
     this.allowedContercount = Number(localStorage.getItem('Counter'));
     this.Role = localStorage.getItem('Role');
-    console.log(this.allowedContercount, 'ss');
+    // console.log(this.allowedContercount, 'ss');
     this.getcounterCount();
 
     console.log(this.countercount > this.allowedContercount, 'bbb');
-}
-ngOnInit(): void {
-
-  const dateuserCreated=localStorage.getItem("CREATED_DT");
-if(localStorage.getItem("Days")){
-  this.Days=Number(localStorage.getItem("Days"));
-
-}
-
-
-  if(dateuserCreated){
-    this. storedDate = new Date(dateuserCreated);
-
   }
+  ngOnInit(): void {
+    const dateuserCreated = localStorage.getItem('CREATED_DT');
+    if (localStorage.getItem('Days')) {
+      this.Days = Number(localStorage.getItem('Days'));
+    }
 
-  // Get the current date (normalize time to midnight)
-  const currentDate = new Date();
-  currentDate.setHours(0, 0, 0, 0);
+    if (dateuserCreated) {
+      this.storedDate = new Date(dateuserCreated);
+    }
 
- // Calculate absolute difference in milliseconds
- const diffInMs = Math.abs(this.storedDate.getTime() - currentDate.getTime());
+    // Get the current date (normalize time to midnight)
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
 
- // Convert to positive number of days
- const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+    // Calculate absolute difference in milliseconds
+    const diffInMs = Math.abs(
+      this.storedDate.getTime() - currentDate.getTime()
+    );
 
-  console.log(`Difference in days: ${diffInDays}`);
+    // Convert to positive number of days
+    const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
 
-  if (this.Days !== 0 && diffInDays >= this.Days) {
-    this.openChangePasswordDialog();
-  }
+    // console.log(`Difference in days: ${diffInDays}`);
 
-  const storedCounterId = localStorage.getItem('counterId');
-  if (!storedCounterId) {
-    this.openCounterIdDialog();
-  }
-}
+    if (this.Days !== 0 && diffInDays >= this.Days) {
+      this.openChangePasswordDialog();
+    }
 
-getLogoUrl(): string {
-  return `assets/images/${this.logo}`; 
-}
-
-openCounterIdDialog(): void {
-  const dialogRef = this.dialog.open(CouterPopupComponent, {
-    width: '300px',
-    disableClose: true,
-  });
-
-  dialogRef.afterClosed().subscribe((result) => {
-    if (result) {
-      // Store the entered Counter ID in localStorage
-      this.getcounterCount();
-      if (this.Role == 'admin' || this.Role == 'super' ) {
-        localStorage.setItem('counterId', result);
-      } else {
-
-        const payLoad = {
-          Type: 'CounterId',
-          Code: result,
-        };
-        if (
-          this.countercount != null &&
-          this.allowedContercount != null &&
-          this.countercount >= this.allowedContercount
-        ) {
-          this.notification.error(
-            'Counter limit exceeded. Please contact the Kshethrasuvidham for assistance.'
-          );
+    const storedCounterId = localStorage.getItem('counterId');
+    if (this.Role === 'admin') {
+      if (!storedCounterId) {
+        localStorage.setItem('counterId', '0');
+      } 
+      
+    }else if(this.Role === 'staff'){
+      if (!storedCounterId) {
+        this.openCounterIdDialog();
+      }else{
+        if(storedCounterId==='0'){
           this.openCounterIdDialog();
+        }
+      }
+    }
+    
+    // else {
+    //   if (!storedCounterId) {
+    //     this.openCounterIdDialog();
+    //   }
+    // }
+  }
+
+  getLogoUrl(): string {
+    return `assets/images/${this.logo}`;
+  }
+
+  openCounterIdDialog(): void {
+    const dialogRef = this.dialog.open(CouterPopupComponent, {
+      width: '300px',
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        // Store the entered Counter ID in localStorage
+        this.getcounterCount();
+        if (this.Role == 'admin' || this.Role == 'super') {
+          localStorage.setItem('counterId', result);
         } else {
-         
+          const payLoad = {
+            Type: 'CounterId',
+            Code: result,
+          };
+
+          if (
+            this.countercount != null &&
+            this.allowedContercount != null &&
+            this.countercount >= this.allowedContercount
+          ) {
+            this.notification.error(
+              'Counter limit exceeded. Please contact the Kshethrasuvidham for assistance.'
+            );
+            this.openCounterIdDialog();
+          } else {
             this.service.ADDCOUNTER(payLoad).subscribe((data: any) => {
-              console.log(data, 'sass');
+              // console.log(data, 'sass');
               if (data.RespStatus === 'I') {
                 localStorage.setItem('counterId', result);
               } else {
                 this.openCounterIdDialog();
               }
-            }); 
+            });
+          }
         }
       }
-    }
-  });
-}
+    });
+  }
 
-getcounterCount() {
-  const payLoad = {
-    Type: 'CounterCount',
-    Code: '',
-  };
-  this.service.getMaster(payLoad).subscribe((data) => {
-    console.log(data);
-    this.countercount = data[0].cnt;
-    console.log(this.countercount, 'cc');
-    // if (this.countercount != null && this.allowedContercount != null && this.countercount > this.allowedContercount) {
-    //   this.openCounterIdDialog()
-    // }
-  });
-}
-openChangePasswordDialog(){
- const dialogRef = this.dialog.open(ChangePasswordComponent, {
-          width: '300px',
-          disableClose: true,
-        });
-    
-        dialogRef.afterClosed().subscribe((result) => {
-          if (result) {
-          }
-        })
+  getcounterCount() {
+    const payLoad = {
+      Type: 'CounterCount',
+      Code: '',
+    };
+    this.service.getMaster(payLoad).subscribe((data) => {
+      // console.log(data);
+      this.countercount = data[0].cnt;
+      console.log(this.countercount, 'cc');
+      // if (this.countercount != null && this.allowedContercount != null && this.countercount > this.allowedContercount) {
+      //   this.openCounterIdDialog()
+      // }
+    });
+  }
+  openChangePasswordDialog() {
+    const dialogRef = this.dialog.open(ChangePasswordComponent, {
+      width: '300px',
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+      }
+    });
+  }
 
 
 
-}
-
+  alreadyenterdcounterid() {
+    // console.log("dddd")
+    const payLoad = {
+      Type: 'CounterID',
+      Code: '',
+    };
+    this.service.getMaster(payLoad).subscribe((data) => {
+      // console.log(data, 'iiiii');
+      this.alreadyenterdCunter = data;
+    });
+  }
 }

@@ -74,13 +74,21 @@ export class FrontComponent implements AfterViewInit {
     console.log(this.countercount > this.allowedContercount, 'bbb');
   }
   ngOnInit(): void {
-    const storedCounterId = localStorage.getItem('counterId');
-    if (!storedCounterId) {
-      this.openCounterIdDialog();
-    }
-    
-    // sessionStorage.setItem('isPageRefreshed', 'true');
-// this.getIdaddress();
+  //   const storedCounterId = localStorage.getItem('counterId');
+  // if (this.Role === 'admin') {
+  //   if (!storedCounterId) {
+  //     localStorage.setItem('counterId', '100');
+  //   } else if (storedCounterId !== '100') {
+  //     localStorage.removeItem('counterId');
+  //     localStorage.setItem('counterId', '100');
+  //   }
+  //   // Admin doesn't need the popup
+  // } else {
+  //   if (!storedCounterId) {
+      
+  //     this.openCounterIdDialog();
+  //   }
+  // }
 
   }
 
@@ -143,7 +151,7 @@ export class FrontComponent implements AfterViewInit {
       if (result) {
         // Store the entered Counter ID in localStorage
         this.getcounterCount();
-        if (this.Role == 'admin' || this.Role == 'super' ) {
+        if (this.Role == 'admin' || this.Role == 'super' || this.Role == 'audit' ) {
           localStorage.setItem('counterId', result);
         } else {
 

@@ -11,9 +11,9 @@ i{
   text-transform: capitalize;
 }
 input[type="text"]:focus {
-  border: 2px solid rgb(32, 59, 94); /* Change to your desired color */
+  border: 2px solid rgb(32, 59, 94); 
   outline: none;
-  background-color: #f0f4ff; /* Optional: light background on focus */
+  background-color: #f0f4ff; 
 }
 .styled-search {
   width: 300px;

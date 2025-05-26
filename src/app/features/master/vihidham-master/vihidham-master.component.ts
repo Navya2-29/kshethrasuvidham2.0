@@ -383,11 +383,11 @@ export class VihidhamMasterComponent {
   }
 
 
-  checkVazhipadDelete(id:any){
+  checkVazhipadDelete(vazhid:any,vihiId:any){
 
     const payLoad={
       Type:"CheckName",
-      Code:id
+      Code:vazhid
     }
     this.masterService.getMaster(payLoad).subscribe({
       next:(data)=>{
@@ -397,7 +397,7 @@ export class VihidhamMasterComponent {
           this.checkBillingVazjipad=true;
           this.notification.showError("This item has already been billed.","Deletion not allowed")
         }else{
-          this.onDelete(id)
+          this.onDelete(vihiId)
         }
       },error:(err)=>{
         console.log(err,"check vazhipad") 
@@ -427,8 +427,8 @@ export class VihidhamMasterComponent {
   }
 
 
-  onDeleteCheck(id: number){
-    this.checkVazhipadDelete(id);
+  onDeleteCheck(data:any){
+    this.checkVazhipadDelete(data.VazhId,data.VR_ID);
     
     
   }

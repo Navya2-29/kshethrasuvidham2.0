@@ -42,6 +42,7 @@ export class UserComponent {
   filteredUmaster: any[] = [];
   id: string;
   code: number;
+  userdata:any[];
   private duplicateCheck = inject(DuplicatecheckService);
   constructor(
     private fb: FormBuilder,
@@ -216,13 +217,30 @@ export class UserComponent {
   }
 
   onDelete(id: string) {
-    if (confirm('Are you sure you want to delete this user?')) {
+     
+    const payLoad={
+      Type:"CheckUser",
+      Code:id
+    }
+this.service.getMaster(payLoad).subscribe((data)=>{
+  console.log(data,"delete");
+ this.userdata=data;
+})
+if(this.userdata.length>0){
+  this.notification.error("This user is not allowed to delete ")
+}
+else{
+  
+if (confirm('Are you sure you want to delete this user?')) {
       const payLoad = { Type: 'Staff', Id: id };
       this.service.deleteMaster(payLoad).subscribe((data) => {
         console.log(data);
         this.getStaffList();
       });
     }
+}
+
+    
   }
 
 

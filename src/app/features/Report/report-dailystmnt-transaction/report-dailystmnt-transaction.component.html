@@ -77,7 +77,7 @@
 
           <!-- Total for each transaction mode -->
           <div class="transactionTotal">
-            {{"Report Name.Total for" | translate}} {{ getTransactionType(mode.key) | translate }}:
+            {{"Report Name.Total for" | translate}} ({{ getTransactionType(mode.key) | translate }}):
             {{ getTotalForTransactionMode(mode.key) | number : "1.2-2" }}
           </div>
         </div>

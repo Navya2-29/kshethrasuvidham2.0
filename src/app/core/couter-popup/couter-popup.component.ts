@@ -39,7 +39,7 @@ export class CouterPopupComponent {
   ) {
     // Initialize the form group with validation
     this.counterForm = this.fb.group({
-      counterId: ['', [Validators.required, Validators.pattern('^[0-9]*$')]], // Numeric validation
+      counterId: ['', [Validators.required, Validators.pattern('^[1-9][0-9]*$')]], // Numeric validation
     });
   }
 

@@ -231,6 +231,8 @@ if(prathista || vazhipad){
     }
     else if (reportType === 'Dayend') {
       this.newTab = window.open(`#/report-Dayend${queryString}`, '_blank');
+    }else if(reportType==='report-endowment'){
+       this.newTab = window.open(`#/report-endowment${queryString}`, '_blank');
     }
   }
 

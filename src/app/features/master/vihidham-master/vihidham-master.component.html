@@ -24,8 +24,8 @@
                          <td>
                           Vazhipad Name:
                           <select name="" id="" formControlName="vazhipad_name" class="form-control" style="width:100%" >
-                            <option value="">Select Vazhipad</option>
-                            <option *ngFor="let item of Vmaster" [value]="item.VM_Id">{{item.VM_Name}}</option>
+                            <option value=""[disabled]="updateFlag">Select Vazhipad</option>
+                            <option *ngFor="let item of Vmaster" [disabled]="updateFlag" [value]="item.VM_Id">{{item.VM_Name}}</option>
                            </select>
                          </td>
                          
@@ -45,8 +45,8 @@
                       <td colspan="3"> Vihidham Type
                         
                         <select name="" id=""  formControlName="vihidham_type"   class="form-control" style="width:100%" >
-                          <option value="">select type </option>
-                          <option *ngFor="let type of filteredCmaster" [value]="type.VC_ID" >{{type.VC_Name}}</option>
+                          <option value=""[disabled]="updateFlag">select type </option>
+                          <option *ngFor="let type of filteredCmaster" [disabled]="updateFlag" [value]="type.VC_ID" >{{type.VC_Name}}</option>
                         </select>
                         
                     </tr>
@@ -103,7 +103,7 @@
                               
                               <td>
                                 <mat-icon title="Edit" class="small" style="vertical-align: middle;" (click)="onEdit(data)" >edit</mat-icon>
-                                <mat-icon title="Delete" class="small" style="vertical-align: middle;" (click)="onDeleteCheck(data.VR_ID)" >delete</mat-icon>
+                                <mat-icon title="Delete" class="small" style="vertical-align: middle;" (click)="onDeleteCheck(data)" >delete</mat-icon>
                               </td>
                               
                             </tr>

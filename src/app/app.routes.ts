@@ -64,6 +64,8 @@ import { EndowmentBillingComponent } from './features/Billing/endowment-billing/
 import { VihidhamCateogryMasterComponent } from './features/master/vihidham-cateogry-master/vihidham-cateogry-master.component';
 import { ReportVihidhamComponent } from './features/Report/report-vihidham/report-vihidham.component';
 import { ReportBillingRegisterComponent } from './features/Report/report-billing-register/report-billing-register.component';
+import { ReportEndowmentComponent } from './features/Report/report-endowment/report-endowment.component';
+import { ReportEndowmnetRegisterComponent } from './features/Report/report-endowmnet-register/report-endowmnet-register.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -193,6 +195,7 @@ export const routes: Routes = [
   {path:"report-devotee-creditcollection",component: DevoteeCreditcollectioReportComponent},
   {path:"report-donation",component: DonationReportComponent},
   {path:"members-list",component: MembersListComponent},
+   {path:"endowment-register",component: ReportEndowmnetRegisterComponent},
   {path:"members-pending-report",component: ReportMemberPendingCreditComponent},
   {path:"non-members-pending-report",component: ReportNonMemberPendingCreditComponent},
   {path:"endowment",component:EndowmentBillingComponent},
@@ -201,6 +204,8 @@ export const routes: Routes = [
   {path:"report-Dayend",component:ReportDayendComponent},
   {path:"Home",component: HomeComponent},
   {path:'vihiham-list',component:VihidhamlistComponent},
+  {path:'vihiham-list',component:VihidhamlistComponent},
+  {path:'report-endowment',component:ReportEndowmentComponent},
   {
     path: '**',
     pathMatch: 'full',

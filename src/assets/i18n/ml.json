@@ -14,7 +14,7 @@
   "TIME": "സമയം",
   "Select": "സെലക്ട്",
   "AMOUNT":"തുക",
-  
+  "ADDRESS":"വിലാസം",
   "TODAYCOLLECTION": "ആകെ വരവ്",
   "LastBillNo": "അവസാന ബിൽ നമ്പർ",
   "Cash": "ക്യാഷ്",
@@ -137,7 +137,8 @@
     "Vazhipad Cancel":"വഴിപാട് ക്യാൻസൽ",
     "VIHIDHAM REPORT":"വിഹിതം റിപ്പോർട്ട്",
     "Bill Register":"ബിൽ രജിസ്റ്റർ",
-    "Dayend":"ദിവസം അവസാനം"
+    "Dayend":"ഡേ എൻഡ്",
+    "Endowment":"എൻഡോമെന്റ്"
   },
   "Report Name": {
     "ADVANCE BOOKING REPORT": "Advance booking Report",
@@ -152,6 +153,7 @@
     "MONEY ORDER REPORT": "Money Order Report",
     "CHEQUE STATEMENT": "Cheque Statement Report",
     "CREDIT REPORT": "Credit Report",
+    "ENDOWMENT REPORT":"Endowment Report",
     "UPI REPORT": "UPI Report",
     "OFFERING REPORT": "Offering Report",
     "NADAVARAVU BOOKING REPORT": "Nadavaravu Report",

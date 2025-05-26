@@ -151,7 +151,7 @@ private cdr: ChangeDetectorRef
       Vazhid: [''],
       Amount: [''],
       VazhipadDate: [formattedDate, [Validators.required]],
-      VTime: ['0', [Validators.required]],
+      VTime: ['', [Validators.required]],
       Postal: ['10'],
       Mday: [''],
       NalBy: [''],
@@ -297,8 +297,6 @@ private cdr: ChangeDetectorRef
     //   this.qtyChange();
     // });
 
-   
-
   }
 
 
@@ -380,7 +378,7 @@ private cdr: ChangeDetectorRef
     });
     this.multidayFilterForm.get('MalMonth')?.valueChanges.subscribe((value) => {
       if (value !== '') {
-        this.multidayFilterForm.patchValue({ Thithi: '', EngishDay: '' });
+        this.multidayFilterForm.patchValue({  EngishDay: '' });
       }
     });
 
@@ -389,7 +387,7 @@ private cdr: ChangeDetectorRef
         this.multidayFilterForm.patchValue({
           Star: '',
           EngMonth: '',
-          MalMonth: '',
+         
           EngishDay: '',
           MalDay: '',
         });
@@ -523,6 +521,7 @@ private cdr: ChangeDetectorRef
         this.VM_MaxNo=res[0].VM_MaxNo;
         console.log(this.VM_MaxNo,"vVM_MaxNo value")
         // if(this.VM_MaxNo>0){
+       
           this.form.get("VM_MaxNo")?.setValue(this.VM_MaxNo);
         // }else{
         //   this.form.get("VM_MaxNo")?.setValue(0);
@@ -549,10 +548,12 @@ private cdr: ChangeDetectorRef
                 this.form.get('PMid')?.setValue(defaultPrathishtaId);
               }
             }
+             this.validateVazhipadDate();
             this.qtyChange()
           });
       });
   }
+  
 
   calculateTotalAmount() {
     const qty = parseInt(this.form.get('Qty')!.value, 10);
@@ -657,11 +658,12 @@ private cdr: ChangeDetectorRef
           formValues.NoOfDays
         ).toString(),
         Postal: '0',
+        SearchBy:formValues.SearchBy,
         VazhipadDate: formValues.VazhipadDate,
         Mday: formValues.Mday,
         NalBy: formValues.NalBy,
         Mmonth: formValues.Mmonth,
-        VTime: '1',
+        VTime:formValues.VTime ,
         FromDate: this.convertWithDatePipe(formValues.FromDate),
         ToDate: this.convertWithDatePipe(formValues.EndDate),
       }));
@@ -892,7 +894,17 @@ private cdr: ChangeDetectorRef
       !thithi
     ) {
       type = 'EngDate';
-    } else if (
+    }else if (
+      thithi &&
+      malMonth &&
+      !star &&
+      !engMonth &&   
+      !englishday &&
+      !malday
+    ) {
+      type = 'MalThithi';
+    } 
+    else if (
       thithi &&
       !star &&
       !engMonth &&
@@ -977,6 +989,17 @@ private cdr: ChangeDetectorRef
             EndDate: this.datePipe.transform(endDate, 'dd-MM-YYYY'),
             FromDate: this.datePipe.transform(firstitem.edate1, 'dd-MM-YYYY'),
           });
+
+// const firstValidItem = this.multiDayList.find(
+//   item => item.selected 
+// );
+
+// if (firstValidItem) {
+//   this.form.patchValue({
+//     FromDate: this.datePipe.transform(firstValidItem.edate1, 'dd-MM-yyyy')
+//   });
+// }
+
           console.log('Last Date:', endDate);
           console.log(this.form.get('VazhipadDate'))
         }
@@ -1047,6 +1070,8 @@ private cdr: ChangeDetectorRef
       const endDate = lastItem.edate1;
       this.form.patchValue({
         EndDate: this.datePipe.transform(endDate, 'dd-MM-YYYY'),
+        FromDate: this.datePipe.transform(firstItem.edate1, 'dd-MM-YYYY'),
+
         // VazhipadDate: firstItem.edate1
       });
       console.log('Last Date:', endDate);
@@ -1057,6 +1082,7 @@ private cdr: ChangeDetectorRef
 
 
   validateVazhipadDate() {
+
     const vazhipadDateControl = this.form.get("VazhipadDate");
   
     if (!this.updatedDayList || this.updatedDayList.length === 0) {

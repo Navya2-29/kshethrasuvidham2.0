@@ -233,18 +233,18 @@
   
   
 <div id="receipt" style="width: 6in; height: 4in; display: none; position: relative; font-size: 12px; font-family: Arial, sans-serif;">
-  <div style="position: absolute; left: 4.8cm; top: 3cm;">{{getItemNameById( feeCollctionForm.get('ItemType')?.value) }}</div>
-  <div style="position: absolute; left: 10.9cm; top: 2.5cm;">{{ formatDateToDDMMYYYY(todayDate) }}</div>
-  <div style="position: absolute; left: 10.9cm; top: 3cm;">{{ feeCollctionForm.get('BillNo')?.value }}</div>
-  <div style="position: absolute; left: 2cm; top: 5cm;">{{ feeCollctionForm.get('Name')?.value }}<p>{{feeCollctionForm.get('Address')?.value }}</p>
+  <div style="position: absolute; left: 2cm; top: 4.3cm;">{{getItemNameById( feeCollctionForm.get('ItemType')?.value) }}</div>
+  <div style="position: absolute; left: 10.1cm; top: 3.8cm;">{{ formatDateToDDMMYYYY(todayDate) }}</div>
+  <div style="position: absolute; left: 10.1cm; top: 4.3cm;">{{ feeCollctionForm.get('BillNo')?.value }}</div>
+  <div style="position: absolute; left: 1.8cm; top: 6.1cm;">{{ feeCollctionForm.get('Name')?.value }}<p>{{feeCollctionForm.get('Address')?.value }}</p>
   <p>
     Months Selected:{{ receiptMonthYear }}
  </p>
   </div>
   <!-- <div style="position: absolute; left: 10.5cm; top: 5cm;">{{ feeCollctionForm.get('vazhipadinfo')?.value }}</div> -->
-  <div style="position: absolute; left: 12.5cm; top: 5cm;">{{ feeCollctionForm.get('Amount')?.value  }}</div>
-  <div style="position: absolute;  left: 11.2cm; top: 7.1cm;">{{ feeCollctionForm.get('totalAmount')?.value  }}</div>
-  <div style="position: absolute; left: 2cm; top: 7.5cm;font-size:8pt">User:{{ name}},{{getTransactionType(feeCollctionForm.get('TransMode')?.value)}}</div>
+  <div style="position: absolute; left: 12.2cm; top: 6.1cm;">{{ feeCollctionForm.get('Amount')?.value  }}</div>
+  <div style="position: absolute;  left: 10cm; top: 8.4cm;">{{ feeCollctionForm.get('totalAmount')?.value  }}</div>
+  <div style="position: absolute; left: 2cm; top: 8.4cm;font-size:8pt">User:{{ name}},{{getTransactionType(feeCollctionForm.get('TransMode')?.value)}}</div>
 </div>
   
 

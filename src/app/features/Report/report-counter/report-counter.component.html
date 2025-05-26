@@ -90,7 +90,7 @@
 
               <div class="total">
                 <h5 id="totalamount">
-                 {{"Report Name.Total for" | translate}} {{ user.key }}:
+                 {{"Report Name.Total for" | translate}} ({{ user.key }}):
                   {{
                     getTotalForCuser(counter.key, user.key) | number : "1.2-2"
                   }}
@@ -101,7 +101,7 @@
             <!-- Counter-wise Total -->
             <div class="total">
               <h5 class="totalcounter">
-                {{"Report Name.Total for" | translate }} {{"Counter" | translate }} {{ counter.key }}:
+                {{"Report Name.Total for" | translate }} ({{"Counter" | translate }} {{ counter.key }}):
                 {{ getTotalForCounter(counter.key) | number : "1.2-2" }}
               </h5>
             </div>

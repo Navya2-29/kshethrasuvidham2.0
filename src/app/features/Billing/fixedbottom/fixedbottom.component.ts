@@ -79,6 +79,7 @@ export class FixedbottomComponent implements OnInit {
   templeLogoUrl: string = '';
   name:string | null;
   nakshatham:any[];
+  role:string | null;
   receivedBooleanValue: boolean;
   memberId:string | null;
   private refreshSubscription!: Subscription;
@@ -118,6 +119,7 @@ export class FixedbottomComponent implements OnInit {
     this.templeAddress = localStorage.getItem('Address');
     this.logo=localStorage.getItem('Logo');
     this.name=localStorage.getItem('name');
+    this.role=localStorage.getItem('Role');
     if(this.logo){
       this.templeLogoUrl=window.location.origin + `/assets/images/${this.logo}`;
       console.log( this.templeLogoUrl,"url img")
@@ -339,36 +341,37 @@ console.log(data,"dot metrix checkingkkkkkk");
        <div class="receipt-page" style="page-break-after: ${
       pageIndex < pages.length - 1 ? 'always' : 'avoid'
     };">
+    
           <!-- Prathista -->
-          <div style="position: absolute; left: 3cm; top: 3.75cm; max-width: 8cm; font-size:9pt; white-space: pre-wrap; word-wrap: break-word;">${prathista}</div>
+          <div style="position: absolute; left: 2cm; top: 3.8cm; max-width: 8cm; font-size:9pt; white-space: pre-wrap; word-wrap: break-word;">${prathista}</div>
           <!-- Vazhipad -->
-          <div style="position: absolute; left: 3cm; top: 4.2cm; max-width: 5cm;font-size:9pt; white-space: pre-wrap;">${vazhipad}</div>
+          <div style="position: absolute; left: 2cm; top: 4.3cm; max-width: 5cm;font-size:9pt; white-space: pre-wrap;">${vazhipad}</div>
           <!-- Bill date Date -->
-          <div style="position: absolute; left: 10.9cm; top: 3.75cm;font-size:9pt;">${Billdate}</div>
+          <div style="position: absolute; left: 10.1cm; top: 3.8cm;font-size:9pt;">${Billdate}</div>
           <!-- bill Number -->
-          <div style="position: absolute; left: 10.9cm; top: 4.2cm;font-size:9pt;"> ${BillNo}</div>
+          <div style="position: absolute; left: 10.1cm; top: 4.3cm;font-size:9pt;"> ${BillNo}</div>
            <!-- vazhipad date -->
-         <div style="position: absolute; left: 5.5cm; top: 9cm;font-size:9pt;">
+         <div style="position: absolute; left: 5.2cm; top: 9.3cm;font-size:9pt;">
   ${fromDate != toDate ? `${this.convertDateFormat(fromDate)} to ${this.convertDateFormat(toDate)}` : `${this.convertDateFormat(fromDate)}`}
 </div>
 ${group.nalBy ? `<div style="position: absolute; left: 5.5cm; top: 8cm;font-size:6pt">- ${group.nalBy},</div>` : ''}
 ${group.mday ? `<div style="position: absolute; left: 5.5cm; top: 8.3cm;font-size:6pt">- ${group.mday},</div>` : ''}
 ${group.mmonth ? `<div style="position: absolute; left: 5.5cm; top:8.5cm;font-size:6pt">- ${group.mmonth}</div>` : ''}
- <div style="position: absolute; left: 2cm; top: 8.2cm;font-size:8pt">User:${this.name},${this.getTransactionType(Trnsmode)}, ${Trnsmode=='CR'?"Not Paid":""}</div>
+${group.thithi ? `<div style="position: absolute; left: 5.5cm; top:8cm;font-size:6pt">- ${group.thithi}</div>` : ''}
+ <div style="position: absolute; left: 2cm; top: 8.4cm;font-size:8pt">User:${this.name}(${this.getTransactionType(Trnsmode)}) ${Trnsmode=='CR'?"(Not Paid)":""}(CNTR:${this.counterId})</div>
           `
       // Render rows in the current page
       page.forEach((item: any, rowIndex: number) => {
-        let rowTop = 5 + rowIndex * 0.5; // Adjust row spacing
+        let rowTop = 5.6 + rowIndex * 0.5; // Adjust row spacing
         const amount = item.Qty * item.Rate;
         grandTotalAmount += amount; // Add the amount to the grand total
         receiptContent += `
-          <div style="position: absolute; left: 2.7cm; font-size:9pt;font-weight:bold; top: ${rowTop}cm; max-width: 5.5cm; white-space: pre-wrap; word-wrap: break-word; line-height: 1.2em;">${item.Name}${item.Name2 ? `<div style="margin-top: 0.1mm;">${item.Name2}</div>` : ''}</div>
-          <div style="position: absolute; left: 8.4cm;font-size:8pt; top: ${rowTop}cm;">${this.getStarbyId(item.Star)}${item.Star2 ? `<div style="margin-top: 0.1mm;">${this.getStarbyId(item.Star2)}</div>` : ''}</div>
-          <div style="position: absolute; left: 10.8cm; font-size:9pt; top: ${rowTop}cm;">${item.Qty}</div>
-          <div style="position: absolute; left: 11.6cm;font-size:9pt; top: ${rowTop}cm;">${item.Rate}</div>
-          <div style="position: absolute; left: 13cm; font-size:9pt;top: ${rowTop}cm;">${amount.toFixed(2)}</div>
-         <div style="position: absolute; left: 11cm; top: 9cm;font-size:8pt;">${this.getTimeForBill(item.VTime)}</div>
-
+          <div style="position: absolute; left: 1.8cm; font-size:9pt;font-weight:bold; top: ${rowTop}cm; max-width: 5.5cm; white-space: pre-wrap; word-wrap: break-word; line-height: 1.2em;">${item.Name}${item.Name2 ? `<div style="margin-top: 0.1mm;">${item.Name2}</div>` : ''}</div>
+          <div style="position: absolute; left: 7.8cm;font-size:8pt;font-weight:bold; top: ${rowTop}cm;">${this.getStarbyId(item.Star)}${item.Star2 ? `<div style="margin-top: 0.1mm;">${this.getStarbyId(item.Star2)}</div>` : ''}</div>
+          <div style="position: absolute; left: 10.2cm; font-size:9pt; top: ${rowTop}cm;">${item.Qty}</div>
+          <div style="position: absolute; left: 11cm;font-size:9pt; top: ${rowTop}cm;">${item.Rate}</div>
+          <div style="position: absolute; left: 12.2cm; font-size:9pt;top: ${rowTop}cm;">${amount.toFixed(2)}</div>
+         <div style="position: absolute; left: 10.5cm; top: 9.3cm;font-size:8pt;font-weight:bold;">${this.getTimeForBill(item.VTime)}</div>
         `;
       });
       // receiptContent += `</div>`; // Close receipt page
@@ -380,7 +383,7 @@ ${group.mmonth ? `<div style="position: absolute; left: 5.5cm; top:8.5cm;font-si
         //  ${this.numbertowordpipe.transform(grandTotalAmount)} <span> Rupees</span>
       // </div>
     receiptContent += `
-      <div style="position: absolute; left: 10.5cm; top: 8.3cm; font-weight: bold; font-size: 12pt;">
+      <div style="position: absolute; left: 10cm; top: 8.4cm; font-weight: bold; font-size: 12pt;">
          ${grandTotalAmount.toFixed(2)}
       </div>
       
@@ -1276,7 +1279,7 @@ printReceiptsThermal(data: any) {
     const groupedData = this.differentDateArray.reduce((acc: any, item: any) => {
       const key = `${item.Prethista}/${item.Vazhipad}/${item.FromDate}/${item.ToDate}`;
       if (!acc[key]) {
-        acc[key] = { items: [], totalQty: 0, uniqueNames: new Set(), nalBy: '', mday: '', thithi: '', mmonth: '', Rate: "" };
+        acc[key] = { items: [], totalQty: 0, uniqueNames: new Set(), nalBy: '', mday: '', thithi: '', mmonth: '', Rate: "",VTime:'' };
       }
       acc[key].items.push(item);
       acc[key].totalQty += parseInt(item.Qty, 10);
@@ -1288,6 +1291,7 @@ printReceiptsThermal(data: any) {
       if (item.SearchBy) acc[key].thithi = item.SearchBy;
       if (item.Mmonth) acc[key].mmonth = item.Mmonth;
       if (item.Rate) acc[key].rate = item.Rate;
+      if (item.VTime) acc[key].VTime = item.VTime;
       return acc;
     }, {});
 
@@ -1361,18 +1365,23 @@ printReceiptsThermal(data: any) {
             <div class="receipt-content-vd">Vazhipad Date: 
               ${fromDate !== toDate ? `${this.convertDateFormat(fromDate)} to ${this.convertDateFormat(toDate)}` : `${this.convertDateFormat(fromDate)}`}
             </div>
-             ${items?.VTime ? `
-    <div class="receipt-content-vd">Vazhipad Time: 
-      ${this.getTimeForBill(items[0].VTime)}
-    </div>
-  ` : ''}
+            
            
             <div>
-            ${group.nalBy ? `<div class="receipt-footer">- ${group.nalBy}</div>` : ''}
-            ${group.mday ? `<div class="receipt-footer">- ${group.mday}</div>` : ''}
-            ${group.mmonth ? `<div class="receipt-footer">- ${group.mmonth}</div>` : ''}</div>
+             ${group.VTime ? `
+    <div class="receipt-content-vd">Vazhipad Time: 
+      ${this.getTimeForBill(group.VTime)}
+    </div>
+  ` : ''}
+  ${group.thithi ? `<div class="receipt-footer">Thhithi : ${group.thithi}</div>` : ''}
+            ${group.nalBy ? `<div class="receipt-footer">Star: ${group.nalBy}</div>` : ''}
+            ${group.mday ? `<div class="receipt-footer">Day: ${group.mday}</div>` : ''}
+            ${group.mmonth ? `<div class="receipt-footer">Month: ${group.mmonth}</div>` : ''}</div>
             <div class="receipt-footer-ut">
               User: ${this.name} 
+            </div>
+             <div class="receipt-footer-ut">
+              Counter:${this.counterId}
             </div>
              <div class="receipt-footer-ut">
               Payment Mode:  ${this.getTransactionType(Trnsmode)}, ${Trnsmode=='CR'?"Not Paid":""}
@@ -1419,7 +1428,7 @@ printReceiptsThermal(data: any) {
             }
 
             .receipt-sub-header {
-              font-size: 8pt;
+              font-size: 6pt;
               text-align: center;
               margin-bottom: 5px;
               font-family:Manjari;
@@ -1631,7 +1640,7 @@ getdevoteeDetailsforBiling(){
           let grandTotalAmount = 0;
   
           let receiptContent = `
-<div class="receipt-page" style="${pageIndex < pages.length - 1 ? 'page-break-after: always;' : ''}">
+           <div class="receipt-page" style="${pageIndex < pages.length - 1 ? 'page-break-after: always;' : ''}">
               <!-- Header with logo and temple info -->
               <div style="display: flex; align-items: center; margin-bottom: 10px;">
                 <img src="${this.templeLogoUrl}" alt="Temple Logo" style="height: 60px; margin-right: 10px;">
@@ -1773,7 +1782,7 @@ getdevoteeDetailsforBiling(){
 
     getTimeForBill(time:string){
      
-      switch (time) {
+      switch (time.toString()) {
         case '0':
           if (this.lang == 'en') {
             return 'Any Time';

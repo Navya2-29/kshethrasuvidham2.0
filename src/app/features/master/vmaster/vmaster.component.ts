@@ -141,6 +141,7 @@ export class VmasterComponent implements OnInit {
     this.getVmaster();
     this.getCategory();
     this.fetchDeities();
+    this.getAccounthead()
     // this.checkVazhipadName()
     // filter for autocompleate category
     this.filteredCategory = this.vazhipadMasterForm
@@ -688,7 +689,7 @@ export class VmasterComponent implements OnInit {
 
     const payLoad={
       Type:"CheckName",
-      Code:id
+      Code:"1"
     }
     this.masterService.getMaster(payLoad).subscribe({
       next:(data)=>{
@@ -705,6 +706,18 @@ export class VmasterComponent implements OnInit {
       }
     })
 
+  }
+
+  getAccounthead(){
+    const payLoad={
+  Type:"Head",
+  Code:""
+    }
+    this.masterService.getMaster(payLoad).subscribe({
+      next:(data)=>{
+        console.log(data,"account head");
+      }
+    })
   }
 
 

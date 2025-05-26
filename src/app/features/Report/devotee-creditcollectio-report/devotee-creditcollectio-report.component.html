@@ -41,29 +41,29 @@
       <table>
         <thead>
           <tr>
-            <th>{{"BILLDATE" | translate}}</th>
-            <th>{{"BILL NO" | translate}}</th>
-           <th>{{"Report Name.VAZHIPAD DATE"| translate}}</th>
-            <th>{{"VAZHIPAD" | translate }}</th>
-            <th>{{"NAME"| translate }}</th>
-            <th>{{"Report Name.MOBILE NO" | translate}}</th>
+            <th class="billdate">{{"BILLDATE" | translate}}</th>
+            <th class="billno">{{"BILL NO" | translate}}</th>
+           <th class="vazhipaddate">{{"Report Name.VAZHIPAD DATE"| translate}}</th>
+            <th class="vazhipad">{{"VAZHIPAD" | translate }}</th>
+            <th class="name">{{"NAME"| translate }}</th>
+            <th class="mobileno">{{"Report Name.MOBILE NO" | translate}}</th>
             <!-- <th>{{"QUANTITY" | translate }}</th>
             <th>{{"RATE" | translate }}</th> -->
-            <th class="number">{{"AMOUNT" | translate }}</th>
+            <th class="number amount">{{"AMOUNT" | translate }}</th>
             
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let member of data">
-            <td>{{ member.BillDate }}</td>
-            <td>{{ member.BillNo }}</td>
-            <td>{{ member.VazhiDate }}</td>
-            <td>{{ member.Vazhipad }}</td>
-            <td>{{ member.Name }}</td>
+            <td class="billdate">{{ member.BillDate }}</td>
+            <td class="billno" >{{ member.BillNo }}</td>
+            <td class="vazhipaddate" >{{ member.VazhiDate }}</td>
+            <td class="vazhipad">{{ member.Vazhipad }}</td>
+            <td  class="name">{{ member.Name }}</td>
             
-            <td>{{ member.MobileNo }}</td>
+            <td class="mobileno" >{{ member.MobileNo }}</td>
             <!-- <td class="number">{{ member.Rate  | number : "1.2-2" }}</td> -->
-            <td class="number">{{ member.Amount  | number : "1.2-2" }}</td>
+            <td class="number amount">{{ member.Amount  | number : "1.2-2" }}</td>
             <!-- <td >{{ getTransactionType(member.TrnMode) }}</td> -->
           </tr>
           <tr>
@@ -76,7 +76,7 @@
       </table>
     </div>
 
-    <div class="page-break"></div>
+    <div class="page-break"*ngIf="data.length > 0"></div>
 <div class="allcreditdata" *ngIf="allCreditdata.length > 0" >
   <h4 class="tabble-heading" >  {{"Report Name.Devotee Credit Collection" | translate }} </h4>
 

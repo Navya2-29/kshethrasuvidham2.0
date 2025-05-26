@@ -322,77 +322,194 @@
 <!-- gramasamudayaram duplicate and recipt for nadavaravu -->
 
 <div id="receipt" style="width: 6in; height: 4in; display: none; position: relative; font-size: 12px; font-family: Arial, sans-serif;">
-  <div style="position: absolute; left: 4.8cm; top: 3cm;font-family:Manjari;">{{ itemName }}</div>
-  <div style="position: absolute; left: 10.9cm; top: 2.5cm;font-family:Manjari;">{{ todayDate | date: 'dd-MM-yyyy' }}</div>
-  <div style="position: absolute; left: 10.9cm; top: 3cm;font-family:Manjari;">{{ nadavaravForm.get('BillNo')?.value }}</div>
-  <div style="position: absolute; left: 2cm; top: 5cm;font-family:Manjari;margin-bottom: 0;">{{ nadavaravForm.get('Name')?.value }}
-    <p style="font-family:Manjari;margin-bottom: 0;font-family:Manjari;margin-top: 0px;padding-top: 0px;padding-bottom: 0px;" >{{nadavaravForm.get('Address')?.value }}</p>
+  <div style="position: absolute; left: 2cm; top: 4.3cm;font-size:9pt;">{{ itemName }}</div>
+  <div style="position: absolute; left: 10.1cm; top: 3.8cm;font-size:9pt;">{{ todayDate | date: 'dd-MM-yyyy' }}</div>
+  <div style="position: absolute; left: 10.1cm; top: 4.3cm;font-size:9pt;">{{ nadavaravForm.get('BillNo')?.value }}</div>
+  <div style="position: absolute; left: 1.8cm; top: 6.1cm;font-size:9pt;margin-bottom: 0;">{{ nadavaravForm.get('Name')?.value }}
+    <p style="font-size:8pt;margin-bottom: 0;margin-top: 0px;padding-top: 0px;padding-bottom: 0px;" >{{nadavaravForm.get('Address')?.value }}</p>
   <!-- <p style="font-family:Manjari;margin-bottom: 0;font-family:Manjari;margin-top: 0px;padding-top: 0px;padding-bottom: 0px;">{{"Quantity" | translate}}:{{nadavaravForm.get('Qty')?.value }}</p> -->
-  <p style="font-family:Manjari;margin-bottom: 0;font-family:Manjari;margin-top: 0px;padding-top: 0px;padding-bottom: 0px;">{{"Weight" | translate}}:{{nadavaravForm.get('weight')?.value }}</p>
-  <p style="font-family:Manjari;margin-bottom: 0;font-family:Manjari;margin-top: 0px;padding-top: 0px;padding-bottom: 0px;">{{"unit" | translate}}:{{nadavaravForm.get('unit')?.value }}</p>
+  <p style="font-family:Manjari;font-size:8pt;margin-bottom: 0;margin-top: 0px;padding-top: 0px;padding-bottom: 0px;">{{"Weight" | translate}}:{{nadavaravForm.get('weight')?.value }}</p>
+  <p style="font-family:Manjari;font-size:8pt;margin-bottom: 0;margin-top: 0px;padding-top: 0px;padding-bottom: 0px;">{{"unit" | translate}}:{{nadavaravForm.get('unit')?.value }}</p>
 
 </div>
-  <div style="position: absolute; left: 7.8cm;top: 5cm;font-family:Manjari;font-size:7pt;">{{ getStarNameById(nadavaravForm.get('Star')?.value) }}</div>
-  <div style="position: absolute; left: 10cm; top: 5cm;">{{ nadavaravForm.get('Qty')?.value }}</div>
-  <div style="position: absolute; left: 12.5cm; top: 5cm;">{{ nadavaravForm.get('ReceiptAmount')?.value  }}</div>
-  <div style="position: absolute;  left: 11.2cm; top: 7.1cm;">{{ nadavaravForm.get('ReceiptAmount')?.value  }}</div>
+  <div style="position: absolute; left: 7.8cm;top: 6.1cm;font-size:8pt;">{{ getStarNameById(nadavaravForm.get('Star')?.value) }}</div>
+  <div style="position: absolute; left: 10.2cm; top: 6.1cm;font-size:9pt;">{{ nadavaravForm.get('Qty')?.value }}</div>
+  <div style="position: absolute; left: 12.2cm; top: 6.1cm;font-size:9pt;">{{ nadavaravForm.get('ReceiptAmount')?.value  }}</div>
+  <div style="position: absolute;  left: 10cm; top: 8.4cm;font-weight: bold; font-size: 12pt;">{{ nadavaravForm.get('ReceiptAmount')?.value  }}</div>
   <!-- <div style="position: absolute;  left: 3cm; top: 8cm;">{{numbertowordpipe.transform(nadavaravForm.get('ReceiptAmount')?.value)}}</div> -->
+ <div style="position: absolute; left: 2cm; top: 8.4cm;font-size:8pt">User:{{name}}({{getTransactionType(nadavaravForm.get('TrnsMode')?.value )}})</div>
+
 </div>
 
 <div  id="duplicateRecipt" style="width: 6in; height: 4in; display: none; position: relative; font-size: 12px; font-family: Arial, sans-serif;">
-  <div style="position: absolute; left: 4.8cm; top: 3cm;">{{getItemById(dupliacteBillData?.NM_Id) }}</div> 
- <div style="position: absolute; left: 10.9cm; top: 2.5cm;">{{ dupliacteBillData?.Billdate | date : "dd-MM-YYYY" }}</div>
-  <div style="position: absolute; left: 10.9cm; top: 3cm;">{{ dupliacteBillData?.BillNo }}</div>
-  <div style="position: absolute; left: 2cm; top: 5cm;">{{ dupliacteBillData?.Name }}
+  <div style="position: absolute;  left: 2cm; top: 4.3cm;font-size:9pt;">{{getItemById(dupliacteBillData?.NM_Id) }}</div> 
+ <div style="position: absolute; left: 10.1cm; top: 3.8cm;font-size:9pt;">{{ dupliacteBillData?.Billdate | date : "dd-MM-YYYY" }}</div>
+  <div style="position: absolute; left: 10.1cm; top: 4.3cm;font-size:9pt;">{{ dupliacteBillData?.BillNo }}</div>
+  <div style="position: absolute; left: 2cm; top: 6.1cm;">{{ dupliacteBillData?.Name }}
    
     <!-- <p style="font-family:Manjari;margin-bottom: 0;font-family:Manjari;margin-top: 0px;padding-top: 0px;padding-bottom: 0px;" >{{nadavaravForm.get('Address')?.value }}</p> -->
 
-     <p style="font-family:Manjari;margin-bottom: 0;font-family:Manjari;margin-top: 0px;padding-top: 0px;padding-bottom: 0px;">{{"Weight" | translate}}:{{dupliacteBillData?.weight }}</p>
-  <p style="font-family:Manjari;margin-bottom: 0;font-family:Manjari;margin-top: 0px;padding-top: 0px;padding-bottom: 0px;">{{"unit" | translate}}:{{dupliacteBillData?.unit }}</p> 
+     <p style="font-size:8pt;margin-bottom: 0;margin-top: 0px;padding-top: 0px;padding-bottom: 0px;">{{"Weight" | translate}}:{{dupliacteBillData?.weight }}</p>
+  <p style="font-size:8pt;margin-bottom: 0;margin-top: 0px;padding-top: 0px;padding-bottom: 0px;">{{"unit" | translate}}:{{dupliacteBillData?.unit }}</p> 
 
   </div>
-  <div style="position: absolute; left: 7.8cm; top: 5cm;">{{getStarNameById(dupliacteBillData?.Star) }}</div>
-  <div style="position: absolute; left: 10cm; top: 5cm;">{{dupliacteBillData?.Qty }}</div>
-  <div style="position: absolute; left: 12.5cm; top: 5cm;">{{ dupliacteBillData?.Receipt_Amt  }}</div>
-  <div style="position: absolute; left: 11.2cm; top: 7.1cm;">{{ dupliacteBillData?.Receipt_Amt  }}</div>
-  <div style="position: absolute; left: 2cm; top: 8.4cm; ; ">
+  <div style="position: absolute; left: 7.8cm;top: 6.1cm;font-size:8pt;">{{getStarNameById(dupliacteBillData?.Star) }}</div>
+  <div style="position: absolute; left: 10.2cm; top: 6.1cm;font-size:9pt;">{{dupliacteBillData?.Qty }}</div>
+  <div style="position: absolute; left: 12.2cm; top: 6.1cm;font-size:9pt;">{{ dupliacteBillData?.Receipt_Amt  }}</div>
+  <div style="position: absolute; left: 10cm; top: 8.4cm;font-weight: bold; font-size: 12pt;">{{ dupliacteBillData?.Receipt_Amt  }}</div>
+  <div style="position: absolute; left: 2cm; top: 8.4cm;font-size:8pt">User:{{dupliacteBillData?.Userid}},CNTR:{{dupliacteBillData?.CounterId}},({{getTransactionType(dupliacteBillData?.TrnMode )}})</div>
+ 
+  <div style="position: absolute; left: 2cm; top: 8.9cm; ; ">
     Duplicate Bill
   </div>
 </div>
 
 <!-- end of nadavaravu gramasamudayam -->
 
-<div id="thermalreceipt" style="width: 6in; height: 4in; display: none; position: relative; font-size: 12px; font-family: Arial, sans-serif;">
+<div id="thermalreceipt" class="receipt-page" style=" width: 80mm; height: auto; display: none; position: relative; margin: 0 auto;padding: 10px; overflow: hidden;">
   <!-- <div style="position: absolute; left: 2.1cm; top: 3.8cm;">{{ itemName }}</div> -->
-  <div class="receipt-header">{{templeName}}</div>
-  <div class="receipt-sub-header">{{templeAddress}}</div>
-  <hr>
-  <div class="receipt-content">{{"BILLDATE" | translate}}: {{ todayDate | date: 'dd-MM-yyyy' }}</div>
-  <div class="receipt-content">{{"BILL NO" | translate }}:{{ nadavaravForm.get('BillNo')?.value }}</div>
-  <!-- <div class="receipt-content">{{"PRATHISTA"}}: </div> -->
-  <div class="receipt-content">{{"VAZHIPAD" | translate}}:{{ itemName }} </div>
+<div style="text-align: center;"><img [src]=logo alt="logo" style="width: 60px; height: 60px;"/></div>
 
-  <div class="receipt-content">{{"NAME" | translate}}:{{ nadavaravForm.get('Name')?.value }}<p>{{nadavaravForm.get('Address')?.value }}</p></div>
-  <div class="receipt-content">{{"STAR" | translate }}:{{ getStarNameById(nadavaravForm.get('Star')?.value) }}</div>
-  <div class="receipt-content">{{"QTY" | translate}}:{{ nadavaravForm.get('Qty')?.value }}</div>
-  <div class="receipt-total">{{"AMOUNT" | translate}}:{{ nadavaravForm.get('ReceiptAmount')?.value}}</div>
+  <div class="receipt-header" style=" font-size: 12pt;
+              font-weight: bold;
+              text-align: center;
+              margin-bottom: 2px;
+              font-family:Manjari;">{{templeName}}</div>
+  <div class="receipt-sub-header" style="font-size: 6pt;
+              text-align: center;
+              margin-bottom: 5px;
+              font-family:Manjari;" >{{templeAddress}}</div>
   <hr>
+  <div class="receipt-content receipt-contentbill" style=" margin-top:10px;text-align: left;
+              font-size: 12pt;
+              margin-bottom: 5px;
+              margin-top:10px;
+              margin-top:5px;
+              font-family:Manjari;
+              font-weight: bold;">{{"BILLDATE" | translate}}: {{ todayDate | date: 'dd-MM-yyyy' }}</div>
+  <div class="receipt-content" style="text-align: left;
+              font-size: 12pt;
+              margin-bottom: 5px;
+              margin-top:10px;
+              margin-top:5px;
+              font-family:Manjari;
+              font-weight: bold;">{{"BILL NO" | translate }}:{{ nadavaravForm.get('BillNo')?.value }}</div>
+  <!-- <div class="receipt-content">{{"PRATHISTA"}}: </div> -->
+  <div class="receipt-content" style=" margin-top:10px;text-align: left;
+              font-size: 12pt;
+              margin-bottom: 5px;
+              margin-top:10px;
+              margin-top:5px;
+              font-family:Manjari;
+              font-weight: bold;">{{"VAZHIPAD" | translate}}:{{ itemName }} </div>
+
+  <div class="receipt-content" style=" margin-top:10px;text-align: left;
+              font-size: 12pt;
+              margin-bottom: 5px;
+              margin-top:10px;
+              margin-top:5px;
+              font-family:Manjari;
+              font-weight: bold;">{{"NAME" | translate}}:<span class="nd">{{ nadavaravForm.get('Name')?.value }}</span><p>{{nadavaravForm.get('Address')?.value }}</p>
+            <p>{{"Weight" | translate}}:{{nadavaravForm.get('weight')?.value }}</p> 
+            <p>{{"unit" | translate}}:{{dupliacteBillData?.unit }}</p> 
+            </div>
+  <div class="receipt-content" style=" margin-top:10px;text-align: left;
+              font-size: 12pt;
+              margin-bottom: 5px;
+              margin-top:10px;
+              margin-top:5px;
+              font-family:Manjari;
+              font-weight: bold;">{{"STAR" | translate }}:{{ getStarNameById(nadavaravForm.get('Star')?.value) }}</div>
+  <div class="receipt-rq" style=" margin-top: 10px;
+              font-weight: bold;
+              font-size: 11pt;
+              
+             
+              text-align: left;">{{"QTY" | translate}}:{{ nadavaravForm.get('Qty')?.value }}</div>
+
+
+
+  <div class="receipt-total" style="margin-top: 10px 0px;
+               margin-bottom: 10px 0px;
+              font-weight: bold;
+              font-size: 12pt;
+              border-top: 1px solid #000;
+              border-bottom: 1px dashed #000;
+              padding-bottom: 10px;
+              padding-top: 10px;
+              text-align: left;">{{"AMOUNT" | translate}}:{{ nadavaravForm.get('ReceiptAmount')?.value}}</div>
+  <hr>
+  <div class="receipt-footer-ut" style="font-size: 9pt;
+              margin-top: 2px;
+              font-style: italic;
+              text-align: left;">
+              User: {{name}} 
+            </div>
+            <div class="receipt-footer-ut" style="font-size: 9pt;
+              margin-top: 2px;
+              font-style: italic;
+              text-align: left;">
+              Payment Mode:  {{getTransactionType(nadavaravForm.get('TrnsMode')?.value)}}, {{nadavaravForm.get('TrnsMode')?.value=='CR'?"Not Paid":""}}
+
+            </div>
+            <div class="receipt-footer-ut" style="font-size: 9pt;
+              margin-top: 2px;
+              font-style: italic;
+              text-align: left;">
+              Counter:{{CounterId}}
+
+            </div>
+          <div><p>www.cubixsystems.com</p></div>
+
 </div>
 
 <div id="thermalduplicatereceipt" style="width: 6in; height: 4in; display: none; position: relative; font-size: 12px; font-family: Arial, sans-serif;">
   <!-- <div style="position: absolute; left: 2.1cm; top: 3.8cm;">{{ itemName }}</div> -->
+   <div style="text-align: center;"><img [src]=logo alt="logo" style="width: 60px; height: 60px;"/></div>
+
   <div class="receipt-header">{{templeName}}</div>
   <div class="receipt-sub-header">{{templeAddress}}</div>
   <hr>
-  <div class="receipt-content">{{"BILLDATE" | translate}}: {{ dupliacteBillData?.Billdate | date : "dd-MM-YYYY" }}</div>
+  <div class="receipt-content">{{"DATE" | translate}}: {{ dupliacteBillData?.Billdate | date : "dd-MM-YYYY" }}</div>
   <div class="receipt-content">{{"BILL NO" | translate }}:{{ dupliacteBillData?.BillNo }}</div>
   <!-- <div class="receipt-content">Prathista: </div> -->
   <div class="receipt-content">{{"VAZHIPAD" | translate }}: {{getItemById(dupliacteBillData?.NM_Id) }}</div>
 
-  <div class="receipt-content">{{"NAME" | translate }}:{{ dupliacteBillData?.Name }}</div>
+  <div class="receipt-content ">{{"NAME" | translate }}:<span class="nd">{{ dupliacteBillData?.Name }}</span></div>
   <div class="receipt-content">{{"STAR" | translate }}:{{getStarNameById(dupliacteBillData?.Star) }}</div>
   <div class="receipt-content">{{"QTY" | translate}}:{{dupliacteBillData?.Qty }}</div>
-
+  <div class="receipt-content">{{"Weight" | translate}}:{{dupliacteBillData?.weight }}</div>
+<div class="receipt-content">{{"unit" | translate}}:{{dupliacteBillData?.unit }}</div>
   <div class="receipt-total">{{"AMOUNT" | translate}}:{{ dupliacteBillData?.Receipt_Amt}}</div>
-  <hr>
+  <!-- <hr> -->
+<div class="receipt-footer-ut" style="font-size: 9pt;
+              margin-top: 2px;
+              font-style: italic;
+              text-align: left;">
+              User: {{name}} 
+            </div>
+            <div class="receipt-footer-ut" style="font-size: 9pt;
+              margin-top: 2px;
+              font-style: italic;
+              text-align: left;">
+              Payment Mode:  {{getTransactionType(nadavaravForm.get('TrnsMode')?.value)}}, {{nadavaravForm.get('TrnsMode')?.value=='CR'?"Not Paid":""}}
+
+            </div>
+            <div class="receipt-footer-ut" style="font-size: 9pt;
+              margin-top: 2px;
+              font-style: italic;
+              text-align: left;">
+              Counter:{{CounterId}}
+
+            </div>
+            <div class="receipt-footer-ut" style="font-size: 9pt;
+              margin-top: 2px;
+              font-style: italic;
+              text-align: left;">
+             Duplicate bill
+
+            </div>
+          <div><p>www.cubixsystems.com</p></div>
+
+
 </div>
