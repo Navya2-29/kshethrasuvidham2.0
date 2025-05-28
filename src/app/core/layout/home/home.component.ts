@@ -20,6 +20,7 @@ import { CouterPopupComponent } from '../../couter-popup/couter-popup.component'
 import { AuthService } from '../../auth/service/auth.service';
 import { FrontComponent } from '../front/front.component';
 import { ChangePasswordComponent } from '../../auth/change-password/change-password.component';
+import { map, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -48,6 +49,7 @@ export class HomeComponent {
   storedDate: any;
   Days: number;
     alreadyenterdCunter: any;
+    userEnterdCounterId:string;
   // passwordChangeDate:number | null;
   constructor(
     private http: HttpClient,
@@ -55,7 +57,7 @@ export class HomeComponent {
     private service: MasterService,
     private notification: ToastrService
   ) {
-    this.alreadyenterdcounterid();
+    
 
     this.templeName = localStorage.getItem('TempleName');
     this.logo = localStorage.getItem('Logo');
@@ -131,6 +133,7 @@ export class HomeComponent {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
+        this.userEnterdCounterId=result
         // Store the entered Counter ID in localStorage
         this.getcounterCount();
         if (this.Role == 'admin' || this.Role == 'super') {
@@ -151,6 +154,17 @@ export class HomeComponent {
             );
             this.openCounterIdDialog();
           } else {
+            this.alreadyenterdcounterid(result).subscribe((isAlreadyUsed) => {
+            if (isAlreadyUsed) {
+              this.notification.error('This counter ID is already used. Please try another one.');
+              this.openCounterIdDialog();
+              return;
+            }
+
+
+
+
+
             this.service.ADDCOUNTER(payLoad).subscribe((data: any) => {
               // console.log(data, 'sass');
               if (data.RespStatus === 'I') {
@@ -159,6 +173,7 @@ export class HomeComponent {
                 this.openCounterIdDialog();
               }
             });
+          });
           }
         }
       }
@@ -193,15 +208,14 @@ export class HomeComponent {
 
 
 
-  alreadyenterdcounterid() {
-    // console.log("dddd")
-    const payLoad = {
-      Type: 'CounterID',
-      Code: '',
-    };
-    this.service.getMaster(payLoad).subscribe((data) => {
-      // console.log(data, 'iiiii');
-      this.alreadyenterdCunter = data;
-    });
-  }
+  alreadyenterdcounterid(counterId: string): Observable<boolean> {
+  const payLoad = {
+    Type: 'CounterID',
+    Code: counterId,
+  };
+
+  return this.service.getMaster(payLoad).pipe(
+    map((data) => data && data.length > 0) // true = already used
+  );
+}
 }

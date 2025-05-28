@@ -548,6 +548,12 @@ export class ReportDailystmntTransactionComponent {
         } else {
           return 'ഡെബിറ്റ്';
         }
+         case 'EN':
+        if (this.lang == 'en') {
+          return 'ENDOWMENT';
+        } else {
+          return 'എൻഡോമെന്റ്';
+        }
       default:
         return 'OTHERS';
     }

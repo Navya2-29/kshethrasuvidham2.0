@@ -104,7 +104,9 @@ export class MultidayitemsComponent implements OnInit {
   multiDayList: multiDayFilter[] = [];
   updatedmultiDayList: multiDayFilter[] = [];
   memberDevoteeCheck:boolean=false;
-  allselecteddaylist:any[]=[]
+  allselecteddaylist:any[]=[];
+  searchmultidaylist:any[];
+  dayList:any[]=[];
   @ViewChild('vazhipadInput') vazhipadInput!: ElementRef;
   @ViewChild('rateInput') rateInput!: ElementRef<HTMLInputElement>;
   @ViewChild('prathistaInput') prathistaInput!: ElementRef<HTMLInputElement>;
@@ -124,7 +126,6 @@ export class MultidayitemsComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: { Name: string,Star:string ,MID:string}[],
 private cdr: ChangeDetectorRef
   ) {
-    console.log(data,"multiday devoteee master checking")
     this.lang = localStorage.getItem('Language');
     const userLang = navigator.language || 'en';
     const languageCode = userLang.split('-')[0];
@@ -284,14 +285,17 @@ private cdr: ChangeDetectorRef
     this.setupAutocomplete();
     this.getNakshthram();
     this.getThithiList();
-    this.getmultidayfilterData();
+    this.serachmultidayFiltering()
+    // this.getmultidayfilterData();
     this.getMalayalamMonthList();
     this.onDropdownChange();
     this.form.get('VazhipadDate')?.valueChanges.subscribe((value) => {
-      this.getmultidayfilterData();
+      // this.getmultidayfilterData();
+      this.serachmultidayFiltering()
     });
     this.form.get('NoOfDays')?.valueChanges.subscribe((value) => {
-      this.getmultidayfilterData();
+       this.serachmultidayFiltering()
+      // this.getmultidayfilterData();
     });
     // this.form.get('Vazhipad')?.valueChanges.subscribe((value) => {
     //   this.qtyChange();
@@ -319,13 +323,12 @@ private cdr: ChangeDetectorRef
   }
 
   async getStarIdByName(starName: string): Promise<any> {
-    console.log(starName, "star nameeeee");
+   
   
     const payLoad = { Type: 'ListStar', Code: '' };
   
     try {
       this.nakshatham = await lastValueFrom(this.masterservice.getStarData(payLoad));
-      console.log(this.nakshatham, "Nakshathram data loaded");
   
       if (!this.nakshatham || !Array.isArray(this.nakshatham)) {
         console.error("Nakshatham data is undefined or not an array");
@@ -333,8 +336,6 @@ private cdr: ChangeDetectorRef
       }
   
       const foundStar = this.nakshatham.find(star => star.SM_NameEng === starName);
-      console.log(foundStar, "data checking star");
-  console.log(foundStar.id,"ccccccccccccccccccc");
       return foundStar ? foundStar.Id : null;
     } catch (error) {
       console.error("Error fetching Nakshathram data:", error);
@@ -345,7 +346,6 @@ private cdr: ChangeDetectorRef
     const payLoad = { Type: 'Thithi', code: '' };
     this.masterservice.getThithilist(payLoad).subscribe((res: any) => {
       this.thithiList = res;
-      console.log(this.thithiList);
     });
   }
 
@@ -444,7 +444,6 @@ private cdr: ChangeDetectorRef
     const payLoad = { Type: 'ListStar', Code: '' };
     this.masterservice.getStarData(payLoad).subscribe((res) => {
       this.nakshatham = res;
-      console.log(this.nakshatham);
     });
   }
 
@@ -488,12 +487,9 @@ private cdr: ChangeDetectorRef
       );
     }
 
-    console.log(this.selectedVazhipadItem);
     if (this.selectedVazhipadItem) {
-      console.log(this.selectedVazhipadItem);
       this.form.get('Vazhid')?.setValue(this.selectedVazhipadItem.VM_Id);
       const vazhipadCode = this.selectedVazhipadItem.VM_Code;
-      console.log(vazhipadCode);
       this.fetchVazhipadDetails(vazhipadCode);
       this.getBlockingvazipadDate(this.selectedVazhipadItem.VM_Id);
       this.getDatamasterdateCheck(this.selectedVazhipadItem.VM_Id)
@@ -506,7 +502,6 @@ private cdr: ChangeDetectorRef
     this.masterservice
       .getVazhipadeByCode(vazhipadcode)
       .subscribe((res: any) => {
-        console.log(res, 'vazhipad details');
         if (res[0].VM_Amt != 0) {
           this.form.get('Rate')?.setValue(res[0].VM_Amt);
         } else {
@@ -519,31 +514,24 @@ private cdr: ChangeDetectorRef
         const booking = res[0].VM_Booking;
         const receipt = res[0].VM_Receipt;
         this.VM_MaxNo=res[0].VM_MaxNo;
-        console.log(this.VM_MaxNo,"vVM_MaxNo value")
-        // if(this.VM_MaxNo>0){
        
           this.form.get("VM_MaxNo")?.setValue(this.VM_MaxNo);
-        // }else{
-        //   this.form.get("VM_MaxNo")?.setValue(0);
-        // }
+        
         
         this.calculateTotalAmount();
         this.masterservice
           .getVazhipadByCodeForDiety(vazhipadcode)
           .subscribe((data: any) => {
             this.prathishtaOptions = data;
-            console.log(this.prathishtaOptions,"prathista options dataaaaaaaaaaaaaaaaa check mlyalm");
             if (this.prathishtaOptions.length > 0) {
               if (this.lang === 'en') {
                 const defaultPrathishta = this.prathishtaOptions[0].PM_Name;
                 const defaultPrathishtaId = this.prathishtaOptions[0].PM_ID;
-                console.log(this.prathishtaOptions[0].PM_Name);
                 this.form.get('Prethista')?.setValue(defaultPrathishta);
                 this.form.get('PMid')?.setValue(defaultPrathishtaId);
               } else if (this.lang == 'ml') {
                 const defaultPrathishta = this.prathishtaOptions[0].PM_RegName;
                 const defaultPrathishtaId = this.prathishtaOptions[0].PM_ID;
-                console.log(this.prathishtaOptions[0].PM_RegName);
                 this.form.get('Prethista')?.setValue(defaultPrathishta);
                 this.form.get('PMid')?.setValue(defaultPrathishtaId);
               }
@@ -578,14 +566,12 @@ private cdr: ChangeDetectorRef
     // Fetch seasonal date validation data
     this.masterservice.getSeasonalVazhipadDateCheck(vid).subscribe({
       next: (data) => {
-        console.log(data, 'Seasonal Vazhipad Date Check Response');
 
         if (data && data.length > 0) {
           this.seasonalDates = {
             fromDate: data[0].VS_FromDate,
             toDate: data[0].VS_ToDate,
           };
-          console.log(this.seasonalDates, 'Seasonal Dates');
         } else {
           this.seasonalDates = null// Clear previous data if no seasonal range is returned
         }
@@ -611,7 +597,6 @@ private cdr: ChangeDetectorRef
   validateAndSubmit() {
     const enteredFromDate = this.form.get('VazhipadDate')?.value;
     const enteredToDate = this.form.get('EndDate')?.value;
-    console.log(enteredFromDate, enteredToDate, 'entered dates');
 
     // Seasonal date validation
     if (this.seasonalDates) {
@@ -626,7 +611,6 @@ private cdr: ChangeDetectorRef
       if (
         seasonaldateValidate === false
       ) {
-        console.log(seasonaldateValidate, "vaidation after")
         this.notification.showError(
           `The selected dates are not within the allowed range `,
           'Invalid Dates'
@@ -634,11 +618,9 @@ private cdr: ChangeDetectorRef
         return; // Stop submission
       }
     }
-    console.log(this.form.valid, "vaidate forms sssssssssssssssssssssss")
     // Proceed with form submission if validation passes
     if (this.form.valid && this.devotees.valid) {
       const formValues = this.form.value;
-      console.log(formValues, "forms valuessssssssssssssssssssssssssssssssssssssssssssssssssssssss")
       const devoteeArray = formValues.devotees.map((devotee: any) => ({
         Slno: '',
         PMid: formValues.PMid,
@@ -683,7 +665,6 @@ private cdr: ChangeDetectorRef
         });
       });
 
-      console.log(finalArray, "data with additions added newly");
       const VM_MaxNo=this.VM_MaxNo
       this.dialogRef.close({finalArray,VM_MaxNo});
     } else {
@@ -722,11 +703,9 @@ private cdr: ChangeDetectorRef
     const [day, month, year] = enteredToDate.split('-').map(Number);
     const endDate = new Date(year, month - 1, day);
     const enteredToDates = this.formatToDDMMYYYYDate(endDate)
-    console.log(seasonalFromDates, seasonalToDates, enteredFromDates, enteredToDates, "after data formt ")
-    console.log(typeof (seasonalFromDates), typeof (seasonalToDates), typeof (enteredFromDates), typeof (enteredToDates), "after data formt types ")
-    console.log(enteredFromDates >= seasonalFromDates &&
-      enteredToDates <= seasonalToDates &&
-      enteredFromDates <= enteredToDates, "to know the output ");
+    // console.log(enteredFromDates >= seasonalFromDates &&
+    //   enteredToDates <= seasonalToDates &&
+    //   enteredFromDates <= enteredToDates, "to know the output ");
 
     return (
       enteredFromDates >= seasonalFromDates &&
@@ -753,230 +732,231 @@ private cdr: ChangeDetectorRef
     this.masterservice.getMalayalamMonthList(payLoad).subscribe({
       next: (data) => {
         this.malayalamMonthList = data;
-        console.log(this.malayalamMonthList);
       },
     });
   }
 
+
+
   getmultidayfilterData() {
-    const engMonth = this.multidayFilterForm.get('EngMonth')?.value;
-    const malMonth = this.multidayFilterForm.get('MalMonth')?.value;
-    const star = this.multidayFilterForm.get('Star')?.value;
-    const englishday = this.multidayFilterForm.get('EngishDay')?.value;
-    const malday = this.multidayFilterForm.get('MalDay')?.value;
-    const thithi = this.multidayFilterForm.get('Thithi')?.value;
-    this.form.patchValue({
-      Mday: engMonth,
-      NalBy: star,
-      Mmonth: malMonth,
-      SearchBy: thithi
-    });
-    console.log(englishday);
-    let type: string | null = null;
-    if (star && englishday && !engMonth && !malMonth && !malday && !thithi) {
-      type = 'EDayStar';
-    } else if (
-      star &&
-      malday &&
-      malMonth &&
-      !engMonth &&
-      !englishday &&
-      !thithi
-    ) {
-      type = 'StarMDayMDate';
-    } else if (
-      star &&
-      engMonth &&
-      !malMonth &&
-      !englishday &&
-      !malday &&
-      !thithi
-    ) {
-      type = 'StarDay';
-    } else if (
-      star &&
-      !engMonth &&
-      !malMonth &&
-      !englishday &&
-      !malday &&
-      !thithi
-    ) {
-      type = 'Star';
-    } else if (
-      malMonth &&
-      star &&
-      !engMonth &&
-      !englishday &&
-      !malday &&
-      !thithi
-    ) {
-      type = 'MalStar';
-    } else if (
-      malMonth &&
-      star &&
-      engMonth &&
-      !englishday &&
-      !malday &&
-      !thithi
-    ) {
-      type = 'Both';
-    } else if (
-      star &&
-      malday &&
-      !engMonth &&
-      !malMonth &&
-      !englishday &&
-      !thithi
-    ) {
-      type = 'MDaystar';
-    } else if (
-      star &&
-      engMonth &&
-      englishday &&
-      !malMonth &&
-      !malday &&
-      !thithi
-    ) {
-      type = 'StarDayEngDate';
-    } else if (
-      malMonth &&
-      !star &&
-      !engMonth &&
-      !englishday &&
-      !malday &&
-      !thithi
-    ) {
-      type = 'MalMonth';
-    } else if (
-      malMonth &&
-      engMonth &&
-      !star &&
-      !englishday &&
-      !malday &&
-      !thithi
-    ) {
-      type = 'MalEng';
-    } else if (
-      malday &&
-      malMonth &&
-      !star &&
-      !engMonth &&
-      !englishday &&
-      !thithi
-    ) {
-      type = 'MDayMDate';
-    } else if (
-      malday &&
-      malMonth &&
-      engMonth &&
-      !star &&
-      !englishday &&
-      !thithi
-    ) {
-      type = 'MDayMDateEDay';
-    } else if (
-      engMonth &&
-      !star &&
-      !malMonth &&
-      !englishday &&
-      !malday &&
-      !thithi
-    ) {
-      type = 'EngDay';
-    } else if (engMonth && englishday) {
-      type = 'DayEngDate';
-    } else if (
-      englishday &&
-      !star &&
-      !engMonth &&
-      !malMonth &&
-      !malday &&
-      !thithi
-    ) {
-      type = 'EngDate';
-    }else if (
-      thithi &&
-      malMonth &&
-      !star &&
-      !engMonth &&   
-      !englishday &&
-      !malday
-    ) {
-      type = 'MalThithi';
-    } 
-    else if (
-      thithi &&
-      !star &&
-      !engMonth &&
-      !malMonth &&
-      !englishday &&
-      !malday
-    ) {
-      type = 'Thithi';
-    } else if (
-      !thithi &&
-      star &&
-      engMonth &&
-      !malMonth &&
-      !englishday &&
-      malday
-    ) {
-      type = 'StarDayMDate';
-    } else if (
-      !thithi &&
-      !star &&
-      engMonth &&
-      !malMonth &&
-      !englishday &&
-      malday
-    ) {
-      type = 'DayMDate';
-    } else if (
-      !thithi &&
-      !star &&
-      !engMonth &&
-      !malMonth &&
-      !englishday &&
-      malday
-    ) {
-      type = 'MDate';
-    } else {
-      type = 'NULL';
-    }
 
-    const formattedDate = this.datePipe.transform(
-      this.form.get('VazhipadDate')?.value,
-      'dd-MM-yyyy'
-    );
-    const payLoad = {
-      ...this.multidayFilterForm.value,
-      Type: type,
-      NoofDays: this.form.get('NoOfDays')?.value,
-      VazhipadDate: formattedDate,
-    };
-    console.log(payLoad, "multiday filter console");
-    this.masterservice.getMultidyaFilterinddata(payLoad).subscribe({
-      next: (data: multiDayFilter) => {
-        console.log(data);
-        const dayList = Array.isArray(data) ? data : [data];
-        this.updatedDayList = Array.isArray(data) ? data : [data];
-        console.log(this.updatedDayList);
-        // this.multiDayList = Array.isArray(data) ? data : [data];
+    // const engMonth = this.multidayFilterForm.get('EngMonth')?.value;
+    // const malMonth = this.multidayFilterForm.get('MalMonth')?.value;
+    // const star = this.multidayFilterForm.get('Star')?.value;
+    // const englishday = this.multidayFilterForm.get('EngishDay')?.value;
+    // const malday = this.multidayFilterForm.get('MalDay')?.value;
+    // const thithi = this.multidayFilterForm.get('Thithi')?.value;
+    // this.form.patchValue({
+    //   Mday: engMonth,
+    //   NalBy: star,
+    //   Mmonth: malMonth,
+    //   SearchBy: thithi
+    // });
+    // let type: string | null = null;
+    
 
-        this.updatedDayList = dayList.map((item: any) => ({
-          ...item,
-          selected: true, // Set the initial value to true for all dates
-          disabled:false
-        }));
-    console.log(this.updatedDayList,"updated list to validate qty");
+
+
+    // if (star && englishday && !engMonth && !malMonth && !malday && !thithi) {
+    //   type = 'EDayStar';
+    // } else if (
+    //   star &&
+    //   malday &&
+    //   malMonth &&
+    //   !engMonth &&
+    //   !englishday &&
+    //   !thithi
+    // ) {
+    //   type = 'StarMDayMDate';
+    // } else if (
+    //   star &&
+    //   engMonth &&
+    //   !malMonth &&
+    //   !englishday &&
+    //   !malday &&
+    //   !thithi
+    // ) {
+    //   type = 'StarDay';
+    // } else if (
+    //   star &&
+    //   !engMonth &&
+    //   !malMonth &&
+    //   !englishday &&
+    //   !malday &&
+    //   !thithi
+    // ) {
+    //   type = 'Star';
+    // } else if (
+    //   malMonth &&
+    //   star &&
+    //   !engMonth &&
+    //   !englishday &&
+    //   !malday &&
+    //   !thithi
+    // ) {
+    //   type = 'MalStar';
+    // } else if (
+    //   malMonth &&
+    //   star &&
+    //   engMonth &&
+    //   !englishday &&
+    //   !malday &&
+    //   !thithi
+    // ) {
+    //   type = 'Both';
+    // } else if (
+    //   star &&
+    //   malday &&
+    //   !engMonth &&
+    //   !malMonth &&
+    //   !englishday &&
+    //   !thithi
+    // ) {
+    //   type = 'MDaystar';
+    // } else if (
+    //   star &&
+    //   engMonth &&
+    //   englishday &&
+    //   !malMonth &&
+    //   !malday &&
+    //   !thithi
+    // ) {
+    //   type = 'StarDayEngDate';
+    // } else if (
+    //   malMonth &&
+    //   !star &&
+    //   !engMonth &&
+    //   !englishday &&
+    //   !malday &&
+    //   !thithi
+    // ) {
+    //   type = 'MalMonth';
+    // } else if (
+    //   malMonth &&
+    //   engMonth &&
+    //   !star &&
+    //   !englishday &&
+    //   !malday &&
+    //   !thithi
+    // ) {
+    //   type = 'MalEng';
+    // } else if (
+    //   malday &&
+    //   malMonth &&
+    //   !star &&
+    //   !engMonth &&
+    //   !englishday &&
+    //   !thithi
+    // ) {
+    //   type = 'MDayMDate';
+    // } else if (
+    //   malday &&
+    //   malMonth &&
+    //   engMonth &&
+    //   !star &&
+    //   !englishday &&
+    //   !thithi
+    // ) {
+    //   type = 'MDayMDateEDay';
+    // } else if (
+    //   engMonth &&
+    //   !star &&
+    //   !malMonth &&
+    //   !englishday &&
+    //   !malday &&
+    //   !thithi
+    // ) {
+    //   type = 'EngDay';
+    // } else if (engMonth && englishday) {
+    //   type = 'DayEngDate';
+    // } else if (
+    //   englishday &&
+    //   !star &&
+    //   !engMonth &&
+    //   !malMonth &&
+    //   !malday &&
+    //   !thithi
+    // ) {
+    //   type = 'EngDate';
+    // }else if (
+    //   thithi &&
+    //   malMonth &&
+    //   !star &&
+    //   !engMonth &&   
+    //   !englishday &&
+    //   !malday
+    // ) {
+    //   type = 'MalThithi';
+    // } 
+    // else if (
+    //   thithi &&
+    //   !star &&
+    //   !engMonth &&
+    //   !malMonth &&
+    //   !englishday &&
+    //   !malday
+    // ) {
+    //   type = 'Thithi';
+    // } else if (
+    //   !thithi &&
+    //   star &&
+    //   engMonth &&
+    //   !malMonth &&
+    //   !englishday &&
+    //   malday
+    // ) {
+    //   type = 'StarDayMDate';
+    // } else if (
+    //   !thithi &&
+    //   !star &&
+    //   engMonth &&
+    //   !malMonth &&
+    //   !englishday &&
+    //   malday
+    // ) {
+    //   type = 'DayMDate';
+    // } else if (
+    //   !thithi &&
+    //   !star &&
+    //   !engMonth &&
+    //   !malMonth &&
+    //   !englishday &&
+    //   malday
+    // ) {
+    //   type = 'MDate';
+    // } else {
+    //   type = 'NULL';
+    // }
+
+    // const formattedDate = this.datePipe.transform(
+    //   this.form.get('VazhipadDate')?.value,
+    //   'dd-MM-yyyy'
+    // );
+    // const payLoad = {
+    //   ...this.multidayFilterForm.value,
+    //   Type: "NULL",
+    //   NoofDays: this.form.get('NoOfDays')?.value,
+    //   VazhipadDate: formattedDate,
+    // };
+
+
+    // this.masterservice.getMultidyaFilterinddata(payLoad).subscribe({
+    //   next: (data: multiDayFilter) => {
+    //     this.dayList = Array.isArray(data) ? data : [data];
+    //     this.updatedDayList = Array.isArray(data) ? data : [data];
+    //     // this.multiDayList = Array.isArray(data) ? data : [data];
+
+        // this.updatedDayList = this.dayList.map((item: any) => ({
+        //   ...item,
+        //   selected: true, // Set the initial value to true for all dates
+        //   disabled:false
+        // }));
     if(this.form.get('Vazhid')?.value && this.form.get('PMid')?.value && +this.form.get('VM_MaxNo')?.value>0 ){
     this.validateallvazhipaddatewithqty(this.updatedDayList);
     }
 
 
-        console.log(this.multiDayList, 'day listtttttttttttttttttttt');
         this.multiDayList = [...this.updatedDayList];
-        console.log(this.multiDayList, 'day listtttttttttttttttttttt after selct added');
         // this
         this.validateVazhipadDate()
         //finding end date
@@ -1000,16 +980,38 @@ private cdr: ChangeDetectorRef
 //   });
 // }
 
-          console.log('Last Date:', endDate);
-          console.log(this.form.get('VazhipadDate'))
         }
-      },
-    });
+    //   },
+    // });
   }
 
   onSearchClick() {
-    this.getmultidayfilterData();
-  }
+
+const engMonth = this.multidayFilterForm.get('EngMonth')?.value;
+    const malMonth = this.multidayFilterForm.get('MalMonth')?.value;
+    const star = this.multidayFilterForm.get('Star')?.value;
+    const englishday = this.multidayFilterForm.get('EngishDay')?.value;
+    const malday = this.multidayFilterForm.get('MalDay')?.value;
+    const thithi = this.multidayFilterForm.get('Thithi')?.value;
+    this.form.patchValue({
+      Mday: engMonth,
+      NalBy: star,
+      Mmonth: malMonth,
+      SearchBy: thithi
+    });
+
+
+
+this.updatedDayList = this.searchmultidaylist.filter(item => {
+return (!star || item.nal === star) &&
+         (!malMonth || item.mmon === malMonth) &&
+         (!engMonth || item.day === engMonth) &&
+         (!malday || item.mday === malday) &&
+         (!englishday || item.Eday == englishday) &&
+         (!thithi || item.Thithi === thithi);
+});
+this.getmultidayfilterData()
+}
 
   onCancelClick() {
     this.multidayFilterForm.patchValue({
@@ -1020,8 +1022,7 @@ private cdr: ChangeDetectorRef
       MalDay: '',
       Thithi: '',
     });
-    this.getmultidayfilterData();
-    console.log('Filters have been cleared and the form reset.');
+    // this.getmultidayfilterData();
   }
 
   validateDevoteeName() {
@@ -1053,13 +1054,8 @@ private cdr: ChangeDetectorRef
   }
 
   onCheckboxChange(index: number): void {
-    console.log(index,"index");
-    console.log(this.updatedDayList,"updated list");
-    console.log( this.updatedDayList[index].selected ,"selected")
-    console.log(!this.updatedDayList[index].selected,"not selected");
     this.updatedDayList[index].selected = this.updatedDayList[index].selected;
     // this.allselecteddaylist=[...this.updatedDayList];
-    // console.log(this.allselecteddaylist, "All selected day list to show in array");
     // this.updatedDayList = [...this.updatedDayList];
     this.multiDayList = this.updatedDayList.filter((item) => item.selected);
     // this.updatedDayList = [...this.updatedDayList];
@@ -1074,7 +1070,6 @@ private cdr: ChangeDetectorRef
 
         // VazhipadDate: firstItem.edate1
       });
-      console.log('Last Date:', endDate);
     }
   }
 
@@ -1086,7 +1081,6 @@ private cdr: ChangeDetectorRef
     const vazhipadDateControl = this.form.get("VazhipadDate");
   
     if (!this.updatedDayList || this.updatedDayList.length === 0) {
-      console.log("No dates found to validate.");
       vazhipadDateControl?.setErrors(null);
       return;
     }
@@ -1097,7 +1091,6 @@ private cdr: ChangeDetectorRef
       return `${day}-${month}-${year}`;
     });
   
-    console.log("Formatted Selected Dates:", this.formattedDates);
   
     let errorMessages: string[] = [];
   
@@ -1107,7 +1100,6 @@ private cdr: ChangeDetectorRef
   
       this.formattedDates.forEach(dateStr => {
         const dayName = this.getDayName(dateStr);
-        console.log(`Date: ${dateStr} - Day: ${dayName}`);
   
         if (!this.allowedDays.includes(dayName)) {
           invalidDates.push({ date: dateStr, day: dayName });
@@ -1127,7 +1119,6 @@ private cdr: ChangeDetectorRef
         return date.toLocaleDateString("en-GB").split("/").join("-"); // Converts to dd-mm-yyyy
       });
   
-      console.log("Blocked Dates:", blockedDates);
   
       const blockedConflicts = this.formattedDates.filter(date => blockedDates.includes(date));
   
@@ -1169,7 +1160,6 @@ private cdr: ChangeDetectorRef
   getBlockingvazipadDate(vmId:any){
     const payLoad={Type:"BlockingALL",Code:vmId }
     this.masterservice.getMaster(payLoad).subscribe({next:(data)=>{
-    console.log(data,"datablocing");
     this.blockingArray=data;
     },error:(err)=>{
       console.log(err)
@@ -1180,13 +1170,9 @@ private cdr: ChangeDetectorRef
   getDatamasterdateCheck(vid:string){
     this.masterservice.getDayMastervazhipaddateCheck(vid).subscribe({
       next: (data) => {
-        console.log(data, "day master");
         // this.dayArray
-        console.log(data, "day master");
         const allowedDays = data.map((item: any) => item.Day);
         this.allowedDays = allowedDays.map(dayId => this.dayMapping[dayId] || 'Unknown');
-      console.log('Allowed Days (IDs):', allowedDays);
-      console.log('Allowed Days (Names):', this.allowedDays);
 
       },error:(err)=>{
           console.log(err);
@@ -1201,8 +1187,6 @@ private cdr: ChangeDetectorRef
 
 
   getNameAndStarByMobilenumber(){
-    console.log(this.mobileNumber,"mobile number data");
-   console.log(this.memberDevoteeCheck,"dsssssssssssssss");
     if(this.mobileNumber){
      // this.masterService.getMaster
     //  this.customerdetailsForBillingForm.patchValue({
@@ -1213,7 +1197,6 @@ private cdr: ChangeDetectorRef
        member:this.memberDevoteeCheck
      }
     //  this.receiptPrinrservice.setMobileNumber(data);
-     console.log('Mobile number sent:', this.mobileNumber);
      this.openBillingDialog(this.mobileNumber)
     }else{
      this.notification.showError("Please enter the valid mobile number and try again");
@@ -1232,10 +1215,8 @@ openBillingDialog(mobileNumber: any) {
 
     // Handle dialog result
     dialogRef.afterClosed().subscribe((result) => {
-      console.log('Selected Rows:', result);
       this.nameStarArray = result.selectedData;
       if (result) {
-       console.log(this.nameStarArray,"checking name star data")
        this.devotees.clear();
        this.nameStarArray.forEach((devotee:any) => {
         this.devotees.push(this.fb.group({
@@ -1308,10 +1289,7 @@ openBillingDialog(mobileNumber: any) {
 
 handleEnterOnStar(event: Event, index: number): void {
   event.preventDefault(); // Prevent default behavior
-  console.log("Pressed Enter on Star input at index:", index);
-  console.log("Current number of devotees:", this.devotees.length);
   if (index === this.devotees.length - 1) {
-    console.log("Adding new devotee...");
     this.addDevotee(); // Create new row
     // Wait for the DOM update
     setTimeout(() => {
@@ -1321,11 +1299,9 @@ handleEnterOnStar(event: Event, index: number): void {
         const nameInputsArray = this.nameInputs.toArray();
         const newIndex = nameInputsArray.length - 1; // Last row index
 
-        console.log("New row index:", newIndex);
         
         if (newIndex >= 0) {
           nameInputsArray[newIndex].nativeElement.focus();
-          console.log("Focused on new row Name input");
         }
       }, 100); // Extra delay to allow rendering
     }, 0);
@@ -1382,9 +1358,9 @@ qtyChange(){
   const maxqty=this.form.get('VM_MaxNo')?.value;
   const pmid=this.form.get('PMid')?.value;
   const vazhId=this.form.get('Vazhid')?.value;
-if(maxqty>0 && pmid && vazhId ){
+  if(maxqty>0 && pmid && vazhId ){
   this.validateallvazhipaddatewithqty(this.updatedDayList);
-}
+  }
 }
 
 validateallvazhipaddatewithqty(updatedDayList: any[]) {
@@ -1449,6 +1425,43 @@ validateallvazhipaddatewithqty(updatedDayList: any[]) {
     }
   });
 }
+
+
+serachmultidayFiltering(){
+ const formattedDate = this.datePipe.transform(
+      this.form.get('VazhipadDate')?.value,
+      'dd-MM-yyyy'
+    );
+    const payLoad = {
+      ...this.multidayFilterForm.value,
+      Type: "NULL",
+      NoofDays: this.form.get('NoOfDays')?.value,
+      VazhipadDate: formattedDate,
+    };
+
+
+    this.masterservice.getMultidyaFilterinddata(payLoad).subscribe({
+      next: (data: multiDayFilter) => {
+        this.dayList = Array.isArray(data) ? data : [data];
+        this.searchmultidaylist = Array.isArray(data) ? data : [data];
+        // this.multiDayList = Array.isArray(data) ? data : [data];
+
+        this.searchmultidaylist = this.dayList.map((item: any) => ({
+          ...item,
+          selected: true, // Set the initial value to true for all dates
+          disabled:false
+        }));
+        this.updatedDayList=[...this.searchmultidaylist]
+        this.getmultidayfilterData()
+    // if(this.form.get('Vazhid')?.value && this.form.get('PMid')?.value && +this.form.get('VM_MaxNo')?.value>0 ){
+    // this.validateallvazhipaddatewithqty(this.updatedDayList);
+    // }
+    // this.getmultidayfilterData()
+  },
+})
+
+}
+
 
 
 

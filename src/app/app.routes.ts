@@ -1,3 +1,4 @@
+import { ReportVazhipadTransactionComponent } from './features/Report/report-vazhipad-transaction/report-vazhipad-transaction.component';
 import { VihidhamlistComponent } from './features/Report/vihidhamlist/vihidhamlist.component';
 import { ReportDayendComponent } from './features/Report/report-dayend/report-dayend.component';
 import { DevoteeMasterComponent } from './features/master/devotee-master/devotee-master.component';
@@ -206,6 +207,7 @@ export const routes: Routes = [
   {path:'vihiham-list',component:VihidhamlistComponent},
   {path:'vihiham-list',component:VihidhamlistComponent},
   {path:'report-endowment',component:ReportEndowmentComponent},
+  {path:'report-vazhipadonly',component:ReportVazhipadTransactionComponent},
   {
     path: '**',
     pathMatch: 'full',

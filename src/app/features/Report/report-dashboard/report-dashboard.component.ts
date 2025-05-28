@@ -125,7 +125,7 @@ export class ReportDashboardComponent {
     // )}&fromDate=${encodeURIComponent(
     //   payLoad.FromDate
     // )}&toDate=${encodeURIComponent(payLoad.ToDate)}`;
-if(prathista || vazhipad){
+if(prathista && vazhipad){
   const queryString = `?Prathishta=${encodeURIComponent(
     prathista
   )}&Vazhipad=${encodeURIComponent(
@@ -135,7 +135,18 @@ if(prathista || vazhipad){
     payLoad.FromDate
   )}&toDate=${encodeURIComponent(payLoad.ToDate)}`;
    this.getVazhipadwisereprt(queryString)
-}else{
+}
+else if(vazhipad){
+ const queryString = `?Vazhipad=${encodeURIComponent(
+    vazhipad
+  )}
+  &fromDate=${encodeURIComponent(
+    payLoad.FromDate
+  )}&toDate=${encodeURIComponent(payLoad.ToDate)}`;
+   this.getVazhipadonly(queryString)
+}
+
+else{
   const queryString = `?type=${encodeURIComponent(
     payLoad.Type
   )}&fromDate=${encodeURIComponent(
@@ -245,6 +256,11 @@ if(prathista || vazhipad){
   getVazhipadwisereprt(queryString:any){
      if(queryString){
       this.newTab = window.open(`#/vazhipadwise${queryString}`, '_blank');
+    }
+  }
+  getVazhipadonly(queryString:any){
+     if(queryString){
+      this.newTab = window.open(`#/report-vazhipadonly${queryString}`, '_blank');
     }
   }
   // format date as the dd/mm/yyyy

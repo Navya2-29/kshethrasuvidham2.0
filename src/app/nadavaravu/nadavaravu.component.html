@@ -295,7 +295,7 @@
 
 <!-- oolanbarra start nadavaravu recipt and duplicte -->
 
-<!-- <div id="receipt" style="width: 6in; height: 4in; display: none; position: relative; font-size: 12px; font-family: Arial, sans-serif;">
+<div id="receipt" style="width: 6in; height: 4in; display: none; position: relative; font-size: 12px; font-family: Arial, sans-serif;">
   <div style="position: absolute; left: 5cm; top: 3.6cm;">{{ itemName }}</div>
   <div style="position: absolute; left: 11cm; top: 3.2cm;">{{ todayDate | date: 'dd-MM-yyyy' }}</div>
   <div style="position: absolute; left: 11cm; top: 3.6cm;">{{ nadavaravForm.get('BillNo')?.value }}</div>
@@ -315,20 +315,19 @@
   <div style="position: absolute; left: 10cm; top: 5.5cm;">{{dupliacteBillData?.Qty }}</div>
   <div style="position: absolute; left: 12.5cm; top: 5.5cm;">{{ dupliacteBillData?.Receipt_Amt  }}</div>
   <div style="position: absolute; left: 11.5cm; top: 7.5cm;">{{ dupliacteBillData?.Receipt_Amt  }}</div>
-</div> -->
+</div>
 <!-- end of ollanbara -->
 
 
 <!-- gramasamudayaram duplicate and recipt for nadavaravu -->
 
-<div id="receipt" style="width: 6in; height: 4in; display: none; position: relative; font-size: 12px; font-family: Arial, sans-serif;">
+<!-- <div id="receipt" style="width: 6in; height: 4in; display: none; position: relative; font-size: 12px; font-family: Arial, sans-serif;">
   <div style="position: absolute; left: 2cm; top: 4.3cm;font-size:9pt;">{{ itemName }}</div>
   <div style="position: absolute; left: 10.1cm; top: 3.8cm;font-size:9pt;">{{ todayDate | date: 'dd-MM-yyyy' }}</div>
   <div style="position: absolute; left: 10.1cm; top: 4.3cm;font-size:9pt;">{{ nadavaravForm.get('BillNo')?.value }}</div>
   <div style="position: absolute; left: 1.8cm; top: 6.1cm;font-size:9pt;margin-bottom: 0;">{{ nadavaravForm.get('Name')?.value }}
-    <p style="font-size:8pt;margin-bottom: 0;margin-top: 0px;padding-top: 0px;padding-bottom: 0px;" >{{nadavaravForm.get('Address')?.value }}</p>
-  <!-- <p style="font-family:Manjari;margin-bottom: 0;font-family:Manjari;margin-top: 0px;padding-top: 0px;padding-bottom: 0px;">{{"Quantity" | translate}}:{{nadavaravForm.get('Qty')?.value }}</p> -->
-  <p style="font-family:Manjari;font-size:8pt;margin-bottom: 0;margin-top: 0px;padding-top: 0px;padding-bottom: 0px;">{{"Weight" | translate}}:{{nadavaravForm.get('weight')?.value }}</p>
+    <p style="font-size:8pt;margin-bottom: 0;margin-top: 0px;padding-top: 0px;padding-bottom: 0px;" >{{nadavaravForm.get('Address')?.value }}</p> -->
+  <!-- <p style="font-family:Manjari;font-size:8pt;margin-bottom: 0;margin-top: 0px;padding-top: 0px;padding-bottom: 0px;">{{"Weight" | translate}}:{{nadavaravForm.get('weight')?.value }}</p>
   <p style="font-family:Manjari;font-size:8pt;margin-bottom: 0;margin-top: 0px;padding-top: 0px;padding-bottom: 0px;">{{"unit" | translate}}:{{nadavaravForm.get('unit')?.value }}</p>
 
 </div>
@@ -336,7 +335,6 @@
   <div style="position: absolute; left: 10.2cm; top: 6.1cm;font-size:9pt;">{{ nadavaravForm.get('Qty')?.value }}</div>
   <div style="position: absolute; left: 12.2cm; top: 6.1cm;font-size:9pt;">{{ nadavaravForm.get('ReceiptAmount')?.value  }}</div>
   <div style="position: absolute;  left: 10cm; top: 8.4cm;font-weight: bold; font-size: 12pt;">{{ nadavaravForm.get('ReceiptAmount')?.value  }}</div>
-  <!-- <div style="position: absolute;  left: 3cm; top: 8cm;">{{numbertowordpipe.transform(nadavaravForm.get('ReceiptAmount')?.value)}}</div> -->
  <div style="position: absolute; left: 2cm; top: 8.4cm;font-size:8pt">User:{{name}}({{getTransactionType(nadavaravForm.get('TrnsMode')?.value )}})</div>
 
 </div>
@@ -346,10 +344,9 @@
  <div style="position: absolute; left: 10.1cm; top: 3.8cm;font-size:9pt;">{{ dupliacteBillData?.Billdate | date : "dd-MM-YYYY" }}</div>
   <div style="position: absolute; left: 10.1cm; top: 4.3cm;font-size:9pt;">{{ dupliacteBillData?.BillNo }}</div>
   <div style="position: absolute; left: 2cm; top: 6.1cm;">{{ dupliacteBillData?.Name }}
-   
-    <!-- <p style="font-family:Manjari;margin-bottom: 0;font-family:Manjari;margin-top: 0px;padding-top: 0px;padding-bottom: 0px;" >{{nadavaravForm.get('Address')?.value }}</p> -->
+    -->
 
-     <p style="font-size:8pt;margin-bottom: 0;margin-top: 0px;padding-top: 0px;padding-bottom: 0px;">{{"Weight" | translate}}:{{dupliacteBillData?.weight }}</p>
+     <!-- <p style="font-size:8pt;margin-bottom: 0;margin-top: 0px;padding-top: 0px;padding-bottom: 0px;">{{"Weight" | translate}}:{{dupliacteBillData?.weight }}</p>
   <p style="font-size:8pt;margin-bottom: 0;margin-top: 0px;padding-top: 0px;padding-bottom: 0px;">{{"unit" | translate}}:{{dupliacteBillData?.unit }}</p> 
 
   </div>
@@ -362,7 +359,7 @@
   <div style="position: absolute; left: 2cm; top: 8.9cm; ; ">
     Duplicate Bill
   </div>
-</div>
+</div> -->
 
 <!-- end of nadavaravu gramasamudayam -->
 

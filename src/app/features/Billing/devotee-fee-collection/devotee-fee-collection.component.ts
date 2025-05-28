@@ -7,6 +7,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { FormControl } from '@angular/forms';
 import { MasterService } from '../../../services/master/master.service';
 import { NotificationService } from '../../../services/notification/notification.service';
+import { map } from 'rxjs/operators';
+
 @Component({
   selector: 'app-devotee-fee-collection',
   standalone: true,
@@ -36,6 +38,8 @@ export class DevoteeFeeCollectionComponent implements OnInit {
   DevoteemobileNumber:string;
   devoteeFeeeCollectiondetails:any[];
   yearList: number[] = [];
+monthList: { Month: string }[] = [];
+monthString = '';
   toppingList: string[] = [
     'Jan',
     'Feb',
@@ -56,6 +60,9 @@ templeName: string | null = '';
 templeAddress: string | null = '';
 printerLayOut:string |null;
 receiptMonthYear: string = '';
+CounterId: string | null = '';
+logo:string | null = '';
+
   constructor(
     private ts: TranslateService,
     private masterService: MasterService,
@@ -74,7 +81,10 @@ receiptMonthYear: string = '';
     this.templeAddress = localStorage.getItem('Address');
     this.loginId = localStorage.getItem('LoginId')
     this.name=localStorage.getItem('name');
+    this.CounterId=localStorage.getItem('counterId');
     this.billNumberFormatDate = this.getCurrentDateMMYY();
+     this.logo = localStorage.getItem('Logo');
+
     this. today=new Date();
     this. formattedDate = this.today.toISOString().split('T')[0];
     this.todayDate=this.today.toISOString().split('T')[0];
@@ -218,13 +228,14 @@ receiptMonthYear: string = '';
 
   onSubmit() {
     if(this.feeCollctionForm.valid){
-
-   
     console.log(this.feeCollctionForm.value)
     const formData = this.feeCollctionForm.value
     console.log(formData, "dd");
     const totalAmount = formData.totalAmount;
     const amount = formData.Amount;
+    this.monthList=[...formData.vazhipadInfo];
+    this.monthString = this.monthList.map(item => item.Month).join(', ');
+    console.log(this.monthList,"aaaaaaaaaaaaaaaaaa")
     const updatedVazhipadInfo = formData.vazhipadInfo.map((item: any) => {
       return {
         ...item,
@@ -339,7 +350,7 @@ Reset(){
       // this.printReciept();
     }
     else if(this.printerLayOut=="thermal"){
-      this.prepareReceiptData();
+      // this.prepareReceiptData();
       this.printThermlRecipt();
     }
     else if(this.printerLayOut=="dotMetrix"){
@@ -411,65 +422,114 @@ printThermlRecipt(){
       <html>
         <head>
           <title>Print Receipt</title>
-           <style>
-            body {
+          <style>
+             body {
               margin: 10px;
               padding: 0;
-              font-family: Arial, sans-serif;
-              font-size: 10pt;
-              font-weight: bold;
+              
+             font-family:Manjari;
+              
               text-align: left;
             }
 
             .receipt-page {
-               position: relative;
-  width: 80mm;            /* Thermal printer width */
-  margin: 0 auto;
-  padding: 10px;
-  overflow: hidden;
-  border: 1px dashed #000;
-  page-break-after: always; /* If you're printing multiple pages */
+              position: relative;
+              width: 80mm;;
+              height: auto;
+              margin: 0 auto;
+              padding: 10px;
+              overflow: hidden;
+              page-break-after: auto;
+              // border: 1px dashed #000;
+              
             }
 
             .receipt-header {
-              font-size: 14pt;
+              font-size: 12pt;
               font-weight: bold;
               text-align: center;
-              margin-bottom: 5px;
+              margin-bottom: 2px;
+              font-family:Manjari;
             }
 
             .receipt-sub-header {
-              font-size: 12pt;
+              font-size: 6pt;
               text-align: center;
               margin-bottom: 5px;
+              font-family:Manjari;
+              // font-weight: bold;
             }
 
             hr {
               border: 0;
-              border-top: 1px solid black;
-              margin: 5px 0;
+              border-top: 1px dashed black;
+              margin: 8px 0px;
             }
+              .receipt-contentbill{
+              margin-top:10px;
+              }
 
             .receipt-content {
               text-align: left;
-              font-size: 9pt;
-              margin-bottom: 3px;
+              font-size: 10pt;
+              margin-bottom: 5px;
+              margin-top:10px;
+              margin-top:5px;
+              font-family:Manjari;
+              font-weight: bold;
+            }
+              .receipt-content-vd{
+              text-align: left;
+              font-size: 12pt;
+              margin-bottom: 10px;
+              margin-top:10px;
+              
+              font-family:Manjari;
+              font-weight: bold;
+              }
+              .receipt-contents {
+              text-align: left;
+              font-size: 10pt;
+              
+              margin-top:10px;
+              font-family:Manjari;
             }
 
             .receipt-total {
-              margin-top: 10px;
+              margin-top: 10px 0px;
+               margin-bottom: 10px 0px;
               font-weight: bold;
-              font-size: 11pt;
+              font-size: 12pt;
               border-top: 1px solid #000;
-              padding-top: 5px;
+              border-bottom: 1px dashed #000;
+              padding-bottom: 10px;
+              padding-top: 10px;
               text-align: left;
             }
-
-            .receipt-footer {
+           .receipt-rq{
+            margin-top: 10px;
+              font-weight: bold;
+              font-size: 11pt;
+              
+              // padding-top: 5px;
+              text-align: left;
+            }
+              .receipt-footer-ut{
               font-size: 9pt;
-              margin-top: 10px;
+              margin-top: 2px;
               font-style: italic;
               text-align: left;
+              }
+            .receipt-footer {
+              font-size: 9pt;
+              margin-top: 3px;
+              font-style: italic;
+              text-align: left;
+            }
+            .nd{
+            font-size: 18pt;
+            font-weight:bold;
+
             }
           </style>
         </head>

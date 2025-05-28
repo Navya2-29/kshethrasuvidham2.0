@@ -43,17 +43,8 @@
 
   <div class="container" >
 
-   
-
-
-
     <div class="row">
-      <div class="vazhipad-details" class="col-md-6">
- 
-       
-
-
-        
+      <div class="vazhipad-details" class="col-md-6"> 
           <div >
 
 <div class="searchmember" style="display: flex; align-items: center; gap: 10px;">
@@ -161,7 +152,7 @@
                           <ng-container *ngIf="lang=='ml'">
                             <option
                           *ngFor="let prathishta of prathishtaOptions"
-                          value="prathishta.PM_RegName"
+                          [value]="prathishta.PM_RegName"
                         >
                           {{prathishta.PM_RegName}}
                         </option>
@@ -401,13 +392,13 @@
                   <select class="form-control select-star"
                   style="width: 100%; height: 30.6px" formControlName="EngMonth">
                   <option value="">-{{"Select" |translate}}-</option>
-                    <option value="Sunday">{{"Day.SUNDAY" |translate}}</option>
-                    <option value="Monday">{{"Day.MONDAY" | translate}}</option>
-                    <option value="Tuesday">{{"Day.TUESDAY" | translate}}</option>
-                    <option value="wednesday">{{"Day.WEDNESDAY" | translate}}</option>
-                    <option value="Thursday">{{"Day.THURSDAY" | translate}}</option>
-                    <option value="Friday">{{"Day.FRIDAY" | translate}}</option>
-                    <option value="saturday">{{"Day.SATURDAY" |translate }}</option>
+                    <option value="SUNDAY">{{"Day.SUNDAY" |translate}}</option>
+                    <option value="MONDAY">{{"Day.MONDAY" | translate}}</option>
+                    <option value="TUESDAY">{{"Day.TUESDAY" | translate}}</option>
+                    <option value="WEDNESDAY">{{"Day.WEDNESDAY" | translate}}</option>
+                    <option value="THURSDAY">{{"Day.THURSDAY" | translate}}</option>
+                    <option value="FRIDAY">{{"Day.FRIDAY" | translate}}</option>
+                    <option value="SATURDAY">{{"Day.SATURDAY" |translate }}</option>
                   </select>
                 </td>
               </tr>
@@ -472,7 +463,7 @@
           <table class="table" style="width: 100%; ">
             <tbody>
               <tr *ngFor="let day of updatedDayList; let i = index">
-                <td><input type="checkbox" [checked]="day.selected" (change)="onCheckboxChange(i)" />&nbsp;{{ day.date }}  </td>
+                <td><input type="checkbox" [(ngModel)]="day.selected"  (change)="onCheckboxChange(i)" />&nbsp;{{ day.date }}  </td>
               </tr>
               <tr *ngIf="updatedDayList.length==0">
                 <td>No day found</td>

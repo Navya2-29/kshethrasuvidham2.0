@@ -1373,7 +1373,7 @@ printReceiptsThermal(data: any) {
       ${this.getTimeForBill(group.VTime)}
     </div>
   ` : ''}
-  ${group.thithi ? `<div class="receipt-footer">Thhithi : ${group.thithi}</div>` : ''}
+  ${group.thithi ? `<div class="receipt-footer">Thithi : ${group.thithi}</div>` : ''}
             ${group.nalBy ? `<div class="receipt-footer">Star: ${group.nalBy}</div>` : ''}
             ${group.mday ? `<div class="receipt-footer">Day: ${group.mday}</div>` : ''}
             ${group.mmonth ? `<div class="receipt-footer">Month: ${group.mmonth}</div>` : ''}</div>

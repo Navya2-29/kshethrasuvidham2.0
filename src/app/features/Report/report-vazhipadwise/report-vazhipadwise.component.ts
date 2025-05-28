@@ -2,8 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ReportService } from '../service/report.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+
 import { jsPDF } from 'jspdf'; 
 import {ReportData} from '../../../models/poornam-report'
 import { HeaderComponent } from '../../../core/layout/header/header.component';
@@ -12,7 +11,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-// import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { PrintreportService } from '../../../shared/service/printreport.service';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
@@ -27,7 +25,7 @@ interface ConsolidatedData {
   standalone: true,
   imports: [CommonModule,
     SpinnerComponent,
-    MatTableModule,MatPaginatorModule,HeaderComponent,TranslateModule,MatTooltipModule,MatFormFieldModule, MatInputModule],
+HeaderComponent,TranslateModule,MatTooltipModule,MatFormFieldModule, MatInputModule],
   templateUrl: './report-vazhipadwise.component.html',
   styleUrls: ['./report-vazhipadwise.component.css','/src/assets/styles/report.style.css'],
 })

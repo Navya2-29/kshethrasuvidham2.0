@@ -114,7 +114,9 @@ export class EndowmentBillingComponent {
   memberDevoteeCheck:boolean=false;
    templeName: string | null = '';
   templeAddress: string | null = '';
-  
+  searchmultidaylist:any[];
+  dayList:any[]=[];
+  totalqty:any;
   logo:string | null;
   templeLogoUrl: string = '';
     loginId: string | null = '';
@@ -329,17 +331,63 @@ this.userForm=this.fb.group({
     this.setupAutocomplete();
     this.getNakshthram();
     this.getThithiList();
-    this.getmultidayfilterData();
+     this.serachmultidayFiltering()
+    // this.getmultidayfilterData();
     this.getMalayalamMonthList();
     this.onDropdownChange();
     this.form.get('VazhipadDate')?.valueChanges.subscribe((value) => {
-      this.getmultidayfilterData();
+      // this.getmultidayfilterData();
+            this.serachmultidayFiltering()
+
     });
     this.form.get('NoOfDays')?.valueChanges.subscribe((value) => {
-      this.getmultidayfilterData();
+      // this.getmultidayfilterData();
+            this.serachmultidayFiltering()
+
     });
 
   }
+
+
+serachmultidayFiltering(){
+ const formattedDate = this.datePipe.transform(
+      this.form.get('VazhipadDate')?.value,
+      'dd-MM-yyyy'
+    );
+    const payLoad = {
+      ...this.multidayFilterForm.value,
+      Type: "NULL",
+      NoofDays: this.form.get('NoOfDays')?.value,
+      VazhipadDate: formattedDate,
+    };
+
+    console.log(payLoad, "multiday filter console");
+
+    this.masterservice.getMultidyaFilterinddata(payLoad).subscribe({
+      next: (data: multiDayFilter) => {
+        console.log(data,"multiday filtering check first");
+        this.dayList = Array.isArray(data) ? data : [data];
+        this.searchmultidaylist = Array.isArray(data) ? data : [data];
+        console.log(this.updatedDayList);
+        // this.multiDayList = Array.isArray(data) ? data : [data];
+
+        this.searchmultidaylist = this.dayList.map((item: any) => ({
+          ...item,
+          selected: true, // Set the initial value to true for all dates
+          disabled:false
+        }));
+        this.updatedDayList=[...this.searchmultidaylist]
+        this.getmultidayfilterData()
+    // console.log(this.updatedDayList,"updated list to validate qty");
+    // if(this.form.get('Vazhid')?.value && this.form.get('PMid')?.value && +this.form.get('VM_MaxNo')?.value>0 ){
+    // this.validateallvazhipaddatewithqty(this.updatedDayList);
+    // }
+    // this.getmultidayfilterData()
+  },
+})
+
+}
+
 
 
   populateDevotees(data: { Name: string; Star: string; MID: string }[]) {
@@ -578,11 +626,11 @@ getVazhipadDetails(selectedVazhipadItem:any){
         const receipt = res[0].VM_Receipt;
         this.VM_MaxNo=res[0].VM_MaxNo;
         console.log(this.VM_MaxNo,"vVM_MaxNo value")
-        if(this.VM_MaxNo>0){
-          this.form.get("NoOfDays")?.setValue(this.VM_MaxNo);
-        }else{
-          this.calculateTotalAmount();
-        }
+        // if(this.VM_MaxNo>0){
+        //   this.form.get("NoOfDays")?.setValue(this.VM_MaxNo);
+        // }else{
+        //   this.calculateTotalAmount();
+        // }
         
         
         this.masterservice
@@ -605,26 +653,37 @@ getVazhipadDetails(selectedVazhipadItem:any){
                 this.form.get('PMid')?.setValue(defaultPrathishtaId);
               }
             }
+            this.validateVazhipadDate();
+             this.qtyChange();
           });
       });
   }
 
-  calculateTotalAmount() {
-    const qty = parseInt(this.form.get('Qty')!.value, 10);
-    const rate = parseInt(this.form.get('Rate')!.value, 10);
-    const noOfDays = parseInt(this.form.get('NoOfDays')!.value, 10);
-    const calculatedQty = qty * noOfDays;
-    this.totalAmount = calculatedQty * rate;
-    this.updateTotalAmount();
-  }
 
-  updateTotalAmount() {
-    const rate = this.form.get('Rate')?.value || 0;
-    const qty = this.form.get('Qty')?.value || 0;
-    const noOfDays = this.form.get('NoOfDays')?.value || 0;
-    const calculatedQty = qty * noOfDays;
-    const initialAmount = rate * calculatedQty;
+  qtyChange(){
+  const maxqty=this.form.get('VM_MaxNo')?.value;
+  const pmid=this.form.get('PMid')?.value;
+  const vazhId=this.form.get('Vazhid')?.value;
+  if(maxqty>0 && pmid && vazhId ){
+  this.validateallvazhipaddatewithqty(this.updatedDayList);
   }
+}
+  // calculateTotalAmount() {
+  //   const qty = parseInt(this.form.get('Qty')!.value, 10);
+  //   const rate = parseInt(this.form.get('Rate')!.value, 10);
+  //   const noOfDays = parseInt(this.form.get('NoOfDays')!.value, 10);
+  //   const calculatedQty = qty * noOfDays;
+  //   this.totalAmount = calculatedQty * rate;
+  //   this.updateTotalAmount();
+  // }
+
+  // updateTotalAmount() {
+  //   const rate = this.form.get('Rate')?.value || 0;
+  //   const qty = this.form.get('Qty')?.value || 0;
+  //   const noOfDays = this.form.get('NoOfDays')?.value || 0;
+  //   const calculatedQty = qty * noOfDays;
+  //   const initialAmount = rate * calculatedQty;
+  // }
 
   onSubmit() {
     const vid = this.form.get('Vazhid')?.value;
@@ -692,6 +751,7 @@ getVazhipadDetails(selectedVazhipadItem:any){
     // Proceed with form submission if validation passes
     if (this.form.valid && this.devotees.valid) {
       const formValues = this.form.value;
+      this.totalqty=formValues.Qty*this.multiDayList.length*formValues.devotees.length
       console.log(formValues, "forms valuessssssssssssssssssssssssssssssssssssssssssssssssssssssss")
       const devoteeArray = formValues.devotees.map((devotee: any) => ({
         Slno: '',
@@ -741,6 +801,7 @@ getVazhipadDetails(selectedVazhipadItem:any){
   VazhipadDate: this.formatToDDMMYYYY(item.VazhipadDate),
   Amount:"0",
   TotalAmt:"0",
+  // Qty:item.Qty*finalArray.length
   // Instdate:this.convertYyyyDdMmToDdMmYyyy(item.Instdate),
   // Billdate:this.convertYyyyDdMmToDdMmYyyy(item.Billdate),
 
@@ -839,8 +900,266 @@ this.submitEndowmentBillData(payLoad)
     });
   }
 
-  getmultidayfilterData() {
-    const engMonth = this.multidayFilterForm.get('EngMonth')?.value;
+   getmultidayfilterData() {
+
+    // const engMonth = this.multidayFilterForm.get('EngMonth')?.value;
+    // const malMonth = this.multidayFilterForm.get('MalMonth')?.value;
+    // const star = this.multidayFilterForm.get('Star')?.value;
+    // const englishday = this.multidayFilterForm.get('EngishDay')?.value;
+    // const malday = this.multidayFilterForm.get('MalDay')?.value;
+    // const thithi = this.multidayFilterForm.get('Thithi')?.value;
+    // this.form.patchValue({
+    //   Mday: engMonth,
+    //   NalBy: star,
+    //   Mmonth: malMonth,
+    //   SearchBy: thithi
+    // });
+    // console.log(englishday);
+    // let type: string | null = null;
+    
+
+
+
+    // if (star && englishday && !engMonth && !malMonth && !malday && !thithi) {
+    //   type = 'EDayStar';
+    // } else if (
+    //   star &&
+    //   malday &&
+    //   malMonth &&
+    //   !engMonth &&
+    //   !englishday &&
+    //   !thithi
+    // ) {
+    //   type = 'StarMDayMDate';
+    // } else if (
+    //   star &&
+    //   engMonth &&
+    //   !malMonth &&
+    //   !englishday &&
+    //   !malday &&
+    //   !thithi
+    // ) {
+    //   type = 'StarDay';
+    // } else if (
+    //   star &&
+    //   !engMonth &&
+    //   !malMonth &&
+    //   !englishday &&
+    //   !malday &&
+    //   !thithi
+    // ) {
+    //   type = 'Star';
+    // } else if (
+    //   malMonth &&
+    //   star &&
+    //   !engMonth &&
+    //   !englishday &&
+    //   !malday &&
+    //   !thithi
+    // ) {
+    //   type = 'MalStar';
+    // } else if (
+    //   malMonth &&
+    //   star &&
+    //   engMonth &&
+    //   !englishday &&
+    //   !malday &&
+    //   !thithi
+    // ) {
+    //   type = 'Both';
+    // } else if (
+    //   star &&
+    //   malday &&
+    //   !engMonth &&
+    //   !malMonth &&
+    //   !englishday &&
+    //   !thithi
+    // ) {
+    //   type = 'MDaystar';
+    // } else if (
+    //   star &&
+    //   engMonth &&
+    //   englishday &&
+    //   !malMonth &&
+    //   !malday &&
+    //   !thithi
+    // ) {
+    //   type = 'StarDayEngDate';
+    // } else if (
+    //   malMonth &&
+    //   !star &&
+    //   !engMonth &&
+    //   !englishday &&
+    //   !malday &&
+    //   !thithi
+    // ) {
+    //   type = 'MalMonth';
+    // } else if (
+    //   malMonth &&
+    //   engMonth &&
+    //   !star &&
+    //   !englishday &&
+    //   !malday &&
+    //   !thithi
+    // ) {
+    //   type = 'MalEng';
+    // } else if (
+    //   malday &&
+    //   malMonth &&
+    //   !star &&
+    //   !engMonth &&
+    //   !englishday &&
+    //   !thithi
+    // ) {
+    //   type = 'MDayMDate';
+    // } else if (
+    //   malday &&
+    //   malMonth &&
+    //   engMonth &&
+    //   !star &&
+    //   !englishday &&
+    //   !thithi
+    // ) {
+    //   type = 'MDayMDateEDay';
+    // } else if (
+    //   engMonth &&
+    //   !star &&
+    //   !malMonth &&
+    //   !englishday &&
+    //   !malday &&
+    //   !thithi
+    // ) {
+    //   type = 'EngDay';
+    // } else if (engMonth && englishday) {
+    //   type = 'DayEngDate';
+    // } else if (
+    //   englishday &&
+    //   !star &&
+    //   !engMonth &&
+    //   !malMonth &&
+    //   !malday &&
+    //   !thithi
+    // ) {
+    //   type = 'EngDate';
+    // }else if (
+    //   thithi &&
+    //   malMonth &&
+    //   !star &&
+    //   !engMonth &&   
+    //   !englishday &&
+    //   !malday
+    // ) {
+    //   type = 'MalThithi';
+    // } 
+    // else if (
+    //   thithi &&
+    //   !star &&
+    //   !engMonth &&
+    //   !malMonth &&
+    //   !englishday &&
+    //   !malday
+    // ) {
+    //   type = 'Thithi';
+    // } else if (
+    //   !thithi &&
+    //   star &&
+    //   engMonth &&
+    //   !malMonth &&
+    //   !englishday &&
+    //   malday
+    // ) {
+    //   type = 'StarDayMDate';
+    // } else if (
+    //   !thithi &&
+    //   !star &&
+    //   engMonth &&
+    //   !malMonth &&
+    //   !englishday &&
+    //   malday
+    // ) {
+    //   type = 'DayMDate';
+    // } else if (
+    //   !thithi &&
+    //   !star &&
+    //   !engMonth &&
+    //   !malMonth &&
+    //   !englishday &&
+    //   malday
+    // ) {
+    //   type = 'MDate';
+    // } else {
+    //   type = 'NULL';
+    // }
+
+    // const formattedDate = this.datePipe.transform(
+    //   this.form.get('VazhipadDate')?.value,
+    //   'dd-MM-yyyy'
+    // );
+    // const payLoad = {
+    //   ...this.multidayFilterForm.value,
+    //   Type: "NULL",
+    //   NoofDays: this.form.get('NoOfDays')?.value,
+    //   VazhipadDate: formattedDate,
+    // };
+
+    // console.log(payLoad, "multiday filter console");
+
+    // this.masterservice.getMultidyaFilterinddata(payLoad).subscribe({
+    //   next: (data: multiDayFilter) => {
+    //     console.log(data,"multiday filtering check first");
+    //     this.dayList = Array.isArray(data) ? data : [data];
+    //     this.updatedDayList = Array.isArray(data) ? data : [data];
+    //     console.log(this.updatedDayList);
+    //     // this.multiDayList = Array.isArray(data) ? data : [data];
+
+        // this.updatedDayList = this.dayList.map((item: any) => ({
+        //   ...item,
+        //   selected: true, // Set the initial value to true for all dates
+        //   disabled:false
+        // }));
+    console.log(this.updatedDayList,"updated list to validate qty");
+    if(this.form.get('Vazhid')?.value && this.form.get('PMid')?.value && +this.form.get('VM_MaxNo')?.value>0 ){
+    this.validateallvazhipaddatewithqty(this.updatedDayList);
+    }
+
+
+        console.log(this.multiDayList, 'day listtttttttttttttttttttt-1');
+        this.multiDayList = [...this.updatedDayList];
+        console.log(this.multiDayList, 'day listtttttttttttttttttttt after selct added');
+        // this
+        this.validateVazhipadDate()
+        //finding end date
+        if (this.multiDayList.length > 0) {
+          let lastItem = this.multiDayList[this.multiDayList.length - 1];
+          let firstitem = this.multiDayList[0];
+          // let lastDate = lastItem ? lastItem.date : null;
+          const endDate = lastItem.edate1;
+          this.form.patchValue({
+            EndDate: this.datePipe.transform(endDate, 'dd-MM-YYYY'),
+            FromDate: this.datePipe.transform(firstitem.edate1, 'dd-MM-YYYY'),
+          });
+
+// const firstValidItem = this.multiDayList.find(
+//   item => item.selected 
+// );
+
+// if (firstValidItem) {
+//   this.form.patchValue({
+//     FromDate: this.datePipe.transform(firstValidItem.edate1, 'dd-MM-yyyy')
+//   });
+// }
+
+          console.log('Last Date:', endDate);
+          console.log(this.form.get('VazhipadDate'))
+        }
+    //   },
+    // });
+  }
+
+  onSearchClick() {
+     
+
+const engMonth = this.multidayFilterForm.get('EngMonth')?.value;
     const malMonth = this.multidayFilterForm.get('MalMonth')?.value;
     const star = this.multidayFilterForm.get('Star')?.value;
     const englishday = this.multidayFilterForm.get('EngishDay')?.value;
@@ -852,233 +1171,21 @@ this.submitEndowmentBillData(payLoad)
       Mmonth: malMonth,
       SearchBy: thithi
     });
-    console.log(englishday);
-    let type: string | null = null;
-    if (star && englishday && !engMonth && !malMonth && !malday && !thithi) {
-      type = 'EDayStar';
-    } else if (
-      star &&
-      malday &&
-      malMonth &&
-      !engMonth &&
-      !englishday &&
-      !thithi
-    ) {
-      type = 'StarMDayMDate';
-    } else if (
-      star &&
-      engMonth &&
-      !malMonth &&
-      !englishday &&
-      !malday &&
-      !thithi
-    ) {
-      type = 'StarDay';
-    } else if (
-      star &&
-      !engMonth &&
-      !malMonth &&
-      !englishday &&
-      !malday &&
-      !thithi
-    ) {
-      type = 'Star';
-    } else if (
-      malMonth &&
-      star &&
-      !engMonth &&
-      !englishday &&
-      !malday &&
-      !thithi
-    ) {
-      type = 'MalStar';
-    } else if (
-      malMonth &&
-      star &&
-      engMonth &&
-      !englishday &&
-      !malday &&
-      !thithi
-    ) {
-      type = 'Both';
-    } else if (
-      star &&
-      malday &&
-      !engMonth &&
-      !malMonth &&
-      !englishday &&
-      !thithi
-    ) {
-      type = 'MDaystar';
-    } else if (
-      star &&
-      engMonth &&
-      englishday &&
-      !malMonth &&
-      !malday &&
-      !thithi
-    ) {
-      type = 'StarDayEngDate';
-    } else if (
-      malMonth &&
-      !star &&
-      !engMonth &&
-      !englishday &&
-      !malday &&
-      !thithi
-    ) {
-      type = 'MalMonth';
-    } else if (
-      malMonth &&
-      engMonth &&
-      !star &&
-      !englishday &&
-      !malday &&
-      !thithi
-    ) {
-      type = 'MalEng';
-    } else if (
-      malday &&
-      malMonth &&
-      !star &&
-      !engMonth &&
-      !englishday &&
-      !thithi
-    ) {
-      type = 'MDayMDate';
-    } else if (
-      malday &&
-      malMonth &&
-      engMonth &&
-      !star &&
-      !englishday &&
-      !thithi
-    ) {
-      type = 'MDayMDateEDay';
-    } else if (
-      engMonth &&
-      !star &&
-      !malMonth &&
-      !englishday &&
-      !malday &&
-      !thithi
-    ) {
-      type = 'EngDay';
-    } else if (engMonth && englishday) {
-      type = 'DayEngDate';
-    } else if (
-      englishday &&
-      !star &&
-      !engMonth &&
-      !malMonth &&
-      !malday &&
-      !thithi
-    ) {
-      type = 'EngDate';
-    }else if (
-      thithi &&
-      malMonth &&
-      !star &&
-      !engMonth &&   
-      !englishday &&
-      !malday
-    ) {
-      type = 'MalThithi';
-    } 
-    
-    
-    else if (
-      thithi &&
-      !star &&
-      !engMonth &&
-      !malMonth &&
-      !englishday &&
-      !malday
-    ) {
-      type = 'Thithi';
-    } else if (
-      !thithi &&
-      star &&
-      engMonth &&
-      !malMonth &&
-      !englishday &&
-      malday
-    ) {
-      type = 'StarDayMDate';
-    } else if (
-      !thithi &&
-      !star &&
-      engMonth &&
-      !malMonth &&
-      !englishday &&
-      malday
-    ) {
-      type = 'DayMDate';
-    } else if (
-      !thithi &&
-      !star &&
-      !engMonth &&
-      !malMonth &&
-      !englishday &&
-      malday
-    ) {
-      type = 'MDate';
-    } else {
-      type = 'NULL';
-    }
 
-    const formattedDate = this.datePipe.transform(
-      this.form.get('VazhipadDate')?.value,
-      'dd-MM-yyyy'
-    );
-    const payLoad = {
-      ...this.multidayFilterForm.value,
-      Type: type,
-      NoofDays: this.form.get('NoOfDays')?.value,
-      VazhipadDate: formattedDate,
-    };
-    console.log(payLoad, "multiday filter console");
-    this.masterservice.getMultidyaFilterinddata(payLoad).subscribe({
-      next: (data: multiDayFilter) => {
-        console.log(data);
-        const dayList = Array.isArray(data) ? data : [data];
-        this.updatedDayList = Array.isArray(data) ? data : [data];
 
-        // this.multiDayList = Array.isArray(data) ? data : [data];
 
-        this.updatedDayList = dayList.map((item: any) => ({
-          ...item,
-          selected: true, 
-          disabled:false// Set the initial value to true for all dates
-        }));
-        console.log(this.multiDayList, 'day listtttttttttttttttttttt');
-//         this.multiDayList = [...this.updatedDayList];
- if(this.form.get('Vazhid')?.value && this.form.get('PMid')?.value && +this.form.get('VM_MaxNo')?.value>0 ){
-    this.validateallvazhipaddatewithqty(this.updatedDayList);
-    }
-    this.validateVazhipadDate()
+this.updatedDayList = this.searchmultidaylist.filter(item => {
+return (!star || item.nal === star) &&
+         (!malMonth || item.mmon === malMonth) &&
+         (!engMonth || item.day === engMonth) &&
+         (!malday || item.mday === malday) &&
+         (!englishday || item.Eday == englishday) &&
+         (!thithi || item.Thithi === thithi);
+});
+this.getmultidayfilterData()
+}
 
-        //finding end date
-        if (this.multiDayList.length > 0) {
-          let lastItem = this.multiDayList[this.multiDayList.length - 1];
-          let firstitem = this.multiDayList[0];
-          // let lastDate = lastItem ? lastItem.date : null;
-          const endDate = lastItem.edate1;
-          this.form.patchValue({
-            EndDate: this.datePipe.transform(endDate, 'dd-MM-YYYY'),
-            FromDate: this.datePipe.transform(firstitem.edate1, 'dd-MM-YYYY'),
-          });
-          console.log('Last Date:', endDate);
-          console.log(this.form.get('VazhipadDate'))
-        }
-      },
-    });
-   
-  }
-
-  onSearchClick() {
-    this.getmultidayfilterData();
-  }
+  
 
   onCancelClick() {
     this.multidayFilterForm.patchValue({
@@ -1089,7 +1196,7 @@ this.submitEndowmentBillData(payLoad)
       MalDay: '',
       Thithi: '',
     });
-    this.getmultidayfilterData();
+    // this.getmultidayfilterData();
     console.log('Filters have been cleared and the form reset.');
   }
 
@@ -1121,11 +1228,11 @@ this.submitEndowmentBillData(payLoad)
     return null;
   }
 
-  onCheckboxChange(index: number): void {
-    console.log(index,"index");
-    console.log(this.updatedDayList,"updated list");
-    console.log( this.updatedDayList[index].selected ,"selected")
-    console.log(!this.updatedDayList[index].selected,"not selected");
+ onCheckboxChange(index: number): void {
+    // console.log(index,"index");
+    // console.log(this.updatedDayList,"updated list");
+    // console.log( this.updatedDayList[index].selected ,"selected")
+    // console.log(!this.updatedDayList[index].selected,"not selected");
     this.updatedDayList[index].selected = this.updatedDayList[index].selected;
     // this.allselecteddaylist=[...this.updatedDayList];
     // console.log(this.allselecteddaylist, "All selected day list to show in array");
@@ -1146,6 +1253,7 @@ this.submitEndowmentBillData(payLoad)
       console.log('Last Date:', endDate);
     }
   }
+
 
   validateVazhipadDate() {
     const vazhipadDateControl = this.form.get("VazhipadDate");
@@ -1516,7 +1624,7 @@ const formattedDate = this.datePipe.transform(
       MalDay: [''],
       Thithi: [''],
     });
-    this.getmultidayfilterData();
+    this.serachmultidayFiltering();
     const today = this.getFormattedDate(new Date());
 this.userForm=this.fb.group({
   BillNo: '',
@@ -1913,7 +2021,7 @@ printReceiptsThermal(data: any) {
     const groupedData = this.differentDateArray.reduce((acc: any, item: any) => {
       const key = `${item.Prethista}/${item.Vazhipad}/${item.FromDate}/${item.ToDate}`;
       if (!acc[key]) {
-        acc[key] = { items: [], totalQty: 0, uniqueNames: new Set(), nalBy: '', mday: '', thithi: '', mmonth: '', Rate: "" };
+        acc[key] = { items: [], totalQty: 0, uniqueNames: new Set(), nalBy: '', mday: '', thithi: '', mmonth: '', Rate: "",VTime:''  };
       }
       acc[key].items.push(item);
       acc[key].totalQty += parseInt(item.Qty, 10);
@@ -1925,6 +2033,7 @@ printReceiptsThermal(data: any) {
       if (item.SearchBy) acc[key].thithi = item.SearchBy;
       if (item.Mmonth) acc[key].mmonth = item.Mmonth;
       if (item.Rate) acc[key].rate = item.Rate;
+      if (item.VTime) acc[key].VTime = item.VTime;
       return acc;
     }, {});
 
@@ -1987,19 +2096,21 @@ printReceiptsThermal(data: any) {
         // Add grand total and other details
         receiptContent += `
             <div class="receipt-rq">Rate: ${group.rate}</div>
-            <div class="receipt-rq">Total Qty: ${group.totalQty}</div>
+            <div class="receipt-rq">Total Qty: ${this.totalqty}</div>
             <div class="receipt-total">Total Amount: 0.00(Endowment)</div>
             
             <div class="receipt-content-vd">Vazhipad Date: 
               ${fromDate !== toDate ? `${this.convertYyyyDdMmToDdMmYyyy(fromDate)} to ${this.convertYyyyDdMmToDdMmYyyy(toDate)}` : `${this.convertYyyyDdMmToDdMmYyyy(fromDate)}`}
             </div>
-             ${items?.VTime ? `
+             ${group?.VTime ? `
     <div class="receipt-content-vd">Vazhipad Time: 
-      ${this.getTimeForBill(items[0].VTime)}
+      ${this.getTimeForBill(group.VTime)}
     </div>
   ` : ''}
            
             <div>
+             ${group.thithi ? `<div class="receipt-footer">Thithi : ${group.thithi}</div>` : ''}
+
             ${group.nalBy ? `<div class="receipt-footer">- ${group.nalBy}</div>` : ''}
             ${group.mday ? `<div class="receipt-footer">- ${group.mday}</div>` : ''}
             ${group.mmonth ? `<div class="receipt-footer">- ${group.mmonth}</div>` : ''}</div>
@@ -2008,6 +2119,9 @@ printReceiptsThermal(data: any) {
             </div>
              <div class="receipt-footer-ut">
               Payment Mode:  ${this.getTransactionType(Trnsmode)}, ${Trnsmode=='CR'?"Not Paid":""}
+            </div>
+            <div class="receipt-footer-ut">
+              Counter:${this.counterId}
             </div>
            <div><p>www.cubixsystems.com</p></div>
           </div> <!-- Close receipt-page -->
@@ -2502,15 +2616,15 @@ getStarbyId(id:string){
   console.log(id,"star id")
   if(this.lang=='en'){
     const star= this.nakshatham.find(
-      (item) => item.SM_Id == id
+      (item) => item.id == id
     );
-    return star ? star.SM_Name : ''; 
+    return star ? star.SM_NameEng : ''; 
 
   }else if(this.lang=='ml'){
     const star= this.nakshatham.find(
-      (item) => item.SM_Id == id
+      (item) => item.id == id
     );
-    return star ? star.SM_RName : ''; 
+    return star ? star.SM_Name : ''; 
   }
  
   // console.log(star,"sssssssssssssssss")
@@ -2564,6 +2678,12 @@ getTransactionType(transmode: string): string {
         return 'DEBIT';
       } else {
         return 'ഡെബിറ്റ്';
+      }
+       case 'EN':
+      if (this.lang == 'en') {
+        return 'ENDOWMENT';
+      } else {
+        return 'എൻഡോമെന്റ്';
       }
     default:
       return 'OTHERS';

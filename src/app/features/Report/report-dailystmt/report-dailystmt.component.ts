@@ -96,6 +96,25 @@ export class ReportDailystmtComponent {
     this.service.getReport(payLoad).subscribe({
       next: (data) => {
         console.log('Fetched report data:', data);
+        data.sort((a:any, b:any) => {
+  // Parse BillDate (format: dd.mm.yyyy)
+  const [aDay, aMonth, aYear] = a.BillDate.split('.').map(Number);
+  const [bDay, bMonth, bYear] = b.BillDate.split('.').map(Number);
+
+  const aDate = new Date(aYear, aMonth - 1, aDay);
+  const bDate = new Date(bYear, bMonth - 1, bDay);
+
+  // Compare dates first
+  if (aDate < bDate) return -1;
+  if (aDate > bDate) return 1;
+
+  // If dates are equal, compare BillNo
+  const [aMain, aSub] = a.BillNo.split('/').map(Number);
+  const [bMain, bSub] = b.BillNo.split('/').map(Number);
+
+  if (aMain !== bMain) return aMain - bMain;
+  return aSub - bSub;
+});
         this.data = data;
 this.loading=false;
       

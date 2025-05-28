@@ -342,6 +342,7 @@ export class AreareceiptComponent implements OnInit {
     }
     return null;
   }
+  
   selectText(event: FocusEvent): void {
     const inputField = event.target as HTMLInputElement;
     if (inputField.value.trim().length > 0) {
@@ -1385,7 +1386,7 @@ else if (row.get('Qty')?.errors?.['invalidQty']) {
 //       const [vazhid, pmid, date] = key.split('_');
 //       const group = groupedEntries[key];
 
-//  // ✅ If maxLimit is 0 or less, skip validation
+//  //  If maxLimit is 0 or less, skip validation
 //  if (!group.maxLimit || group.maxLimit <= 0) {
 //   group.indexes.forEach((i) => {
 //     const control = vazhipadArray.at(i).get('Qty');
