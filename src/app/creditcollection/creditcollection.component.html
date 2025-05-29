@@ -146,14 +146,16 @@
 
 <div id="receipt" style="width: 6in; height: 4in; display: none; position: relative; font-size: 12px; font-family: Arial, sans-serif;">
     <!-- <div style="position: absolute; left: 2.1cm; top: 3.8cm;">{{ itemName }}</div> -->
-    <div style="position: absolute; left: 10.1cm; top: 3.8cm;">{{ today | date: 'dd-MM-yyyy' }}</div>
-    <div style="position: absolute; left: 10.1cm; top: 4.3cm;">{{ CreditForm.get('BillNo')?.value }}</div>
-    <div style="position: absolute; left: 1.8cm; top: 6.1cm;">{{ CreditForm.get('Name')?.value }}<p>{{CreditForm.get('Address')?.value }}</p></div>
+         <div style="position: absolute; left:3cm; top: 3cm; font-size:9pt; white-space: pre-wrap;" >പാലൂർ ശ്രീ മഹാവിഷ്ണു ക്ഷേത്രം ,തിക്കോടി </div>
+
+    <div style="position: absolute; left: 10.5cm; top: 3.5cm;">{{ today | date: 'dd-MM-yyyy' }}</div>
+    <div style="position: absolute; left: 10.5cm; top: 4cm;">{{ CreditForm.get('BillNo')?.value }}</div>
+    <div style="position: absolute; left: 1cm; top: 5.5cm;">{{ CreditForm.get('Name')?.value }}<p>{{CreditForm.get('Address')?.value }}</p></div>
     <!-- <div style="position: absolute; left: 6.9cm; top: 5cm;">{{ CreditForm }}</div> -->
     <!-- <div style="position: absolute; left: 10.5cm; top: 5cm;">{{ CreditForm.get('Qty')?.value }}</div> -->
-    <div style="position: absolute; left: 12.2cm; top: 6.1cm;">{{ CreditForm.get('Amount')?.value  }}</div>
-    <div style="position: absolute;  left:10cm; top: 8.4cm;">{{ CreditForm.get('Amount')?.value  }}</div>
-    <div style="position: absolute; left: 2cm; top: 8.4cm;font-size:8pt">User:{{ name}},({{getTransactionType( CreditForm.get('TrnsMode')?.value)}})(CNTR:{{CounterId}})</div>
+    <div style="position: absolute; left: 11.5cm; top: 5.5cm;">{{ CreditForm.get('Amount')?.value  }}</div>
+    <div style="position: absolute;  left:10.5cm; top: 8.6cm;">{{ CreditForm.get('Amount')?.value  }}</div>
+    <div style="position: absolute; left: 1.5cm; top: 8.4cm;font-size:8pt">User:{{ name}},({{getTransactionType( CreditForm.get('TrnsMode')?.value)}})(CNTR:{{CounterId}})</div>
 
   </div>
 

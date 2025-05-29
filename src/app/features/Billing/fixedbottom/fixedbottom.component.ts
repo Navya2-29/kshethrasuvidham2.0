@@ -341,24 +341,24 @@ console.log(data,"dot metrix checkingkkkkkk");
        <div class="receipt-page" style="page-break-after: ${
       pageIndex < pages.length - 1 ? 'always' : 'avoid'
     };">
-    
+    <div style="position: absolute; left:3cm; top: 3cm; font-size:9pt; white-space: pre-wrap;" >പാലൂർ ശ്രീ മഹാവിഷ്ണു ക്ഷേത്രം ,തിക്കോടി </div>
           <!-- Prathista -->
-          <div style="position: absolute; left: 2cm; top: 3.8cm; max-width: 8cm; font-size:9pt; white-space: pre-wrap; word-wrap: break-word;">${prathista}</div>
+          <div style="position: absolute; left: 2cm; top: 3.5cm; max-width: 8cm; font-size:9pt; white-space: pre-wrap; word-wrap: break-word;">${prathista}</div>
           <!-- Vazhipad -->
-          <div style="position: absolute; left: 2cm; top: 4.3cm; max-width: 5cm;font-size:9pt; white-space: pre-wrap;">${vazhipad}</div>
+          <div style="position: absolute; left: 2cm; top:4cm; max-width: 5cm;font-size:9pt; white-space: pre-wrap;">${vazhipad}</div>
           <!-- Bill date Date -->
-          <div style="position: absolute; left: 10.1cm; top: 3.8cm;font-size:9pt;">${Billdate}</div>
+          <div style="position: absolute; left: 10.5cm; top: 3.5cm;font-size:9pt;">${Billdate}</div>
           <!-- bill Number -->
-          <div style="position: absolute; left: 10.1cm; top: 4.3cm;font-size:9pt;"> ${BillNo}</div>
+          <div style="position: absolute; left: 10.5cm; top: 4cm;font-size:9pt;"> ${BillNo}</div>
            <!-- vazhipad date -->
-         <div style="position: absolute; left: 5.2cm; top: 9.3cm;font-size:9pt;">
+         <div style="position: absolute; left: 4.5cm; top: 9.5cm;font-size:9pt;">
   ${fromDate != toDate ? `${this.convertDateFormat(fromDate)} to ${this.convertDateFormat(toDate)}` : `${this.convertDateFormat(fromDate)}`}
 </div>
 ${group.nalBy ? `<div style="position: absolute; left: 5.5cm; top: 8cm;font-size:6pt">- ${group.nalBy},</div>` : ''}
 ${group.mday ? `<div style="position: absolute; left: 5.5cm; top: 8.3cm;font-size:6pt">- ${group.mday},</div>` : ''}
 ${group.mmonth ? `<div style="position: absolute; left: 5.5cm; top:8.5cm;font-size:6pt">- ${group.mmonth}</div>` : ''}
 ${group.thithi ? `<div style="position: absolute; left: 5.5cm; top:8cm;font-size:6pt">- ${group.thithi}</div>` : ''}
- <div style="position: absolute; left: 2cm; top: 8.4cm;font-size:8pt">User:${this.name}(${this.getTransactionType(Trnsmode)}) ${Trnsmode=='CR'?"(Not Paid)":""}(CNTR:${this.counterId})</div>
+ <div style="position: absolute; left: 1.5cm; top: 8.4cm;font-size:8pt">User:${this.name}(${this.getTransactionType(Trnsmode)}) ${Trnsmode=='CR'?"(Not Paid)":""}(CNTR:${this.counterId})</div>
           `
       // Render rows in the current page
       page.forEach((item: any, rowIndex: number) => {
@@ -366,12 +366,12 @@ ${group.thithi ? `<div style="position: absolute; left: 5.5cm; top:8cm;font-size
         const amount = item.Qty * item.Rate;
         grandTotalAmount += amount; // Add the amount to the grand total
         receiptContent += `
-          <div style="position: absolute; left: 1.8cm; font-size:9pt;font-weight:bold; top: ${rowTop}cm; max-width: 5.5cm; white-space: pre-wrap; word-wrap: break-word; line-height: 1.2em;">${item.Name}${item.Name2 ? `<div style="margin-top: 0.1mm;">${item.Name2}</div>` : ''}</div>
-          <div style="position: absolute; left: 7.8cm;font-size:8pt;font-weight:bold; top: ${rowTop}cm;">${this.getStarbyId(item.Star)}${item.Star2 ? `<div style="margin-top: 0.1mm;">${this.getStarbyId(item.Star2)}</div>` : ''}</div>
-          <div style="position: absolute; left: 10.2cm; font-size:9pt; top: ${rowTop}cm;">${item.Qty}</div>
-          <div style="position: absolute; left: 11cm;font-size:9pt; top: ${rowTop}cm;">${item.Rate}</div>
-          <div style="position: absolute; left: 12.2cm; font-size:9pt;top: ${rowTop}cm;">${amount.toFixed(2)}</div>
-         <div style="position: absolute; left: 10.5cm; top: 9.3cm;font-size:8pt;font-weight:bold;">${this.getTimeForBill(item.VTime)}</div>
+          <div style="position: absolute; left: 1cm; font-size:9pt;font-weight:bold; top: ${rowTop}cm; max-width: 5.5cm; white-space: pre-wrap; word-wrap: break-word; line-height: 1.2em;">${item.Name}${item.Name2 ? `<div style="margin-top: 0.1mm;">${item.Name2}</div>` : ''}</div>
+          <div style="position: absolute; left: 6.8cm;font-size:8pt;font-weight:bold; top: ${rowTop}cm;">${this.getStarbyId(item.Star)}${item.Star2 ? `<div style="margin-top: 0.1mm;">${this.getStarbyId(item.Star2)}</div>` : ''}</div>
+          <div style="position: absolute; left: 9.5cm; font-size:9pt; top: ${rowTop}cm;">${item.Qty}</div>
+          <div style="position: absolute; left: 10.5cm;font-size:9pt; top: ${rowTop}cm;">${item.Rate}</div>
+          <div style="position: absolute; left: 11.5cm; font-size:9pt;top: ${rowTop}cm;">${amount.toFixed(2)}</div>
+         <div style="position: absolute; left: 10cm; top: 9.4cm;font-size:7pt;font-weight:bold;">${this.getTimeForBill(item.VTime)}</div>
         `;
       });
       // receiptContent += `</div>`; // Close receipt page
@@ -383,7 +383,7 @@ ${group.thithi ? `<div style="position: absolute; left: 5.5cm; top:8cm;font-size
         //  ${this.numbertowordpipe.transform(grandTotalAmount)} <span> Rupees</span>
       // </div>
     receiptContent += `
-      <div style="position: absolute; left: 10cm; top: 8.4cm; font-weight: bold; font-size: 12pt;">
+      <div style="position: absolute; left: 10.5cm; top: 8.6cm; font-weight: bold; font-size: 12pt;">
          ${grandTotalAmount.toFixed(2)}
       </div>
       

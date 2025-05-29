@@ -255,7 +255,7 @@
   </div>
   <!-- &#8377; -->
   <button 
-
+[disabled]="role=='admin' || role=='audit' || role=='super'"
   (focus)="onPayFocus()" (blur)="onPayBlur()"
   id="paybutton"
     #payButton

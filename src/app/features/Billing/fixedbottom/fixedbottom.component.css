@@ -193,3 +193,9 @@ input[type="email"]:focus {
     justify-content: space-between;
 }
 /* ****************************************** */
+button:disabled {
+  background-color: #d3d3d3 !important; /* Light gray */
+  color: #888888 !important; /* Optional: change text color */
+  cursor: not-allowed;
+  border-color: #cccccc;
+}
