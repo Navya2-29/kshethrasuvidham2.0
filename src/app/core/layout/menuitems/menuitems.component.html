@@ -1,69 +1,61 @@
+<h2 mat-dialog-title class="dialog-title">
+  {{ templeName }} - Counter
+</h2>
 
-<h2 mat-dialog-title>{{templeName}} - Counter</h2>
-<mat-dialog-content class="high fixitems" >
-    <div class="container">
-        <div class="row openmenu">
-            <div class="col-md-3.5">
-                <div class="card">
-                    <div class="card-header height" style="background-color:maroon;color:white;height:50px;">
-                        <h3>Masters</h3>
-                    </div>
-                    <div class="card-body">
-                       <ul class="list-group list-group-flush">
-                        <a 
-                *ngFor="let link of masterLinks"
-                [routerLink]="role !== 'staff' ? link.path : null"
-                [class.disabled]="role === 'staff'"
-                [mat-dialog-close]="role !== 'staff' ? true : null"
-                (click)="onLinkClick($event)"
-                [attr.aria-disabled]="role=== 'staff'">
-                <li class="list-group-item">{{ link.label }}</li>
-              </a>
-              <a routerLink="/member-master" [mat-dialog-close]="true"><li class="list-group-item">Devotee Master</li></a>
+<mat-dialog-content class="fixitems">
 
-                      </ul>
-                     
-                      <!-- { label: '', path: '/member-master' }, -->
-                    </div>
-                  </div>
-            </div>
-            
-            <div class="col-md-2.5">
-                <div class="card">
-                    <div class="card-header height" style="background-color:maroon;color:white;height:50px;">
-                        <h3>Reports</h3>
-                        
-                    </div>
-                    <div class="card-body">
-                      <ul class="list-group list-group-flush">
-                        <a routerLink="getReport" [mat-dialog-close]="true"><li class="list-group-item">Reports</li></a>
-                      </ul>
-                    </div>
-                  </div>
-            </div>
-            <div class="col-md-2.5">
-                <div class="card">
-                    <div class="card-header height" style="background-color:maroon;color:white;height:50px;">
-                        <h3>Utilities</h3>
-                    </div>
-                    <div class="card-body">
-                      <ul class="list-group list-group-flush">  
-                        <a routerLink="/dashboard" [mat-dialog-close]="true"><li class="list-group-item">Billing </li></a>
+  <div class="menu-container">
 
-                        <a routerLink="/mattinagal" [mat-dialog-close]="true"><li class="list-group-item">Miscellaneous Billing</li></a>
-                       
-                        <a  *ngIf="role === 'admin' || role === 'super' " routerLink="/userSignup" [mat-dialog-close]="true"><li class="list-group-item">Signup</li></a>
-                        <a  *ngIf="role === 'super' "  routerLink="/settings" [mat-dialog-close]="true"><li class="list-group-item">Settings</li></a>
-                        <!-- <a   routerLink="/endowment" [mat-dialog-close]="true"><li class="list-group-item">Endowment</li></a> -->
+    <!-- Masters -->
+    <div class="menu-box">
+      <h3>Masters</h3>
 
-                      </ul>
-                   
-                    </div>
-                  </div>
-            </div>
-        </div>
+      <ng-container *ngFor="let link of masterLinks; trackBy: trackByLabel">
+        <a
+          (click)="navigate(link.path)"
+          [class.disabled]="role === 'staff'"
+        >
+          {{ link.label }}
+        </a>
+      </ng-container>
+
+      <a (click)="navigate('/member-master')">
+        Devotee Master
+      </a>
     </div>
+
+    <!-- Reports -->
+    <div class="menu-box">
+      <h3>Reports</h3>
+
+      <a (click)="navigate('getReport')">
+        Reports
+      </a>
+      <a (click)="navigate('panjankam')">
+        Panchangam
+      </a>
+    </div>
+
+    <!-- Utilities -->
+    <div class="menu-box">
+      <h3>Utilities</h3>
+
+      <ng-container *ngFor="let link of utilityLinks; trackBy: trackByLabel">
+        <a
+          *ngIf="hasAccess(link)"
+          (click)="navigate(link.path)"
+
+        >
+          {{ link.label }}
+        </a>
+      </ng-container>
+
+    </div>
+
+  </div>
+
 </mat-dialog-content>
+
 <mat-dialog-actions align="end" class="menuend">
   <button mat-button [mat-dialog-close]="true">Close</button>
 </mat-dialog-actions>

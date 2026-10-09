@@ -13,6 +13,9 @@
     <button mat-icon-button matTooltip="Make PDF" (click)="generatePDF()">
       <span class="material-icons">print</span>
     </button>
+    <button mat-icon-button matTooltip="Export to Excel" (click)="exportToExcel()">
+      <mat-icon>grid_on</mat-icon>
+    </button>
   </div>
   <div id="print-section">
     <div class="header-print">
@@ -146,7 +149,8 @@
       </tr>
     </tbody>
   </table>
-  <div>
+           <div *ngIf="filteredData.length > 0 || filteredFeecollection.length>0 ">
+
     <p class="grandtotal" >{{"Report Name.Total Collection" | translate}}:{{ getTotalAmount() + getFeecollectionTotalAmount()  |number: '1.2-2' }}</p>
   </div>
 </div>

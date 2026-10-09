@@ -81,7 +81,7 @@ export class BillingViaMobilenumberComponent implements OnInit {
         // if (this.dataSource && this.dataSource[0].MID) {
         //   this.sharedService.setMemberId(this.dataSource[0].MID); // Pass memberId to service
         // }
-        console.log(this.dataSource, 'data mobile');
+        // console.log(this.dataSource, 'data mobile');
       },
       error: (err) => {
         this.noDataFound = true;
@@ -118,21 +118,15 @@ export class BillingViaMobilenumberComponent implements OnInit {
   }
 
   onCancel() {
-    if(this.selectedRows.size>0){
-      this.dialogRef.close(null);  
-    }else{
+    // if(this.selectedRows.size>0){
+    // }else{
       this.sharedService.triggerRefresh()
       this.dialogRef.close(null); 
-    }
+    // }
   }
 
   onSubmit(SmFlag: boolean) {
-    const selectedData = Array.from(this.selectedRows); // Convert Set to an array
-    console.log(
-      { selectedData, SmFlag },
-      'checking the data in billing via mobile number'
-    );
-
+    const selectedData = Array.from(this.selectedRows); 
     this.dialogRef.close({ selectedData, SmFlag });
   }
 

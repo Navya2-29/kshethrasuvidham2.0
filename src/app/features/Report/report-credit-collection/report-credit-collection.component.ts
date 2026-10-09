@@ -4,16 +4,15 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { jsPDF } from 'jspdf'; 
+
 import {ReportData} from '../../../models/poornam-report'
 import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Location } from '@angular/common';
-import autoTable from 'jspdf-autotable';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 @Component({
   selector: 'app-report-credit-collection',
   standalone: true,
@@ -38,10 +37,10 @@ export class ReportCreditCollectionComponent {
   lang:string|null;
   templeName:string|null;
   templeAddress:string|null;
-  constructor(private route: ActivatedRoute, private ts: TranslateService, private service: ReportService,private router: Router, private http:HttpClient) {
+  constructor(private route: ActivatedRoute, private ts: TranslateService, private service: ReportService,private router: Router) {
     this.lang=localStorage.getItem('Language');
     this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
-    this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address'; 
+    this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
     const userLang = navigator.language || 'en';
     const languageCode = userLang.split('-')[0];
     this.ts.setDefaultLang(languageCode);
@@ -68,21 +67,15 @@ export class ReportCreditCollectionComponent {
       next: (data) => {
         console.log('Fetched report data:', data);
         this.data=data;
-         this.filteredData = this.data.filter(item => item.TrnsMode === 'CR');   
-        //  this.filteredData = this.filteredData.sort((a:any, b:any) => {
-        //   const [numA, denomA] = a.BillNo.split('/').map(Number);
-        //   const [numB, denomB] = b.BillNo.split('/').map(Number);
-          
-        //   // Compare the two parts: first compare the numerator, then the denominator
-        //   return numA - numB || denomA - denomB;
-      // });
-      
-
+         this.data = data.sort((a: any, b: any) =>
+        a.BillNo.localeCompare(b.BillNo, undefined, { numeric: true, sensitivity: 'base' })
+        );
+        this.filteredData = this.data.filter(item => item.TrnsMode === 'CR');
         this.dataSource.data = this.data
         console.log( this.dataSource.data)
-        this.length =this.data .length; 
+        this.length =this.data .length;
         this.dataSource.paginator = this.paginator;
-       
+
       },
       error: (error) => {
         console.error('Error fetching report data:', error);
@@ -94,7 +87,7 @@ export class ReportCreditCollectionComponent {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
   }
-  
+
   goBack(): void {
     console.log('Going back...'); // Log to verify method execution
     this.router.navigate(['/getReport']);
@@ -123,7 +116,7 @@ export class ReportCreditCollectionComponent {
 //   generatePDF(): void {
 //     // Filter data for entries with transmode 'ch'
 //     const filteredData = this.data
-  
+
 //     const templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
 //     const templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
 //     const doc = new jsPDF();
@@ -135,14 +128,14 @@ export class ReportCreditCollectionComponent {
 //     const tableHeaderFontSize = 11;
 //     const contentFontSize = 8;
 //     const currentDate = new Date().toLocaleDateString();
-  
+
 //     const maxColumnWidths = [20, 55, 40, 30, 15, 15, 15]; // Column widths for each column
 //     const headers = ["Bill No.", "Vazhipad", "Name", "Mobile", "Ennam", "Rate", "Total"];
-  
+
 //     let y = headerHeight;
 //     let grandTotalRate = 0;
 //     let grandTotalAmount = 0;
-  
+
 
 //     this.http
 //     .get('assets/fonts/malayalam/NotoSansMalayalam-Regular.ttf', {
@@ -180,27 +173,27 @@ export class ReportCreditCollectionComponent {
 //       doc.setFont("NotoSansMalayalam", "normal");
 //       doc.setFontSize(10);
 //       doc.text(templeAddress, pageWidth / 2, 18, { align: "center" });
-    
+
 //       doc.setFontSize(10);
 //       doc.setFont("NotoSansMalayalam", "bold");
 //       doc.text("Credit Transaction Report", pageWidth / 2, 27, { align: "center" });
-    
+
 //       // Add current date below the report title but above the table header
 //       doc.setFontSize(10);
 //       doc.setFont("NotoSansMalayalam", "normal");
 //       doc.text(`${this.formatDateToDDMMYYYY(this.fromDate)} to ${this.formatDateToDDMMYYYY(this.toDate)}`, pageWidth / 2, 32, { align: "center" });
-    
+
 //       doc.setLineWidth(0.5);
 //       doc.line(10, y, pageWidth - 10, y); // Line below header
 //       y += 3; // Space below the line
 //     };
-  
+
 //     // Draw Footer
 //     const drawFooter = (pageNum: number) => {
 //       doc.setFontSize(10);
 //       doc.text(`Page ${pageNum}`, pageWidth / 2, pageHeight - footerHeight / 2, { align: "center" });
 //     };
-  
+
 //     // Add Table Header
 //     const drawTableHeader = () => {
 //       doc.setFontSize(tableHeaderFontSize);
@@ -216,20 +209,20 @@ export class ReportCreditCollectionComponent {
 //       doc.line(10, y, pageWidth - 10, y); // Line below the table header
 //       y += 2;
 //     };
-  
+
 //     // Helper to Wrap Text
 //     const wrapText = (doc: jsPDF, text: string, maxWidth: number): string[] => {
 //       const lines = doc.splitTextToSize(text, maxWidth);
 //       return lines;
 //     };
-  
+
 //     // Initialize PDF
 //     drawHeader();
 //     drawFooter(1);
 //     drawTableHeader();
-  
+
 //     let pageNum = 1;
-  
+
 //     // Iterate over data and draw rows
 //     this.data.forEach((row: any) => {
 //       const tableRow = [
@@ -241,12 +234,12 @@ export class ReportCreditCollectionComponent {
 //         row.Rate.toFixed(2),
 //         row.Amount.toFixed(2),
 //       ];
-  
+
 //       // Calculate the max height required for wrapped text in the row
 //       const rowHeight = Math.max(...tableRow.map((cell, index) => {
 //         return Array.isArray(cell) ? cell.length * contentFontSize : lineHeight;
 //       }));
-  
+
 //       // Check if a new page is needed
 //       if (y + rowHeight > pageHeight - footerHeight - 10) {
 //         doc.addPage();
@@ -256,13 +249,13 @@ export class ReportCreditCollectionComponent {
 //         drawFooter(pageNum);
 //         drawTableHeader();
 //       }
-  
+
 //       let x = 10;
-  
+
 //       // Draw each cell with normal font
 //       doc.setFont("NotoSansMalayalam", "normal");
 //       doc.setFontSize(contentFontSize );
-  
+
 //       tableRow.forEach((cell, index) => {
 //         if (Array.isArray(cell)) {
 //           // Handle wrapped text
@@ -280,30 +273,30 @@ export class ReportCreditCollectionComponent {
 //         }
 //         x += maxColumnWidths[index];
 //       });
-  
+
 //       // Draw row grid lines
 //       doc.setLineWidth(0.3); // Light line width for grid
 //       doc.setDrawColor(200, 200, 200); // Light gray color
 //       doc.line(10, y, pageWidth - 10, y); // Line at the bottom of the row
-  
+
 //       // Accumulate grand totals
 //       grandTotalRate += row.Rate;
 //       grandTotalAmount += row.Amount;
-  
+
 //       y += rowHeight; // Move y position for the next row
 //     });
-  
+
 //     // Add Grand Total row
 //     const grandTotalRow = [
 //       "",
-//       "Grand Total", 
+//       "Grand Total",
 //       "",
-//       "", 
-//       "", 
-//       "", 
+//       "",
+//       "",
+//       "",
 //       grandTotalAmount.toFixed(2)
 //     ];
-  
+
 //     let x = 10;
 //     doc.setFont("NotoSansMalayalam", "bold");
 //     doc.setFontSize(contentFontSize +2);
@@ -317,16 +310,16 @@ export class ReportCreditCollectionComponent {
 //       }
 //       x += maxColumnWidths[index];
 //     });
-  
+
 //     // Draw grid line after Grand Total
 //     doc.setLineWidth(0.3);
 //     doc.setDrawColor(200, 200, 200);
 //     doc.line(10, y, pageWidth - 10, y);
-  
+
 //     y += lineHeight; // Move y position for the Grand Total row
-  
+
 //     // Save PDF
-   
+
 //     // doc.save('Credit_Transaction_Report.pdf');
 
 //     const pdfBlob = doc.output('blob');
@@ -420,4 +413,122 @@ getTotalAmount(): number {
         return 'OTHERS';
     }
   }
+exportToExcel(): void {
+
+  const workbook = XLSX.utils.book_new();
+  const sheetData: any[][] = [];
+
+  // ===== HEADER =====
+  sheetData.push([this.templeName]);
+  sheetData.push([this.templeAddress]);
+  sheetData.push(['CREDIT COLLECTION']);
+  sheetData.push([
+    `${this.formatDateToDDMMYYYY(this.fromDate)} to ${this.formatDateToDDMMYYYY(this.toDate)}`
+  ]);
+  sheetData.push([]);
+
+  // ===== TABLE HEADER =====
+  sheetData.push([
+    'Bill No',
+    'Bill Date',
+    'Vazhipad',
+    'Name',
+    'Mobile No',
+    'Amount'
+  ]);
+
+  // ===== TABLE DATA =====
+  this.data.forEach((item: any) => {
+    sheetData.push([
+      item.BillNo,
+      item.BillDate,
+      item.Vazhipad,
+      item.Name,
+      item.MobileNo,
+      item.Amount
+    ]);
+  });
+
+  // ===== GRAND TOTAL =====
+  sheetData.push([]);
+  sheetData.push([
+    '',
+    '',
+    '',
+    '',
+    'Grand Total',
+    this.getTotalAmount()
+  ]);
+
+  // ===== CREATE SHEET =====
+  const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(sheetData);
+
+  // ===== MERGE HEADER =====
+  worksheet['!merges'] = [
+    { s: { r: 0, c: 0 }, e: { r: 0, c: 5 } },
+    { s: { r: 1, c: 0 }, e: { r: 1, c: 5 } },
+    { s: { r: 2, c: 0 }, e: { r: 2, c: 5 } },
+    { s: { r: 3, c: 0 }, e: { r: 3, c: 5 } }
+  ];
+
+  // ===== HEADER STYLE =====
+  const headerStyle = {
+    alignment: { horizontal: 'center', vertical: 'center' },
+    font: { bold: true, sz: 14 }
+  };
+
+  ['A1', 'A2', 'A3', 'A4'].forEach(cell => {
+    if (worksheet[cell]) worksheet[cell].s = headerStyle;
+  });
+
+  // ===== TABLE HEADER STYLE =====
+  const tableHeaderStyle = {
+    font: { bold: true },
+    alignment: { horizontal: 'center' }
+  };
+
+  const headerRowIndex = 5;
+
+  for (let col = 0; col < 6; col++) {
+    const addr = XLSX.utils.encode_cell({ r: headerRowIndex, c: col });
+    if (worksheet[addr]) worksheet[addr].s = tableHeaderStyle;
+  }
+
+  // ===== AMOUNT ALIGN RIGHT =====
+  Object.keys(worksheet).forEach(cell => {
+    if (cell.startsWith('F') && cell !== 'F6') {
+      if (worksheet[cell]) {
+        worksheet[cell].s = {
+          alignment: { horizontal: 'right' }
+        };
+      }
+    }
+  });
+
+  // ===== COLUMN WIDTH =====
+  worksheet['!cols'] = [
+    { wch: 15 },
+    { wch: 15 },
+    { wch: 25 },
+    { wch: 25 },
+    { wch: 18 },
+    { wch: 15 }
+  ];
+
+  // ===== ADD SHEET =====
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Credit Collection');
+
+  // ===== EXPORT =====
+  const excelBuffer = XLSX.write(workbook, {
+    bookType: 'xlsx',
+    type: 'array'
+  });
+
+  const blob = new Blob([excelBuffer], {
+    type:
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+  });
+
+  saveAs(blob, `Credit_Collection_${new Date().getTime()}.xlsx`);
+}
 }

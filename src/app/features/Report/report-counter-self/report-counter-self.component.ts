@@ -10,7 +10,6 @@ import {
 } from '@angular/material/paginator';
 import { jsPDF } from 'jspdf';
 import { ReportData } from '../../../models/poornam-report';
-import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -18,6 +17,10 @@ import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PrintreportService } from '../../../shared/service/printreport.service';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
+import { HeaderComponent } from '../../../core/layout/header/header.component';
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
+import { MatIconModule } from '@angular/material/icon';
 @Component({
   selector: 'app-report-counter-self',
   standalone: true,
@@ -25,7 +28,7 @@ import { SpinnerComponent } from '../../../shared/component/spinner/spinner.comp
       MatTableModule,
       MatPaginatorModule,SpinnerComponent,
       HeaderComponent,
-      MatTooltipModule,MatFormFieldModule, MatInputModule,TranslateModule],
+      MatTooltipModule,MatFormFieldModule, MatInputModule,TranslateModule,MatIconModule],
   templateUrl: './report-counter-self.component.html',
   styleUrls: ['./report-counter-self.component.css','/src/assets/styles/report.style.css']
 })
@@ -247,7 +250,7 @@ export class ReportCounterSelfComponent {
         if (this.lang == 'en') {
           return 'BANK';
         } else {
-          return 'ഓൺലൈൻ';
+          return 'ബാങ്ക്';
         }
 
       case 'CS':
@@ -286,6 +289,12 @@ export class ReportCounterSelfComponent {
           return 'DEBIT';
         } else {
           return 'ഡെബിറ്റ്';
+        }
+        case 'EN':
+        if (this.lang == 'en') {
+          return 'ENDOWMENT';
+        }else {
+          return 'എൻഡോമെന്റ്';
         }
       default:
         return 'OTHERS';
@@ -658,6 +667,162 @@ export class ReportCounterSelfComponent {
   //     return acc;
   //   }, {});
   // }
+exportToExcel(): void {
 
+  const workbook = XLSX.utils.book_new();
+  const sheetData: any[][] = [];
+
+  /* ---------------- HEADER ---------------- */
+
+  sheetData.push([this.templeName]);
+  sheetData.push([this.templeAddress]);
+  sheetData.push([
+    `DAILY TEMPLE COLLECTION (COUNTER) : ${this.counterId}`
+  ]);
+  sheetData.push([
+    `${this.formatDateToDDMMYYYY(this.fromDate)} To ${this.formatDateToDDMMYYYY(this.toDate)}`
+  ]);
+  sheetData.push([]);
+
+  /* ---------------- DATA ---------------- */
+
+  Object.keys(this.groupedData).forEach((counterKey) => {
+
+    sheetData.push([`Counter : ${counterKey}`]);
+    sheetData.push([]);
+
+    Object.keys(this.groupedData[counterKey]).forEach((userKey) => {
+
+      sheetData.push([`User : ${userKey}`]);
+      sheetData.push([]);
+
+      Object.keys(this.groupedData[counterKey][userKey]).forEach((modeKey) => {
+
+        sheetData.push([this.getTransactionType(modeKey)]);
+
+        sheetData.push([
+          'Sl No',
+          'Vazhipad',
+          'Quantity',
+          'Rate',
+          'Amount'
+        ]);
+
+        let slNo = 1;
+
+        this.groupedData[counterKey][userKey][modeKey]
+          .forEach((item: any) => {
+
+            sheetData.push([
+              slNo++,
+              item.vazhipad,
+              item.Qty,
+              item.Rate,
+              item.Amount
+            ]);
+
+          });
+
+        /* Transaction Total */
+
+        sheetData.push([
+          '',
+          '',
+          '',
+          `Total ${this.getTransactionType(modeKey)}`,
+          this.getTotalForCuserTrnsMode(
+            counterKey,
+            userKey,
+            modeKey
+          )
+        ]);
+
+        sheetData.push([]);
+      });
+
+      /* User Total */
+
+      sheetData.push([
+        '',
+        '',
+        '',
+        `Total ${userKey}`,
+        this.getTotalForCuser(counterKey, userKey)
+      ]);
+
+      sheetData.push([]);
+      sheetData.push([]);
+    });
+
+    /* Counter Total */
+
+    sheetData.push([
+      '',
+      '',
+      '',
+      `Total Counter ${counterKey}`,
+      this.getTotalForCounter(counterKey)
+    ]);
+
+    sheetData.push([]);
+    sheetData.push([]);
+  });
+
+  /* ---------------- GRAND TOTAL ---------------- */
+
+  sheetData.push([
+    '',
+    '',
+    '',
+    'Grand Total',
+    this.getGrandTotal()
+  ]);
+
+  /* ---------------- CREATE SHEET ---------------- */
+
+  const worksheet: XLSX.WorkSheet =
+    XLSX.utils.aoa_to_sheet(sheetData);
+
+  worksheet['!cols'] = [
+    { wch: 8 },
+    { wch: 35 },
+    { wch: 12 },
+    { wch: 20 },
+    { wch: 18 }
+  ];
+
+  worksheet['!merges'] = [
+    { s: { r: 0, c: 0 }, e: { r: 0, c: 4 } },
+    { s: { r: 1, c: 0 }, e: { r: 1, c: 4 } },
+    { s: { r: 2, c: 0 }, e: { r: 2, c: 4 } },
+    { s: { r: 3, c: 0 }, e: { r: 3, c: 4 } }
+  ];
+
+  XLSX.utils.book_append_sheet(
+    workbook,
+    worksheet,
+    'Counter Collection'
+  );
+
+  /* ---------------- DOWNLOAD ---------------- */
+
+  const excelBuffer = XLSX.write(workbook, {
+    bookType: 'xlsx',
+    type: 'array'
+  });
+
+  const blob = new Blob(
+    [excelBuffer],
+    {
+      type:
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+    }
+  );
+
+  FileSaver.saveAs(
+    blob,
+    `Counter_${this.counterId}_Collection_${new Date().getTime()}.xlsx`
+  );
+}
 
 }

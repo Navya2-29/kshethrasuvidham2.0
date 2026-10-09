@@ -12,11 +12,7 @@
     <button mat-icon-button matTooltip="Make Print" (click)="generatePDF()">
       <span class="material-icons">print</span>
     </button>
-    <button mat-icon-button matTooltip="Make PDF">
-      <span class="material-icons" (click)="generatePDFs()"
-        >picture_as_pdf</span
-      >
-    </button>
+    
   </div>
 
   <div id="print-section">
@@ -76,9 +72,14 @@
                 <td>{{ entry.VazhiDate }}</td>
                 <td class="name">
                   {{ entry.Name }}
+                  <ng-container *ngIf="entry.Name2"><br>{{ entry.Name2 }}</ng-container>
+                  <ng-container *ngIf="entry.Name3"><br>{{ entry.Name3 }}</ng-container>
+                  <p>{{entry.MobileNo}}</p>
                 </td>
                 <td>
                   {{ entry.Star }}
+                  <ng-container *ngIf="entry.Star2"><br>{{ entry.Star2 }}</ng-container>
+                  <ng-container *ngIf="entry.Star3"><br>{{ entry.Star3 }}</ng-container>
                 </td>
                 <td class="qty">
                   {{ entry.Qty }}

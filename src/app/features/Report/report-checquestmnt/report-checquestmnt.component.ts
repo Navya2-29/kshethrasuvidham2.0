@@ -8,19 +8,22 @@ import {
   MatPaginatorModule,
   PageEvent,
 } from '@angular/material/paginator';
-import { jsPDF } from 'jspdf';
+
 import { ReportData } from '../../../models/poornam-report';
 import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Location } from '@angular/common';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import puppeteer from 'puppeteer';
+
 import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PrintreportService } from '../../../shared/service/printreport.service';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
+
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+import { MatIconModule } from '@angular/material/icon';
 @Component({
   selector: 'app-report-checquestmnt',
   standalone: true,
@@ -34,6 +37,7 @@ import { SpinnerComponent } from '../../../shared/component/spinner/spinner.comp
     MatFormFieldModule,
     MatInputModule,
     SpinnerComponent,
+    MatIconModule
   ],
   templateUrl: './report-checquestmnt.component.html',
   styleUrls: [
@@ -111,7 +115,11 @@ export class ReportChecquestmntComponent implements OnInit {
       next: (data) => {
         console.log('Fetched report data:', data);
         this.data = data;
+         this.data = this.data.sort((a: any, b: any) =>
+        a.BillNo.localeCompare(b.BillNo, undefined, { numeric: true, sensitivity: 'base' })
+        );
         this.filteredData = this.data.filter((item) => item.TrnsMode === 'CH');
+        
         //    this.filteredData = this.filteredData.sort((a:any, b:any) => {
         //     const [numA, denomA] = a.BillNo.split('/').map(Number);
         //     const [numB, denomB] = b.BillNo.split('/').map(Number);
@@ -506,4 +514,168 @@ this.reportPrintservice.generatePDF();
 //       WindowPrt.close();
 //     }
   }
+
+
+  exportToExcel(): void {
+  const workbook = XLSX.utils.book_new();
+  const excelData: any[] = [];
+
+  // ==========================================
+  // HEADER
+  // ==========================================
+  excelData.push([this.templeName]);
+  excelData.push([this.templeAddress]);
+  excelData.push(['CHEQUE STATEMENT']);
+  excelData.push([
+    `${this.formatDateToDDMMYYYY(this.fromDate)} To ${this.formatDateToDDMMYYYY(this.toDate)}`
+  ]);
+  excelData.push([]);
+
+  // =====================================================
+  // 1. VAZHIPAD COLLECTION
+  // =====================================================
+  if (this.filteredData.length > 0) {
+    excelData.push(['VAZHIPAD']);
+    excelData.push([
+      'Bill No',
+      'Bill Date',
+      'Bank',
+      'Cheque Date',
+      'Cheque No',
+      'Counter',
+      'Vazhipad',
+      'Name',
+      'Amount'
+    ]);
+
+    this.filteredData.forEach((item: any) => {
+      excelData.push([
+        item.BillNo,
+        item.BillDate,
+        item.InstBank,
+        item.InstDate,
+        item.InstNo,
+        `${item.CounterId} (${item.UName})`,
+        item.Vazhipad,
+        item.Name,
+        item.Amount
+      ]);
+    });
+
+    excelData.push([
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      'Total',
+      this.getTotalAmount()
+    ]);
+
+    excelData.push([]);
+  }
+
+  // =====================================================
+  // 2. FEE COLLECTION
+  // =====================================================
+  if (this.filteredFeecollection.length > 0) {
+    excelData.push(['FEE COLLECTION']);
+    excelData.push([
+      'Bill No',
+      'Bill Date',
+      'Bank',
+      'Cheque Date',
+      'Cheque No',
+      'Counter',
+      'Item',
+      'Name',
+      'Amount'
+    ]);
+
+    this.filteredFeecollection.forEach((item: any) => {
+      excelData.push([
+        item.BillNo,
+        item.BillDate,
+        item.InstBank,
+        this.formatDateToDDMMYYYY(item.InstDate),
+        item.InstNo,
+        `${item.CounterId} (${item.UName})`,
+        `${this.lang == 'en' ? item.NM_Name : item.NM_RName} (${item.Month})`,
+        item.Name,
+        item.Amount
+      ]);
+    });
+
+    excelData.push([
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      'Total',
+      this.getFeecollectionTotalAmount()
+    ]);
+
+    excelData.push([]);
+  }
+
+  // =====================================================
+  // GRAND TOTAL
+  // =====================================================
+  excelData.push([
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    'Grand Total',
+    this.getTotalAmount() + this.getFeecollectionTotalAmount()
+  ]);
+
+  // =====================================================
+  // CREATE SHEET
+  // =====================================================
+  const worksheet = XLSX.utils.aoa_to_sheet(excelData);
+
+  worksheet['!cols'] = [
+    { wch: 12 }, // Bill No
+    { wch: 15 }, // Bill Date
+    { wch: 20 }, // Bank
+    { wch: 15 }, // Cheque Date
+    { wch: 15 }, // Cheque No
+    { wch: 18 }, // Counter
+    { wch: 30 }, // Vazhipad
+    { wch: 25 }, // Name
+    { wch: 15 }  // Amount
+  ];
+
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Cheque Statement');
+
+  // =====================================================
+  // DOWNLOAD FILE
+  // =====================================================
+  const excelBuffer: any = XLSX.write(workbook, {
+    bookType: 'xlsx',
+    type: 'array'
+  });
+
+  const file = new Blob(
+    [excelBuffer],
+    {
+      type:
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+    }
+  );
+
+  saveAs(
+    file,
+    `Cheque_Statement_${new Date().getTime()}.xlsx`
+  );
+}
 }

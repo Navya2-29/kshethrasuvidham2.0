@@ -9,7 +9,6 @@ import {
   PageEvent,
 } from '@angular/material/paginator';
 
-import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { HttpClient } from '@angular/common/http';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -17,6 +16,7 @@ import { MatInputModule } from '@angular/material/input';
 import { ReportDailyStmt } from '../../../models/dailytrasaction.model';
 
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { HeaderComponent } from '../../../core/layout/header/header.component';
 interface GroupedData {
   [key: number]: {  // CounterId level
     counterTotalAmount: number;  // Store total amount per CounterId

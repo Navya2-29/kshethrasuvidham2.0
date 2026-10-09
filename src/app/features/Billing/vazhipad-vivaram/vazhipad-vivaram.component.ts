@@ -6,7 +6,7 @@ import { AreaothersComponent } from '../areaothers/areaothers.component';
 @Component({
   selector: 'app-vazhipad-vivaram',
   standalone: true,
-  imports: [HeaderComponent,FixedbottomComponent,AreaothersComponent],
+  imports: [HeaderComponent,AreaothersComponent],
   templateUrl: './vazhipad-vivaram.component.html',
   styleUrl: './vazhipad-vivaram.component.css'
 })

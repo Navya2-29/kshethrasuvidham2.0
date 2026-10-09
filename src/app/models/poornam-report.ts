@@ -11,12 +11,28 @@ export interface ReportData {
     Prathista: string;
     InstBank?:string;
     InstDate?:string;
+    Type:string;
     InstNo?:string;
+    TotalAmt:number;
     TrnsMode:string;
+    Staff:string;
+    Mobile: string;
+    Name1:string;
+    Name2?:string;
+    Name3?:string;
+    Star2?:string;
+    Star3?:string;
+    TrnId:string;
     CounterId:string
     CancelDate?:string;
     Cuser?:string;
     Remarks?:string;
+    OrderId:string;
+    Address3:string;
+    MID:number;
+   Due:number;
+   Paid:number;
+Address4:string;
     ct?:string;
     VTime:string;
     MobileNo?:string;
@@ -31,5 +47,6 @@ export interface ReportData {
     UName:string;
     TrnStatus:string;
     TotalAmount:number;
+    PMId:number;
     // Receipt_Amt?:number
   }

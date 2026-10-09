@@ -4,7 +4,7 @@
     <div class="container" style="width:100%;">
         <div class="row">
            <div class="col-md-12">
-               <div style="padding:0px;margin-bottom:18px;">
+               <div style="padding:0px;margin-bottom:18px;"  id="print-section">
                     <h2 style="font-family: Manjari;">{{vazhipad}} ( {{starDate |date:'dd-MMM-YYYY'}} - {{lastDAte |date:'dd-MMM-YYYY'}})</h2>
                     <!-- {{"From" | translate}}{{"To"| translate }} -->
                     <table class="table" >
@@ -13,8 +13,8 @@
                             <th >{{"NAME"| translate}}</th>
                             <th >{{"STAR" | translate }}</th>
                             <th >{{"Report Name.VAZHIPAD DATE" | translate }}</th>
-                            <th>{{"Name2" | translate}}</th>
-                            <th>{{"Star2" | translate }}</th>
+                            <th *ngIf="hasName2">{{"Name2" | translate}}</th>
+                            <th *ngIf="hasStar2">{{"Star2" | translate }}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -22,8 +22,8 @@
                                 <td>{{devottee.Name}}</td>
                                 <td>{{getStarbyId(devottee.Star)}}</td>
                                 <td>{{devottee.VazhipadDate | date:'dd-MMM-yyyy'}}</td>
-                                <td *ngIf="devottee.Name2.length>0">{{devottee.Name2}}</td>
-                                <td *ngIf="devottee.Star2.length>0">{{getStarbyId(devottee.Star2 )|| "N/A"}}</td>
+                                <td *ngIf="hasName2 && devottee.Name2">{{devottee.Name2}}</td>
+                                <td *ngIf="hasStar2 && devottee.Star2">{{getStarbyId(devottee.Star2 )|| "N/A"}}</td>
                             </tr>
                             </tbody>
                         </table>
@@ -38,5 +38,5 @@
 </mat-dialog-content>
 <mat-dialog-actions  class="menuend">
     <button mat-button  class="close" (click)="cancel()">Cancel</button>
-    <!-- <button mat-button class="proceed" (click)="onSubmit()">Print</button>  -->
+    <button mat-button class="proceed" (click)="print()">Print</button> 
 </mat-dialog-actions>

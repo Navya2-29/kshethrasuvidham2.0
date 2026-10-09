@@ -24,11 +24,15 @@ VM_Receipt:string;
 VM_Sales:string,
 VM_Seasonal:string;
 VM_Special:string;
+LifeTime:string;
 VM_Time:string;
 VM_TimeLimit:number
 VM_Whatsapp:string
 RespStatus:string,
 VM_Mattinam:string,
+VM_TimeSlot:string,
+VM_CurrentDay:string,
+VM_Token:string,
 prathistainfo?: PrathistaInfo[];
 }
 export  interface AccountHead{

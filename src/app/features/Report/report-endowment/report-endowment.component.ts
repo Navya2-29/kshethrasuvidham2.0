@@ -13,14 +13,16 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PrintreportService } from '../../../shared/service/printreport.service';
 import { ReportService } from '../service/report.service';
 import { HttpClient } from '@angular/common/http';
-
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+import { MatIconModule } from '@angular/material/icon';
 @Component({
   selector: 'app-report-endowment',
   standalone: true,
   imports: [
     CommonModule,MatTableModule,MatPaginatorModule,
         SpinnerComponent,
-        TranslateModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,
+        TranslateModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,MatIconModule
   ],
   templateUrl: './report-endowment.component.html',
   styleUrls: ['./report-endowment.component.css','/src/assets/styles/report.style.css'],
@@ -92,14 +94,11 @@ export class ReportEndowmentComponent {
       next: (data) => {
         console.log('Fetched report data:', data);
         this.data=data;
-        this.filteredData=this.data;
-      //   this.data = data.sort((a:any, b:any) => {
-      //     const [numA, denomA] = a.BillNo.split('/').map(Number);
-      //     const [numB, denomB] = b.BillNo.split('/').map(Number);
-          
-      //     // Compare the two parts: first compare the numerator, then the denominator
-      //     return numA - numB || denomA - denomB;
-      // });
+      this.data = this.data.sort((a: any, b: any) =>
+        a.BillNo.localeCompare(b.BillNo, undefined, { numeric: true, sensitivity: 'base' })
+      );
+       this.filteredData=this.data;
+
       this.loading=false;
         this.dataSource.data = this.data
         this.length = data.length; 
@@ -185,5 +184,90 @@ getTimeForBill(time:any){
       return 'OTHERS';
   }
     
+}
+
+exportToExcel(): void {
+  const workbook = XLSX.utils.book_new();
+  const excelData: any[] = [];
+
+  // ==========================================
+  // HEADER
+  // ==========================================
+  excelData.push([this.templeName]);
+  excelData.push([this.templeAddress]);
+  excelData.push(['ENDOWMENT REPORT']);
+  excelData.push([
+    `${this.formatDateToDDMMYYYY(this.fromDate)} To ${this.formatDateToDDMMYYYY(this.toDate)}`
+  ]);
+  excelData.push([]);
+
+  // ==========================================
+  // TABLE HEADER
+  // ==========================================
+  excelData.push([
+    'Bill Date',
+    'Bill No',
+    'Vazhipad Date',
+    'Vazhipad',
+    'Name',
+    'Star',
+    'Quantity',
+    'Rate'
+  ]);
+
+  // ==========================================
+  // TABLE DATA
+  // ==========================================
+  this.filteredData.forEach((item: any) => {
+    excelData.push([
+      item.BillDate,
+      item.BillNo,
+      item.VazhiDate,
+      item.Vazhipad ? item.Vazhipad : '',
+      item.Name,
+      item.Star,
+      item.Qty,
+      item.Rate
+    ]);
+  });
+
+  // ==========================================
+  // CREATE SHEET
+  // ==========================================
+  const worksheet = XLSX.utils.aoa_to_sheet(excelData);
+
+  worksheet['!cols'] = [
+    { wch: 15 }, // Bill Date
+    { wch: 12 }, // Bill No
+    { wch: 15 }, // Vazhipad Date
+    { wch: 30 }, // Vazhipad
+    { wch: 28 }, // Name
+    { wch: 15 }, // Star
+    { wch: 12 }, // Qty
+    { wch: 15 }  // Rate
+  ];
+
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Endowment Report');
+
+  // ==========================================
+  // DOWNLOAD FILE
+  // ==========================================
+  const excelBuffer: any = XLSX.write(workbook, {
+    bookType: 'xlsx',
+    type: 'array'
+  });
+
+  const file = new Blob(
+    [excelBuffer],
+    {
+      type:
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+    }
+  );
+
+  saveAs(
+    file,
+    `Endowment_Report_${new Date().getTime()}.xlsx`
+  );
 }
 }

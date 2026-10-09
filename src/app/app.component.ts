@@ -5,6 +5,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { LoginComponent } from './core/auth/login/login.component';
 import { MasterService } from './services/master/master.service';
 import { Title } from '@angular/platform-browser';
+import { UserStore } from './store/user.store';
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -13,23 +14,12 @@ import { Title } from '@angular/platform-browser';
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'Counter';
-  logo:string;
-  templeName:string;
-  constructor(private service:MasterService,private titleService: Title,){
-    this.getTempleData();
+ 
+  constructor(private userStore: UserStore){
+    
   }
-  getTempleData(){
-    this.service.settingsData().subscribe((data)=>{
-      console.log(data);
-      this.templeName=data[0].Name;
-      this.titleService.setTitle( this.templeName);
-      // this.logo=data[0].logo;
-      // localStorage.setItem('TempleName',this.templeName);
-      // localStorage.setItem('Address',data[0].Address);
-      
-    })
+  ngOnInit() {
+    this.userStore.loadFromStorage();
   }
-  
 
 }

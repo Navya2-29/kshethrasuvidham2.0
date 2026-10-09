@@ -1,9 +1,8 @@
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ReportService } from '../service/report.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
-import { jsPDF } from 'jspdf'; 
 import {ReportData} from '../../../models/poornam-report'
 import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -11,10 +10,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import html2canvas from 'html2canvas';
 import { PrintreportService } from '../../../shared/service/printreport.service';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
-import { NotificationService } from '../../../services/notification/notification.service';
 import { MasterService } from '../../../services/master/master.service';
 import { Vmaster } from '../../../models/vmaster.model';
 @Component({
@@ -41,7 +38,6 @@ vazhipad:string;
   templeAddress:string|null;
   Vmaster: Vmaster[] = [];
   
-   private notification = inject(NotificationService);
    private masterService = inject(MasterService);
   constructor(private route: ActivatedRoute, private ts: TranslateService, 
     private reportPrintservice: PrintreportService
@@ -80,7 +76,7 @@ vazhipad:string;
       PMId:'',
       VazhId:this.vazhipad.trim()
     };
-    console.log(payLoad,"ppp")
+    // console.log(payLoad,"ppp")
     this.service.getVazhipadWiseReport(payLoad).subscribe({
       next: (data) => {
         console.log('Fetched report data:', data);
@@ -90,7 +86,7 @@ vazhipad:string;
       this.groupedData = this.groupByVazhipad(data);
         this.loading=false;
         
-        console.log(this.groupedData);
+        // console.log(this.groupedData);
       },
       error: (error) => {
         console.error('Error fetching report data:', error);
@@ -114,12 +110,11 @@ vazhipad:string;
   }
 
   goBack(): void {
-    console.log('Going back...'); // Log to verify method execution
     this.router.navigate(['/getReport']);
     if (window.history.length > 1) {
-      window.history.back(); // Goes back to the previous page in history
+      window.history.back(); 
     } else {
-      window.close(); // Closes the tab if it's the only page open
+      window.close();
     }
 
 
@@ -130,29 +125,6 @@ vazhipad:string;
 
 
 
-  // consolidateData() {
-  //   this.consolidatedData = this.data.reduce((acc: ConsolidatedData[], current: ReportData) => {
-  //     // Convert Qty to a number if it's a string
-  //     const qty = typeof current.Qty === 'string' ? parseFloat(current.Qty) : current.Qty;
-
-  //     // Find if the Vazhipad already exists in the accumulator
-  //     const existing = acc.find(item => item.Vazhipad === current.Vazhipad);
-
-  //     if (existing) {
-  //       // If it exists, add the quantity
-  //       existing.TotalQty += qty; // Use the converted qty
-  //     } else {
-  //       // If it doesn't exist, push a new object with the current Vazhipad and Qty
-  //       acc.push({ Vazhipad: current.Vazhipad, TotalQty: qty }); // Use the converted qty
-  //     }
-
-  //     return acc;
-  //   }, []);
-  //   this.consolidatedData.sort((a, b) => a.Vazhipad.localeCompare(b.Vazhipad));
-  //   console.log(this.consolidatedData); // Corrected reference to consolidatedData
-  // }
-
-
    
 formatDateToDDMMYYYY(date: string): string {
   const [year, month, day] = date.split('-');
@@ -160,201 +132,6 @@ formatDateToDDMMYYYY(date: string): string {
 }
 
 
-// generatePDF() {
-//   const templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
-//   const templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
-//   const doc = new jsPDF();
-//   const pageWidth = doc.internal.pageSize.width;
-//   const pageHeight = doc.internal.pageSize.height;
-//   this.http
-//   .get('assets/fonts/malayalam/NotoSansMalayalam-Regular.ttf', {
-//     responseType: 'arraybuffer',
-//   })
-//   .subscribe(
-//     (fontData) => {
-//       const doc = new jsPDF();
-
-//       // Convert ArrayBuffer to Base64
-//       const fontBase64 = btoa(
-//         String.fromCharCode(...new Uint8Array(fontData))
-//       );
-
-//       // Add the font to jsPDF
-//       doc.addFileToVFS(
-//         'NotoSansMalayalam-Regular.ttf',
-//         fontBase64
-//       );
-//       doc.addFont(
-//         'NotoSansMalayalam-Regular.ttf',
-//         'NotoSansMalayalam',
-//         'normal'
-//       );
-
-//       // Set the custom font
-//       doc.setFont('NotoSansMalayalam');
-//   const headerHeight = 35; // Increased header height
-//   const footerHeight = 8;
-//   const lineHeight = 10;
-//   const tableHeaderFontSize = 11;
-//   const contentFontSize = 10;
-//   const currentDate = new Date().toLocaleDateString();
-
-//   const maxColumnWidths = [30, 100, 30]; // Column widths for each column (adjusted)
-//   const headers = ["SINO", "VAZHIPAD", "QUANTITY"];
-
-//   let y = headerHeight;
-//   let grandTotalQty = 0;
-
-//   // Draw Header
-//   const drawHeader = () => {
-//     doc.setFontSize(12);
-//     doc.setFont("NotoSansMalayalam", "normal");
-//     doc.text(templeName, pageWidth / 2, 12, { align: "center" });
-//     doc.setFont("NotoSansMalayalam", "normal");
-//     doc.setFontSize(10);
-//     doc.text(templeAddress, pageWidth / 2, 18, { align: "center" });
-
-//     doc.setFontSize(10);
-//     doc.setFont("NotoSansMalayalam", "bold");
-//     doc.text("Vazhipad Report", pageWidth / 2, 27, { align: "center" });
-
-//     // Add current date below the report title but above the table header
-//     doc.setFontSize(10);
-//     doc.setFont("NotoSansMalayalam", "normal");
-//     doc.text(`${this.formatDateToDDMMYYYY(this.fromDate)} to ${this.formatDateToDDMMYYYY(this.toDate)}`, pageWidth / 2, 32, { align: "center" });
-
-//     doc.setLineWidth(0.5);
-//     doc.line(10, y, pageWidth - 10, y); // Line below header
-//     y += 3; // Space below the line
-//   };
-
-//   // Draw Footer (Centered page number)
-//   const drawFooter = (pageNum: number) => {
-//     doc.setFontSize(10);
-//     doc.text(`Page ${pageNum}`, pageWidth / 2, pageHeight - footerHeight / 2, { align: "center" });
-//   };
-
-
-//   // Add Table Header
-//   const drawTableHeader = () => {
-//     doc.setFontSize(tableHeaderFontSize);
-//     doc.setFont("NotoSansMalayalam", "bold");
-//     let x = 10;
-//     headers.forEach((header, index) => {
-//       doc.text(header, x, y + 5);
-//       x += maxColumnWidths[index];
-//     });
-//     y += lineHeight;
-//     doc.setLineWidth(0.3);
-//     doc.setDrawColor(200, 200, 200); // Light gray color for grid lines
-//     doc.line(10, y, pageWidth - 10, y); // Line below the table header
-//     y += 2;
-//   };
-
-//   // Initialize PDF
-//   drawHeader();
-//   drawFooter(1);
-//   drawTableHeader();
-
-//   let pageNum = 1;
-//   let siNo = 1; // Initialize serial number
-
-//   // Iterate over API data and draw rows
-//   this.consolidatedData.forEach((row: any) => {
-//     const tableRow = [
-//       siNo.toString(), // Serial number as the first column
-//       row.Vazhipad, // Vazhipad
-//       row.TotalQty.toString(), // Total Quantity
-//     ];
-
-//     // Calculate the max height required for wrapped text in the row
-//     const rowHeight = Math.max(...tableRow.map((cell, index) => {
-//       return Array.isArray(cell) ? cell.length * contentFontSize : lineHeight;
-//     }));
-
-//     // Check if a new page is needed
-//     if (y + rowHeight > pageHeight - footerHeight - 10) {
-//       doc.addPage();
-//       pageNum++;
-//       y = headerHeight + 5;
-//       drawHeader();
-//       drawFooter(pageNum);
-//       drawTableHeader();
-//     }
-
-//     let x = 10;
-
-//     // Draw each cell with normal font
-//     doc.setFont("NotoSansMalayalam", "normal");
-//     doc.setFontSize(contentFontSize);
-
-//     tableRow.forEach((cell, index) => {
-//       if (index === 2) {
-//         // Align "TOTAL QTY" column to the right
-//         doc.text(String(cell), x + maxColumnWidths[index] - 2, y + 5, { align: "center" });
-//       } else {
-//         // Left-align other columns
-//         doc.text(String(cell), x, y + 5);
-//       }
-//       x += maxColumnWidths[index];
-//     });
-
-//     // Draw row grid lines
-//     doc.setLineWidth(0.3); // Light line width for grid
-//     doc.setDrawColor(200, 200, 200); // Light gray color
-//     doc.line(10, y, pageWidth - 10, y); // Line at the bottom of the row
-
-//     // Increment the serial number for the next row
-//     siNo++;
-
-//     // Accumulate total quantity
-//     grandTotalQty += row.TotalQty;
-
-//     y += rowHeight; // Move y position for the next row
-//   });
-
-//   // Add Grand Total row
-//   const grandTotalRow = [
-//     "",
-//     "Grand Total", 
-//     grandTotalQty.toString()
-//   ];
-
-//   let x = 10;
-//   doc.setFont("NotoSansMalayalam", "bold");
-//   doc.setFontSize(contentFontSize);
-//   grandTotalRow.forEach((cell, index) => {
-//     if (index === 2) {
-//       // Align "TOTAL QTY" column to the right
-//       doc.text(String(cell), x + maxColumnWidths[index] - 2, y + 5, { align: "center" });
-//     } else {
-//       // Left-align other columns
-//       doc.text(String(cell), x, y + 5);
-//     }
-//     x += maxColumnWidths[index];
-//   });
-
-//   // Draw grid line after Grand Total
-//   doc.setLineWidth(0.3);
-//   doc.setDrawColor(200, 200, 200);
-//   doc.line(10, y, pageWidth - 10, y);
-
-//   y += lineHeight; // Move y position for the Grand Total row
-
-//   // Save PDF
-//   // doc.save("VazhipadReport.pdf");
-//   const pdfBlob = doc.output('blob');
-//   const pdfUrl = URL.createObjectURL(pdfBlob);
-//   window.open(pdfUrl, '_blank');
-//   // doc.save('vazhipad_report_with_header_footer.pdf');
-
-// },
-// (error:any) => {
-//   console.error('Error loading font:', error);
-// }
-// );
-
-// }
 
 getTotalAmount(): number {
   return this.data.reduce((sum, item) => sum + item.Amount, 0);
@@ -366,34 +143,12 @@ generatePDF(){
 }
   
   
-generatePDFs() {
-  const element = document.getElementById('print-section'); 
 
-  if (!element) {
-    console.error("Element not found");
-    return;
-  }
-
-  html2canvas(element, { scale: 2 }).then(canvas => {
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF('p', 'mm', 'a4');
-
-    const imgWidth = 210; 
-    const imgHeight = (canvas.height * imgWidth) / canvas.width; 
-
-    pdf.addImage(imgData, 'PNG', 0, 10, imgWidth, imgHeight);
-    pdf.save('Poornam_Report.pdf'); 
-  }).catch(error => {
-    console.error("Error generating PDF:", error);
-  });
-}
 
 getvazhipadbyid(){
-console.log(this.vazhipad,typeof this.vazhipad ,"kkk")
-console.log(this.Vmaster,"ooooooo")
-this.Vmaster.forEach(item => console.log(item.VM_Id, typeof item.VM_Id));
+
+// this.Vmaster.forEach(item => console.log(item.VM_Id, typeof item.VM_Id));
  const matchitem = this.Vmaster.find((item) => item.VM_Id.toString() == this.vazhipad.trim());
-  console.log(matchitem,"oooo")
  return matchitem?matchitem.VM_Name:""
   
     
@@ -403,7 +158,7 @@ getAllvazhipad(){
  this.masterService.getVmaster().subscribe({
       next: (data) => {
         if (data && data.length > 0) {
-          console.log(data);
+          // console.log(data);
           this.Vmaster = data;
          
         }

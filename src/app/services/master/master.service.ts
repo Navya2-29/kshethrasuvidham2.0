@@ -19,6 +19,7 @@ import { DayMaster } from '../../models/day-master.model';
 import { multiDayFilter } from '../../models/multidayFilter.model';
 import { ItemMaster } from '../../models/item-master.model';
 import { Settings } from 'jspdf-autotable';
+import { UpdateStarRequest } from '../../models/starmaster.model';
 @Injectable({
   providedIn: 'root',
 })
@@ -65,7 +66,7 @@ this.userId=localStorage.getItem('LoginId');
       Cuser: this.userId,
       PMImage: obj.PM_Image,
     };
-    console.log(payload)
+
     return this.http
       .post<Pmaster>(
         Constant.BASE_URL + Constant.METHODS.CREATE_PMASTER,
@@ -87,7 +88,6 @@ this.userId=localStorage.getItem('LoginId');
       Cuser: this.userId,
       PMImage: obj.PM_Image,
     };
-    console.log(payLoad);
     return this.http
       .post<Pmaster>(
         Constant.BASE_URL + Constant.METHODS.CREATE_PMASTER,
@@ -126,6 +126,12 @@ this.userId=localStorage.getItem('LoginId');
       .pipe(catchError(this.errorHandler));
   }
 
+   getGmaster(): Observable<any[]> {
+    const payLoad: any = { Type: 'Gothram', Code: '' };
+    return this.http
+      .post<any[]>(Constant.BASE_URL + Constant.METHODS.GET_MASTER, payLoad)
+      .pipe(catchError(this.errorHandler));
+  }
   // create category
   createCmaster(obj: Cmaster): Observable<any> {
     const payLoad = {
@@ -174,6 +180,15 @@ this.userId=localStorage.getItem('LoginId');
       .post<any>(Constant.BASE_URL + Constant.METHODS.DELETE_MASTER, payLoad)
       .pipe(catchError(this.errorHandler));
   }
+   deleteGothrammaster(id: string): Observable<any> {
+    const payLoad = {
+      Type: "Gothram",
+      Id: id.toString(),
+    };
+    return this.http
+      .post<any>(Constant.BASE_URL + Constant.METHODS.DELETE_MASTER, payLoad)
+      .pipe(catchError(this.errorHandler));
+  }
 
   // vamster service
   getVmaster(): Observable<Vmaster[]> {
@@ -197,7 +212,7 @@ this.userId=localStorage.getItem('LoginId');
 
   // create vamster
   createVmaster(id: string, obj: Vmaster): Observable<Vmaster> {
-    console.log(obj);
+
     const Id = `${id}`;
     const payLoad = {
       vazhId: '',
@@ -231,9 +246,13 @@ this.userId=localStorage.getItem('LoginId');
       VM_Whatsapp: obj.VM_Whatsapp ? 'Y' : 'N',
       VM_Sales:obj.VM_Sales ? 'Y':'N',
       VM_Donation:obj.VM_Donation?'Y':"N",
+      TimeSlot:obj.VM_TimeSlot?'Y':'N',
+      VM_CurrentBooking:obj.VM_CurrentDay?'Y':'N',
+      Token:obj.VM_Token?'Y':'N',
+      VM_SingleReceipt:"N",
+      LifeTime: obj.LifeTime ? 'Y' : 'N',
       prathistainfo: obj.prathistainfo,
     };
-    console.log(payLoad,"create vmaster last data")
     return this.http
       .post<Vmaster>(
         Constant.BASE_URL + Constant.METHODS.CREATE_VMASTER,
@@ -245,10 +264,8 @@ this.userId=localStorage.getItem('LoginId');
   // update vamster
   updateVmaster(VC_Id: string, obj: Vmaster, id: number): Observable<Vmaster> {
 
-    console.log(obj,"vmaster update service")
     // const userId=localStorage.getItem('LoginId');
     const Id = `${id}`;
-    console.log(typeof VC_Id, obj, id);
     const payLoad = {
       vazhId: Id,
       VazhCode: obj.VM_Code,
@@ -281,9 +298,12 @@ this.userId=localStorage.getItem('LoginId');
       VM_Whatsapp: obj.VM_Whatsapp ? 'Y' : 'N',
       VM_Sales:obj.VM_Sales ? 'Y':'N',
       VM_Donation:obj.VM_Donation?"Y":"N",
+      TimeSlot:obj.VM_TimeSlot?'Y':'N',
+      VM_CurrentBooking:obj.VM_CurrentDay?'Y':'N',
+      Token:obj.VM_Token?'Y':'N',
+      LifeTime: obj.LifeTime ? 'Y' : 'N',
       prathistainfo: obj.prathistainfo,
     };
-    console.log(payLoad,"update payload");
     return this.http
       .post<Vmaster>(
         Constant.BASE_URL + Constant.METHODS.CREATE_VMASTER,
@@ -375,7 +395,7 @@ this.userId=localStorage.getItem('LoginId');
       Cuser: this.userId,
       Type: 'INSERT',
     };
-    console.log(payLoad);
+
     return this.http.post<any>(
       Constant.BASE_URL + Constant.METHODS.CREATE_SEASONAL,
       payLoad
@@ -392,7 +412,7 @@ this.userId=localStorage.getItem('LoginId');
       Cuser: this.userId,
       Type: 'UPDATE',
     };
-    console.log(payLoad);
+
     return this.http
       .post<any>(Constant.BASE_URL + Constant.METHODS.CREATE_SEASONAL, payLoad)
       .pipe(catchError(this.errorHandler));
@@ -494,7 +514,7 @@ this.userId=localStorage.getItem('LoginId');
 
   // create  item master
   createItemMaster(data: any): Observable<any> {
-    console.log(data ,"service")
+
     return this.http.post<any>(
       Constant.BASE_URL + Constant.METHODS.CREATE_ITEM,
       data
@@ -503,7 +523,7 @@ this.userId=localStorage.getItem('LoginId');
 
   // update  item master
   updateItemMaster( obj: any): Observable<any> {
-    console.log(obj,"service")
+
     return this.http
       .post<any>(Constant.BASE_URL + Constant.METHODS.CREATE_ITEM , obj)
       .pipe(catchError(this.errorHandler));
@@ -607,6 +627,13 @@ this.userId=localStorage.getItem('LoginId');
     );
   }
 
+   updateStarMaster(payload: UpdateStarRequest): Observable<any> {
+    return this.http.post(
+      Constant.BASE_URL + Constant.METHODS.UPDATESTARMASTER,
+      payload
+    );
+  }
+
   // create  day
   createDayMaster(payLoad: object): Observable<any> {
     // console.log(typeof(VMId));
@@ -629,7 +656,7 @@ this.userId=localStorage.getItem('LoginId');
 
   // delete  day
   deleteDay(id: number): Observable<any> {
-    console.log(id);
+
     const payLoad = { Type: 'DayMaster', Id: `${id}` };
     return this.http
       .post<any>(Constant.BASE_URL + Constant.METHODS.DELETE_MASTER, payLoad)
@@ -637,7 +664,7 @@ this.userId=localStorage.getItem('LoginId');
   }
 
   deleteDayByVazhipadId(id: number): Observable<any> {
-    console.log(id);
+
     const payLoad = { Type: 'DayAll', Id: `${id}` };
     return this.http
       .post<any>(Constant.BASE_URL + Constant.METHODS.DELETE_MASTER, payLoad)
@@ -655,7 +682,7 @@ this.userId=localStorage.getItem('LoginId');
   }
   // create block
   createBlockingMaster(data: any): Observable<any> {
-    console.log(data);
+
     return this.http.post<any>(
       Constant.BASE_URL + Constant.METHODS.CREATE_VBLOCK,
       data
@@ -710,6 +737,12 @@ this.userId=localStorage.getItem('LoginId');
     );
   }
 
+  updateonlinetrnsactionstatuspaymentmode(payLoad: any){
+    return this.http.post<any>(
+      Constant.BASE_URL + Constant.METHODS.UPDATEONLINESTATUS,
+      payLoad
+    );
+  }
   SearchByBillNo(payLoad: any): Observable<any[]> {
     return this.http.post<any>(
       Constant.BASE_URL + Constant.METHODS.GET_MASTER,
@@ -724,7 +757,7 @@ this.userId=localStorage.getItem('LoginId');
     );
   }
   getMalayalamMonthList(payLoad: any): Observable<any[]> {
-    console.log(payLoad);
+
     return this.http.post<any>(
       Constant.BASE_URL + Constant.METHODS.GET_MASTER,
       payLoad
@@ -813,7 +846,7 @@ nadavaravBooking(payLoad:any){
   return this.http.post<any>(
     Constant.BASE_URL + Constant.METHODS.NADAVARAV_BOOKING,
     payLoad
-  ); 
+  );
 }
 
 getNadavaravBooking(payLoad:any){
@@ -828,7 +861,7 @@ getNadavaravBillNumber(payLoad:any){
   return this.http.post<any>(
     Constant.BASE_URL + Constant.METHODS.GET_MASTER,
     payLoad
-  ); 
+  );
 }
 
 settingsData(){
@@ -838,26 +871,26 @@ settingsData(){
   return this.http.post<any>(
     Constant.BASE_URL + Constant.METHODS.GET_MASTER,
     payLoad
-  ); 
+  );
 }
 upDateSettings(payLoad:any){
   return this.http.post<any>(
     Constant.BASE_URL + Constant.METHODS.UPDATESETTING,
     payLoad
-  );  
+  );
 }
 
 getMaster(payLoad:any){
   return this.http.post<any>(
     Constant.BASE_URL + Constant.METHODS.GET_MASTER,
     payLoad
-  ); 
+  );
 }
 deleteMaster(payLoad:any){
   return this.http.post<any>(
     Constant.BASE_URL + Constant.METHODS.DELETE_MASTER,
     payLoad
-  ); 
+  );
 }
 
 updateNadavaravuBillNumber(currentbillnumber: any): Observable<any[]> {
@@ -890,7 +923,7 @@ updateNadavaravuBillNumber(currentbillnumber: any): Observable<any[]> {
   }
 
   editBilllingDetils(payLoad: any): Observable<any[]> {
-   
+
     return this.http.post<any>(
       Constant.BASE_URL + Constant.METHODS.UPDATEBILL,
       payLoad
@@ -899,14 +932,14 @@ updateNadavaravuBillNumber(currentbillnumber: any): Observable<any[]> {
 
 
   duplicateCount(payLoad: any): Observable<any[]> {
-   
+
     return this.http.post<any>(
       Constant.BASE_URL + Constant.METHODS.DUPLICATECOUNT,
       payLoad
     );
   }
   ADDCOUNTER(payLoad: any): Observable<any[]> {
-   
+
     return this.http.post<any>(
       Constant.BASE_URL + Constant.METHODS.ADDCOUNTER,
       payLoad
@@ -922,20 +955,56 @@ updateNadavaravuBillNumber(currentbillnumber: any): Observable<any[]> {
 
   }
 
+   createGothramMaster(obj: Cmaster): Observable<any> {
+    const payLoad = {
+      VCId: '1',
+      VCCode: obj.VC_Code,
+      VCName: obj.VC_Name,
+      VCRName: obj.VC_RegName,
+      Active: obj.VC_Active ? 'Y' : 'N',
+      Type: 'INSERT',
+      Cuser:this.userId,
+    };
+    return this.http
+      .post<Cmaster>(
+        Constant.BASE_URL + Constant.METHODS.GOTHRAMMASTER,
+        payLoad
+      )
+      .pipe(catchError(this.errorHandler));
+  }
+    updateGothramMaster(id: string, obj: Cmaster): Observable<any> {
+    const payLoad = {
+      VCId: id.toString(),
+      VCCode: obj.VC_Code,
+      VCName: obj.VC_Name,
+      VCRName: obj.VC_RegName,
+      Active: obj.VC_Active ? 'Y' : 'N',
+      Type: 'UPDATE',
+      Cuser: this.userId,
+    };
+    return this.http
+      .post<Cmaster>(
+        Constant.BASE_URL + Constant.METHODS.GOTHRAMMASTER,
+        payLoad
+      )
+      .pipe(catchError(this.errorHandler));
+  }
   getVazhipadWiseReport(payLoad:any){
     return this.http.post<any>(Constant.BASE_URL+Constant.METHODS.VAZHIPADWISEREPRT,payLoad)
-  
   }
 
   updateBookingTransmode(payLoad:any){
     return this.http.post<any>(Constant.BASE_URL+Constant.METHODS.UPDATEBILLMODE,payLoad)
-  
   }
 
   getMultiBlockDayList(payLoad:any){
     return this.http.post<any>(Constant.BASE_URL+Constant.METHODS.CHECKMULTIBLOCKS,payLoad)
   }
-  
+
+updatePanchangam(data: any) {
+  return this.http.post(Constant.BASE_URL+Constant.METHODS.UPDATEUTIL, data);
+}
+
 AddDevoteeMaster(payLoad:any){
  return this.http.post<any>(Constant.BASE_URL+Constant.METHODS.DEVOTEEMASTER,payLoad);
 }
@@ -957,7 +1026,6 @@ addFeeCollection(payLoad:any){
 }
 changePassword(payLoad:any){
   return this.http.post<any>(Constant.BASE_URL+Constant.METHODS.CHANGEPASSWORD,payLoad);
- 
 }
 
 // getDayList(payLoad:any){

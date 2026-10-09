@@ -13,8 +13,12 @@
     <button mat-icon-button matTooltip="Make Print" (click)="generatePDF()">
       <span class="material-icons">print</span>
     </button>
-    <button mat-icon-button matTooltip="Make PDF">
-      <span class="material-icons" (click)="generatePDFs()">picture_as_pdf</span>
+    <button
+      mat-icon-button
+      matTooltip="Export to Excel"
+      (click)="reportinexcelformat()"
+    >
+      <mat-icon>grid_on</mat-icon>
     </button>
   </div>
   <div id="print-section">
@@ -32,95 +36,173 @@
         {{ formatDateToDDMMYYYY(fromDate) }} to
         {{ formatDateToDDMMYYYY(toDate) }}
       </p>
-<hr>
-</div>
-      <div  class="body-print">
-        <div id="pdf-content" *ngIf="data.length>0" >
+      <hr />
+    </div>
+    <div class="body-print">
+      <div id="pdf-content" *ngIf="data.length > 0">
         <table>
           <thead>
             <tr>
-                <th>{{"Report Name.SINO" | translate }}</th>
-              <th>{{"Report Name.Bill Date" | translate}}</th>
+              <th>{{ "Report Name.SINO" | translate }}</th>
+              <th>{{ "Report Name.Bill Date" | translate }}</th>
               <th>
                 {{ "BILL NO" | translate }}
               </th>
-             
-              <th class="number">{{"Cash" |translate }}</th>
+
+              <th class="number">{{ "Cash" | translate }}</th>
               <th class="number">
-               {{"UPI" |translate }}
+                {{ "UPI" | translate }}
               </th>
               <th class="number">
-                {{"Cheque" | translate }}
+                {{ "Cheque" | translate }}
               </th>
               <th class="number">
-                {{"Credit" | translate}}
+                {{ "M.Order" | translate }}
               </th>
               <th class="number">
-                {{"Debit" | translate }}
+                {{ "Debit" | translate }}
               </th>
               <th class="number">
-                {{"Online" | translate}}
+                {{ "Bank" | translate }}
               </th>
               <th class="number">
-                {{"Report Name.TOTAL" | translate }}
+                {{ "Online" | translate }}
               </th>
-             
-              
+              <th class="number">
+                {{ "Due" | translate }}
+              </th>
+              <th class="number">
+                {{ "Report Name.TOTAL" | translate }}
+              </th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let item of billRegisterData;let i=index;" >
-              <td [ngStyle]="isRedText(item) ? {'color': 'red'} : {}">{{i+1}}</td>
-              <td [ngStyle]="isRedText(item) ? {'color': 'red'} : {}" >{{item.BillDate}}</td>
-              <td [ngStyle]="isRedText(item) ? {'color': 'red'} : {}">
+            <tr *ngFor="let item of billRegisterData; let i = index">
+              <td [ngStyle]="isRedText(item) ? { color: 'red' } : {}">
+                {{ i + 1 }}
+              </td>
+              <td [ngStyle]="isRedText(item) ? { color: 'red' } : {}">
+                {{ item.BillDate }}
+              </td>
+              <td [ngStyle]="isRedText(item) ? { color: 'red' } : {}">
                 {{ item.BillNo }}
               </td>
-              
-              <td class="number" [ngStyle]="isRedText(item) ? {'color': 'red'} : {}">  {{  item.TrnsMode === 'CS' ? item.TotalAmount.toFixed(2) || 0 : 0 | number: '1.2-2' }}
+
+              <td
+                class="number"
+                [ngStyle]="isRedText(item) ? { color: 'red' } : {}"
+              >
+                {{
+                  item.TrnsMode === "CS" ? item.TotalAmt : (0 | number: "1.2-2")
+                }}
               </td>
-              <td class="number" [ngStyle]="isRedText(item) ? {'color': 'red'} : {}">
-                {{ item.TrnsMode === 'UP' ? item.TotalAmount.toFixed(2) || 0 : 0 | number: '1.2-2' }}
+              <td
+                class="number"
+                [ngStyle]="isRedText(item) ? { color: 'red' } : {}"
+              >
+                {{
+                  item.TrnsMode === "UP" ? item.TotalAmt : (0 | number: "1.2-2")
+                }}
               </td>
-              <td class="number" [ngStyle]="isRedText(item) ? {'color': 'red'} : {}">
-                {{ item.TrnsMode === 'CH' ? item.TotalAmount.toFixed(2) || 0 : 0 | number: '1.2-2' }}
+              <td
+                class="number"
+                [ngStyle]="isRedText(item) ? { color: 'red' } : {}"
+              >
+                {{
+                  item.TrnsMode === "CH" ? item.TotalAmt : (0 | number: "1.2-2")
+                }}
               </td>
-              <td class="number" [ngStyle]="isRedText(item) ? {'color': 'red'} : {}"  >
-                {{ item.TrnsMode === 'CR' ? item.TotalAmount.toFixed(2) : 0  | number: '1.2-2' }}
+              <td
+                class="number"
+                [ngStyle]="isRedText(item) ? { color: 'red' } : {}"
+              >
+                {{
+                  item.TrnsMode === "MO" ? item.TotalAmt : (0 | number: "1.2-2")
+                }}
               </td>
-              <td class="number" [ngStyle]="isRedText(item) ? {'color': 'red'} : {}" >
-                {{ item.TrnsMode === 'DE' ? item.TotalAmount.toFixed(2) || 0 : 0 | number: '1.2-2' }}
+              <td
+                class="number"
+                [ngStyle]="isRedText(item) ? { color: 'red' } : {}"
+              >
+                {{
+                  item.TrnsMode === "DE" ? item.TotalAmt : (0 | number: "1.2-2")
+                }}
               </td>
-              <td class="number" [ngStyle]="isRedText(item) ? {'color': 'red'} : {}">
-                {{ item.TrnsMode === 'ON' ? item.TotalAmount.toFixed(2) || 0 : 0 | number: '1.2-2' }}
+              <td
+                class="number"
+                [ngStyle]="isRedText(item) ? { color: 'red' } : {}"
+              >
+                {{
+                  item.TrnsMode === "ON"
+                    ? item.TotalAmt.toFixed(2)
+                    : (0 | number: "1.2-2")
+                }}
               </td>
-              <td class="number" [ngStyle]="isRedText(item) ? {'color': 'red'} : {}">
-                <span>{{item.TrnsMode === 'CR'?'-':''}}</span>  {{item.TotalAmount ?item.TotalAmount.toFixed(2) :0 | number : "1.2-2"}}
+              <td
+                class="number"
+                [ngStyle]="isRedText(item) ? { color: 'red' } : {}"
+              >
+                {{ isRedText(item) ? "-" : "" }}
+                {{
+                  item.TrnsMode === "OL"
+                    ? item.TotalAmt.toFixed(2)
+                    : (0 | number: "1.2-2")
+                }}
+              </td>
+              <td
+                class="number"
+                [ngStyle]="isRedText(item) ? { color: 'red' } : {}"
+              >
+                {{
+                  item.TrnsMode === "CR"
+                    ? item.TotalAmt.toFixed(2)
+                    : (0 | number: "1.2-2")
+                }}
+              </td>
+              <td
+                class="number"
+                [ngStyle]="isRedText(item) ? { color: 'red' } : {}"
+              >
+                <span>{{
+                  item.TrnsMode === "CR" ||
+                  (item.TrnsMode !== "CR" && item.TrnStatus !== "S")
+                    ? "-"
+                    : ""
+                }}</span>
+                {{ item.TotalAmt.toFixed(2) | number: "1.2-2" }}
               </td>
             </tr>
             <tr>
               <td colspan="3" class="total">
-                {{"Report Name.GrandTotal" | translate }} 
+                {{ "Report Name.GrandTotal" | translate }}
               </td>
               <td class="total">
-                {{ getColumnTotalforCsansMo() | number:'1.2-2' }}
+                {{ getColumnTotal("CS") | number: "1.2-2" }}
               </td>
               <td class="total">
-                {{ getColumnTotal('UP') | number:'1.2-2' }}
+                {{ getColumnTotal("UP") | number: "1.2-2" }}
               </td>
               <td class="total">
-                {{ getColumnTotal('CH') | number:'1.2-2' }}
+                {{ getColumnTotal("CH") | number: "1.2-2" }}
               </td>
               <td class="total">
-                {{'-'+ getColumnTotal('CR') | number:'1.2-2' }}
+                {{ getColumnTotal("MO") | number: "1.2-2" }}
+              </td>
+
+              <td class="total">
+                {{ getColumnTotal("DE") | number: "1.2-2" }}
               </td>
               <td class="total">
-                {{ getColumnTotal('DE') | number:'1.2-2' }}
+                {{ getColumnTotal("ON") | number: "1.2-2" }}
               </td>
               <td class="total">
-               {{ getColumnTotal('ON') | number:'1.2-2' }}
+                {{ getColumnTotal("OL") | number: "1.2-2" }}
               </td>
               <td class="total">
-                {{ getGrandTotal() | number : "1.2-2" }}
+                {{ "-" + getColumnTotal("CR") | number: "1.2-2" }}
+              </td>
+              <td class="total">
+                {{ getGrandTotal() | number: "1.2-2" }}
               </td>
             </tr>
           </tbody>
@@ -129,7 +211,7 @@
       <div class="nodataFound" *ngIf="data.length === 0">
         <h2></h2>
       </div>
-      <hr/>
-      </div>
+      <hr />
+    </div>
   </div>
 </div>

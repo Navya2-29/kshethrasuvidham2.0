@@ -1,0 +1,321 @@
+<div class="card-body" style="background: white; font-family: Manjari">
+  <div class="row">
+    <div class="col-md-4">
+      <h2 style="margin-bottom: 0">
+        {{ "Credit Collection" | translate }}
+      </h2>
+      <form [formGroup]="CreditForm">
+        <table class="table">
+          <tr>
+            <!-- <td colspan="2">
+              <input
+                type="text"
+                readonly
+                [placeholder]="'Credits.BillNo' | translate"
+                formControlName="BillNo"
+                class="form-control sps"
+              />
+            </td> -->
+            <td colspan="2">
+              <input
+                type="text"
+                [placeholder]="'Credits.Mobile Number' | translate"
+                formControlName="Mobile"
+                class="form-control"
+                (blur)="checkMobileRegistration()"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <input
+                type="text"
+                readonly
+                [placeholder]="'Credits.MemberId' | translate"
+                formControlName="MID"
+                class="form-control"
+              />
+            </td>
+            <td>
+              <input
+                type="text"
+                [placeholder]="'Credits.Name' | translate"
+                readonly
+                formControlName="Name"
+                class="form-control sps"
+              />
+            </td>
+          </tr>
+          <tr>
+            <!-- <td colspan="3">
+              <input
+                type="text"
+                [placeholder]="'Credits.Address' | translate"
+                formControlName="Address"
+                class="form-control sps"
+              />
+            </td> -->
+          </tr>
+          <!-- <tr>
+                    <td colspan="3">
+                        <input type="text" placeholder="Remark"  class="form-control sps">
+                    </td>
+                    
+                </tr> -->
+          <tr>
+            <td
+              style="
+                text-align: center;
+                vertical-align: middle;
+                border: 2px solid silver;
+                padding-top: 3%;
+                margin: 25px;
+              "
+            >
+              <span>{{ "Credits.Total Amount" | translate }}</span>
+              <h4>{{ totalAmount }}</h4>
+            </td>
+
+            <td
+              style="
+                text-align: center;
+                vertical-align: middle;
+                border: 2px solid silver;
+                padding-top: 3%;
+                margin: 25px;
+              "
+            >
+              <span>Amount Paid</span>
+              <h4>{{ PaidMount }}</h4>
+            </td>
+            <td
+              style="
+                text-align: center;
+                vertical-align: middle;
+                border: 2px solid silver;
+                padding-top: 3%;
+                background: #223d61;
+                color: white;
+              "
+            >
+              <span>{{totalAmount>PaidMount?"Balance amount to Paid":"Balance amount at Temple"}}</span>
+              <h4>{{ Balanace }}</h4>
+            </td>
+          </tr>
+          <tr>
+            <td style="width: 25%">
+              <input
+                type="text"
+                [placeholder]="'Report Name.Amount' | translate"
+                formControlName="Amount"
+                class="form-control sps"
+              />
+            </td>
+            <td
+              colspan="2"
+              style="
+                border: 1px solid gray;
+                padding: 6px;
+                text-align: center;
+                vertical-align: middle;
+              "
+            >
+              <span style="font-weight: 700"
+                >{{ "Credits.Payment Method" | translate }}: &nbsp;&nbsp;
+              </span>
+              <select formControlName="TrnsMode">
+                <option value="CS">{{ "Cash" | translate }}</option>
+
+                <option value="UP">{{ "UPI" | translate }}</option>
+                <option value="DE">{{ "Debit" | translate }}</option>
+                <!-- <option value="CR">{{"Credit" |translate}}</option> -->
+                <!-- <option value="CH">{{"Cheque"| translate}}</option> -->
+                <!-- <option value="MO">{{"Money order" |translate}}</option> -->
+                <option value="ON">{{ "Bank" | translate }}</option>
+              </select>
+              <input
+                type="text"
+                *ngIf="CreditForm.get('TrnsMode')?.value != 'CS'"
+                [placeholder]="'Credits.Remakrs' | translate"
+                formControlName="Remarks"
+                [placeholder]="
+                  'Credits.Enter  Number Cheque / DD /Mo /UPI' | translate
+                "
+                class="form-control sps"
+                [ngClass]="{
+                  'is-invalid':
+                    CreditForm.get('Remarks')?.invalid &&
+                    CreditForm.get('Remarks')?.touched
+                }"
+              />
+            </td>
+          </tr>
+
+          <tr>
+            <td colspan="3" style="text-align: right; padding: 9px">
+              <button
+                class="btn btn-submit bwidth mr-2"
+                (click)="onSubmit()"
+                [disabled]="
+                  isSubmitting ||
+                  role == 'admin' ||
+                  role == 'audit' ||
+                  role == 'super'
+                "
+              >
+                {{ isSubmitting ? "Processing..." : "Save" }}
+              </button>
+              <button class="btn btn-secondary bwidth" (click)="Reset()">
+                Cancel
+              </button>
+            </td>
+          </tr>
+        </table>
+      </form>
+    </div>
+    <div class="col-md-8 search">
+      <form [formGroup]="searchForm">
+        <div style="display: flex">
+          <input
+            type="date"
+            class="form-control formdate"
+            formControlName="searchBillDate"
+            style="width: 15%; display: none"
+          />
+          <button
+            class="btn btn-primary"
+            style="margin-right: 15px; display: none"
+           
+          >
+            Search
+          </button>
+          <input
+            type="text"
+            class="form-control sps"
+            formControlName="searchBillNo"
+            [placeholder]="'Search by Mobile' | translate"
+            style="width: 25%"
+            (input)="getCreditCollection()"
+          />
+        </div>
+      </form>
+      <div class="fixitems">
+        <table class="table credit">
+          <tr style="border-bottom: 2px solid #223d61">
+            <th>{{ "Report Name.SINO" | translate }}</th>
+            <th>{{ "BILL NO" | translate }}.</th>
+            <th>{{ "Report Name.Bill Date" | translate }}</th>
+            <th>{{ "Credits.Name" | translate }}</th>
+            <th>{{ "Credits.Mobile Number" | translate }}</th>
+            <th>{{"Vazhipad" | translate}}</th>
+            <th>{{"Qty" | translate}}</th>
+            <th>{{"Rate" | translate}}</th>
+            <th>{{ "Report Name.TOTAL" | translate }}</th>
+
+            <th></th>
+          </tr>
+
+          <tr *ngFor="let data of filteredData; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>{{ data.BillNo }}</td>
+            <td>{{ data.BillDate | date : "dd/MM/YYYY" }}</td>
+            <td>
+              <p>{{ data.Name }}</p>
+              <p>{{ data.Name2 }}</p>
+            </td>
+            <td>{{ data.MobileNo }}</td>
+            <td>{{data.Vazhipad}}</td>
+            <td>{{data.Qty}}</td>
+            <td>{{data.Rate}}</td>
+            <td class="number">{{ data.Amount }}</td>
+          </tr>
+          <tr  *ngIf="hasFilteredData">
+            <td colspan="7"></td>
+            <td class="total">Total Due :</td>
+            <td class="total">{{getDuetotal("Due") | number : "1.2-2"}}</td>
+
+          </tr>
+          <tr  *ngIf="hasFilteredData">
+             <td colspan="7"></td>
+            <td class="total">Total Paid :</td>
+            <td class="total">{{getDuetotal("Credit")  | number : "1.2-2"}}</td>
+            </tr>
+            <tr  *ngIf="hasFilteredData">
+              <td colspan="7"></td>
+            <td class="total">{{getDuetotal("Due")>getDuetotal("Credit")?"Due Amount :":"Amount in Hand:"}}</td>
+             <td class="total">{{getDuetotal("Due")>getDuetotal("Credit")?getDuetotal("Due")-getDuetotal("Credit"):getDuetotal("Credit")-getDuetotal("Due") | number : "1.2-2"}}</td>
+            </tr>
+            <tr  *ngIf="!hasFilteredData">
+              <td colspan="10">No records found</td>
+            </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div
+  id="receipt"
+  style="
+    width: 6in;
+    height: 4in;
+    display: none;
+    position: relative;
+    font-size: 12px;
+    font-family: Arial, sans-serif;
+  "
+>
+  <div
+    style="
+      position: absolute;
+      left:11cm; top: 3.6cm;
+      max-width: 8cm;
+      font-size: 9pt;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    "
+  >
+    {{ lastBillnumber }}
+  </div>
+  <div style="position: absolute; left:11cm; top: 3.1cm; font-size: 9pt">
+    {{ today | date : "dd-MM-yyyy" }}
+  </div>
+  <div
+    style="
+      position: absolute;
+      left: 2.6cm; top: 3.6cm;
+      max-width: 5cm;
+      font-size: 9pt;
+      white-space: pre-wrap;
+    "
+  >{{"Report.Credit Collection" | translate}}
+  </div>
+  <div
+    style="
+      position: absolute;
+     left: 1cm; top: 5.2cm;
+      max-width: 5cm;
+      font-size: 9pt;
+      white-space: pre-wrap;
+    "
+  >
+    {{ CreditForm.get("Name")?.value }}
+   
+  <div style="margin-top: 0;">
+    {{ CreditForm.get("Mobile")?.value }}<br/>
+     {{"ID | translste"}}:{{ CreditForm.get("MID")?.value }}
+ 
+  </div>
+    </div>
+  <div style="position: absolute; left: 12cm;top: 5.2cm">
+    {{ CreditForm.get("Amount")?.value }}
+  </div>
+  <div style="position: absolute; left: 7.5cm; top: 9.3cm;">
+    {{ CreditForm.get("Amount")?.value }}
+  </div>
+  <div style="position: absolute; left: 1cm; top: 8.2cm; font-size: 8pt">
+    User:{{ name }},({{
+      getTransactionType(CreditForm.get("TrnsMode")?.value)
+    }})(CNTR:{{ CounterId }})
+  </div>
+</div>
+

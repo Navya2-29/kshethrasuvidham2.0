@@ -10,4 +10,5 @@ export interface ItemMaster{
     ACHeadCode:string;
     ACSubCode:string;
     ItemType:string;
+NM_Category:string;
 }

@@ -13,6 +13,13 @@
     <button mat-icon-button matTooltip="Make PDF" (click)="generatePDF()">
       <span class="material-icons">print</span>
     </button>
+     <button
+      mat-icon-button
+      matTooltip="Export to Excel"
+     (click)="exportToExcel()"
+    >
+      <mat-icon>grid_on</mat-icon>
+    </button>
   </div>
   <div id="print-section">
     <div class="header-print">
@@ -112,8 +119,6 @@
       <div class="grandtotal" *ngIf="data.length > 0">
         <h1>{{"Report Name.GrandTotal" | translate }}: {{ "" + getGrandTotal() | number : "1.2-2" }}</h1>
       </div>
-
-      
     </div>
     <div class="nodataFound" *ngIf="data.length === 0">
       <h2></h2>

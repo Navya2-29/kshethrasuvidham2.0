@@ -70,20 +70,19 @@ export class VmasterComponent implements OnInit {
   deities: any[];
   code: string;
   showNoRecordsMessage: boolean = false;
-  checkVazhipadData:number=0;
-  checkBillingVazjipad:boolean=false;
+  checkVazhipadData: number = 0;
+  checkBillingVazjipad: boolean = false;
   private formBuilder = inject(FormBuilder);
   private masterService = inject(MasterService);
   private duplicateCheck = inject(DuplicatecheckService);
   private notification = inject(NotificationService);
   private router = inject(Router);
   sortAscending: boolean = true;
-  templeName:string | null;
+  templeName: string | null;
   constructor() {
-
     const domain = window.location.hostname;
-    console.log(domain,"domain name")
-    this.templeName=localStorage.getItem('TempleName') 
+    console.log(domain, 'domain name');
+    this.templeName = localStorage.getItem('TempleName');
     this.vazhipadMasterForm = this.formBuilder.group({
       VM_Code: [
         '',
@@ -130,8 +129,12 @@ export class VmasterComponent implements OnInit {
       VM_SMS: [false],
       VM_Whatsapp: [false],
       VM_Mattinam: [false],
-      VM_Sales:[false],
-      VM_Donation:[false],
+      VM_Sales: [false],
+      VM_Donation: [false],
+      VM_TimeSlot: [false],
+      VM_CurrentDay: [false],
+      VM_Token: [false],
+      LifeTime:[ false],
       prathistainfo: this.formBuilder.array([]),
       //  deities: this.formBuilder.array([]),
     });
@@ -141,7 +144,7 @@ export class VmasterComponent implements OnInit {
     this.getVmaster();
     this.getCategory();
     this.fetchDeities();
-    this.getAccounthead()
+    this.getAccounthead();
     // this.checkVazhipadName()
     // filter for autocompleate category
     this.filteredCategory = this.vazhipadMasterForm
@@ -231,7 +234,10 @@ export class VmasterComponent implements OnInit {
 
           // Check if prathista is found before accessing its properties
           if (prathista) {
-            return { PMId: prathista.PM_ID.toString() ,VMId:this.Id?this.Id:"" };
+            return {
+              PMId: prathista.PM_ID.toString(),
+              VMId: this.Id ? this.Id : '',
+            };
           } else {
             console.warn(
               `Prathista with name "${name}" not found in deities array.`
@@ -299,14 +305,18 @@ export class VmasterComponent implements OnInit {
       VM_Description: '',
       VM_AlertMsg: '',
       VM_Mattinam: false,
-      VM_Donation:false,
+      VM_Donation: false,
       DisplayMode: false,
       ACHeadCode: '',
       ACSubCode: '',
       VC_Name: '',
       VM_Whatsapp: '',
-      VM_Sales:false,
+      VM_Sales: false,
+      VM_TimeSlot: false,
+      VM_CurrentDay: false,
+      VM_Token: false,
       VM_Time: '1',
+      LifeTime: false,
       PrathistaInfo: '',
       // prathistainfo:this.toppings
     });
@@ -314,7 +324,7 @@ export class VmasterComponent implements OnInit {
     this.updateFlag = false;
     this.loading = false;
     this.prathistainfo.clear();
-    this.checkBillingVazjipad=false;
+    this.checkBillingVazjipad = false;
   }
 
   // for editing the form fields
@@ -328,10 +338,10 @@ export class VmasterComponent implements OnInit {
     const VCName = selectedVc?.VC_Name;
     this.masterService.getVazhipadByCodeForDiety(data.VM_Code).subscribe({
       next: (diety: Deity[]) => {
-        console.log(diety,"pratstaaaaaaaaaaaaaaaaaaaaaaa");
+        // console.log(diety,"pratstaaaaaaaaaaaaaaaaaaaaaaa");
         this.editDeity = diety;
         const preSelectedNames = this.editDeity.map((deity) => deity.PM_Name);
-        console.log(preSelectedNames,"hjjjjjjjjjjjjjjjjjjjjjjjjjjjjjk");
+        // console.log(preSelectedNames,"hjjjjjjjjjjjjjjjjjjjjjjjjjjjjjk");
         this.toppings.setValue(preSelectedNames);
       },
     });
@@ -350,8 +360,8 @@ export class VmasterComponent implements OnInit {
       VM_Mobileapp: data.VM_Mobileapp == 'Y' ? true : false,
       VM_Special: data.VM_Special == 'Y' ? true : false,
       VM_Rate_Change: data.VM_Rate_Change == 'Y' ? true : false,
-      VM_Sales:data.VM_Sales=='Y'?true:false,
-      VM_Donation:data.VM_Donation=="Y"?true:false,
+      VM_Sales: data.VM_Sales == 'Y' ? true : false,
+      VM_Donation: data.VM_Donation == 'Y' ? true : false,
       VM_TimeLimit: data.VM_TimeLimit,
       VM_Description: data.VM_Description,
       VM_AlertMsg: data.VM_AlertMsg,
@@ -363,14 +373,19 @@ export class VmasterComponent implements OnInit {
       VM_Whatsapp: data.VM_Whatsapp == 'Y' ? true : false,
       VC_Name: VCName,
       VM_Time: data.VM_Time,
-      VM_Mattinam: data.VM_Mattinam== 'Y' ? true : false,
+      VM_Mattinam: data.VM_Mattinam == 'Y' ? true : false,
+      VM_TimeSlot: data.VM_TimeSlot == 'Y' ? true : false,
+      VM_CurrentDay: data.VM_CurrentDay == 'Y' ? true : false,
+      VM_Token: data.VM_Token == 'Y' ? true : false,
+      LifeTime: data.LifeTime == 'Y' ? true : false,
     });
     this.checkVazhipadName(this.Id);
-   
-    this.loading = false;
-    if(this.checkBillingVazjipad){
-      this.notification.showError("You cant Rename the vazhipad name , its already make receipt so please create a new one")
 
+    this.loading = false;
+    if (this.checkBillingVazjipad) {
+      this.notification.showError(
+        'You cant Rename the vazhipad name , its already make receipt so please create a new one'
+      );
     }
   }
 
@@ -390,7 +405,7 @@ export class VmasterComponent implements OnInit {
     this.loading = true;
     // this.deleteForUpdate(this.Id);
     // this.onSubmit(updatedata)
-   
+
     console.log(updatedata, this.Id);
     if (this.vazhipadMasterForm.valid && this.toppings.valid) {
       const formValue = this.vazhipadMasterForm.value;
@@ -410,7 +425,10 @@ export class VmasterComponent implements OnInit {
 
           // Check if prathista is found before accessing its properties
           if (prathista) {
-            return { PMId: prathista.PM_ID.toString() ,VMId:this.Id?this.Id.toString():""};
+            return {
+              PMId: prathista.PM_ID.toString(),
+              VMId: this.Id ? this.Id.toString() : '',
+            };
           } else {
             console.warn(
               `Prathista with name "${name}" not found in deities array.`
@@ -423,7 +441,7 @@ export class VmasterComponent implements OnInit {
       // Add prathistainfo to formValue
       formValue.prathistainfo = prathistainfo;
 
-      console.log('Form value with prathistainfo:', formValue);
+      // console.log('Form value with prathistainfo:', formValue);
 
       const selectedVc = this.category.find(
         (vc) => vc.VC_Name === formValue.VC_Name
@@ -432,30 +450,29 @@ export class VmasterComponent implements OnInit {
       if (selectedVc) {
         const VCId = selectedVc.VC_Id;
 
-        this.masterService
-        .deleteAllPrethista(this.Id.toString())
-        .subscribe((data) => {
-          console.log('delete suceessfully');
+        // this.masterService
+        //   .deleteAllPrethista(this.Id.toString())
+        //   .subscribe((data) => {
+            // console.log('delete suceessfully');
 
-          this.masterService.updateVmaster(VCId, updatedata, this.Id).subscribe({
-            next: (res) => {
-              this.getVmaster();
-              this.loading = false;
-  
-              this.onReset();
-              this.notification.showSuccess(
-                'Vazhipad details updated sucessfully'
-              );
-            },
-            error: (error) => {
-              this.loading = true;
-              this.notification.showSuccess(error);
-            },
-          });
+            this.masterService
+              .updateVmaster(VCId, updatedata, this.Id)
+              .subscribe({
+                next: (res) => {
+                  this.getVmaster();
+                  this.loading = false;
 
-
-
-        });
+                  this.onReset();
+                  this.notification.showSuccess(
+                    'Vazhipad details updated sucessfully'
+                  );
+                },
+                error: (error) => {
+                  this.loading = true;
+                  this.notification.showSuccess(error);
+                },
+              });
+          // });
 
         // this.masterService.updateVmaster(VCId, updatedata, this.Id).subscribe({
         //   next: (res) => {
@@ -491,11 +508,8 @@ export class VmasterComponent implements OnInit {
 
   // deleteData
 
-
-  onDeleteCheck(id: number){
+  onDeleteCheck(id: number) {
     this.checkVazhipadDelete(id);
-    
-    
   }
 
   onDelete(id: number) {
@@ -550,10 +564,10 @@ export class VmasterComponent implements OnInit {
     this.router.navigate(['/dashboard']);
   }
   vazhipadTime = [
-    {
-      id: '0',
-      name: 'Any time',
-    },
+    // {
+    //   id: '0',
+    //   name: 'Any time',
+    // },
     {
       id: '1',
       name: 'Morning',
@@ -665,60 +679,57 @@ export class VmasterComponent implements OnInit {
     this.router.navigate(['/vazhipadReport']);
   }
 
-
-  checkVazhipadName(id:any){
-
-    const payLoad={
-      Type:"CheckName",
-      Code:id
-    }
+  checkVazhipadName(id: any) {
+    const payLoad = {
+      Type: 'CheckName',
+      Code: id,
+    };
     this.masterService.getMaster(payLoad).subscribe({
-      next:(data)=>{
-        console.log(data,"check vazhipad")
-        this.checkVazhipadData=data.length;
-        if(this.checkVazhipadData!=0){
-          this.checkBillingVazjipad=true;
+      next: (data) => {
+        console.log(data, 'check vazhipad');
+        this.checkVazhipadData = data.length;
+        if (this.checkVazhipadData != 0) {
+          this.checkBillingVazjipad = true;
         }
-      },error:(err)=>{
-        console.log(err,"check vazhipad") 
-      }
-    })
-
+      },
+      error: (err) => {
+        console.log(err, 'check vazhipad');
+      },
+    });
   }
-  checkVazhipadDelete(id:any){
-
-    const payLoad={
-      Type:"CheckName",
-      Code:"1"
-    }
+  checkVazhipadDelete(id: any) {
+    const payLoad = {
+      Type: 'CheckName',
+      Code: id,
+    };
     this.masterService.getMaster(payLoad).subscribe({
-      next:(data)=>{
-        console.log(data,"check vazhipad")
-        this.checkVazhipadData=data.length;
-        if(this.checkVazhipadData!=0){
-          this.checkBillingVazjipad=true;
-          this.notification.showError("This item has already been billed.","Deletion not allowed")
-        }else{
-          this.onDelete(id)
+      next: (data) => {
+        this.checkVazhipadData = data.length;
+        if (this.checkVazhipadData != 0) {
+          this.checkBillingVazjipad = true;
+          this.notification.showError(
+            'This item has already been billed.',
+            'Deletion not allowed'
+          );
+        } else {
+          this.onDelete(id);
         }
-      },error:(err)=>{
-        console.log(err,"check vazhipad") 
-      }
-    })
-
+      },
+      error: (err) => {
+        console.log(err, 'check vazhipad');
+      },
+    });
   }
 
-  getAccounthead(){
-    const payLoad={
-  Type:"Head",
-  Code:""
-    }
+  getAccounthead() {
+    const payLoad = {
+      Type: 'Head',
+      Code: '',
+    };
     this.masterService.getMaster(payLoad).subscribe({
-      next:(data)=>{
-        console.log(data,"account head");
-      }
-    })
+      next: (data) => {
+        console.log(data, 'account head');
+      },
+    });
   }
-
-
 }

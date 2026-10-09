@@ -4,52 +4,75 @@
   <div class="container">
     <div class="card-body outlook" style="background: white">
       <div class="posback">
-        <a (click)="gotoDashBoard()" class="back">&nbsp;&nbsp;<mat-icon title="Edit"
-            style="color: white">arrow_back_ios</mat-icon></a>
-        <h1 class="tname">{{templeName}}</h1>
+        <a (click)="gotoDashBoard()" class="back"
+          >&nbsp;&nbsp;<mat-icon title="Edit" style="color: white"
+            >arrow_back_ios</mat-icon
+          ></a
+        >
+        <h1 class="tname">{{ templeName }}</h1>
       </div>
       <div class="master">
         <div class="col-md-5">
           <form [formGroup]="settingsForm">
             <div class="row">
-
               <h1 style="font-weight: 500">Setting Master</h1>
               <table class="table scrollable-table">
                 <tr>
                   <td>
-                    Temple Name<span class="text-danger">*</span><input type="text" formControlName="templeName"
-                      class="form-control sps" placeholder="Enter Temple Name" />
+                    Temple Name<span class="text-danger">*</span
+                    ><input
+                      type="text"
+                      formControlName="templeName"
+                      class="form-control sps"
+                      placeholder="Enter Temple Name"
+                    />
                   </td>
                 </tr>
                 <tr>
                   <td>
                     Temple address<span class="text-danger">*</span>
-                    <textarea type="text" class="form-control" appUpperCase 
-                      formControlName="templeAddress" placeholder="Enter Name">
-                      </textarea>
-
+                    <textarea
+                      type="text"
+                      class="form-control"
+                      appUpperCase
+                      formControlName="templeAddress"
+                      placeholder="Enter Temple Address"
+                    >
+                    </textarea>
                   </td>
                 </tr>
                 <tr>
                   <td>
-                    Email<span class="text-danger">*</span><input type="email" formControlName="email"
-                      class="form-control sps" placeholder="Enter email address" />
-
+                    Email<span class="text-danger">*</span
+                    ><input
+                      type="email"
+                      formControlName="email"
+                      class="form-control sps"
+                      placeholder="Enter email address"
+                    />
                   </td>
                 </tr>
                 <tr>
                   <td>
                     Phone
-                    <input type="text" formControlName="phone" class="form-control sps"
-                      placeholder="Enter phone number" />
-
+                    <input
+                      type="text"
+                      formControlName="phone"
+                      class="form-control sps"
+                      placeholder="Enter phone number"
+                    />
                   </td>
                 </tr>
 
                 <tr>
-                  <td>Language
-                    <span class="text-danger">*</span><select type="text" formControlName="language"
-                      class="form-control sps" placeholder="Select Language">
+                  <td>
+                    Language <span class="text-danger">*</span
+                    ><select
+                      type="text"
+                      formControlName="language"
+                      class="form-control sps"
+                      placeholder="Select Language"
+                    >
                       <option value="">Select</option>
                       <option value="en">English</option>
                       <option value="ml">Malayalam</option>
@@ -60,16 +83,20 @@
                   </td>
                 </tr>
                 <tr>
-                  <td>Printer
-                    <span class="text-danger">*</span><select type="text" formControlName="printer"
-                      class="form-control sps" placeholder="Select printer">
+                  <td>
+                    Printer <span class="text-danger">*</span
+                    ><select
+                      type="text"
+                      formControlName="printer"
+                      class="form-control sps"
+                      placeholder="Select printer"
+                    >
                       <option value="">Select</option>
                       <option value="dotMetrix">Dot Matrix</option>
                       <option value="inkjet">Inkjet Printer</option>
                       <option value="laser">Laser Printer</option>
                       <option value="thermal">Thermal Printer</option>
                       <option value="lasera5">Laser A5</option>
-
                     </select>
                   </td>
                 </tr>
@@ -77,32 +104,127 @@
                   <td>
                     Counter
                     <span class="text-danger">*</span>
-                    <input type="number" class="form-control sps" formControlName="Counter" placeholder="Enter counter"
-                      min="1">
-
+                    <input
+                      type="number"
+                      class="form-control sps"
+                      formControlName="Counter"
+                      placeholder="Enter counter"
+                      min="1"
+                    />
                   </td>
                 </tr>
-                <tr >
+                <tr>
+                  <td>
+                    Opening Time
+
+                    <!-- <label for="timeRange" class="form-label">Opening Time:</label><br/> -->
+                    <input
+                      type="time"
+                      class="form-control"
+                      formControlName="StartTime"
+                      placeholder="From"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    Closing Time
+                    <!-- <label for="timeRange" class="form-label">To Date:</label><br/> -->
+                    <input
+                      type="time"
+                      class="form-control"
+                      formControlName="EndTime"
+                      placeholder="To"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    Notification
+                    <span class="text-danger"></span>
+                    <textarea
+                      type="text"
+                      class="form-control"
+                      appUpperCase
+                      formControlName="Notification"
+                      placeholder="Add Notification"
+                    >
+                    </textarea>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    Installation date
+                    <span class="text-danger"></span>
+                    <input
+                      type="date"
+                      class="form-control"
+                      appUpperCase
+                      formControlName="InstallationDate"
+                      placeholder="select date"
+                    >
+                    
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    Expiration date
+                   
+                    <input
+                      type="date"
+                      class="form-control"
+                      appUpperCase
+                      formControlName="ExpiryDate"
+                      placeholder="select date"
+                    >
+                    
+                  </td>
+                </tr>
+
+                <tr>
                   <td>
                     Logo
                     <span class="text-danger">*</span>
                     <div class="file-upload-wrapper">
-                    <input type="file" accept="image/png" class="form-control"  placeholder="Select Logo" (change)="previewImage($event)" #fileInput forControlName="logo">
-                    <button type="button" class="close-button-inside" *ngIf="imagePreview"
-                    (click)="removeImagePreview()">X</button>
-                </div>
-                <div *ngIf="errorMessage" class="error text-danger">{{ errorMessage }}</div>
-
+                      <input
+                        type="file"
+                        accept="image/png"
+                        class="form-control"
+                        placeholder="Select Logo"
+                        (change)="previewImage($event)"
+                        #fileInput
+                        forControlName="logo"
+                      />
+                      <button
+                        type="button"
+                        class="close-button-inside"
+                        *ngIf="imagePreview"
+                        (click)="removeImagePreview()"
+                      >
+                        X
+                      </button>
+                    </div>
+                    <div *ngIf="errorMessage" class="error text-danger">
+                      {{ errorMessage }}
+                    </div>
                   </td>
                 </tr>
                 <tr>
                   <td>
-  
-                    <img [src]="imagePreview" *ngIf="imagePreview" alt="Preview" width="100" height="100">
+                    <img
+                      [src]="imagePreview"
+                      *ngIf="imagePreview"
+                      alt="Preview"
+                      width="100"
+                      height="100"
+                    />
                   </td>
                 </tr>
                 <tr>
-                  <td> <button class="btn btn-primary" (click)="updateSettings()">Submit</button>
+                  <td>
+                    <button class="btn btn-primary" (click)="updateSettings()">
+                      Submit
+                    </button>
 
                     <button class="btn btn-danger">Cancel</button>
                   </td>
@@ -112,7 +234,6 @@
           </form>
         </div>
         <div class="col-md-7">
-
           <div>
             <h2>Lock settings</h2>
           </div>
@@ -124,27 +245,39 @@
                 </tr>
                 <tr>
                   <td class="settings">
-                    <select class="form-control" style="width: 100%;" [(ngModel)]="billType">
-                      <option value="">Plese select bill Type </option>
+                    <select
+                      class="form-control"
+                      style="width: 100%"
+                      [(ngModel)]="billType"
+                    >
+                      <option value="">Plese select bill Type</option>
                       <option value="UnLockBooking">vazhipad booking</option>
                       <option value="UnLockNadavaravu">Nadavaravu</option>
 
                       <option value="UnLockCredit">Credit Collection</option>
                       <option value="UnLockFeeCollect">Fee Collection</option>
                       <option value="UnLockEndowment">Endowment</option>
+                      <option value="UnLockThulabaram">Thulabaram</option>
                     </select>
                   </td>
                 </tr>
                 <tr>
-                  <td class="settings"><Button class="btn btn-primary" (click)="unLockBillNumber()">Unlock</Button></td>
+                  <td class="settings">
+                    <Button class="btn btn-primary" (click)="unLockBillNumber()"
+                      >Unlock</Button
+                    >
+                  </td>
                 </tr>
-
               </tbody>
-
             </table>
-            <button class="btn btn-warning" (click)="clearAllBrowserData()" style="width:100%;height:30px; font-size: 12px;color:red">Clear browser Data</button>
+            <button
+              class="btn btn-warning"
+              (click)="clearAllBrowserData()"
+              style="width: 100%; height: 30px; font-size: 12px; color: red"
+            >
+              Clear browser Data
+            </button>
           </div>
-          
         </div>
       </div>
     </div>

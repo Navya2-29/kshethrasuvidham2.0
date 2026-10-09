@@ -12,14 +12,16 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+
 import { PrintreportService } from '../../../shared/service/printreport.service';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
+import { MatIconModule } from '@angular/material/icon';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 @Component({
   selector: 'app-report-online',
   standalone: true,
-  imports: [CommonModule,MatTableModule,SpinnerComponent, TranslateModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
+  imports: [CommonModule,MatTableModule,SpinnerComponent,MatIconModule, TranslateModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
   templateUrl: './report-online.component.html',
   styleUrls: ['./report-online.component.css','/src/assets/styles/report.style.css'],
 })
@@ -81,16 +83,13 @@ export class ReportOnlineComponent {
       next: (data) => {
         console.log('Fetched report data:', data);
         this.data=data;
+         this.data = this.data.sort((a: any, b: any) =>
+  a.BillNo.localeCompare(b.BillNo, undefined, { numeric: true, sensitivity: 'base' })
+);
+      // 
          this.filteredData = this.data.filter(item => item.TrnsMode === 'ON');   
          this.loading=false;
-      //    this.filteredData = this.filteredData.sort((a:any, b:any) => {
-      //     const [numA, denomA] = a.BillNo.split('/').map(Number);
-      //     const [numB, denomB] = b.BillNo.split('/').map(Number);
-          
-      //     // Compare the two parts: first compare the numerator, then the denominator
-      //     return numA - numB || denomA - denomB;
-      // });
-      console.log(this.filteredData,"aaaaaaaaaaaaaaaaaaa")  
+       console.log(this.filteredData,"aaaaaaaaaaaaaaaaaaa")  
 
         // this.dataSource.data = this.filteredData
         // console.log( this.dataSource.data)
@@ -118,7 +117,9 @@ export class ReportOnlineComponent {
        
         // this.data=data;
          this.filteredNadavaravu = data.filter((item:any) => item.TrnMode === 'ON');   
-      
+      this.filteredNadavaravu = this.filteredNadavaravu.sort((a: any, b: any) =>
+  a.BillNo.localeCompare(b.BillNo, undefined, { numeric: true, sensitivity: 'base' })
+);
          console.log('Fetched report data:nadavaravu',  this.filteredNadavaravu);
         // this.length =this.filteredData .length; 
        this.loading=false;
@@ -140,6 +141,10 @@ export class ReportOnlineComponent {
     this.service.getReport(payLoad).subscribe({
       next: (data) => {
         // this.data=data;
+         this.filteredCreditCollection = data.sort((a: any, b: any) =>
+  a.BillNo.localeCompare(b.BillNo, undefined, { numeric: true, sensitivity: 'base' })
+);
+    
          this.filteredCreditCollection = data.filter((item:any) => item.TrnMode === 'ON');   
          console.log('Fetched report data: credit collect', this.filteredCreditCollection);
 this.loading=false;
@@ -161,7 +166,12 @@ this.loading=false;
       next: (data) => {
        
         // this.data=data;
+     
          this.filteredFeecollection = data.filter((item:any) => item.TrnMode === 'ON');   
+            this.filteredFeecollection = this.filteredFeecollection.sort((a: any, b: any) =>
+  a.BillNo.localeCompare(b.BillNo, undefined, { numeric: true, sensitivity: 'base' })
+);
+
       //    this.filteredData = this.filteredData.sort((a:any, b:any) => {
       //     const [numA, denomA] = a.BillNo.split('/').map(Number);
       //     const [numB, denomB] = b.BillNo.split('/').map(Number);
@@ -549,26 +559,201 @@ generatePDF(){
 
 }
 
-generatePDFs() {
-  const element = document.getElementById('print-section'); 
 
-  if (!element) {
-    console.error("Element not found");
-    return;
+exportToExcel(): void {
+  const workbook = XLSX.utils.book_new();
+
+  // ==========================================
+  // Sheet Data Array
+  // ==========================================
+  const excelData: any[] = [];
+
+  // Header
+  excelData.push([this.templeName]);
+  excelData.push([this.templeAddress]);
+  excelData.push(['BANK REPORT']);
+  excelData.push([
+    `${this.formatDateToDDMMYYYY(this.fromDate)} To ${this.formatDateToDDMMYYYY(this.toDate)}`
+  ]);
+  excelData.push([]);
+
+  // ======================================================
+  // 1. VAZHIPAD DATA
+  // ======================================================
+  if (this.data.length > 0) {
+    excelData.push(['VAZHIPAD']);
+    excelData.push([
+      'Bill No',
+      'Bill Date',
+      'ID',
+      'Counter',
+      'Vazhipad',
+      'Name',
+      'Qty',
+      'Rate',
+      'Amount'
+    ]);
+
+    this.data.forEach((item: any) => {
+      excelData.push([
+        item.BillNo,
+        item.BillDate,
+        item.InstNo,
+        `${item.CounterId} (${item.UName})`,
+        item.Vazhipad,
+        item.Name,
+        item.Qty,
+        item.Rate,
+        item.Amount
+      ]);
+    });
+
+    excelData.push([
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      'Total',
+      this.getTotalAmount()
+    ]);
+
+    excelData.push([]);
   }
 
-  html2canvas(element, { scale: 2 }).then(canvas => {
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF('p', 'mm', 'a4');
+  // ======================================================
+  // 2. CREDIT COLLECTION
+  // ======================================================
+  if (this.filteredCreditCollection.length > 0) {
+    excelData.push(['Credit Collection']);
+    excelData.push([
+      'Bill No',
+      'Bill Date',
+      'ID',
+      'Counter',
+      'Name',
+      'Amount'
+    ]);
 
-    const imgWidth = 210; 
-    const imgHeight = (canvas.height * imgWidth) / canvas.width; 
+    this.filteredCreditCollection.forEach((item: any) => {
+      excelData.push([
+        item.BillNo,
+        item.BillDate,
+        item.Remarks,
+        `${item.CounterId} (${item.UName})`,
+        item.Name,
+        item.Amount
+      ]);
+    });
 
-    pdf.addImage(imgData, 'PNG', 0, 10, imgWidth, imgHeight);
-    pdf.save('Poornam_Report.pdf'); 
-  }).catch(error => {
-    console.error("Error generating PDF:", error);
+    excelData.push([
+      '',
+      '',
+      '',
+      '',
+      'Total',
+      this.getCreditCollectTotalAmount()
+    ]);
+
+    excelData.push([]);
+  }
+
+  // ======================================================
+  // 3. FEE COLLECTION
+  // ======================================================
+  if (this.filteredFeecollection.length > 0) {
+    excelData.push(['Fee Collection']);
+    excelData.push([
+      'Bill No',
+      'Bill Date',
+      'ID',
+      'Counter',
+      'Item',
+      'Name',
+      'Amount'
+    ]);
+
+    this.filteredFeecollection.forEach((item: any) => {
+      excelData.push([
+        item.BillNo,
+        item.BillDate,
+        item.InstNo,
+        `${item.CounterId} (${item.UName})`,
+        this.lang == 'en'
+          ? item.NM_Name
+          : item.NM_RName,
+        item.Name,
+        item.Amount
+      ]);
+    });
+
+    excelData.push([
+      '',
+      '',
+      '',
+      '',
+      '',
+      'Total',
+      this.getFeecollectionTotalAmount()
+    ]);
+
+    excelData.push([]);
+  }
+
+  // ======================================================
+  // GRAND TOTAL
+  // ======================================================
+  excelData.push([
+    '',
+    '',
+    '',
+    '',
+    '',
+    'Grand Total',
+    this.getTotalAmount()
+      + this.getCreditCollectTotalAmount()
+      + this.getFeecollectionTotalAmount()
+  ]);
+
+  // ==========================================
+  // Create Sheet
+  // ==========================================
+  const worksheet = XLSX.utils.aoa_to_sheet(excelData);
+
+  worksheet['!cols'] = [
+    { wch: 12 },
+    { wch: 15 },
+    { wch: 15 },
+    { wch: 18 },
+    { wch: 25 },
+    { wch: 25 },
+    { wch: 10 },
+    { wch: 12 },
+    { wch: 15 }
+  ];
+
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Bank Report');
+
+  // Save File
+  const excelBuffer: any = XLSX.write(workbook, {
+    bookType: 'xlsx',
+    type: 'array'
   });
+
+  const file = new Blob(
+    [excelBuffer],
+    {
+      type:
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+    }
+  );
+
+  saveAs(
+    file,
+    `Bank_Report_${new Date().getTime()}.xlsx`
+  );
 }
 
 }

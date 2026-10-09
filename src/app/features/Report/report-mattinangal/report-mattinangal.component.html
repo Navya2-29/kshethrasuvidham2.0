@@ -10,9 +10,13 @@
   <button mat-icon-button matTooltip="Make PDF" (click)="generatePDF()">
     <span class="material-icons">print</span>
   </button>
-  <!-- <button mat-icon-button matTooltip="Export to Spreadsheet" >
-        <span class="material-icons">grid_view</span>
-    </button> -->
+  <button
+  mat-icon-button
+  matTooltip="Export to Excel"
+  (click)="exportToExcel()"
+>
+  <mat-icon>grid_on</mat-icon>
+</button>
 </div>
 <div id="print-section">
   
@@ -49,8 +53,12 @@
         <tr>
           <th >{{ "BILL NO" | translate }}</th>
           <th>{{ "BILLDATE" | translate }}</th>
+          
+          <!-- <th>{{"Counter" | translate }}</th> -->
           <th>{{ "VAZHIPAD" | translate }}</th>
-          <th >{{ "NAME" | translate }}</th>
+          <th>{{"Remarks" |translate }}</th>
+          
+          <th class="fwname">{{ "NAME" | translate }}</th>
           <th >{{ "STAR" | translate }}</th>
           <!--  -->
           <th >{{ "QUANTITY" | translate }}</th>
@@ -65,12 +73,22 @@
         <tr *ngFor="let item of data">
           <td>{{ item.BillNo }}</td>
           <td>{{ item.BillDate }}</td>
-          <td>{{ item.Vazhipad }}</td>
-          <td>{{ item.Name }}
-            <br *ngIf="item.Address1" ><i>{{ item.Address1 }}</i>
-            <br *ngIf="item.Address2"><i>{{ item.Address2 }}</i>
-            <br *ngIf="item.MobileNo">{{ item.MobileNo }}
-
+          
+          <!-- <td>
+            <p>{{item.UName}}({{item.CounterId}})</p>
+           
+          </td> -->
+          
+          <td>{{ item.Vazhipad }}
+            <!-- <p>{{item.Remarks}}</p> -->
+          </td>
+          <td class="fwnames">{{item.Remarks}}</td>
+          <td class="fwname" >{{ item.Name }}
+            <p *ngIf="item.Address1" ><i>{{ item.Address1 }}</i></p>
+            <p *ngIf="item.Address2"><i>{{ item.Address2 }}</i></p>
+            <p *ngIf="item.MobileNo"><i class="fa-solid fa-phone" >&nbsp;</i>{{ item.MobileNo }}</p>
+            <p *ngIf="item.PinCode">{{item.PinCode}}</p>
+            <p *ngIf="item.EmailId"><i>{{ item.EmailId }}</i></p>
           </td>
           <td>{{ item.Star || "N/A" }}</td>
           <td>{{ item.Qty }}</td>
@@ -82,7 +100,7 @@
           <!-- <td>{{ item.TrnMode }}</td> -->
         </tr>
         <tr>
-          <td colspan="7" class="total">
+          <td colspan="8" class="total">
             {{"Report Name.TOTAL" | translate }}
           </td>
           <td  class="total">

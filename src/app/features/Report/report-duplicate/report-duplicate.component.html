@@ -13,6 +13,13 @@
     <button mat-icon-button matTooltip="Make PDF" (click)="generatePDF()">
       <span class="material-icons">print</span>
     </button>
+      <button
+      mat-icon-button
+      matTooltip="Export to Excel"
+     (click)="exportToExcel()"
+    >
+      <mat-icon>grid_on</mat-icon>
+    </button>
   </div>
   <div id="print-section">
     <div class="header-print">

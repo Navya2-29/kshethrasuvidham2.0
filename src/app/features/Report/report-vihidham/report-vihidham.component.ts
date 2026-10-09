@@ -9,7 +9,6 @@ import {
   PageEvent,
 } from '@angular/material/paginator';
 import { jsPDF } from 'jspdf';
-import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -18,7 +17,10 @@ import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PrintreportService } from '../../../shared/service/printreport.service';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
-
+import { HeaderComponent } from '../../../core/layout/header/header.component';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+import { MatIconModule } from '@angular/material/icon';
 @Component({
   selector: 'app-report-vihidham',
   standalone: true,
@@ -31,7 +33,8 @@ import { SpinnerComponent } from '../../../shared/component/spinner/spinner.comp
     MatFormFieldModule,
     MatInputModule,
     TranslateModule,
-    SpinnerComponent
+    SpinnerComponent,
+    MatIconModule
   ],
   templateUrl: './report-vihidham.component.html',
   styleUrls: [
@@ -233,5 +236,104 @@ export class ReportVihidhamComponent {
     return total;
   }
 
+exportToExcel(): void {
+  const workbook = XLSX.utils.book_new();
+  const excelData: any[] = [];
 
+  // ==========================================
+  // HEADER
+  // ==========================================
+  excelData.push([this.templeName]);
+  excelData.push([this.templeAddress]);
+  excelData.push(['VIHIDHAM REPORT']);
+  excelData.push([
+    `${this.formatDateToDDMMYYYY(this.fromDate)} To ${this.formatDateToDDMMYYYY(this.toDate)}`
+  ]);
+  excelData.push([]);
+
+  // ==========================================
+  // GROUPED DATA
+  // ==========================================
+  const categories = Object.keys(this.groupedData);
+
+  categories.forEach((category: string) => {
+    const rows = this.groupedData[category];
+
+    // Section Title
+    excelData.push([category.toUpperCase()]);
+
+    // Column Header
+    excelData.push([
+      'Vazhipad',
+      'Quantity',
+      'Rate',
+      'Amount'
+    ]);
+
+    // Data Rows
+    rows.forEach((item: any) => {
+      excelData.push([
+        item.Vazhipad,
+        item.Qty,
+        item.Rate,
+        item.Qty * item.Rate
+      ]);
+    });
+
+    // Category Total
+    excelData.push([
+      '',
+      '',
+      'Total',
+      this.getGrandTotalForTrnsMode(category)
+    ]);
+
+    excelData.push([]);
+  });
+
+  // ==========================================
+  // OVERALL GRAND TOTAL
+  // ==========================================
+  excelData.push([
+    '',
+    '',
+    'Grand Total',
+    this.getOverallGrandTotal()
+  ]);
+
+  // ==========================================
+  // CREATE SHEET
+  // ==========================================
+  const worksheet = XLSX.utils.aoa_to_sheet(excelData);
+
+  worksheet['!cols'] = [
+    { wch: 35 }, // Vazhipad
+    { wch: 12 }, // Qty
+    { wch: 15 }, // Rate
+    { wch: 18 }  // Amount
+  ];
+
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Vihidham Report');
+
+  // ==========================================
+  // SAVE FILE
+  // ==========================================
+  const excelBuffer: any = XLSX.write(workbook, {
+    bookType: 'xlsx',
+    type: 'array'
+  });
+
+  const file = new Blob(
+    [excelBuffer],
+    {
+      type:
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+    }
+  );
+
+  saveAs(
+    file,
+    `Vihidham_Report_${new Date().getTime()}.xlsx`
+  );
+}
 }

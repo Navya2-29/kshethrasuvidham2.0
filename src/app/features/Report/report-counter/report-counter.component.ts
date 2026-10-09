@@ -19,6 +19,10 @@ import { ReportDailyStmt } from '../../../models/dailytrasaction.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PrintreportService } from '../../../shared/service/printreport.service';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
+import { MatIconModule } from '@angular/material/icon';
+
 @Component({
   selector: 'app-report-counter',
   standalone: true,
@@ -26,7 +30,7 @@ import { SpinnerComponent } from '../../../shared/component/spinner/spinner.comp
     MatTableModule,
     MatPaginatorModule,
     HeaderComponent,
-    MatTooltipModule,MatFormFieldModule,TranslateModule, MatInputModule,SpinnerComponent],
+    MatTooltipModule,MatFormFieldModule,TranslateModule, MatInputModule,SpinnerComponent,MatIconModule],
   templateUrl: './report-counter.component.html',
   styleUrls: ['./report-counter.component.css','/src/assets/styles/report.style.css'],
 })
@@ -674,4 +678,159 @@ getTotalForCuser(counterId: string, cuser: string): number {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
+
+  exportToExcel(): void {
+
+  const workbook = XLSX.utils.book_new();
+  const sheetData: any[][] = [];
+
+  /* ---------------- HEADER ---------------- */
+
+  sheetData.push([this.templeName]);
+  sheetData.push([this.templeAddress]);
+  sheetData.push(['DAILY TEMPLE COLLECTION (COUNTER)']);
+  sheetData.push([
+    `${this.formatDateToDDMMYYYY(this.fromDate)} To ${this.formatDateToDDMMYYYY(this.toDate)}`
+  ]);
+  sheetData.push([]);
+
+  /* ---------------- REPORT DATA ---------------- */
+
+  Object.keys(this.groupedData).forEach((counterKey) => {
+
+    sheetData.push([`Counter : ${counterKey}`]);
+    sheetData.push([]);
+
+    Object.keys(this.groupedData[counterKey]).forEach((userKey) => {
+
+      sheetData.push([`User : ${userKey}`]);
+      sheetData.push([]);
+
+      Object.keys(this.groupedData[counterKey][userKey]).forEach((modeKey) => {
+
+        sheetData.push([this.getTransactionType(modeKey)]);
+        sheetData.push([
+          'Sl No',
+          'Vazhipad',
+          'Quantity',
+          'Rate',
+          'Amount'
+        ]);
+
+        let slNo = 1;
+
+        this.groupedData[counterKey][userKey][modeKey]
+          .forEach((item: any) => {
+
+            sheetData.push([
+              slNo++,
+              item.vazhipad,
+              item.Qty,
+              item.Rate,
+              item.Amount
+            ]);
+          });
+
+        /* Transaction Total */
+
+        sheetData.push([
+          '',
+          '',
+          '',
+          `Total ${this.getTransactionType(modeKey)}`,
+          this.getTotalForCuserTrnsMode(
+            counterKey,
+            userKey,
+            modeKey
+          )
+        ]);
+
+        sheetData.push([]);
+      });
+
+      /* User Total */
+
+      sheetData.push([
+        '',
+        '',
+        '',
+        `Total ${userKey}`,
+        this.getTotalForCuser(counterKey, userKey)
+      ]);
+
+      sheetData.push([]);
+      sheetData.push([]);
+    });
+
+    /* Counter Total */
+
+    sheetData.push([
+      '',
+      '',
+      '',
+      `Total Counter ${counterKey}`,
+      this.getTotalForCounter(counterKey)
+    ]);
+
+    sheetData.push([]);
+    sheetData.push([]);
+  });
+
+  /* ---------------- GRAND TOTAL ---------------- */
+
+  sheetData.push([
+    '',
+    '',
+    '',
+    'Grand Total',
+    this.getGrandTotal()
+  ]);
+
+  /* ---------------- CREATE SHEET ---------------- */
+
+  const worksheet: XLSX.WorkSheet =
+    XLSX.utils.aoa_to_sheet(sheetData);
+
+  worksheet['!cols'] = [
+    { wch: 8 },
+    { wch: 35 },
+    { wch: 12 },
+    { wch: 18 },
+    { wch: 18 }
+  ];
+
+  worksheet['!merges'] = [
+    { s: { r: 0, c: 0 }, e: { r: 0, c: 4 } },
+    { s: { r: 1, c: 0 }, e: { r: 1, c: 4 } },
+    { s: { r: 2, c: 0 }, e: { r: 2, c: 4 } },
+    { s: { r: 3, c: 0 }, e: { r: 3, c: 4 } }
+  ];
+
+  XLSX.utils.book_append_sheet(
+    workbook,
+    worksheet,
+    'Temple Collection'
+  );
+
+  /* ---------------- DOWNLOAD ---------------- */
+
+  const excelBuffer = XLSX.write(workbook, {
+    bookType: 'xlsx',
+    type: 'array'
+  });
+
+  const blob = new Blob(
+    [excelBuffer],
+    {
+      type:
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+    }
+  );
+
+  FileSaver.saveAs(
+    blob,
+    `Daily_Temple_Couter_wise_Collection_${new Date().getTime()}.xlsx`
+  );
+  }
+
 }

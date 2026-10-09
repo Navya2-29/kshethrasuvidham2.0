@@ -25,10 +25,7 @@ import { ItemMAterComponent } from './features/master/item-mater/item-mater.comp
 import { LoginComponent } from './core/auth/login/login.component';
 import { authGuard } from './core/auth/guard/auth.guard';
 import { StarMasterComponent } from './features/master/star-master/star-master.component';
-import { CalendarComponent } from './calendar/calendar.component';
-import { VazhipadVivaramComponent } from './features/Billing/vazhipad-vivaram/vazhipad-vivaram.component';
 import { MattinangalComponent } from './features/Billing/mattinangal/mattinangal.component';
-import { UserComponent } from './features/user/user/user.component';
 import { FrontComponent } from './core/layout/front/front.component';
 import { ReportViewComponent } from './features/Report/report-view/report-view.component';
 import { ReportChecquestmntComponent } from './features/Report/report-checquestmnt/report-checquestmnt.component';
@@ -67,6 +64,16 @@ import { ReportVihidhamComponent } from './features/Report/report-vihidham/repor
 import { ReportBillingRegisterComponent } from './features/Report/report-billing-register/report-billing-register.component';
 import { ReportEndowmentComponent } from './features/Report/report-endowment/report-endowment.component';
 import { ReportEndowmnetRegisterComponent } from './features/Report/report-endowmnet-register/report-endowmnet-register.component';
+import { ReportOnlineTransactionComponent } from './features/Report/report-online-transaction/report-online-transaction.component';
+import { ReportDatewiseTrasnasctionmodesumComponent } from './features/Report/report-datewise-trasnasctionmodesum/report-datewise-trasnasctionmodesum.component';
+import { GothramMasterComponent } from './features/master/gothram-master/gothram-master.component';
+import { ReportTimeSlotComponent } from './features/Report/report-time-slot/report-time-slot.component';
+import { DevoteeledgerComponent } from './features/Report/devoteeledger/devoteeledger.component';
+import { ReportPrathistawiseComponent } from './features/Report/report-prathistawise/report-prathistawise.component';
+import { ReportPrathistaAllComponent } from './features/Report/report-prathista-all/report-prathista-all.component';
+import { CalendarComponent } from './features/Billing/calendar/calendar.component';
+import { UserComponent } from './features/master/user/user/user.component';
+import { HallbookingComponent } from './features/Billing/hallbooking/hallbooking.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -165,49 +172,60 @@ export const routes: Routes = [
     component: ReportDashboardComponent,
     canActivate: [authGuard],
   },
-  
-  { path: 'report-viewer', component: ReportViewComponent },
-  { path: 'report-dailystmnt', component: ReportDailystmtComponent },
-  { path: 'report-cheque', component: ReportChecquestmntComponent },
-  { path: 'report-transaction', component: ReportDailystmntTransactionComponent },
-  { path: 'report-AdvanceBook', component: ReportAdvancedbookingComponent },
-  { path: 'report-upi', component: ReportUpiComponent },
-  { path: 'report-offering', component: ReportOfferingComponent },
-  { path: 'report-address', component: ReportAddresslistComponent },
-  { path: 'report-credit', component: ReportCreditComponent },
-  { path: 'report-counter', component: ReportCounterComponent },
-  { path: 'report-cancel', component: ReportCancelComponent },
-  { path: 'report-nadavaravu', component: ReportNadavaravComponent },
-  { path: 'report-debit', component: ReportDebitComponent },
-  { path: 'report-moneyorder', component: ReportMoneyOrderComponent },
-  { path: 'report-nadavaravu-cancel', component: ReportNadavaravuCancelComponent },
-  { path: 'report-online', component: ReportOnlineComponent },
-  { path: 'report-counter-trnsaction', component: ReportCounterTransactionComponent },
+  {
+    path:'hallbooking',
+    component:HallbookingComponent,
+    canActivate:[authGuard]
+  },
+  {path:"gothram-master",component:GothramMasterComponent,canActivate: [authGuard]},
+  { path: 'report-viewer', component: ReportViewComponent,canActivate: [authGuard] },
+  { path: 'report-dailystmnt', component: ReportDailystmtComponent,canActivate: [authGuard]},
+  { path: 'report-cheque', component: ReportChecquestmntComponent,canActivate: [authGuard] },
+  { path: 'report-transaction', component: ReportDailystmntTransactionComponent,canActivate: [authGuard] },
+  { path: 'report-AdvanceBook', component: ReportAdvancedbookingComponent ,canActivate: [authGuard]},
+  { path: 'report-upi', component: ReportUpiComponent ,canActivate: [authGuard]},
+  { path: 'report-offering', component: ReportOfferingComponent ,canActivate: [authGuard]},
+  { path: 'report-address', component: ReportAddresslistComponent,canActivate: [authGuard] },
+  { path: 'report-credit', component: ReportCreditComponent ,canActivate: [authGuard]},
+  { path: 'report-counter', component: ReportCounterComponent,canActivate: [authGuard] },
+  { path: 'report-cancel', component: ReportCancelComponent,canActivate: [authGuard] },
+  { path: 'report-nadavaravu', component: ReportNadavaravComponent ,canActivate: [authGuard]},
+  { path: 'report-debit', component: ReportDebitComponent,canActivate: [authGuard] },
+  { path: 'report-moneyorder', component: ReportMoneyOrderComponent,canActivate: [authGuard] },
+  { path: 'report-nadavaravu-cancel', component: ReportNadavaravuCancelComponent,canActivate: [authGuard] },
+  { path: 'report-online', component: ReportOnlineComponent,canActivate: [authGuard] },
+  { path: 'report-counter-trnsaction', component: ReportCounterTransactionComponent,canActivate: [authGuard] },
   { path: 'report-credit-Collection', component: ReportCreditCollectionComponent },
-  { path: 'report-counter-self', component: ReportCounterSelfComponent },
-  { path: 'settings', component: SettingsComponent },
-  {path:"vazhipadwise",component: ReportVazhipadwiseComponent },
-  {path:"vazhipadlistwithprathista",component: AllvazhipadlistComponent },
-  {path:"devotee-master",component: DevoteeMasterComponent},
-  {path:"report-duplicate",component: ReportDuplicateComponent},
-  {path:"report-mattinamgal",component: ReportMattinangalComponent},
-  {path:"report-salesitem",component: ReportSalesitemComponent},
-  {path:"report-feecollection",component: ReportFeecollectionComponent},
-  {path:"report-devotee-creditcollection",component: DevoteeCreditcollectioReportComponent},
-  {path:"report-donation",component: DonationReportComponent},
-  {path:"members-list",component: MembersListComponent},
-   {path:"endowment-register",component: ReportEndowmnetRegisterComponent},
-  {path:"members-pending-report",component: ReportMemberPendingCreditComponent},
-  {path:"non-members-pending-report",component: ReportNonMemberPendingCreditComponent},
-  {path:"endowment",component:EndowmentBillingComponent},
+  { path: 'report-counter-self', component: ReportCounterSelfComponent,canActivate: [authGuard] },
+  { path: 'settings', component: SettingsComponent,canActivate: [authGuard] },
+  {path:"vazhipadwise",component: ReportVazhipadwiseComponent,canActivate: [authGuard] },
+  {path:"vazhipadlistwithprathista",component: AllvazhipadlistComponent ,canActivate: [authGuard]},
+  {path:"devotee-master",component: DevoteeMasterComponent,canActivate: [authGuard]},
+  {path:"report-duplicate",component: ReportDuplicateComponent,canActivate: [authGuard]},
+  {path:"report-mattinamgal",component: ReportMattinangalComponent,canActivate: [authGuard]},
+  {path:"report-salesitem",component: ReportSalesitemComponent,canActivate: [authGuard]},
+  {path:"report-feecollection",component: ReportFeecollectionComponent,canActivate: [authGuard]},
+  {path:"report-devotee-creditcollection",component: DevoteeCreditcollectioReportComponent,canActivate: [authGuard]},
+  {path:"report-donation",component: DonationReportComponent,canActivate: [authGuard]},
+  {path:"members-list",component: MembersListComponent,canActivate: [authGuard]},
+  {path:"endowment-register",component: ReportEndowmnetRegisterComponent,canActivate: [authGuard]},
+  {path:"members-pending-report",component: ReportMemberPendingCreditComponent,canActivate: [authGuard]},
+  {path:"non-members-pending-report",component: ReportNonMemberPendingCreditComponent,canActivate: [authGuard]},
+  {path:"endowment",component:EndowmentBillingComponent,canActivate: [authGuard]},
   {path:'report-vihidham',component:ReportVihidhamComponent},
-  {path:'report-billregister',component:ReportBillingRegisterComponent},
-  {path:"report-Dayend",component:ReportDayendComponent},
-  {path:"Home",component: HomeComponent},
-  {path:'vihiham-list',component:VihidhamlistComponent},
-  {path:'vihiham-list',component:VihidhamlistComponent},
-  {path:'report-endowment',component:ReportEndowmentComponent},
-  {path:'report-vazhipadonly',component:ReportVazhipadTransactionComponent},
+  {path:'report-billregister',component:ReportBillingRegisterComponent,canActivate: [authGuard]},
+  {path:"dayend",component:ReportDayendComponent,canActivate: [authGuard]},
+  {path:"Home",component: HomeComponent,canActivate: [authGuard]},
+  {path:'vihiham-list',component:VihidhamlistComponent,canActivate: [authGuard]},
+  {path:'vihiham-list',component:VihidhamlistComponent,canActivate: [authGuard]},
+  {path:'report-endowment',component:ReportEndowmentComponent,canActivate: [authGuard]},
+  {path:'report-vazhipadonly',component:ReportVazhipadTransactionComponent,canActivate: [authGuard]},
+  {path:'online-transaction',component:ReportOnlineTransactionComponent,canActivate: [authGuard],},
+  {path:"datewise",component:ReportDatewiseTrasnasctionmodesumComponent,canActivate: [authGuard]},
+  {path:'report-timeslot',component:ReportTimeSlotComponent,canActivate: [authGuard]},
+  {path:"devotee-ledger",component:DevoteeledgerComponent,canActivate: [authGuard]},
+  {path:'report-prathistaOnly',component:ReportPrathistawiseComponent,canActivate: [authGuard]},
+  {path:'report-prathistaAll',component:ReportPrathistaAllComponent,canActivate: [authGuard]},
   {
     path: '**',
     pathMatch: 'full',

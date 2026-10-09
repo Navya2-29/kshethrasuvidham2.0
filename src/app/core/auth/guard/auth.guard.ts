@@ -21,7 +21,7 @@ export const authGuard: CanActivateFn = (route, state) => {
     // }
 
     const masterRoutes = [
-      'pmaster', 'cmaster', 'vmaster', 'panjankam', 'member-master', 'vihidham-master',
+      'pmaster', 'cmaster', 'vmaster', 'panjankam', 'vihidham-master',
       'day-master', 'special-day-master', 'combo-master', 'item-master', 'star-master'
     ]; // Masters restricted for staff
   

@@ -1,90 +1,60 @@
-
 <app-header></app-header>
+
 <main class="main">
+
   <div class="content">
+
+    <!-- LEFT SIDE -->
     <div class="left-side">
       <div class="temple-details">
-        <img [src]=this.logo class="temple-image" />
-        <h2
-         class="temple-name"
-        >
-          {{templeName}}
-        </h2>
-      </div>
-
-      <div class="copyright"
-       
-      >
-        <!-- <p style="color:white;">Version 1.0</p> -->
-        <!-- <p  class="copyright" style="color: white;   padding: 9px;">Last Updated on: {{todayDate | date:'dd MMM yyyy'}}</p> -->
+        <img [src]="getlogo()" class="temple-image" />
+        <h2 class="temple-name">{{ templeName }}</h2>
       </div>
     </div>
-    
-    <p 
-     class="copy-right"
-    >
-      &#169; Copyright 2025 | Cubix Software Solutions
-    </p>
-    <p class="lastupdate">Last Updated on: {{todayDate | date:'dd MMM yyyy'}}</p>
 
-    <!-- <div class="divider" role="separator" aria-label="Divider"></div> -->
+    <!-- RIGHT SIDE -->
     <div class="right-side">
-      <p
-       class="version"
-      >
-        Version 1.0
-      </p>
+
+      <p class="version">Version 1.0</p>
+
       <img src="assets/images/logo.jpg" />
+
       <div class="dashbord">
-        <a
-          routerLink="/dashboard"
-          mat-raised-button
-          #billingButton
-         
-        
 
-          class="col-md-12"
-        >
-          {{"BILLING" | translate }}</a
-        >
-        <a
-          routerLink="/getReport"
-          mat-raised-button
-         
-          class="col-md-12"
+        <a routerLink="/dashboard" mat-raised-button class="col-md-12">
+          {{ "BILLING" | translate }}
+        </a>
 
-        >
-          {{"REPORTS" | translate }}</a
-        >
-        <a
-          routerLink="/mattinagal"
-          mat-raised-button
-          
-          class="col-md-12"
-        >
-        {{"MISCELLANEOUS BILLING"| translate }}</a
-        >
-        <!-- <a
-          routerLink="/mattinagal"
-          mat-raised-button
-          style="
-            text-decoration: none;
-            margin-top: 9px;
-            margin-bottom: 9px;
-            font-size: 12pt;
-            padding: 22.5px;
-            font-weight: 800;
-          "
-          class="col-md-12"
-        >
-          പഞ്ചാംഗം</a
-        > -->
-         
+        <a routerLink="/getReport" mat-raised-button class="col-md-12">
+          {{ "REPORTS" | translate }}
+        </a>
+
+        <a routerLink="/mattinagal" mat-raised-button class="col-md-12">
+          {{ "MISCELLANEOUS BILLING" | translate }}
+        </a>
+
         <div class="backicon">
-          <a  (click)="goBack()" ><img src="assets/images/home.png"></a>
+          <a (click)="goBack()">
+            <img src="assets/images/home.png">
+          </a>
         </div>
 
       </div>
+
     </div>
+
   </div>
+
+  <!-- FOOTER -->
+   <div>
+  <p class="copy-right">
+    © Copyright 2025 | Cubix Software Solutions
+  </p>
+
+
+</div>
+<div>
+  <p class="lastupdate">
+    Last Updated on: {{ todayDate | date:'dd MMM yyyy' }}
+  </p></div>
 </main>

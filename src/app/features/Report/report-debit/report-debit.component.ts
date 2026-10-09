@@ -14,11 +14,13 @@ import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PrintreportService } from '../../../shared/service/printreport.service';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
-
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+import { MatIconModule } from '@angular/material/icon';
 @Component({
   selector: 'app-report-debit',
   standalone: true,
-  imports: [CommonModule,SpinnerComponent, MatTableModule,TranslateModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
+  imports: [CommonModule,SpinnerComponent,MatIconModule, MatTableModule,TranslateModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
   templateUrl: './report-debit.component.html',
   styleUrls:[ './report-debit.component.css','/src/assets/styles/report.style.css'],
 })
@@ -96,6 +98,9 @@ loading:boolean;
       next: (data) => {
         console.log('Fetched report data:', data);
         this.data=data;
+         this.data = this.data.sort((a: any, b: any) =>
+        a.BillNo.localeCompare(b.BillNo, undefined, { numeric: true, sensitivity: 'base' })
+        );
          this.filteredData = this.data.filter(item => item.TrnsMode === 'DE'); 
          this.loading=false;  
         //  this.filteredData = this.filteredData.sort((a:any, b:any) => {
@@ -131,6 +136,9 @@ loading:boolean;
     this.service.getReport(payLoad).subscribe({
       next: (data) => {
         // this.data=data;
+        data = data.sort((a: any, b: any) =>
+        a.BillNo.localeCompare(b.BillNo, undefined, { numeric: true, sensitivity: 'base' })
+        );
          this.filteredCreditCollection = data.filter((item:any) => item.TrnMode === 'DE');   
          console.log('Fetched report data: credit collect', this.filteredCreditCollection);
 this.loading=false;
@@ -152,7 +160,10 @@ this.loading=false;
       next: (data) => {
        
         // this.data=data;
-         this.filteredFeecollection = data.filter((item:any) => item.TrnMode === 'DE'); 
+         const datas = data.sort((a: any, b: any) =>
+        a.BillNo.localeCompare(b.BillNo, undefined, { numeric: true, sensitivity: 'base' })
+        );
+         this.filteredFeecollection = datas.filter((item:any) => item.TrnMode === 'DE'); 
          this.loading=false;  
       //    this.filteredData = this.filteredData.sort((a:any, b:any) => {
       //     const [numA, denomA] = a.BillNo.split('/').map(Number);
@@ -512,7 +523,232 @@ generatePDF(){
 //   } 
 }
    
+exportToExcel(): void {
 
+  const workbook = XLSX.utils.book_new();
+
+  /* =====================================================
+      SHEET 1 : VAZHIPAD
+  ===================================================== */
+  if (this.filteredData?.length > 0) {
+
+    const rows: any[] = [];
+
+    rows.push([this.templeName]);
+    rows.push([this.templeAddress]);
+    rows.push(['DEBIT REPORT - VAZHIPAD']);
+    rows.push([
+      `${this.formatDateToDDMMYYYY(this.fromDate)} to ${this.formatDateToDDMMYYYY(this.toDate)}`
+    ]);
+    rows.push([]);
+
+    rows.push([
+      'Bill No',
+      'Bill Date',
+      'ID',
+      'Counter',
+      'Vazhipad',
+      'Name',
+      'Qty',
+      'Rate',
+      'Amount'
+    ]);
+
+    this.filteredData.forEach((item: any) => {
+      rows.push([
+        item.BillNo,
+        item.BillDate,
+        item.InstNo,
+        `${item.CounterId} (${item.UName})`,
+        item.Vazhipad,
+        item.Name,
+        item.Qty,
+        item.Rate,
+        item.Amount
+      ]);
+    });
+
+    rows.push([]);
+    rows.push([
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      'TOTAL',
+      this.getTotalAmount()
+    ]);
+
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+
+    ws['!cols'] = [
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 22 },
+      { wch: 30 },
+      { wch: 25 },
+      { wch: 10 },
+      { wch: 12 },
+      { wch: 15 }
+    ];
+
+    XLSX.utils.book_append_sheet(workbook, ws, 'Vazhipad');
+  }
+
+
+  /* =====================================================
+      SHEET 2 : CREDIT COLLECTION
+  ===================================================== */
+  if (this.filteredCreditCollection?.length > 0) {
+
+    const rows: any[] = [];
+
+    rows.push([this.templeName]);
+    rows.push([this.templeAddress]);
+    rows.push(['DEBIT REPORT - CREDIT COLLECTION']);
+    rows.push([]);
+
+    rows.push([
+      'Bill No',
+      'Bill Date',
+      'ID',
+      'Counter',
+      'Name',
+      'Amount'
+    ]);
+
+    this.filteredCreditCollection.forEach((item: any) => {
+      rows.push([
+        item.BillNo,
+        item.BillDate,
+        item.Remarks,
+        `${item.CounterId} (${item.UName})`,
+        item.Name,
+        item.Amount
+      ]);
+    });
+
+    rows.push([]);
+    rows.push(['', '', '', '', 'TOTAL', this.getCreditCollectTotalAmount()]);
+
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+
+    ws['!cols'] = [
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 20 },
+      { wch: 22 },
+      { wch: 30 },
+      { wch: 15 }
+    ];
+
+    XLSX.utils.book_append_sheet(workbook, ws, 'Credit Collection');
+  }
+
+
+  /* =====================================================
+      SHEET 3 : FEE COLLECTION
+  ===================================================== */
+  if (this.filteredFeecollection?.length > 0) {
+
+    const rows: any[] = [];
+
+    rows.push([this.templeName]);
+    rows.push([this.templeAddress]);
+    rows.push(['DEBIT REPORT - FEE COLLECTION']);
+    rows.push([]);
+
+    rows.push([
+      'Bill No',
+      'Bill Date',
+      'ID',
+      'Counter',
+      'Item',
+      'Name',
+      'Amount'
+    ]);
+
+    this.filteredFeecollection.forEach((item: any) => {
+      rows.push([
+        item.BillNo,
+        item.BillDate,
+        item.InstNo,
+        `${item.CounterId} (${item.UName})`,
+        `${item.NM_Name} (${item.Month})`,
+        item.Name,
+        item.Amount
+      ]);
+    });
+
+    rows.push([]);
+    rows.push(['', '', '', '', '', 'TOTAL', this.getFeecollectionTotalAmount()]);
+
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+
+    ws['!cols'] = [
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 22 },
+      { wch: 30 },
+      { wch: 25 },
+      { wch: 15 }
+    ];
+
+    XLSX.utils.book_append_sheet(workbook, ws, 'Fee Collection');
+  }
+
+
+  /* =====================================================
+      SHEET 4 : SUMMARY
+  ===================================================== */
+
+  const summaryRows = [
+    [this.templeName],
+    ['DEBIT REPORT SUMMARY'],
+    [],
+    ['Vazhipad Total', this.getTotalAmount()],
+    ['Credit Collection Total', this.getCreditCollectTotalAmount()],
+    ['Fee Collection Total', this.getFeecollectionTotalAmount()],
+    ['Nadavaravu Total', this.getNadavaravuTotalAmount()],
+    [],
+    [
+      'Grand Total',
+      this.getTotalAmount()
+      + this.getCreditCollectTotalAmount()
+      + this.getFeecollectionTotalAmount()
+      + this.getNadavaravuTotalAmount()
+    ]
+  ];
+
+  const wsSummary = XLSX.utils.aoa_to_sheet(summaryRows);
+  wsSummary['!cols'] = [{ wch: 30 }, { wch: 20 }];
+
+  XLSX.utils.book_append_sheet(workbook, wsSummary, 'Summary');
+
+
+  /* =====================================================
+      SAVE FILE
+  ===================================================== */
+
+  const excelBuffer = XLSX.write(workbook, {
+    bookType: 'xlsx',
+    type: 'array'
+  });
+
+  const blob = new Blob([excelBuffer], {
+    type:
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+  });
+
+  saveAs(
+    blob,
+    `Debit_Report_${this.fromDate}_to_${this.toDate}.xlsx`
+  );
+}
 
 
 

@@ -6,23 +6,24 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { jsPDF } from 'jspdf'; 
 import {ReportData} from '../../../models/poornam-report'
-import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
-
 import { TranslateModule } from '@ngx-translate/core';
 import { PrintreportService } from '../../../shared/service/printreport.service';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
-
+import { HeaderComponent } from '../../../core/layout/header/header.component';
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
+import { MatIconModule } from '@angular/material/icon';
 @Component({
   selector: 'app-report-advancedbooking',
   standalone: true,
   imports: [CommonModule,MatTableModule,MatPaginatorModule,
     SpinnerComponent,
-    TranslateModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
+    TranslateModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,MatIconModule],
   templateUrl: './report-advancedbooking.component.html',
   styleUrls: ['./report-advancedbooking.component.css','/src/assets/styles/report.style.css'],
 })
@@ -73,7 +74,7 @@ export class ReportAdvancedbookingComponent {
     this.searchText = value;
   
     this.filteredData = this.data.filter(item =>
-      (item.BillDate + ' ' + item.BillNo + ' ' + item.VazhiDate + ' ' +
+      (item.BillDate + ' ' + item.BillNo + ' ' + item.VazhiDate + ' ' +item.Type+''+
        item.Vazhipad + ' ' + item.Name + ' ' + item.Star + ' ' + item.Qty +' '+ item.MobileNo+''+item.Address1+''
         + item.Rate +item.Address2+'').toLowerCase().includes(this.searchText)
     );
@@ -93,14 +94,15 @@ export class ReportAdvancedbookingComponent {
       next: (data) => {
         console.log('Fetched report data:', data);
         this.data=data;
-        this.filteredData=this.data;
-      //   this.data = data.sort((a:any, b:any) => {
-      //     const [numA, denomA] = a.BillNo.split('/').map(Number);
-      //     const [numB, denomB] = b.BillNo.split('/').map(Number);
+       
+        this.data = data.sort((a:any, b:any) => {
+          const [numA, denomA] = a.BillNo.split('/').map(Number);
+          const [numB, denomB] = b.BillNo.split('/').map(Number);
           
-      //     // Compare the two parts: first compare the numerator, then the denominator
-      //     return numA - numB || denomA - denomB;
-      // });
+          // Compare the two parts: first compare the numerator, then the denominator
+          return numA - numB || denomA - denomB;
+      });
+       this.filteredData=this.data;
       this.loading=false;
         this.dataSource.data = this.data
         this.length = data.length; 
@@ -503,6 +505,145 @@ getTimeForBill(time:any){
   }
     
 }
+exportToExcel(): void {
 
+  import('xlsx').then(XLSX => {
+    import('file-saver').then(FileSaver => {
+
+      const workbook = XLSX.utils.book_new();
+      const sheetData: any[][] = [];
+
+      /* ---------------- HEADER ---------------- */
+
+      sheetData.push([this.templeName]);
+      sheetData.push([this.templeAddress]);
+      sheetData.push(['ADVANCE BOOKING REPORT']);
+      sheetData.push([
+        `${this.formatDateToDDMMYYYY(this.fromDate)} To ${this.formatDateToDDMMYYYY(this.toDate)}`
+      ]);
+      sheetData.push([]);
+
+      /* ---------------- TABLE HEADER ---------------- */
+
+      sheetData.push([
+        'Sl No',
+        'Type',
+        'Bill Date',
+        'Bill No',
+        'Vazhipad Date',
+        'Vazhipad',
+        'Name',
+        'Star',
+        'Qty',
+        'Rate',
+        'Amount'
+      ]);
+
+      /* ---------------- DATA ---------------- */
+
+      this.filteredData.forEach((item: any, index: number) => {
+
+        const type =
+          item.Type === 'Counter'
+            ? 'CTR'
+            : item.Type === 'Online'
+            ? 'OL'
+            : item.Type;
+
+        const fullName =
+          `${item.Name || ''} ${
+            item.Address1 ? ' - ' + item.Address1 : ''
+          } ${
+            item.Address2 ? ' - ' + item.Address2 : ''
+          } ${
+            item.MobileNo ? ' - ' + item.MobileNo : ''
+          }`;
+
+        sheetData.push([
+          index + 1,
+          type,
+          item.BillDate,
+          item.BillNo,
+          item.VazhiDate,
+          `${item.Vazhipad} (${this.getTimeForBill(item.VTime)})`,
+          fullName.trim(),
+          item.Star,
+          item.Qty,
+          item.Rate,
+          item.Qty * item.Rate
+        ]);
+      });
+
+      /* ---------------- TOTAL ---------------- */
+
+      sheetData.push([
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        '',
+        'Grand Total',
+        this.getGrandTotal()
+      ]);
+
+      /* ---------------- CREATE SHEET ---------------- */
+
+      const worksheet =
+        XLSX.utils.aoa_to_sheet(sheetData);
+
+      worksheet['!cols'] = [
+        { wch: 8 },
+        { wch: 10 },
+        { wch: 15 },
+        { wch: 15 },
+        { wch: 15 },
+        { wch: 35 },
+        { wch: 45 },
+        { wch: 15 },
+        { wch: 8 },
+        { wch: 12 },
+        { wch: 15 }
+      ];
+
+      worksheet['!merges'] = [
+        { s: { r: 0, c: 0 }, e: { r: 0, c: 10 } },
+        { s: { r: 1, c: 0 }, e: { r: 1, c: 10 } },
+        { s: { r: 2, c: 0 }, e: { r: 2, c: 10 } },
+        { s: { r: 3, c: 0 }, e: { r: 3, c: 10 } }
+      ];
+
+      XLSX.utils.book_append_sheet(
+        workbook,
+        worksheet,
+        'Advance Booking'
+      );
+
+      /* ---------------- DOWNLOAD ---------------- */
+
+      const excelBuffer = XLSX.write(workbook, {
+        bookType: 'xlsx',
+        type: 'array'
+      });
+
+      const blob = new Blob(
+        [excelBuffer],
+        {
+          type:
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+        }
+      );
+
+      FileSaver.saveAs(
+        blob,
+        `Advance_Booking_Report_${new Date().getTime()}.xlsx`
+      );
+
+    });
+  });
+}
 
 }

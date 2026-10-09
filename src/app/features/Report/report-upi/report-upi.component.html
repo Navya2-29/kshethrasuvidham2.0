@@ -14,8 +14,8 @@
       <span class="material-icons">print</span>
     </button>
     <button mat-icon-button matTooltip="Make PDF">
-      <span class="material-icons" (click)="generatePDFs()"
-        >picture_as_pdf</span
+      <span class="material-icons" (click)="exportToExcel()"
+        >grid_on</span
       >
     </button>
   </div>
@@ -40,8 +40,8 @@
     </div>
 
     <div class="body-print">
-      <div id="pdf-content" *ngIf="filteredData.length > 0">
-        <div class="vazhipad-upi">
+      <div id="pdf-content" >
+        <div class="vazhipad-upi" *ngIf="filteredData.length > 0">
           <h4 class="tabble-heading">{{"VAZHIPAD" | translate }}</h4>
 
           <table>
@@ -159,11 +159,11 @@
                 <td>{{ item.Remarks }}</td>
                 
                 <td>{{item.CounterId}}({{item.UName}})</td> 
-                <td>{{ item.Vazhipad }}</td>
+                <td>--</td>
                 <td>{{ item.Name }}</td>
-                <td>{{ item.Qty }}</td>
+                <td>--</td>
                 <td class="number">
-                  {{ item.Rate | number : "1.2-2" }}
+                 --
                 </td>
                 <td class="number">
                   {{ item.Amount | number : "1.2-2" }}
@@ -229,10 +229,11 @@
               </tr>
             </tbody>
           </table>
-          <div>
-            <p class="grandtotal" >{{"Report Name.Total Collection" | translate}}:{{ getTotalAmount() +getCreditCollectTotalAmount() +getFeecollectionTotalAmount() +getNadavaravuTotalAmount() |number: '1.2-2' }}</p>
-          </div>
+         
         </div>
+          <div *ngIf="filteredData.length > 0 || filteredCreditCollection.length>0 || filteredFeecollection.length>0 ">
+            <p class="grandtotal">{{"Report Name.Total Collection" | translate}}:{{ getTotalAmount() +getCreditCollectTotalAmount() +getFeecollectionTotalAmount() +getNadavaravuTotalAmount() |number: '1.2-2' }}</p>
+          </div>
       </div>
       <div class="nodataFound" *ngIf="filteredData.length === 0">
         <h2></h2>

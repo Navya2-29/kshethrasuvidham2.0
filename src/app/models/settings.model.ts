@@ -9,5 +9,10 @@ export interface Settings{
     Language: string;
     Counter: number;
     Printer: string | null;
+InstallationDate:string;
+ExpiryDate:string;
+StartTime:string;
+EndTime:string;
+Notification:string;
 
 }

@@ -12,11 +12,12 @@
     <button mat-icon-button matTooltip="Make Print" (click)="generatePDF()">
       <span class="material-icons">print</span>
     </button>
-    <button mat-icon-button matTooltip="Make PDF">
-      <span class="material-icons" (click)="generatePDFs()"
-        >picture_as_pdf</span
-      >
-    </button>
+    <button
+  mat-icon-button
+  matTooltip="Export Excel"
+  (click)="exportToExcel()">
+  <span class="material-icons">download</span>
+</button>
   </div>
 
   <div id="print-section">
@@ -40,9 +41,9 @@
 
     <div class="body-print">
       <div id="pdf-content">
-        <div
+        <div class="tabble-headings"
           *ngFor="let group of groupedData | keyvalue"
-          class="tabble-heading"
+          
         >
           <h3>{{ group.key }}</h3>
           <table>
@@ -76,9 +77,13 @@
                 <td>{{ entry.VazhiDate }}</td>
                 <td>
                   {{ entry.Name }}
+                  <ng-container *ngIf="entry.Name2"><br>{{ entry.Name2 }}</ng-container>
+                  <ng-container *ngIf="entry.Name3"><br>{{ entry.Name3 }}</ng-container>
                 </td>
                 <td>
                   {{ entry.Star }}
+                  <ng-container *ngIf="entry.Star2"><br>{{ entry.Star2 }}</ng-container>
+                  <ng-container *ngIf="entry.Star3"><br>{{ entry.Star3 }}</ng-container>
                 </td>
                 <td class="qty">
                   {{ entry.Qty }}

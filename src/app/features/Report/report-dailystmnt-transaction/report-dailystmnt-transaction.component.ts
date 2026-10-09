@@ -10,7 +10,6 @@ import {
 } from '@angular/material/paginator';
 import { jsPDF } from 'jspdf';
 import { ReportData } from '../../../models/poornam-report';
-import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import html2pdf from 'html2pdf.js';
 import { HttpClient } from '@angular/common/http';
@@ -18,10 +17,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ReportDailyStmt } from '../../../models/dailytrasaction.model';
 
-
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PrintreportService } from '../../../shared/service/printreport.service';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
+import { HeaderComponent } from '../../../core/layout/header/header.component';
+import { MatIconModule } from '@angular/material/icon';
 
 // Fix TypeScript issues with `vfs`
 // (pdfMake as any).setVfs(pdfFonts.pdfMake.vfs);
@@ -37,7 +39,8 @@ import { SpinnerComponent } from '../../../shared/component/spinner/spinner.comp
     MatFormFieldModule,
     MatInputModule,
     TranslateModule,
-    SpinnerComponent
+    SpinnerComponent,
+    MatIconModule
   ],
   templateUrl: './report-dailystmnt-transaction.component.html',
   styleUrls: ['./report-dailystmnt-transaction.component.css','/src/assets/styles/report.style.css']
@@ -133,7 +136,7 @@ export class ReportDailystmntTransactionComponent {
     };
     this.service.getReport(payLoad).subscribe({
       next: (data) => {
-        console.log('Fetched report data:', data);
+        console.log('Fetched report data upi:', data);
         this.data = data;
         this.groupDataByTransactionModeAndCategory()
         this.loading=false
@@ -510,6 +513,12 @@ export class ReportDailystmntTransactionComponent {
         } else {
           return 'ബാങ്ക്';
         }
+        case 'OL':
+        if (this.lang == 'en') {
+          return 'Online';
+        } else {
+          return 'ഓൺലൈൻ';
+        }
 
       case 'CS':
         if (this.lang == 'en') {
@@ -548,7 +557,7 @@ export class ReportDailystmntTransactionComponent {
         } else {
           return 'ഡെബിറ്റ്';
         }
-         case 'EN':
+        case 'EN':
         if (this.lang == 'en') {
           return 'ENDOWMENT';
         } else {
@@ -591,6 +600,169 @@ export class ReportDailystmntTransactionComponent {
   
     return format === 'dd.MM.yyyy' ? `${day}.${month}.${year}` : `${day}-${month}-${year}`;
   }
-  
+  exportToExcel(): void {
+
+  const workbook = XLSX.utils.book_new();
+  const sheetData: any[][] = [];
+
+  /* ---------------- HEADER ---------------- */
+  sheetData.push([this.templeName]);
+  sheetData.push([this.templeAddress]);
+  sheetData.push(['DAILY STATEMENT REPORT']);
+  sheetData.push([
+    `${this.formatDateToDDMMYYYY(this.fromDate)} To ${this.formatDateToDDMMYYYY(this.toDate)}`
+  ]);
+  sheetData.push([]);
+
+  /* ------------ TRANSACTION DATA ---------- */
+
+  Object.keys(this.groupedData).forEach((modeKey) => {
+
+    // Transaction Heading
+    sheetData.push([this.getTransactionType(modeKey)]);
+    sheetData.push([]);
+
+    Object.keys(this.groupedData[modeKey]).forEach((categoryKey) => {
+
+      // Category Heading
+      sheetData.push([categoryKey]);
+
+      // Table Header
+      sheetData.push([
+        'Sl No',
+        'Vazhipad',
+        'Quantity',
+        'Rate',
+        'Amount'
+      ]);
+
+      let slNo = 1;
+
+      Object.keys(this.groupedData[modeKey][categoryKey]).forEach((itemKey) => {
+
+        const item = this.groupedData[modeKey][categoryKey][itemKey];
+
+        sheetData.push([
+          slNo++,
+          item.vazhipad,
+          item.Qty,
+          item.Rate,
+          item.Amount
+        ]);
+      });
+
+      // Category Total
+      sheetData.push([
+        '',
+        '',
+        '',
+        'TOTAL',
+        this.getTotalForCategory(modeKey, categoryKey)
+      ]);
+
+      sheetData.push([]);
+    });
+
+    // Transaction Total
+    sheetData.push([
+      '',
+      '',
+      '',
+      `Total ${this.getTransactionType(modeKey)}`,
+      this.getTotalForTransactionMode(modeKey)
+    ]);
+
+    sheetData.push([]);
+    sheetData.push([]);
+  });
+
+  /* ------------ CREDIT SECTION ------------ */
+
+  if (this.creditTransactionArray?.length > 0) {
+
+    sheetData.push(['CREDIT']);
+    sheetData.push([
+      'Sl No',
+      'Vazhipad',
+      'Quantity',
+      'Rate',
+      'Amount'
+    ]);
+
+    this.creditTransactionArray.forEach((item: any, index: number) => {
+      sheetData.push([
+        index + 1,
+        item.Vazhipad,
+        item.Qty,
+        item.Rate,
+        item.Amount
+      ]);
+    });
+
+    sheetData.push([
+      '',
+      '',
+      '',
+      'Credit Total',
+      this.getCrediTransactionTotal()
+    ]);
+
+    sheetData.push([]);
+  }
+
+  /* ------------ GRAND TOTAL ------------ */
+
+  sheetData.push([
+    '',
+    '',
+    '',
+    'Grand Total',
+    this.getGrandTotal()
+  ]);
+
+  /* ------------ CREATE SHEET ------------ */
+
+  const worksheet: XLSX.WorkSheet =
+    XLSX.utils.aoa_to_sheet(sheetData);
+
+  worksheet['!cols'] = [
+    { wch: 8 },
+    { wch: 35 },
+    { wch: 12 },
+    { wch: 15 },
+    { wch: 18 }
+  ];
+
+  worksheet['!merges'] = [
+    { s: { r: 0, c: 0 }, e: { r: 0, c: 4 } },
+    { s: { r: 1, c: 0 }, e: { r: 1, c: 4 } },
+    { s: { r: 2, c: 0 }, e: { r: 2, c: 4 } },
+    { s: { r: 3, c: 0 }, e: { r: 3, c: 4 } }
+  ];
+
+  XLSX.utils.book_append_sheet(
+    workbook,
+    worksheet,
+    'Daily Statement'
+  );
+
+  const excelBuffer = XLSX.write(workbook, {
+    bookType: 'xlsx',
+    type: 'array'
+  });
+
+  const blob = new Blob(
+    [excelBuffer],
+    {
+      type:
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+    }
+  );
+
+  FileSaver.saveAs(
+    blob,
+    `Daily_Statement_Report_${new Date().getTime()}.xlsx`
+  );
+}
 
 }

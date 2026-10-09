@@ -19,7 +19,9 @@ import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PrintreportService } from '../../../shared/service/printreport.service';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
-
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+import { MatIconModule } from '@angular/material/icon';
 @Component({
   selector: 'app-report-nadavarav',
   standalone: true,
@@ -27,7 +29,7 @@ import { SpinnerComponent } from '../../../shared/component/spinner/spinner.comp
     MatTableModule,
     MatPaginatorModule,
     HeaderComponent,
-    MatTooltipModule,MatFormFieldModule, MatInputModule,TranslateModule,SpinnerComponent  ],
+    MatTooltipModule,MatFormFieldModule, MatInputModule,TranslateModule,SpinnerComponent ,MatIconModule ],
   templateUrl: './report-nadavarav.component.html',
   styleUrls: ['./report-nadavarav.component.css','/src/assets/styles/report.style.css'],
 })
@@ -155,7 +157,11 @@ const userLang = navigator.language || 'en';
     this.service.getReport(payLoad).subscribe({
       next: (data) => {
         console.log('Fetched report data:', data);
-        this.data = data;
+        this.data = data.sort((a: any, b: any) =>
+  a.BillNo.localeCompare(b.BillNo, undefined, { numeric: true, sensitivity: 'base' })
+);
+
+        // this.data = data;
         this.groupDataByTransactionMode(this.data); // Group the data
         this.loading=false;
         // this.data = data.sort((a: any, b: any) => {
@@ -625,6 +631,124 @@ const total = items.reduce((sum, item) => {
 return total;
 
 
+}
+
+exportToExcel(): void {
+  const workbook = XLSX.utils.book_new();
+  const excelData: any[] = [];
+
+  // ==========================================
+  // HEADER
+  // ==========================================
+  excelData.push([this.templeName]);
+  excelData.push([this.templeAddress]);
+  excelData.push(['NADAVARAVU BOOKING REPORT']);
+  excelData.push([
+    `${this.formatDateToDDMMYYYY(this.fromDate)} To ${this.formatDateToDDMMYYYY(this.toDate)}`
+  ]);
+  excelData.push([]);
+
+  // ==========================================
+  // GROUPED CATEGORY DATA
+  // ==========================================
+  const categories = Object.keys(this.groupedData);
+
+  categories.forEach((category: string) => {
+    const rows = this.groupedData[category];
+
+    // Section Title
+    excelData.push([category.toUpperCase()]);
+    excelData.push([
+      'Bill No',
+      'Bill Date',
+      'Counter',
+      'Vazhipad',
+      'Name',
+      'Star',
+      'Qty',
+      'Amount'
+    ]);
+
+    rows.forEach((item: any) => {
+      excelData.push([
+        item.BillNo,
+        item.BillDate,
+        `${item.CounterId} (${item.UName})`,
+        this.lang === 'en' ? item.NM_Name : item.NM_RName,
+        item.Name,
+        item.Star || 'N/A',
+        item.Qty,
+        item.Receipt_Amt
+      ]);
+    });
+
+    // Category Total
+    excelData.push([
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      'Total',
+      this.getGrandTotalForTrnsMode(category)
+    ]);
+
+    excelData.push([]);
+  });
+
+  // ==========================================
+  // GRAND TOTAL
+  // ==========================================
+  excelData.push([
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    'Grand Total',
+    this.getTotalAmount()
+  ]);
+
+  // ==========================================
+  // CREATE SHEET
+  // ==========================================
+  const worksheet = XLSX.utils.aoa_to_sheet(excelData);
+
+  worksheet['!cols'] = [
+    { wch: 12 }, // Bill No
+    { wch: 15 }, // Bill Date
+    { wch: 20 }, // Counter
+    { wch: 30 }, // Vazhipad
+    { wch: 28 }, // Name
+    { wch: 15 }, // Star
+    { wch: 10 }, // Qty
+    { wch: 15 }  // Amount
+  ];
+
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Nadavaravu Report');
+
+  // ==========================================
+  // SAVE FILE
+  // ==========================================
+  const excelBuffer: any = XLSX.write(workbook, {
+    bookType: 'xlsx',
+    type: 'array'
+  });
+
+  const file = new Blob(
+    [excelBuffer],
+    {
+      type:
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+    }
+  );
+
+  saveAs(
+    file,
+    `Nadavaravu_Booking_Report_${new Date().getTime()}.xlsx`
+  );
 }
   
 }

@@ -1,4 +1,10 @@
-import { Component, inject, Inject, TemplateRef, ViewChild } from '@angular/core';
+import {
+  Component,
+  inject,
+  Inject,
+  TemplateRef,
+  ViewChild,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import {
@@ -14,9 +20,14 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MasterService } from '../../../services/master/master.service';
-import { CommonModule, DatePipe } from '@angular/common';
-import { ReceiptPrintService } from '../../../shared/service/receipt-print.service';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
@@ -25,6 +36,8 @@ import { NotificationService } from '../../../services/notification/notification
 import { MatSelectModule } from '@angular/material/select';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NumberToWordsPipe } from '../../../shared/pipe/number-to-words.pipe';
+import { ReceiptPrintService } from '../../../shared/service/receipt-print.service';
+import { Router } from '@angular/router';
 export interface Data {
   vazhipad: string;
   name: string;
@@ -37,17 +50,22 @@ export interface Data {
   position: number;
 }
 
-
 interface Entry {
   Name: string;
-  Name2:string;
+  Name2: string;
+  Name3: string;
   Star: string;
-  Star2:string;
+  Star2: string;
+  Star3: string;
   Rate: number;
   Amount: number;
-  VazhipadDate:string;
-  Qty:number;
-  VTime:number;
+  VazhipadDate: string;
+  Qty: number;
+  VTime: number;
+  NalBy: string;
+  MMonth: string;
+  Thithi: string;
+  MDay: string;
 }
 
 interface GroupedData {
@@ -55,8 +73,6 @@ interface GroupedData {
     [vazhipad: string]: Entry[];
   };
 }
-
-
 
 @Component({
   selector: 'app-search-by-bill-number',
@@ -71,17 +87,15 @@ interface GroupedData {
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
-    MatSelectModule, 
-    MatInputModule, 
+    MatSelectModule,
+    MatInputModule,
     MatFormFieldModule,
     TranslateModule,
     ReactiveFormsModule,
-    
-
   ],
   templateUrl: './search-by-bill-number.component.html',
   styleUrl: './search-by-bill-number.component.css',
-   providers:[NumberToWordsPipe]
+  providers: [NumberToWordsPipe],
 })
 export class SearchByBillNumberComponent {
   displayedColumns: string[] = [
@@ -101,6 +115,8 @@ export class SearchByBillNumberComponent {
   starData: { [id: string]: string } = {};
   duplicatebilldata: any;
   billdata: any;
+  activevazhipad: string;
+  Address3: any;
   role: string | null;
   loginId: string | null;
   displayTrnsmode: string;
@@ -108,13 +124,16 @@ export class SearchByBillNumberComponent {
   templeName: string | null;
   nakshatham: any[];
   logo: string | null;
-  name:string | null;
-  updateTransMode:FormGroup;
+  name: string | null;
+  updateTransMode: FormGroup;
   gropedData: GroupedData = {};
-  multidayNal:string;
-  multidayMonth:string;
-  multidayDay:string;
-  multidaySearch:string;
+  multidayNal: string;
+  multidayMonth: string;
+  multidayDay: string;
+  multidaySearch: string;
+  templeLogoUrl: string = '';
+  billTotalAmount: number;
+
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   cancellationReason: string = '';
@@ -122,44 +141,62 @@ export class SearchByBillNumberComponent {
   lang: string | null;
   @ViewChild('dialogTemplate') dialogTemplate!: TemplateRef<any>;
   remarkDialogRef: MatDialogRef<any>;
-  differentDateArray:any[]
-  printerType:string |null;
-  billDate:any;
-  InstaNo:string;
-  InstaDate:string;
-  InstaBank:string;
-  MobileNo:string;
-  CounterId:String;
-  userName:string;
-  loginUserName:string |null;
-  editTransmodevalue:string;
-  changeByValue:string;
-  // editName:string;
-  // editstar:string;
-  private numbertowordpipe=inject(NumberToWordsPipe);
+  differentDateArray: any[];
+  printerType: string | null;
+  billDate: any;
+  InstaNo: string;
+  InstaDate: string;
+  InstaBank: string;
+  MobileNo: string;
+  CounterId: String;
+  userName: string;
+  loginUserName: string | null;
+  editTransmodevalue: string;
+  changeByValue: string;
+
+  private numbertowordpipe = inject(NumberToWordsPipe);
   constructor(
     public dialogRef: MatDialogRef<SearchByBillNumberComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
+
     private masterService: MasterService,
     private notification: NotificationService,
     private dialog: MatDialog,
-    private fb:FormBuilder,
-   private ts: TranslateService,
+    private fb: FormBuilder,
+    private ts: TranslateService,
+    private receiptService: ReceiptPrintService,
+    private router: Router,
   ) {
+    // console.log(this.data, 'all data of that bill');
     this.lastBillNo = data[0].BillNo;
-    this.billDate=this.convertDateFormat(data[0].BillDate);
-    console.log(this.billDate,"checking bill date")
+    this.billDate = this.convertDateFormat(data[0].BillDate);
+    // console.log(this.billDate, 'checking bill date');
     this.TrnStatus = data[0].TrnStatus;
     this.displayTrnsmode = data[0].TrnsMode;
+    this.billTotalAmount = data[0].TotalAmt;
+    this.billdata = data;
     this.duplicatebilldata = data;
-    this. InstaNo=data[0].InstNo;
-    this.InstaDate=data[0].InstDate;
-      this.InstaBank=data[0].InstBank;
-      this.MobileNo=data[0].MobileNo;
-      this.CounterId=data[0].CounterId;
-      this.userName=data[0].UName;
-      this.changeByValue=data[0].ChangeBy;
-    console.log(this.duplicatebilldata,"dupicate bill data first");
+    this.activevazhipad = this.duplicatebilldata[0].Bookingactive;
+    if (this.duplicatebilldata && Array.isArray(this.duplicatebilldata)) {
+      this.duplicatebilldata.forEach((item: any) => {
+        if (item.EvazDate) {
+          const date = new Date(item.EvazDate);
+          const localDate = new Date(
+            date.getTime() - date.getTimezoneOffset() * 60000,
+          );
+          item.EvazDate = localDate.toISOString().split('T')[0];
+        }
+      });
+    }
+    this.InstaNo = data[0].InstNo;
+    this.InstaDate = data[0].InstDate;
+    this.InstaBank = data[0].InstBank;
+    this.MobileNo = data[0].MobileNo;
+    this.CounterId = data[0].CounterId;
+    this.userName = data[0].UName;
+    this.changeByValue = data[0].ChangeBy;
+    this.Address3 = data[0].Address3;
+    console.log(this.duplicatebilldata, 'dupicate bill data first');
     this.dataSource = new MatTableDataSource(this.duplicatebilldata);
     this.role = localStorage.getItem('Role');
     this.loginId = localStorage.getItem('LoginId');
@@ -168,39 +205,39 @@ export class SearchByBillNumberComponent {
     this.logo = localStorage.getItem('Logo');
     this.templeAddress = localStorage.getItem('Address');
     this.lang = localStorage.getItem('Language');
-    this.printerType=localStorage.getItem('Printer');
-    this.name=localStorage.getItem('name');
+    this.printerType = localStorage.getItem('Printer');
+    this.name = localStorage.getItem('name');
 
+    if (this.logo) {
+      this.templeLogoUrl =
+        window.location.origin + `/assets/images/${this.logo}`;
+      // console.log(this.templeLogoUrl, 'url img');
+    }
 
-    // this.lang=localStorage.getItem('Language');
-    // this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
-    // this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address'; 
     const userLang = navigator.language || 'en';
     const languageCode = userLang.split('-')[0];
     this.ts.setDefaultLang(languageCode);
     this.ts.use(this.lang || 'en');
-
-}
+  }
 
   ngOnInit() {
     this.loadStarData();
-this.groupDataByPrathistaAndVazhipad()
-    console.log(this.TrnStatus,"transmode");
-    this.updateTransMode=this.fb.group({
- 
-      InstaNo:[this.InstaNo],
-      InstaDate:[this.convertToDateFormatyyymmdd(this.InstaDate)],
-      InstaBank:[this.InstaBank],
-      Trnsmode:[this.displayTrnsmode],
-      PaidStatus:['Y'],
-      MobileNo:[this.MobileNo]
-    })
-    // this.getStarData();
-    this.subscribeToTrnsmodeChanges()
+    this.groupDataByPrathistaAndVazhipad();
+    console.log(this.TrnStatus, 'transmode');
+    this.updateTransMode = this.fb.group({
+      InstaNo: [this.InstaNo],
+      InstaDate: [this.convertToDateFormatyyymmdd(this.InstaDate)],
+      InstaBank: [this.InstaBank],
+      Trnsmode: [this.displayTrnsmode],
+      PaidStatus: ['Y'],
+      MobileNo: [this.MobileNo],
+    });
+
+    this.subscribeToTrnsmodeChanges();
   }
 
   getNakshthram(id: string): string {
-    return this.starData[id] || 'Unknown'; // Return 'Unknown' if ID not found
+    return this.starData[id] || 'Unknown';
   }
 
   loadStarData(): void {
@@ -208,21 +245,26 @@ this.groupDataByPrathistaAndVazhipad()
     this.masterService.getStarData(payLoad).subscribe({
       next: (data: any[]) => {
         console.log(data);
-        this.nakshatham = data; // Specify that data is an array of Star
+        this.nakshatham = data;
         this.starData = data.reduce(
           (acc: { [id: string]: string }, star: any) => {
             acc[star.id] = star.SM_NameEng;
             return acc;
           },
-          {}
+          {},
         );
 
-        console.log('Star Data Loaded:', this.starData); // Debug log
+        console.log('Star Data Loaded:', this.starData);
       },
       error: (err) => {
         console.error('Error loading star data:', err);
       },
     });
+  }
+  formatDateToInput(date: Date): string {
+    const offset = date.getTimezoneOffset();
+    const localDate = new Date(date.getTime() - offset * 60 * 1000);
+    return localDate.toISOString().split('T')[0];
   }
 
   ngAfterViewInit() {
@@ -233,7 +275,7 @@ this.groupDataByPrathistaAndVazhipad()
   getTotalAmount(): number {
     const total = this.dataSource.data.reduce(
       (total, item) => total + (item.amount || 0),
-      0
+      0,
     );
     console.log('Total Amount:', total);
     return total;
@@ -248,12 +290,12 @@ this.groupDataByPrathistaAndVazhipad()
   openCancelRemarkDialog() {
     const remarkDialogRef = this.dialog.open(CancelBillRemarkComponent, {
       width: '400px',
-      data: { reason: this.cancellationReason }, // You can pass data to the new component here
+      data: { reason: this.cancellationReason },
     });
 
     remarkDialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.cancellationReason = result; // Update the cancellationReason with the value from the dialog
+        this.cancellationReason = result;
         console.log('Updated Cancellation Reason:', this.cancellationReason);
         this.OnCancelSubmit();
       } else {
@@ -266,12 +308,15 @@ this.groupDataByPrathistaAndVazhipad()
     const payLoad = { Type: 'SearchBillno', Code: this.lastBillNo };
     this.masterService.SearchByBillNo(payLoad).subscribe({
       next: (data) => {
-        console.log(data, 'hhhhhhhhhhhhhhhhhhhhhhhhh');
+        // console.log(data, 'hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh');
         if (data.length > 0) {
           this.billdata = data;
-          console.log(this.billdata,"billdatataa")
+          this.duplicatebilldata = data;
+          this.activevazhipad = this.duplicatebilldata[0].Bookingactive;
+
+          console.log(this.billdata, 'billdatataa');
           this.TrnStatus = data[0].TrnStatus;
-          this.dataSource = new MatTableDataSource(this.billdata);
+          this.dataSource = new MatTableDataSource(this.duplicatebilldata);
         } else {
           // this.notiication.showError('enter valid billnumber');
         }
@@ -311,13 +356,1266 @@ this.groupDataByPrathistaAndVazhipad()
     });
   }
 
-  onProceed() {
-    console.log('Proceed button clicked');
-    // Set the bill data in the service
-    // this.printService.setBillData(this.duplicatebilldata);
+  formatBillDateTime(): string {
+    const now = new Date(); // system date & time
 
-    // Emit the event to notify PrintComponent
-    // this.printService.triggerProceedEvent();
+    const options: Intl.DateTimeFormatOptions = {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    };
+
+    return new Intl.DateTimeFormat('en-GB', options).format(now);
+  }
+  getTransactionType(transmode: string): string {
+    switch (transmode) {
+      case 'ON':
+        if (this.lang == 'en') {
+          return 'ONLINE';
+        } else {
+          return 'ഓൺലൈൻ';
+        }
+
+      case 'CS':
+        if (this.lang == 'en') {
+          return 'CASH';
+        } else {
+          return 'ക്യാഷ്';
+        }
+      case 'MO':
+        if (this.lang == 'en') {
+          return 'MONEY ORDER';
+        } else {
+          return 'മണി ഓർഡർ';
+        }
+      case 'UP':
+        if (this.lang == 'en') {
+          return 'UPI';
+        } else {
+          return 'യുപിഐ';
+        }
+
+      case 'CH':
+        if (this.lang == 'en') {
+          return 'CHEQUE';
+        } else {
+          return 'ചെക്ക്';
+        }
+      case 'CR':
+        if (this.lang == 'en') {
+          return 'CREDIT';
+        } else {
+          return 'ക്രെഡിറ്റ്';
+        }
+      case 'EN':
+        if (this.lang == 'en') {
+          return 'Endowment';
+        } else {
+          return 'എന്ഡോമെൻറ്';
+        }
+      case 'DE':
+        if (this.lang == 'en') {
+          return 'DEBIT';
+        } else {
+          return 'ഡെബിറ്റ്';
+        }
+      default:
+        return 'OTHERS';
+    }
+  }
+  formatDate(date: string | Date): string {
+    const d = new Date(date);
+    const day = d.getDate().toString().padStart(2, '0'); // Add leading zero if day is single digit
+    const month = (d.getMonth() + 1).toString().padStart(2, '0'); // Add leading zero if month is single digit
+    const year = d.getFullYear();
+    return `${day}-${month}-${year}`;
+  }
+
+  // convertToDateFormat(dateString: string): any {
+  //   const date = new Date(dateString); // Convert the string to a Date object
+  //   return this.datePipe.transform(date, 'yyyy-MM-dd'); // Format to 'yyyy-MM-dd'
+  // }
+
+  editRow(row: any) {
+    console.log(row);
+    const date = new Date(row.EvazDate);
+
+    row.isEditing = true;
+    row.editName = row.Name;
+    row.editStar = row.Star;
+
+    row.EvazDate = date.toISOString().split('T')[0];
+    row.editEvazDate = row.EvazDate;
+  }
+
+  saveRow(row: any) {
+    // console.log(row, 'testing thr rows');
+    row.isEditing = false;
+    row.nameEdited = row.editName == row.Name ? true : false;
+    row.starEdited = row.editStar == row.Star ? true : false;
+    row.EvazDateEdited = row.editEvazDate == row.EvazDate ? true : false;
+
+    if (!row.nameEdited && !row.starEdited && !row.EvazDateEdited) {
+      row.nameStarEdited =
+        row.editName +
+        ',' +
+        this.getStarbyId(row.editStar) +
+        ',' +
+        row.EvazDate +
+        ',' +
+        '(' +
+        this.name +
+        ',' +
+        this.getTodayDate() +
+        ')';
+    }
+    if (!row.nameEdited && !row.starEdited) {
+      row.nameStarEdited =
+        row.editName +
+        ',' +
+        this.getStarbyId(row.editStar) +
+        ',' +
+        '(' +
+        this.name +
+        ',' +
+        this.getTodayDate() +
+        ')';
+    }
+    if (!row.nameEdited && !row.EvazDateEdited) {
+      row.nameStarEdited =
+        row.editName +
+        ',' +
+        row.EvazDate +
+        ',' +
+        '(' +
+        this.name +
+        ',' +
+        this.getTodayDate() +
+        ')';
+    }
+    if (!row.starEdited && !row.EvazDateEdited) {
+      row.nameStarEdited =
+        this.getStarbyId(row.editStar) +
+        ',' +
+        row.EvazDate +
+        ',' +
+        '(' +
+        this.name +
+        ',' +
+        this.getTodayDate() +
+        ')';
+    } else if (!row.nameEdited) {
+      row.nameStarEdited =
+        row.editName + ',' + '(' + this.name + ',' + this.getTodayDate() + ')';
+    } else if (!row.starEdited) {
+      row.nameStarEdited =
+        this.getStarbyId(row.editStar) +
+        '(' +
+        this.name +
+        ',' +
+        this.getTodayDate() +
+        ')';
+    } else if (!row.EvazDateEdited) {
+      row.nameStarEdited =
+        row.EvazDate + '(' + this.name + ',' + this.getTodayDate() + ')';
+    }
+    // console.log('Row saved:', row);
+    const payLoad = {
+      BillId: row.BillId,
+      Name: row.Name,
+      Star: row.Star,
+      Name2: row.Name2,
+      Star2: row.Star2,
+      ChangeBy: row.nameStarEdited,
+      UserId: this.loginId,
+      VazhipadDate: this.formatToDDMMYYYY(row.EvazDate),
+      PMid: row.PMId,
+      Prethista: row.Prathista,
+    };
+    // console.log(payLoad, 'checking uploaded vzhipd date');
+    // Example: Update the backend API with new values
+    this.masterService.editBilllingDetils(payLoad).subscribe({
+      next: (response: any) => {
+        if (response.RespStatus === 'U') {
+          this.notification.showSuccess("'Row updated successfully");
+        }
+        console.log('Row updated successfully:', response);
+      },
+      error: (error) => {
+        this.notification.showError('Error in updatinag row Please try again');
+
+        console.error('Error updatinag row:', error);
+      },
+    });
+  }
+
+  formatToDDMMYYYY(dateStr: string): string {
+    const date = new Date(dateStr);
+    const day = ('0' + date.getDate()).slice(-2);
+    const month = ('0' + (date.getMonth() + 1)).slice(-2);
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  }
+
+  getTodayDate() {
+    const today = new Date();
+    console.log(today, 'gggggg');
+    const formattedDate = today
+      .toLocaleDateString('en-GB')
+      .split('/')
+      .join('-');
+    return formattedDate;
+  }
+
+  openReceipt() {
+    //  send full bill data (recommended)
+    this.receiptService.setBookingData(this.duplicatebilldata);
+
+    // OR if you want grouped:
+    // this.eventService.setReceiptData(this.gropedData);
+
+    this.dialogRef.close(); // close popup
+
+    this.router.navigate(['/dashboard']);
+  }
+
+  // getStarData() {
+  //   const payLoad = { Type: 'ListStar', Code: '' };
+  //   this.masterService.getStarData(payLoad).subscribe((res) => {
+  //     this.nakshatham = res;
+  // console.log(this.nakshatham,"sdsfsddss")
+  //     this.nakshatham = res.map((item) => ({
+  //       SM_Id: item.id,
+  //       SM_Name: item.SM_NameEng,
+  //       SM_Code: item.SM_Code,
+  //       SM_RName: item.SM_Name,
+  //     }));
+  //     console.log(this.nakshatham,"stttttttttttttt")
+  //   });
+  // }
+
+  getStarbyId(id: string) {
+    console.log(id, 'star id');
+    if (this.lang == 'en') {
+      const star = this.nakshatham.find((item) => item.id == id);
+      return star ? star.SM_NameEng : '';
+    } else if (this.lang == 'ml') {
+      const star = this.nakshatham.find((item) => item.id == id);
+      return star ? star.SM_Name : '';
+    }
+
+    // console.log(star,"sssssssssssssssss")
+  }
+
+  // Helper function to add wrapped text
+  addWrappedText(
+    doc: jsPDF,
+    text: string,
+    x: number,
+    y: number,
+    maxWidth: number,
+  ) {
+    const lines = doc.splitTextToSize(text, maxWidth);
+    lines.forEach((line: any, index: any) => {
+      doc.text(line, x, y + index * 6); // 6 is the line height
+    });
+    return y + lines.length * 6; // Return the new Y offset after wrapping
+  }
+
+  openWhatsAppWeb() {
+    const whatsappUrl = 'https://web.whatsapp.com/'; // URL for WhatsApp Web
+    window.open(whatsappUrl, '_blank'); // Open in a new tab
+  }
+
+  generatePDF() {
+    const doc = new jsPDF();
+    const columns = [
+      'Vazhipad',
+      'Prathishta',
+      'Name',
+      'Star',
+      'Qty',
+      'Rate',
+      'Amount',
+    ];
+    const rows = this.data.map((item: any) => [
+      item.Vazhipad,
+      item.Prathista,
+      item.Name,
+      item.Star,
+      item.Qty,
+      item.Rate,
+      item.Amount,
+    ]);
+
+    // Adding title
+    doc.text('Vazhipad Details', 14, 10);
+
+    // Adding table
+    autoTable(doc, {
+      head: [columns],
+      body: rows,
+      startY: 20,
+    });
+
+    // Save the PDF
+    doc.save('Vazhipad-Details.pdf');
+  }
+
+  // const generateDateRange = (startDate: string, endDate: string): string[] => {
+  //   const dates = [];
+  //   let current = new Date(startDate);
+  //   const end = new Date(endDate);
+
+  //   while (current <= end) {
+  //     dates.push(current.toISOString().split('T')[0]);
+  //     current.setDate(current.getDate() + 1);
+  //   }
+
+  //   return dates;
+  // };
+
+  printReceiptsDotmetrix() {
+    this.differentDateArray = [];
+    this.duplicatebilldata.forEach((item: any) => {
+      this.differentDateArray.push(item);
+    });
+    if (this.differentDateArray.length > 0) {
+      const groupedData = this.differentDateArray.reduce(
+        (acc: any, item: any) => {
+          const key = `${item.Prathista}/${item.Vazhipad}/${item.Fdate}/${item.Tdate}`;
+          if (!acc[key]) {
+            acc[key] = {
+              items: [],
+              totalQty: 0,
+              uniqueNames: new Set(),
+              nalBy: '',
+              mday: '',
+              thithi: '',
+              mmonth: '',
+              SlNo: '',
+            };
+          }
+          acc[key].items.push(item);
+          acc[key].totalQty += parseInt(item.Qty, 10);
+          acc[key].uniqueNames.add(item.Vazhipad);
+
+          // Check if NalBy, Mday, or Thithi has data and store it
+          if (item.NalBy) acc[key].nalBy = item.NalBy;
+          if (item.MDay) acc[key].mday = item.MDay;
+          if (item.SearchBy) acc[key].thithi = item.SearchBy;
+          if (item.MMonth) acc[key].mmonth = item.MMonth;
+          if (item.SlNo) acc[key].Slno = item.SlNo;
+          return acc;
+        },
+        {},
+      );
+
+      const maxRowsPerPage = 5; // Maximum rows per page
+      let allReceiptsContent = '';
+      // Variable to store the total amount of all pages
+
+      Object.keys(groupedData).forEach((key) => {
+        const group = groupedData[key];
+        const [prathista, vazhipad, fromDate, toDate] = key.split('/');
+        const items = group.items;
+
+        let grandTotalAmount = 0;
+        // Group items by Name to sum Qty and avoid repetition
+        const nameGroupedItems = items.reduce((nameAcc: any, item: any) => {
+          if (!nameAcc[item.Name]) {
+            nameAcc[item.Name] = {
+              ...item,
+              Qty: 0, // Initialize Qty sum
+            };
+          }
+          nameAcc[item.Name].Qty += parseInt(item.Qty, 10); // Sum Qty for the same Name
+          return nameAcc;
+        }, {});
+
+        // Convert grouped by Name items into an array
+        const uniqueNamesItems = Object.values(nameGroupedItems);
+
+        // Split items into pages
+        const pages = [];
+        for (let i = 0; i < uniqueNamesItems.length; i += maxRowsPerPage) {
+          pages.push(uniqueNamesItems.slice(i, i + maxRowsPerPage));
+        }
+
+        // Render each page
+        pages.forEach((page, pageIndex) => {
+          let receiptContent = `
+          <div class="print-page">
+         <div class="receipt-page" style="page-break-after: 'always'
+         };">
+
+            <!-- Prathista -->
+            <div style="position: absolute; left: 2.4cm; top:2.5cm; max-width: 8cm;  white-space: pre-wrap; word-wrap: break-word;font-size:9pt;">${prathista
+            }</div>
+            <!-- Vazhipad -->
+            <div style="position: absolute; left: 2.4cm; top: 3cm; max-width: 5cm; white-space: pre-wrap;font-size:9pt; white-space: pre-wrap;">${vazhipad}</div>
+             <!-- Bill date Date -->
+             <div style="position: absolute; left:10.5cm; top: 2.5cm;font-size:9pt;"> ${this.billDate}</div>
+           <!-- bill Number -->
+            <div style="position: absolute; left:10.5cm; top: 3cm;"> ${this.lastBillNo}</div>
+             <!-- Vazhipad Date -->
+           <div style="position: absolute; left: 5.5cm; top: 8cm;font-size:9pt;">
+    ${fromDate != toDate
+              ? `${this.convertDateFormat(fromDate)} to ${this.convertDateFormat(
+                toDate,
+              )}`
+              : `${this.convertDateFormat(fromDate)}`
+            }
+  </div>
+  ${group.nalBy
+              ? `<div style="position: absolute; left: 5.5cm; top: 8cm;font-size:6pt">- ${group.nalBy},</div>`
+              : ''
+            }
+  ${group.mday
+              ? `<div style="position: absolute; left: 5.5cm; top: 8.3cm;font-size:6pt">- ${group.mday},</div>`
+              : ''
+            }
+  ${group.mmonth
+              ? `<div style="position: absolute; left: 5.5cm; top:8.5cm;font-size:6pt">- ${group.mmonth}</div>`
+              : ''
+            }
+  ${group.thithi
+              ? `<div style="position: absolute; left: 5.5cm; top: 8cm;font-size:6pt">- ${group.thithi},</div>`
+              : ''
+            }
+   <div style="position: absolute; left: 1cm; top: 8.1cm;font-size:8pt">User:${this.name
+            },(${this.getTransactionType(this.displayTrnsmode)})  ${this.displayTrnsmode == 'CR' ? '(Not Paid)' : ''
+            }(CNTR:${this.counterId})</div>
+          <div style="position: absolute; left: 3.5cm; top: 8.5cm;font-size:7pt; ">
+          Duplicate Bill
+        </div>
+            `;
+
+          // Render rows in the current page
+          page.forEach((item: any, rowIndex: number) => {
+            let rowTop = 4.8 + rowIndex * 0.5; // Adjust row spacing
+            const amount = item.Qty * item.Rate;
+            grandTotalAmount += amount; // Add the amount to the grand total
+            receiptContent += `
+            <div style="position: absolute; left:1cm; font-size:9pt;font-weight:bold; top: ${rowTop}cm; max-width: 8cm; white-space: pre-wrap; word-wrap: break-word; line-height: 1.2em;">${item.Name
+              }<br/>${item.Name2
+                ? `<div style="margin-top: 0.1mm;">Name2:${item.Name2}</div>`
+                : ''
+              }
+            </br>
+               ${item.Remarks && item.Remarks.toString().trim() !== ''
+                ? `<div style="margin-top:0px;padding-top:0px;margin-bottom:0px;padding-bottom:5px;">Remark:${item.Remarks}</div>`
+                : ''
+              }
+            </div>
+            <div style="position: absolute; left: 6.9cm; font-size:9pt;font-weight:bold; top: ${rowTop}cm; max-width: 8cm; white-space: pre-wrap; word-wrap: break-word; line-height: 1.2em;">${this.getStarbyId(
+                item.Star,
+              )}<br/>${item.Star2
+                ? `<div style="margin-top: 0.1mm;">Name2:${this.getStarbyId(item.Star)}</div>`
+                : ''
+              }
+
+         }
+            </div>
+            <div style="position: absolute; left: 9.7cm;font-size:9pt; top: ${rowTop}cm;">${item.Qty
+              }</div>
+            <div style="position: absolute;  left: 11cm;font-size:9pt; top: ${rowTop}cm;">${item.Rate
+              }</div>
+            <div style="position: absolute;  left: 12cm;font-size:9pt; top: ${rowTop}cm;">${amount}</div>
+
+           <div style="position: absolute; left: 7.5cm; top: 9.3cm; font-weight: bold; font-size: 10pt;">
+        Grand Total: ${item.TotalAmt}
+      </div>
+            `;
+          });
+          receiptContent += `
+        <div style="position: absolute; left: 10.5cm; top: 8.3cm; font-weight: bold; font-size: 12pt;">
+          ${this.displayTrnsmode === 'EN' ? 0 : grandTotalAmount}
+        </div>
+     ${group.SlNo != 0
+              ? `<div style="position: absolute; left: 3cm; top: 8cm; font-weight: bolder; font-size: 12pt;">
+         Token : ${group.SlNo}
+       </div>`
+              : ''
+            }   </div>
+      </div>`;
+          allReceiptsContent += receiptContent;
+        });
+      });
+
+      //   });
+      // });
+
+      const printContent = `
+    <html>
+      <head>
+
+         <style>
+
+          body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            font-size: 10pt;
+            font-weight: bold;
+          }
+          .receipt-page {
+            position: relative;
+            width: 6in;
+            height: 4in;
+            margin: 0 auto;
+            padding: 0;
+            overflow: hidden;
+            page-break-after: auto;
+          }
+        </style>
+    </head>
+    <body>
+      ${allReceiptsContent}
+    </body>
+  </html>
+  `;
+      const printWindow = window.open('', '_blank', 'width=800,height=600');
+      if (printWindow) {
+        printWindow.document.open();
+        printWindow.document.write(printContent);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
+        // this.resetForm()
+      }
+    }
+  }
+
+  convertDateFormat(dateString: string): string {
+    console.log(dateString, 'dateString');
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    console.log();
+    return `${day}-${month}-${year}`;
+  }
+
+  private showValidationErrors() {
+    Object.keys(this.updateTransMode.controls).forEach((key) => {
+      const controlErrors = this.updateTransMode.get(key)?.errors;
+      if (controlErrors) {
+        if (controlErrors['required']) {
+          this.notification.showError(`${key} is required`, 'Billing');
+        }
+        if (controlErrors['pattern']) {
+          if (key === 'MobileNo') {
+            this.notification.showError(
+              'Invalid phone number. Must be 10 digits atleast.',
+            );
+          }
+        }
+
+        if (controlErrors['minLength']) {
+          if (key === 'MobileNo') {
+            this.notification.showError(
+              'Invalid phone number. Must be 10 digits atleast.',
+            );
+          }
+        }
+      }
+    });
+  }
+
+  private markAllFieldsAsTouched() {
+    this.updateTransMode.markAllAsTouched();
+  }
+
+  onEditTransmode() {
+    if (this.updateTransMode.invalid) {
+      this.showValidationErrors();
+      this.markAllFieldsAsTouched();
+      return;
+    }
+    const editedTransmodeValue = this.updateTransMode.get('Trnsmode')?.value;
+    if (this.displayTrnsmode != editedTransmodeValue) {
+      if (this.changeByValue) {
+        this.changeByValue =
+          this.changeByValue +
+          ',' +
+          this.displayTrnsmode +
+          '(' +
+          this.name +
+          ',' +
+          this.getTodayDate() +
+          ')';
+      } else {
+        this.changeByValue =
+          this.displayTrnsmode +
+          '(' +
+          this.name +
+          ',' +
+          this.getTodayDate() +
+          ')';
+      }
+    }
+
+    const formValue = this.updateTransMode.value;
+
+    const payLoad = {
+      Type: 'Booking',
+      BillNo: this.lastBillNo,
+      InstaNo: formValue.InstaNo,
+      InstaDate: formValue.InstaDate,
+      InstaBank: formValue.InstaBank,
+      TransMode: formValue.Trnsmode,
+      PaidStatus: formValue.Trnsmode == 'CR' ? 'N' : 'Y',
+      MobileNo: formValue.MobileNo,
+      ChangeBy: this.changeByValue,
+    };
+    console.log(payLoad, 'payLoad');
+    this.masterService.updateBookingTransmode(payLoad).subscribe((data) => {
+      // console.log(data, 'subscription data');
+      this.notification.showSuccess(' Payment mode Updated successfully');
+      this.searchBillNumber();
+    });
+  }
+
+  private subscribeToTrnsmodeChanges() {
+    this.updateTransMode.get('Trnsmode')?.valueChanges.subscribe((value) => {
+      if (value == 'CH') {
+        this.setChequeValidators();
+        this.clearCreditValidators();
+      } else if (value == 'CR') {
+        this.updateTransMode.patchValue({ PaidStatus: 'N' });
+        this.clearChequeValidators();
+        this.setCreditValidators();
+      } else {
+        this.clearChequeValidators();
+        this.clearCreditValidators();
+        this.clearUpiValidators();
+      }
+    });
+  }
+
+  private setChequeValidators() {
+    this.updateTransMode
+      .get('InstaNo')
+      ?.setValidators([Validators.required, Validators.minLength(6)]);
+    this.updateTransMode.get('InstaBank')?.setValidators([Validators.required]);
+    this.updateTransMode.get('InstaDate')?.setValidators([Validators.required]);
+    this.updateTransMode.get('InstaNo')?.updateValueAndValidity();
+    this.updateTransMode.get('InstaBank')?.updateValueAndValidity();
+    this.updateTransMode.get('InstaDate')?.updateValueAndValidity();
+  }
+
+  private clearChequeValidators() {
+    this.updateTransMode.get('InstaNo')?.clearValidators();
+    this.updateTransMode.get('InstaBank')?.clearValidators();
+    this.updateTransMode.get('InstaDate')?.clearValidators();
+    this.updateTransMode.get('InstaNo')?.updateValueAndValidity();
+    this.updateTransMode.get('InstaBank')?.updateValueAndValidity();
+    this.updateTransMode.get('InstaDate')?.updateValueAndValidity();
+  }
+
+  private setCreditValidators() {
+    this.updateTransMode
+      .get('MobileNo')
+      ?.setValidators([
+        Validators.required,
+        Validators.minLength(10),
+        Validators.pattern('^[0-9]{10}$'),
+      ]);
+    this.updateTransMode.get('MobileNo')?.updateValueAndValidity();
+  }
+
+  private clearCreditValidators() {
+    this.updateTransMode.get('MobileNo')?.clearValidators();
+    this.updateTransMode.get('MobileNo')?.updateValueAndValidity();
+  }
+
+  private clearUpiValidators() {
+    this.updateTransMode.get('InstaNo')?.clearValidators();
+    this.updateTransMode.get('InstaNo')?.updateValueAndValidity();
+  }
+
+  convertToDateFormatyyymmdd(dateString: string): string {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = ('0' + (date.getMonth() + 1)).slice(-2);
+    const day = ('0' + date.getDate()).slice(-2);
+    return `${year}-${month}-${day}`;
+  }
+
+  printPage(): void {
+    const printContent = document.getElementById('print-section');
+
+    if (!printContent) return;
+
+    const printWindow = window.open('', '_blank', 'width=900,height=650');
+    if (!printWindow) return;
+
+    const logoUrl = window.location.origin + '/assets/images/temple_logo.png';
+
+    printWindow.document.write(`
+    <html>
+      <head>
+        <title>Print</title>
+
+        <style>
+          @page {
+            size: A4 portrait;
+            margin: 15mm 10mm 20mm 10mm;
+          }
+          body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+          }
+          .group-container {
+            page-break-before: always;
+            padding: 10mm;
+          }
+          .print-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 20px;
+  border-bottom: 2px solid maroon;
+  padding-bottom: 10px;
+}
+.header-left {
+  flex: 0 0 auto;
+}
+.header-left img {
+  height: 80px;
+  width: auto;
+}
+.header-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.temple-name {
+  font-size: 20pt;
+  font-weight: bold;
+  color: red;
+  text-align: left;
+  margin: 0;
+}
+.temple-address {
+  font-size: 12pt;
+  font-weight: bold;
+  text-align: left;
+  margin: 2px 0 0 0;
+}
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+          }
+          th, td {
+            padding: 6px;
+            font-size: 10pt;
+          }
+          img {
+            display: block;
+            max-width: 100%;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+        </style>
+      </head>
+
+      <body>
+        ${printContent.innerHTML}
+      </body>
+    </html>
+  `);
+
+    printWindow.document.close();
+
+    // ✅ WAIT FOR IMAGES TO LOAD BEFORE PRINT
+    printWindow.onload = () => {
+      const images = printWindow.document.images;
+
+      const imagePromises = Array.from(images).map((img) => {
+        if (img.complete) return Promise.resolve(true);
+        return new Promise((res) => {
+          img.onload = img.onerror = () => res(true);
+        });
+      });
+
+      Promise.all(imagePromises).then(() => {
+        setTimeout(() => {
+          printWindow.focus();
+          printWindow.print();
+          printWindow.close();
+        }, 300);
+      });
+    };
+  }
+
+  groupDataByPrathistaAndVazhipad(): void {
+    this.gropedData = this.data.reduce((acc: GroupedData, item: any) => {
+      const prathistaKey = item.Prathista;
+      const vazhipadKey = item.Vazhipad;
+
+      if (!acc[prathistaKey]) {
+        acc[prathistaKey] = {};
+      }
+
+      if (!acc[prathistaKey][vazhipadKey]) {
+        acc[prathistaKey][vazhipadKey] = [];
+      }
+
+      acc[prathistaKey][vazhipadKey].push({
+        Name: item.Name,
+        Name2: item.Name2,
+        Name3: item.Name3,
+        Star: item.Star,
+        Star2: item.Star2,
+        Star3: item.Star3,
+        Rate: item.Rate,
+        Amount: item.Amount,
+        VazhipadDate: item.EvazDate,
+        Qty: item.Qty,
+        VTime: item.VTime,
+        NalBy: item.NalBy,
+        MMonth: item.MMonth,
+        Thithi: item.SearchBy,
+        MDay: item.MDay,
+      });
+
+      return acc;
+    }, {} as GroupedData);
+
+    console.log(this.gropedData, 'PDF making');
+  }
+
+  isPast(dateString: string | Date): boolean {
+    const evazDate = new Date(dateString);
+    const today = new Date();
+    evazDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+    console.log(dateString, today, 'dateString');
+    return evazDate > today;
+  }
+
+  calculateTotalAmount(entries: any[]): number {
+    return entries.reduce((total, entry) => total + entry.Amount, 0);
+  }
+
+  getKeys(obj: any): string[] {
+    return obj ? Object.keys(obj) : [];
+  }
+
+  getTimeForBill(time: any) {
+    switch (time.toString()) {
+      case '0':
+        if (this.lang == 'en') {
+          return 'Any Time';
+        } else {
+          return 'എപ്പോൾ വേണമെങ്കിലും';
+        }
+
+      case '1':
+        if (this.lang == 'en') {
+          return 'Morning';
+        } else {
+          return 'രാവിലെ';
+        }
+      case '2':
+        if (this.lang == 'en') {
+          return 'Evening';
+        } else {
+          return 'വൈകുന്നേരം';
+        }
+      case '3':
+        if (this.lang == 'en') {
+          return 'Night';
+        } else {
+          return 'രാത്രി';
+        }
+
+      case 'CH':
+        if (this.lang == 'en') {
+          return 'CHEQUE';
+        } else {
+          return 'ചെക്ക്';
+        }
+      case 'CR':
+        if (this.lang == 'en') {
+          return 'CREDIT';
+        } else {
+          return 'ക്രെഡിറ്റ്';
+        }
+      case 'DE':
+        if (this.lang == 'en') {
+          return 'DEBIT';
+        } else {
+          return 'ഡെബിറ്റ്';
+        }
+      case 'EN':
+        if (this.lang == 'en') {
+          return 'ENDOWMENT';
+        } else {
+          return 'എൻഡോവ്മെന്റ്';
+        }
+      default:
+        return 'OTHERS';
+    }
+  }
+
+  deactivateVazhipad() {
+    const payLoad = {
+      Type: 'UpdateActive',
+      BillNo: this.lastBillNo,
+      InstaNo: '',
+      InstaDate: '',
+      InstaBank: '',
+      TransMode: '',
+      PaidStatus: this.activevazhipad == 'Y' ? 'N' : 'Y',
+      MobileNo: '',
+      ChangeBy: '',
+    };
+    this.masterService.updateBookingTransmode(payLoad).subscribe((data) => {
+      // console.log(data, 'deactivate response');
+      this.notification.showSuccess('Vazhipad Deactivated successfully');
+      this.searchBillNumber();
+    });
+  }
+
+  printReceiptslaserA4_4() {
+    this.differentDateArray = [];
+    console.log('Duplicate Bill Data print:', this.duplicatebilldata);
+    this.duplicatebilldata.forEach((item: any) => {
+      this.differentDateArray.push(item);
+    });
+    if (this.differentDateArray.length > 0) {
+      const groupedData = this.differentDateArray.reduce(
+        (acc: any, item: any) => {
+          const key = `${item.Prathista}@${item.Vazhipad}@${item.Fdate}@${item.Tdate}`;
+          console.log(key, 'group key');
+          if (!acc[key]) {
+            acc[key] = {
+              items: [],
+              totalQty: 0,
+              uniqueNames: new Set(),
+              nalBy: '',
+              mday: '',
+              thithi: '',
+              mmonth: '',
+              Address3: '',
+              Remarks: '',
+              SINo: '',
+              TotalAmt: '',
+              VTime: '',
+            };
+          }
+          acc[key].items.push(item);
+          acc[key].totalQty += parseInt(item.Qty, 10);
+          acc[key].uniqueNames.add(item.Name);
+          if (item.NalBy) acc[key].nalBy = item.NalBy;
+          if (item.MDay) acc[key].mday = item.MDay;
+          if (item.SearchBy) acc[key].thithi = item.SearchBy;
+          if (item.MMonth) acc[key].mmonth = item.MMonth;
+          if (item.Address3) acc[key].Address3 = item.Address3;
+          if (item.Remarks) acc[key].Remarks = item.Remarks;
+          if (item.SINo) acc[key].SINo = item.SINo;
+          if (item.TotalAmt) acc[key].TotalAmt = item.TotalAmt;
+          return acc;
+        },
+        {},
+      );
+      const maxRowsPerPage = 5;
+      let allReceiptsContent = '';
+      Object.keys(groupedData).forEach((key) => {
+        const group = groupedData[key];
+        const [prathista, vazhipad, fromDate, toDate] = key.split('@');
+        console.log(group, fromDate, 'grouped items');
+        const items = group.items;
+        let grandTotalAmount = 0;
+        const nameGroupedItems = items.reduce((nameAcc: any, item: any) => {
+          if (!nameAcc[item.Name]) {
+            nameAcc[item.Name] = {
+              ...item,
+              Qty: 0,
+            };
+          }
+          nameAcc[item.Name].Qty += parseInt(item.Qty, 10);
+          return nameAcc;
+        }, {});
+        const uniqueNamesItems = Object.values(nameGroupedItems);
+        const pages = [];
+        for (let i = 0; i < uniqueNamesItems.length; i += maxRowsPerPage) {
+          pages.push(uniqueNamesItems.slice(i, i + maxRowsPerPage));
+        }
+        pages.forEach((page, pageIndex) => {
+          let receiptContent = `
+         <div class="receipt-page" style="page-break-after: ${pageIndex < pages.length - 1 ? 'always' : 'avoid'
+            };">
+ <div>
+<div class="header-area">
+      <div class="title">
+              <h3>AYYAPPA SEVA SANGHAM </h3>
+              </div>
+              <div class="address">
+                <p>Regd. No - 1161/2010-2011, Sector V, Bokaro Steel City</p>
+                <p>Ph: 923 430 0663, E-Mail: mail-ayyappatemple365@gmail.com,</p> <p>ayyappatemplebokaro.com</p>
+              </div>
+              </div>
+          <div class="qr">
+              <img src="/assets/images/qr.png">
+              </div>
+              <div class="clear">
+                <h4 class="receipt">RECEIPT</h4>
+              </div>
+
+      </div>
+<div class="content-area">
+              <center>
+                <table>
+                  <tr>
+                    <td class="left">Bill No:${this.lastBillNo}</td>
+                    <td class="right">Bill Date:  ${this.billDate}</td>
+                  </tr>
+              </table>
+`;
+          receiptContent += `
+                <table class="records" padding="0" >
+                  <tr >
+
+                    <th class="border">Name</th>
+                    <th class="border center">Star</th>
+
+                    <th class="border center">Pooja Name</th>
+                    <th class="border center">Diety</th>
+                    <th class="border center">Qty</th>
+                    <th class="border center">Rate</th>
+                    <th class="border center">Amount</th>
+                  </tr>
+`;
+          let rowCount = 0;
+          page.forEach((item: any, rowIndex: number) => {
+            let rowTop = 5.6 + rowIndex * 0.5;
+            const amount = item.Qty * item.Rate;
+            grandTotalAmount += amount;
+            rowCount++;
+            receiptContent += `
+            <tr >
+            <td class="border"> ${item.Name}
+           ${item.Name2 ? `<div>${item.Name2}</div>` : ''}</td>
+           <td class="border center">${this.getStarbyId(item.Star)}${item.Star2 ? `<div>${this.getStarbyId(item.Star2)}</div>` : ''
+              }</td>
+
+                    <td class="border center"> ${item.Vazhipad}</td>
+                    <td class="border center">${item.Prethista}</td>
+                    <td class="border center">${item.Qty}</td>
+                    <td class="border center">${item.Rate}</td>
+                    <td class="border center">${amount}</td>
+          </tr>
+            <tr>
+        <td colspan="6" ></td>
+        <td class="righttotal">Total:${grandTotalAmount}</td>
+      </tr>
+      <tr>
+  `;
+          });
+          for (let i = rowCount; i < 5; i++) {
+            receiptContent += `
+        <tr style="height: 0.5cm;">
+        <td>&nbsp;</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+       </tr>
+    `;
+          }
+          const hasFooterInfo =
+            group.nalBy ||
+            group.mday ||
+            group.mmonth ||
+            group.thithi ||
+            group.Remarks ||
+            group.Slno;
+          receiptContent += `
+    <!-- Footer (Total Row) -->
+
+     ${hasFooterInfo
+              ? `<tr ">
+            <td colspan="7">
+              ${group.nalBy ? `Nal: ${group.nalBy}` : ''}
+              ${group.mday ? `, Day: ${group.mday}` : ''}
+              ${group.mmonth ? `, Month: ${group.mmonth}` : ''}
+              ${group.thithi ? `, Thithi: ${group.thithi}` : ''}
+              ${group.Remarks && group.Remarks.toString().trim() != ''
+                ? `, Remark: ${group.Remarks}`
+                : ''
+              }
+              ${group.Slno ? `, Token: ${group.Slno}` : ''}
+            </td>
+          </tr>`
+              : ''
+            }
+
+       <td colspan="4" >Vazhipad Date:
+  ${fromDate != toDate
+              ? `${this.convertDateFormat(fromDate)} to ${this.convertDateFormat(
+                toDate,
+              )}`
+              : `${this.convertDateFormat(fromDate)}`
+            }</td>
+  <td colspan="3"> ${group.Address3 ? `<div><b>Gothram:${group.Address3}</div>` : ''}</td>
+      </tr>
+
+
+  </table>
+  </center>
+ </div>
+</div>
+</div>
+`;
+          receiptContent += `
+    </div>`;
+          allReceiptsContent += receiptContent;
+        });
+      });
+
+      const printContent = `
+  <html>
+    <head>
+      <style>
+      @page {
+     size: A4;
+    margin: 0;
+  }
+          body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            font-size: 10pt;
+            font-weight: bolder;
+          }
+          .receipt-page {
+            position: relative;
+             width: 100%;
+             height: auto;
+            padding-right: 0.5in;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            page-break-after: auto;
+          }
+
+           .print-area {
+            width: 210mm;
+            height: 99mm;
+            border: 1px solid gray;
+      		        }
+
+        h3,p {
+            font-family: arial;
+        }
+      .receipt{
+      text-align:center;
+      font-family:arial;
+     	font-size:15pt;
+      margin-top:5px;
+      }
+
+      .address {
+     Text-align:left;
+      line-height:2pt;
+Padding-left:25px;
+Font-size:10pt;
+      }
+      .title{
+      height:.3cm;
+      Text-align:left;
+      font-size:18pt;
+      margin-bottom:25px;
+      margin-top:-15px;
+Padding-left:25px;
+      }
+
+
+      table {
+      padding:0;
+      margin:0;
+      width:95%;
+      margin-top:-15px;
+      }
+
+
+      .left{
+      	text-align:left;
+      }
+      .right {
+      text-align:right;
+      }
+      .records {
+      margin-top:10px;
+       border-collapse: collapse;
+  border-spacing: 0;
+      margin-bottom:20px
+      }
+
+      .border{
+     	border:1px solid gray;
+      padding:3px;
+      margin:0px;
+      Font-size:9pt;
+      }
+      .center{
+      text-align:center;
+      vertical-align:middle;
+      }
+      .righttotal{
+      	text-align:right;
+      vertical-align:middle;
+      font-size:12pt;
+      font-weight:600;
+      }
+
+  . clear {
+   Clear:both;
+   }
+  .header-area{
+  Float:left;
+  }
+.qr {width:2cm;height:2cm;margin-left:15px;float:right;padding-right:20px;}
+.qr > img{
+Width:100%;
+}
+td{font-size:10pt;}
+    </style>
+    </head>
+    <body>
+      ${allReceiptsContent}
+    </body>
+  </html>
+`;
+      const printWindow = window.open('', '_blank', 'width=800,height=600');
+      if (printWindow) {
+        printWindow.document.open();
+        printWindow.document.write(printContent);
+        printWindow.document.close();
+        printWindow.focus();
+        setTimeout(() => {
+          printWindow.print();
+          printWindow.close();
+        }, 500);
+      }
+    }
+  }
+
+  onProceed() {
     if (this.TrnStatus === 'S') {
       console.log(this.duplicatebilldata);
 
@@ -331,30 +1629,27 @@ this.groupDataByPrathistaAndVazhipad()
       console.log(payLoad);
       this.masterService.duplicateCount(payLoad).subscribe((data) => {
         console.log(data, 'dupi');
-        // this.printReceipts(this.duplicatebilldata);
-        this.printDuplicateBill()
+        this.printDuplicateBill();
       });
     } else {
       this.notification.showError(
-        'This bill is cancell so you couldnot get duplicate bill'
+        'This bill is cancell so you could not get duplicate bill',
       );
     }
   }
 
-
-  printDuplicateBill(){
-    if(this.printerType=='dotMetrix'){
+  printDuplicateBill() {
+    if (this.printerType == 'dotMetrix') {
       this.printReceiptsDotmetrix();
-    }
-    else if(this.printerType=='thermal'){
+    } else if (this.printerType == 'thermal') {
       this.printReceiptsThermal();
+    } else if (this.printerType == 'laser') {
+      this.printReceiptslaserA4_4();
     }
-
   }
 
   // print data
   printReceipts(data: any[]) {
-    // Group items by Prathista and Vazhipad
     const groupedByPrathistaVazhipad = data.reduce((acc: any, item: any) => {
       const key = `${item.Prathista}-${item.Vazhipad}`;
       if (!acc[key]) acc[key] = [];
@@ -372,25 +1667,24 @@ this.groupDataByPrathistaAndVazhipad()
 
       const totalAmount = items.reduce(
         (total: number, item: any) => total + parseFloat(item.Amount || '0'),
-        0
+        0,
       );
       const vazhipadRows = items
         .map(
           (item: any) => `
           <tr>
               <td>${item.Name || 'N/A'}<p>${item.Name2 || ' '}</p></td>
-                       <td>${
-                        this.getStarbyId(item.Star) 
-                       }<br/><span>${this.getStarbyId(item.Star2)}</span></td>
+                       <td>${this.getStarbyId(
+            item.Star,
+          )}<br/><span>${this.getStarbyId(item.Star2)}</span></td>
 
               <td>${this.formatDate(item.EvazDate) || 'N/A'}</td>
               <td>${item.Qty || '0'}</td>
               <td style="text-align: right;">${item.Rate.toFixed(2) || '0'}</td>
-              <td style="text-align: right;">${
-                item.Amount.toFixed(2) || '0'
-              }</td>
+              <td style="text-align: right;">${item.Amount.toFixed(2) || '0'
+            }</td>
           </tr>
-      `
+      `,
         )
         .join('');
 
@@ -404,9 +1698,8 @@ this.groupDataByPrathistaAndVazhipad()
         <div>
           <div style="display: flex; justify-content: space-between;">
             <strong style="color: red;">പ്രതിഷ്ഠ: ${prathista}</strong>
-            <strong>തീയതി: ${
-              this.formatDate(items[0].BillDate) || 'N/A'
-            }</strong>
+            <strong>തീയതി: ${this.formatDate(items[0].BillDate) || 'N/A'
+        }</strong>
           </div>
           <div style="display: flex; justify-content: space-between;">
             <strong style="color: green;">വഴിപാട്: ${vazhipad}</strong>
@@ -428,34 +1721,31 @@ this.groupDataByPrathistaAndVazhipad()
                       <tr>
                           <td colspan="5" class="total-label"><strong>Total Amount:</strong></td>
                           <td class="total-amount" style="text-align: right;"><strong>${totalAmount.toFixed(
-                            2
-                          )}</strong></td>
+          2,
+        )}</strong></td>
                       </tr>
                   </tbody>
               </table>
-  <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+          <div style="display: flex; justify-content: space-between; margin-top: 20px;">
             <!-- Left side content (Counter ID and Duplicate stacked vertically) -->
             <div style="display: flex; flex-direction: column;">
-                <strong style="margin-right: 15px;">Counter ID: ${
-                  this.counterId
-                }</strong>
+                <strong style="margin-right: 15px;">Counter ID: ${this.counterId
+        }</strong>
                 <strong>Duplicate</strong>
             </div>
             <!-- Right side content (Login ID and Transaction Mode stacked vertically) -->
             <div style="display: flex; flex-direction: column;">
-                <strong style="margin-right: 15px;">Login ID: ${
-                  this.loginId
-                }</strong>
+                <strong style="margin-right: 15px;">Login ID: ${this.loginId
+        }</strong>
                 <strong>Transaction Mode: ${this.displayTrnsmode}</strong>
             </div>
         </div>
 
           </div>
-          ${
-            i < prathistaVazhipadKeys.length - 1
-              ? '<div class="page-break"></div>'
-              : ''
-          }
+          ${i < prathistaVazhipadKeys.length - 1
+          ? '<div class="page-break"></div>'
+          : ''
+        }
       `;
 
       allReceiptsContent += receiptContent;
@@ -506,164 +1796,258 @@ this.groupDataByPrathistaAndVazhipad()
     }
   }
 
-
-  printReceiptsThermal(){
-     const imageUrl = window.location.origin + '/assets/images/temple-logo.png';
+  printReceiptsThermal() {
+    const imageUrl = window.location.origin + '/assets/images/temple-logo.jpeg';
 
     this.differentDateArray = [];
-    
-    
-    // Iterate through the vazhipadinfo array and split based on the condition
-    this.duplicatebilldata.forEach((item:any) => {
-      
-            this.differentDateArray.push(item); // Add to differentDateArray if FromDate != ToDate
-      
+
+    this.duplicatebilldata.forEach((item: any) => {
+      this.differentDateArray.push(item);
     });
-    
-    // Output the arrays
-    // console.log("Same Date Array:", this.sameDateArray);
-    console.log("Different Date Array:", this.differentDateArray);
-  
-  
-  if (this.differentDateArray.length > 0) {
-    // Group data by Prathista, Vazhipad, and From Date
-    const groupedData = this.differentDateArray.reduce((acc: any, item: any) => {
-      const key = `${item.Prathista}/${item.Vazhipad}/${item.Fdate}/${item.Tdate}`;
-      if (!acc[key]) {
-        acc[key] = { items: [], totalQty: 0, uniqueNames: new Set(), nalBy: '', mday: '', thithi: '',mmonth:'',VTime:'' };
-      }
-      acc[key].items.push(item);
-      acc[key].totalQty += parseInt(item.Qty, 10);
-      acc[key].uniqueNames.add(item.Name);
-  
-  
-    // Check if NalBy, Mday, or Thithi has data and store it
-    if (item.NalBy) acc[key].nalBy = item.NalBy;
-    if (item.MDay) acc[key].mday = item.MDay;
-    if (item.SearchBy) acc[key].thithi = item.SearchBy;
-    if (item.MMonth) acc[key].mmonth = item.MMonth;
-  if(item.VTime) acc[key].VTime = item.VTime;
-      return acc;
-    }, {});
-  
-    const maxRowsPerPage = 4; // Maximum rows per page
-    let allReceiptsContent = '';
-    // Variable to store the total amount of all pages
-  
-    Object.keys(groupedData).forEach((key) => {
-      const group = groupedData[key];
-      const [prathista, vazhipad, fromDate,toDate] = key.split('/');
-      const items = group.items;
-      let grandTotalAmount = 0;
-      // Group items by Name to sum Qty and avoid repetition
-      const nameGroupedItems = items.reduce((nameAcc: any, item: any) => {
-        if (!nameAcc[item.Name]) {
-          nameAcc[item.Name] = {
-            ...item,
-            Qty: 0, // Initialize Qty sum
-          };
+
+    console.log('Different Date Array:', this.differentDateArray);
+
+    if (this.differentDateArray.length > 0) {
+      // Group data by Prathista, Vazhipad, and From Date
+      const groupedData = this.differentDateArray.reduce(
+        (acc: any, item: any) => {
+          const key = `${item.Prathista}/${item.Vazhipad}/${item.Fdate}/${item.Tdate}`;
+          if (!acc[key]) {
+            acc[key] = {
+              items: [],
+              totalQty: 0,
+              uniqueNames: new Set(),
+              nalBy: '',
+              mday: '',
+              thithi: '',
+              mmonth: '',
+              VTime: '',
+              Address3: '',
+              TotalAmt: 0,
+              Rate: '',
+            };
+          }
+          acc[key].items.push(item);
+          acc[key].totalQty += parseInt(item.Qty, 10);
+          acc[key].uniqueNames.add(item.Name);
+
+          // Check if NalBy, Mday, or Thithi has data and store it
+          if (item.NalBy) acc[key].nalBy = item.NalBy;
+          if (item.MDay) acc[key].mday = item.MDay;
+          if (item.SearchBy) acc[key].thithi = item.SearchBy;
+          if (item.MMonth) acc[key].mmonth = item.MMonth;
+          if (item.VTime) acc[key].VTime = item.VTime;
+          if (item.address3) acc[key].Address3 = item.Address3;
+          if (item.TotalAmt) acc[key].TotalAmt = item.TotalAmt;
+          if (item.Rate) acc[key].Rate = item.Rate;
+          return acc;
+        },
+        {},
+      );
+
+      const maxRowsPerPage = 4; // Maximum rows per page
+      let allReceiptsContent = '';
+      // Variable to store the total amount of all pages
+
+      Object.keys(groupedData).forEach((key) => {
+        const group = groupedData[key];
+        const [prathista, vazhipad, fromDate, toDate] = key.split('/');
+        const items = group.items;
+        let grandTotalAmount = 0;
+        // Group items by Name to sum Qty and avoid repetition
+        const nameGroupedItems = items.reduce((nameAcc: any, item: any) => {
+          if (!nameAcc[item.Name]) {
+            nameAcc[item.Name] = {
+              ...item,
+              Qty: 0, // Initialize Qty sum
+            };
+          }
+          nameAcc[item.Name].Qty += parseInt(item.Qty, 10); // Sum Qty for the same Name
+          return nameAcc;
+        }, {});
+
+        // Convert grouped by Name items into an array
+        const uniqueNamesItems = Object.values(nameGroupedItems);
+
+        // Split items into pages
+        const pages = [];
+        for (let i = 0; i < uniqueNamesItems.length; i += maxRowsPerPage) {
+          pages.push(uniqueNamesItems.slice(i, i + maxRowsPerPage));
         }
-        nameAcc[item.Name].Qty += parseInt(item.Qty, 10); // Sum Qty for the same Name
-        return nameAcc;
-      }, {});
-  
-      // Convert grouped by Name items into an array
-      const uniqueNamesItems = Object.values(nameGroupedItems);
-  
-      // Split items into pages
-      const pages = [];
-      for (let i = 0; i < uniqueNamesItems.length; i += maxRowsPerPage) {
-        pages.push(uniqueNamesItems.slice(i, i + maxRowsPerPage));
-      }
-  
-      // Render each page
-      pages.forEach((page, pageIndex) => {
-        let receiptContent = `
+        // <div style="text-align: center;"><img src="${imageUrl}" alt="logo" style="width:50%;align-item:center;margin-top:0"/></div>
+
+        // Render each page
+        pages.forEach((page, pageIndex) => {
+          let receiptContent = `
           <div class="receipt-page">
-          <div style="text-align: center;"><img src="${imageUrl}" alt="logo" style="width: 60px; height: 60px;align-item:center;"/></div>
 
-            <div class="receipt-header">${this.templeName}</div>
-            <div class="receipt-sub-header">${this.templeAddress}</div>
-            <hr>
-          <div class="receipt-content receipt-contentbill">Date:${this.billDate}</div>
+            <div class="receipt-header" ">${this.templeName}</div>
 
-             <div class="receipt-content ">Bill No: ${this.lastBillNo}</div>
-           
-            <div class="receipt-content">Prathista: ${prathista}</div>
-            <div class="receipt-content">Vazhipad: ${vazhipad}</div>
+
+            <div style="border-top:1px solid black;border-bottom:1px solid black;">
+                <table style="width:100%;">
+                  <tr>
+                    <td style="text-align:left;font-weight:700;">Date: ${this.billDate
+            }</td>
+                    <td style="text-align:right;font-weight:700;">No. ${this.lastBillNo
+            }</td>
+                  </tr>
+                </table>
+            </div>
+
+       <div style="margin-top:10px;margin-bottom:15px;">
+                <table style="width:100%;">
+                <tr>
+       <td colspan="3" style="text-align:center;font-weight:800;width:70%;border:1px solid black;border-radius:5px 0px 0px 5px;padding:5px;">${prathista}</td>
+         </td>
+                </tr>
+                  <tr>
+                    <td style="text-align:center;font-weight:800;width:30%;border:1px solid black;border-radius:0px 5px 5px 0px;padding:5px;">Pooja</td>
+                    <td style="text-align:center;font-weight:800;width:70%;border:1px solid black;border-radius:5px 0px 0px 5px;padding:5px;">${vazhipad}</td>
+                  </tr>
+                </table>
+                  <center><span style="text-align:center;font-weight:600;">Pooja Date: ${fromDate !== toDate
+              ? `${this.convertDateFormat(
+                fromDate,
+              )} to ${this.convertDateFormat(toDate)}`
+              : `${this.convertDateFormat(fromDate)}`
+            }</span><center>
+            </div>
+
+            <table style="width:100%;">
+                  <tr>
+                      <th style="text-align:left;padding-left:5px;border-bottom:1px solid black;">Name</th>
+                      <th style="text-align:right;padding-left:5px;border-bottom:1px solid black;">Star<th>
+                  </tr>
+                  </table>
+
         `;
 
-        // Render rows in the current page
-        page.forEach((item: any) => {
-          const amount = item.Qty * item.Rate;
-          grandTotalAmount += amount; // Add the amount to the grand total
-          receiptContent += `
-            <div class="receipt-content">Name: ${item.Name}</div>
-            ${item.Name2 ? `<div class="receipt-content">Name2: ${item.Name2}</div>` : ''}
-            <div class="receipt-content">Star: ${this.getStarbyId(item.Star)}</div>
-            ${item.Star2 ? `<div class="receipt-content">Star2: ${this.getStarbyId(item.Star2)}</div>` : ''}
-            <div class="receipt-content">Rate: ${item.Rate.toFixed(2)}</div>
+          // Render rows in the current page
+          page.forEach((item: any) => {
+            const amount = item.Qty * item.Rate;
+            grandTotalAmount += amount; // Add the amount to the grand total
+            receiptContent += `
+
+
+    <div style="margin-top:5px;">
+              <table style="width:100%;">
+
+                  <tr>
+                      <td style="padding-left:5px;text-align:left;">${item.Name}
+                      <br/> ${item.Remarks
+                ? `<div>Remarks: ${item.Remarks}</div>`
+                : ''
+              }</td>
+                      <td style="padding-left:5px;text-align:right;">${this.getStarbyId(
+                item.Star,
+              )}</td>
+                  </tr>
+
+                  ${item.Name2
+                ? ` <tr>
+                      <td style="padding-left:5px;text-align:left;">${item.Name2
+                }</td>
+                      <td style="padding-right:5px;text-align:right;">${this.getStarbyId(
+                  item.Star2,
+                )}</td>
+                  </tr>`
+                : ''
+              }
+              </table>
+            </div>
           `;
-        });
+          });
 
-        // Add grand total and other details
-        receiptContent += `
-            <div class="receipt-rq">Total Qty: ${group.totalQty}</div>
-            <div class="receipt-total">Total Amount: ${grandTotalAmount.toFixed(2)}
-            <p> ${this.numbertowordpipe.transform(grandTotalAmount)}<span> Rupees</span></p>
-            </div>
-          
-            <div class="receipt-content-vd">Vazhipad Date: 
-              ${fromDate !== toDate ? `${this.convertDateFormat(fromDate)} to ${this.convertDateFormat(toDate)}` : `${this.convertDateFormat(fromDate)}`}
-            </div>
-            ${group.VTime ? `
-    <div class="receipt-content-vd">Vazhipad Time: 
-      ${this.getTimeForBill(group.VTime)}
-    </div>
-  ` : ''}
-            ${group.thithi ? `<div class="receipt-footer">Thhithi : ${group.thithi}</div>` : ''}
-            ${group.nalBy ? `<div class="receipt-footer">Star: ${group.nalBy}</div>` : ''}
-            ${group.mday ? `<div class="receipt-footer">Day: ${group.mday}</div>` : ''}
-            ${group.mmonth ? `<div class="receipt-footer">Month: ${group.mmonth}</div>` : ''}
-            <div class="receipt-footer-ut">
-              User: ${this.name} 
-            </div>
-             <div class="receipt-footer-ut">
-              Counter:${this.counterId}
-            </div>
-            <div class="receipt-footer-ut">
-              Payment Mode:  ${this.getTransactionType(this.displayTrnsmode)}, ${this.displayTrnsmode=='CR'?"Not Paid":""}
-
-            </div>
-             <div class="receipt-footer">
-               <p>Duplicate Bill<p>
-            </div>
-            <div><p>www.cubixsystems.com</p></div>
+          // Add grand total and other details
+          receiptContent += `
 
 
-          </div> <!-- Close receipt-page -->
+            ${this.Address3
+              ? `<div class="receipt-content">Gothram: ${this.Address3}</div>`
+              : ''
+            }
+            ${this.MobileNo
+              ? `<div class="receipt-content">MobileNo: ${this.MobileNo}</div>`
+              : ''
+            }
+            <table style="width:100%;">
+                <tr>
+                    <th style="border:1px solid black;">Amount</th>
+                    <th style="border:1px solid black;">Qty</th>
+                    <th style="border:1px solid black;">Total</th>
+                </tr>
+                <tr>
+                    <th style="border:1px solid black;">${group.Rate}</th>
+                    <th style="border:1px solid black;">${group.totalQty}</th>
+                    <th style="border:1px solid black;">${grandTotalAmount.toFixed(
+              2,
+            )}</th>
+                </tr>
+            </table>
+            <p style="text-align:right;margin-bottom:10px;margin-top:0px;"><i>(Rupees ${this.numbertowordpipe.transform(
+              grandTotalAmount,
+            )} only)</i></p>
+            <p style="padding:10px;font-size:12pt;font-weight:700;border:1px solid black;text-align:center;">Grand Total: <span style="font-size:18pt;font-weight:700;">${group.TotalAmt.toFixed(
+              2,
+            )}</span></p>
+
+            <div>
+            ${group.thithi
+              ? `<div class="receipt-footer">Thithi : ${group.thithi}</div>`
+              : ''
+            }
+            ${group.nalBy
+              ? `<div class="receipt-footer">Star: ${group.nalBy}</div>`
+              : ''
+            }
+            ${group.mday
+              ? `<div class="receipt-footer">Day: ${group.mday}</div>`
+              : ''
+            }
+            ${group.mmonth
+              ? `<div class="receipt-footer">Month: ${group.mmonth}</div>`
+              : ''
+            }</div>
+            <div style="display:flex; align-items:center;justify-contents:space-between;width:100%;">
+              <div style="width:25%;">
+                  <p style="font-size:14px;text-align:left"font-weight:bold">User: ${this.name
+            } </p>
+              </div>
+              <div style="width:25%;">
+                  <p style="font-size:14px;text-align:center;font-weight:bold"">Counter:${this.counterId
+            }</p>
+              </div>
+              <div style="width:50%;">
+                  <p style="font-size:14px;text-align:right;font-weight:bold"">Payment Mode: ${this.getTransactionType(
+              this.displayTrnsmode,
+            )} ${this.displayTrnsmode == 'CR' ? 'Not Paid' : ''}</p>
+              </div>
+            </div>
+                      <p style="text-align:center;width:100%;border-top:1px solid black;padding-top:5px;margin-top:0px;margin-bottom:20px;">Duplicate Bill</p>
+                     <div style="margin-top:14px;font-size:14px" >${this.formatBillDateTime()}</div>
+
+                      </div> <!-- Close receipt-page -->
+
         `;
-        allReceiptsContent += receiptContent;
+          allReceiptsContent += receiptContent;
+        });
       });
-  });
-  
-  
-  
-    //   });
-    // });
-  
-   
-    const printContent = `
+
+      //   });
+      // });
+
+      const printContent = `
     <html>
       <head>
-      
+
          <style>
             body {
               margin: 10px;
               padding: 0;
-              
-             
-              
+
+             font-family:arial;
+
               text-align: left;
             }
 
@@ -675,8 +2059,9 @@ this.groupDataByPrathistaAndVazhipad()
               padding: 10px;
               overflow: hidden;
               page-break-after: auto;
+              font-family:arial;
               // border: 1px dashed #000;
-              
+
             }
 
             .receipt-header {
@@ -684,15 +2069,15 @@ this.groupDataByPrathistaAndVazhipad()
               font-weight: bold;
               text-align: center;
               margin-bottom: 2px;
-              font-family:Manjari;
+              font-family:arial;
             }
 
             .receipt-sub-header {
-              font-size: 6pt;
+              font-size: 8pt;
               text-align: center;
               margin-bottom: 5px;
-              font-family:Manjari;
-              // font-weight: bold;
+              font-family:arial;
+              font-weight: bold;
             }
 
             hr {
@@ -702,6 +2087,7 @@ this.groupDataByPrathistaAndVazhipad()
             }
               .receipt-contentbill{
               margin-top:10px;
+              font-family:arial;
               }
 
             .receipt-content {
@@ -710,7 +2096,7 @@ this.groupDataByPrathistaAndVazhipad()
               margin-bottom: 5px;
               margin-top:10px;
               margin-top:5px;
-              font-family:Manjari;
+              font-family:arial;
               font-weight: bold;
             }
               .receipt-content-vd{
@@ -718,16 +2104,16 @@ this.groupDataByPrathistaAndVazhipad()
               font-size: 12pt;
               margin-bottom: 10px;
               margin-top:10px;
-              
-              font-family:Manjari;
+
+             font-family:arial;
               font-weight: bold;
               }
                .receipt-contents {
               text-align: left;
               font-size: 10pt;
-              
+
               margin-top:10px;
-              font-family:Manjari;
+              font-family:arial;
             }
 
             .receipt-total {
@@ -740,12 +2126,13 @@ this.groupDataByPrathistaAndVazhipad()
               padding-bottom: 10px;
               padding-top: 10px;
               text-align: left;
+              font-family:arial;
             }
            .receipt-rq{
             margin-top: 10px;
               font-weight: bold;
               font-size: 11pt;
-              
+              font-family:arial;
               // padding-top: 5px;
               text-align: left;
             }
@@ -754,12 +2141,14 @@ this.groupDataByPrathistaAndVazhipad()
               margin-top: 2px;
               font-style: italic;
               text-align: left;
+              font-family:arial;
               }
             .receipt-footer {
               font-size: 9pt;
               margin-top: 3px;
               font-style: italic;
               text-align: left;
+              font-family:arial;
             }
           </style>
       </head>
@@ -768,780 +2157,26 @@ this.groupDataByPrathistaAndVazhipad()
       </body>
     </html>
   `;
-    const printWindow = window.open('', '_blank', 'width=800,height=600');
-    if (printWindow) {
-      printWindow.document.open();
-      printWindow.document.write(printContent);
-      printWindow.document.close();
-     printWindow.onload = () => {
-        setTimeout(() => {
-          printWindow.focus();
-          printWindow.print();
-          printWindow.close();
-          // this.resetForm();
-        }, 500); // small delay to ensure image is loaded
-      };
-      // this.resetForm()
+      const printWindow = window.open('', '_blank', 'width=800,height=600');
+      if (printWindow) {
+        printWindow.document.open();
+        printWindow.document.write(printContent);
+        printWindow.document.close();
+        printWindow.onload = () => {
+          setTimeout(() => {
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+            // this.resetForm();
+          }, 500); // small delay to ensure image is loaded
+        };
+        // this.resetForm()
+      }
     }
   }
-
-
-
-
-  }
-  
-
-
-
-  getTransactionType(transmode: string): string {
-    switch (transmode) {
-      case 'ON':
-        if (this.lang == 'en') {
-          return 'ONLINE';
-        } else {
-          return 'ഓൺലൈൻ';
-        }
-
-      case 'CS':
-        if (this.lang == 'en') {
-          return 'CASH';
-        } else {
-          return 'ക്യാഷ്';
-        }
-      case 'MO':
-        if (this.lang == 'en') {
-          return 'MONEY ORDER';
-        } else {
-          return 'മണി ഓർഡർ';
-        }
-      case 'UP':
-        if (this.lang == 'en') {
-          return 'UPI';
-        } else {
-          return 'യുപിഐ';
-        }
-
-      case 'CH':
-        if (this.lang == 'en') {
-          return 'CHEQUE';
-        } else {
-          return 'ചെക്ക്';
-        }
-      case 'CR':
-        if (this.lang == 'en') {
-          return 'CREDIT';
-        } else {
-          return 'ക്രെഡിറ്റ്';
-        }
-      case 'DE':
-        if (this.lang == 'en') {
-          return 'DEBIT';
-        } else {
-          return 'ഡെബിറ്റ്';
-        }
-      default:
-        return 'OTHERS';
-    }
-  }
-  formatDate(date: string | Date): string {
-    const d = new Date(date);
-    const day = d.getDate().toString().padStart(2, '0'); // Add leading zero if day is single digit
-    const month = (d.getMonth() + 1).toString().padStart(2, '0'); // Add leading zero if month is single digit
-    const year = d.getFullYear();
-    return `${day}-${month}-${year}`;
+  getLogo() {
+    return `${window.location.origin}/apis/TempleLogo/${this.logo}`;
   }
 
 
-  // convertToDateFormat(dateString: string): any {
-  //   const date = new Date(dateString); // Convert the string to a Date object
-  //   return this.datePipe.transform(date, 'yyyy-MM-dd'); // Format to 'yyyy-MM-dd'
-  // }
-
-  editRow(row: any) {
-    console.log(row);
-    row.isEditing = true;
-    row.editName=row.Name,
-    row.editStar=row.Star
-  }
-
-  saveRow(row: any) {
-    row.isEditing = false;
-    row.nameEdited=row.editName==row.Name?true:false
-    row.starEdited=row.editStar==row.Star?true:false
-    if(!row.nameEdited && !row.starEdited){
-      row.nameStarEdited=row.editName+","+this.getStarbyId(row.editStar)+"("+this.name+","+this.getTodayDate()+")"
-    }
-    else if(!row.nameEdited){
-      row.nameStarEdited=row.editName+","+"("+this.name+","+this.getTodayDate()+")"
-    }else if(!row.starEdited){
-      row.nameStarEdited=this.getStarbyId(row.editStar)+"("+this.name+","+this.getTodayDate()+")"
-    }
-    console.log('Row saved:', row);
-    const payLoad = {
-      BillId: row.BillId,
-      Name: row.Name,
-      Star: row.Star,
-      Name2: row.Name2,
-      Star2: row.Star2,
-      ChangeBy: row.nameStarEdited,
-      UserId:this.loginId 
-    };
-    console.log(payLoad,"checking")
-    // Example: Update the backend API with new values
-    this.masterService.editBilllingDetils(payLoad).subscribe({
-      next: (response:any) => {
-        if(response.RespStatus){
-     this.notification.showSuccess("'Row updated successfully")
-        }
-        console.log('Row updated successfully:', response);
-      },
-      error: (error) => {
-        this.notification.showError("Error in updatinag row")
-
-        console.error('Error updatinag row:', error);
-      },
-    });
-  }
-
-getTodayDate(){
-  const today = new Date();
-  console.log(today,"gggggg")
-const formattedDate = today.toLocaleDateString('en-GB').split('/').join('-'); 
-return formattedDate
 }
-  // getStarData() {
-  //   const payLoad = { Type: 'ListStar', Code: '' };
-  //   this.masterService.getStarData(payLoad).subscribe((res) => {
-  //     this.nakshatham = res;
-  // console.log(this.nakshatham,"sdsfsddss")
-  //     this.nakshatham = res.map((item) => ({
-  //       SM_Id: item.id,
-  //       SM_Name: item.SM_NameEng,
-  //       SM_Code: item.SM_Code,
-  //       SM_RName: item.SM_Name,
-  //     }));
-  //     console.log(this.nakshatham,"stttttttttttttt")
-  //   });
-  // }
-
-  getStarbyId(id: string) {
-    console.log(id, 'star id');
-    if (this.lang == 'en') {
-      const star = this.nakshatham.find((item) => item.id == id);
-      return star ? star.SM_NameEng : '';
-    } else if (this.lang == 'ml') {
-      const star = this.nakshatham.find((item) => item.id == id);
-      return star ? star.SM_Name : '';
-    }
-
-    // console.log(star,"sssssssssssssssss")
-  }
- 
-
-  // Helper function to add wrapped text
-  addWrappedText(doc: jsPDF, text: string, x: number, y: number, maxWidth: number) {
-    const lines = doc.splitTextToSize(text, maxWidth);
-    lines.forEach((line:any, index:any) => {
-      doc.text(line, x, y + (index * 6)); // 6 is the line height
-    });
-    return y + (lines.length * 6); // Return the new Y offset after wrapping
-  }
-
-
-  openWhatsAppWeb() {
-    const whatsappUrl = 'https://web.whatsapp.com/'; // URL for WhatsApp Web
-    window.open(whatsappUrl, '_blank'); // Open in a new tab
-  }
-
-
-  generatePDF(){
-    const doc = new jsPDF();
-    const columns = ['Vazhipad', 'Prathishta', 'Name', 'Star', 'Qty', 'Rate', 'Amount'];
-    const rows = this.data.map((item:any) => [
-      item.Vazhipad,
-      item.Prathista,
-      item.Name,
-      item.Star,
-      item.Qty,
-      item.Rate,
-      item.Amount,
-    ]);
-
-    // Adding title
-    doc.text('Vazhipad Details', 14, 10);
-
-    // Adding table
-    autoTable(doc, {
-      head: [columns],
-      body: rows,
-      startY: 20,
-    });
-
-    // Save the PDF
-    doc.save('Vazhipad-Details.pdf');
-  }
-
-  // const generateDateRange = (startDate: string, endDate: string): string[] => {
-  //   const dates = [];
-  //   let current = new Date(startDate);
-  //   const end = new Date(endDate);
-  
-  //   while (current <= end) {
-  //     dates.push(current.toISOString().split('T')[0]);
-  //     current.setDate(current.getDate() + 1);
-  //   }
-  
-  //   return dates;
-  // };
-
-  printReceiptsDotmetrix() {
-    // const { BillNo, Billdate, vazhipadinfo } = data;
-  
-    this.differentDateArray = [];
-    
-    
-    // Iterate through the vazhipadinfo array and split based on the condition
-    this.duplicatebilldata.forEach((item:any) => {
-      
-            this.differentDateArray.push(item); // Add to differentDateArray if FromDate != ToDate
-      
-    });
-    
-    // Output the arrays
-    // console.log("Same Date Array:", this.sameDateArray);
-    console.log("Different Date Array:", this.differentDateArray);
-  
-  
-  if (this.differentDateArray.length > 0) {
-    // Group data by Prathista, Vazhipad, and From Date
-    const groupedData = this.differentDateArray.reduce((acc: any, item: any) => {
-      const key = `${item.Prathista}/${item.Vazhipad}/${item.Fdate}/${item.Tdate}`;
-      if (!acc[key]) {
-        acc[key] = { items: [], totalQty: 0, uniqueNames: new Set(), nalBy: '', mday: '', thithi: '',mmonth:'' };
-      }
-      acc[key].items.push(item);
-      acc[key].totalQty += parseInt(item.Qty, 10);
-      acc[key].uniqueNames.add(item.Name);
-  
-  
-    // Check if NalBy, Mday, or Thithi has data and store it
-    if (item.NalBy) acc[key].nalBy = item.NalBy;
-    if (item.MDay) acc[key].mday = item.MDay;
-    if (item.SearchBy) acc[key].thithi = item.SearchBy;
-    if (item.MMonth) acc[key].mmonth = item.MMonth;
-  
-      return acc;
-    }, {});
-  
-    const maxRowsPerPage = 4; // Maximum rows per page
-    let allReceiptsContent = '';
-    // Variable to store the total amount of all pages
-  
-    Object.keys(groupedData).forEach((key) => {
-      const group = groupedData[key];
-      const [prathista, vazhipad, fromDate,toDate] = key.split('/');
-      const items = group.items;
-      let grandTotalAmount = 0;
-      // Group items by Name to sum Qty and avoid repetition
-      const nameGroupedItems = items.reduce((nameAcc: any, item: any) => {
-        if (!nameAcc[item.Name]) {
-          nameAcc[item.Name] = {
-            ...item,
-            Qty: 0, // Initialize Qty sum
-          };
-        }
-        nameAcc[item.Name].Qty += parseInt(item.Qty, 10); // Sum Qty for the same Name
-        return nameAcc;
-      }, {});
-  
-      // Convert grouped by Name items into an array
-      const uniqueNamesItems = Object.values(nameGroupedItems);
-  
-      // Split items into pages
-      const pages = [];
-      for (let i = 0; i < uniqueNamesItems.length; i += maxRowsPerPage) {
-        pages.push(uniqueNamesItems.slice(i, i + maxRowsPerPage));
-      }
-  
-      // Render each page
-      pages.forEach((page, pageIndex) => {
-        let receiptContent = `
-         <div class="receipt-page" style="page-break-after: ${
-        pageIndex < pages.length - 1 ? 'always' : 'avoid'
-      };">
-          <div style="position: absolute; left:3cm; top: 3cm; font-size:9pt; white-space: pre-wrap;" >പാലൂർ ശ്രീ മഹാവിഷ്ണു ക്ഷേത്രം ,തിക്കോടി </div>
-
-            <!-- Prathista -->
-            <div style="position: absolute; left: 2cm; top: 3.5cm; max-width: 8cm;  white-space: pre-wrap; word-wrap: break-word;font-size:9pt;">${prathista}</div>
-            <!-- Vazhipad -->
-            <div style="position: absolute; left: 2cm; top: 4cm; max-width: 5cm; white-space: pre-wrap;font-size:9pt; white-space: pre-wrap;">${vazhipad}</div>
-             <!-- Bill date Date -->
-            <div style="position: absolute; left: 10.5cm; top: 3.5cm;">${this.billDate}</div>
-           <!-- bill Number -->
-            <div style="position: absolute; left: 10.5cm; top: 4cm;"> ${this.lastBillNo}</div>
-             <!-- Vazhipad Date -->
-           <div style="position: absolute; left: 4.5cm; top: 9.5cm;font-size:9pt;">
-    ${fromDate != toDate ? `${this.convertDateFormat(fromDate)} to ${this.convertDateFormat(toDate)}` : `${this.convertDateFormat(fromDate)}`}
-  </div>
-  ${group.nalBy ? `<div style="position: absolute; left: 5.5cm; top: 8cm;font-size:6pt">- ${group.nalBy},</div>` : ''}
-  ${group.mday ? `<div style="position: absolute; left: 5.5cm; top: 8.3cm;font-size:6pt">- ${group.mday},</div>` : ''}
-  ${group.mmonth ? `<div style="position: absolute; left: 5.5cm; top:8.5cm;font-size:6pt">- ${group.mmonth}</div>` : ''}
-  ${group.thithi ? `<div style="position: absolute; left: 5.5cm; top: 8cm;font-size:6pt">- ${group.thithi},</div>` : ''}
-   <div style="position: absolute; left: 2cm; top: 8.4cm;font-size:8pt">User:${this.name},(${this.getTransactionType(this.displayTrnsmode)})  ${this.displayTrnsmode=='CR'?"(Not Paid)":""}(CNTR:${this.counterId})</div>
-<div style="position: absolute; left: 2cm; top: 8.7cm;font-size:7pt; ">
-          Duplicate Bill
-        </div>
-            `
-  
-        // Render rows in the current page
-        page.forEach((item: any, rowIndex: number) => {
-          let rowTop = 5.6 + rowIndex * 0.5; // Adjust row spacing
-          const amount = item.Qty * item.Rate;
-          grandTotalAmount += amount; // Add the amount to the grand total
-          receiptContent += `
-            <div style="position: absolute; left: 1cm; font-size:9pt;font-weight:bold; top: ${rowTop}cm; max-width: 5.5cm; white-space: pre-wrap; word-wrap: break-word; line-height: 1.2em;">${item.Name}${item.Name2 ? `<div style="margin-top: 0.1mm;">${item.Name2}</div>` : ''}</div>
-            <div style="position: absolute; left: 6.8cm;font-size:8pt;font-weight:bold; top: ${rowTop}cm;">${this.getStarbyId(item.Star)}${item.Star2 ? `<div style="margin-top: 0.1mm;">${this.getStarbyId(item.Star2)}</div>` : ''}</div>
-            <div style="position: absolute; left: 9.5cm;font-size:9pt; top: ${rowTop}cm;">${item.Qty}</div>
-            <div style="position: absolute;  left: 10.5cm;font-size:9pt; top: ${rowTop}cm;">${item.Rate}</div>
-            <div style="position: absolute;  left: 11.5cm;font-size:9pt; top: ${rowTop}cm;">${amount.toFixed(2)}</div>
-             <div style="position: absolute; left: 10cm; top: 9.4cm;font-size:7pt;font-weight:bold;">${this.getTimeForBill(item.VTime)}</div>
-
-            `;
-        });
-        // receiptContent += `</div>`; // Close receipt page
-        // allReceiptsContent += receiptContent;
-  
-        // Add grand total at the end of the page
-      // const grandTotalTop = 5 + page.length * 0.7 + 1; // Position it below the last row
-      // <div style="position: absolute; left: 3cm; top: 8cm; font-weight: bold; font-size: 9pt;">
-      //    ${this.numbertowordpipe.transform(grandTotalAmount)}<span>Rupees</span>
-      // </div>
-     
-      receiptContent += `
-        <div style="position: absolute; left: 10.5cm; top: 8.6cm; font-weight: bold; font-size: 12pt;">
-           ${grandTotalAmount.toFixed(2)}
-        </div>
-      //   
-      </div>`; // Close receipt page
-      allReceiptsContent += receiptContent;
-    });
-  });
-  
-  
-  
-    //   });
-    // });
-  
-   
-    const printContent = `
-    <html>
-      <head>
-      
-        <style>
-          body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            font-size: 10pt;
-            font-weight: bold;
-          }
-          .receipt-page {
-            position: relative;
-            width: 6in;
-            height: 4in;
-            margin: 0 auto;
-            padding: 0;
-            overflow: hidden;
-            page-break-after: auto;
-          }
-        </style>
-      </head>
-      <body>
-        ${allReceiptsContent}
-      </body>
-    </html>
-  `;
-    const printWindow = window.open('', '_blank', 'width=800,height=600');
-    if (printWindow) {
-      printWindow.document.open();
-      printWindow.document.write(printContent);
-      printWindow.document.close();
-      printWindow.focus();
-      printWindow.print();
-      printWindow.close();
-      // this.resetForm()
-    }
-  }
-  }
-  
-
-
-  convertDateFormat(dateString: string): string {
-    const date = new Date(dateString); // Convert the string to a Date object
-    const day = String(date.getDate()).padStart(2, '0'); // Get the day and pad with 0
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Get the month and pad with 0
-    const year = date.getFullYear(); // Get the year
-    console.log()
-    return `${day}-${month}-${year}`; // Format as dd-mm-yyyy
-  }
-
-
-
-  private showValidationErrors() {
-    Object.keys(this.updateTransMode.controls).forEach((key) => {
-      const controlErrors = this.updateTransMode.get(key)?.errors;
-      if (controlErrors) {
-        if (controlErrors['required']) {
-          this.notification.showError(`${key} is required`, 'Billing');
-        }
-        if (controlErrors['pattern']) {
-          if (key === 'MobileNo') {
-            this.notification.showError(
-              'Invalid phone number. Must be 10 digits atleast.'
-            );
-          }
-         
-        }
-     
-        if (controlErrors['minLength']) {
-          if (key === 'MobileNo') {
-            this.notification.showError(
-              'Invalid phone number. Must be 10 digits atleast.'
-            );
-          }
-        }
-      }
-    });
-  }
-
-
-  private markAllFieldsAsTouched() {
-    this.updateTransMode.markAllAsTouched();
-  }
-
-  onEditTransmode(){
-if(this.updateTransMode.invalid){
-  this.showValidationErrors();
-  this.markAllFieldsAsTouched();
-  return;
-}
-const editedTransmodeValue=this.updateTransMode.get("Trnsmode")?.value
-if(this.displayTrnsmode!=editedTransmodeValue){
-  if(this.changeByValue){
-    this.changeByValue=this.changeByValue+","+this.displayTrnsmode+"("+this.name+","+this.getTodayDate()+")"
-  }else{
-    this.changeByValue=this.displayTrnsmode+"("+this.name+","+this.getTodayDate()+")"
-
-  }
-}
-   
-
-      const formValue=this.updateTransMode.value;
-
-      const payLoad={
-        Type:"Booking",
-        BillNo:this.lastBillNo,
-        InstaNo:formValue.InstaNo,
-        InstaDate:formValue.InstaDate,
-        InstaBank:formValue.InstaBank,
-        TransMode:formValue.Trnsmode,
-        PaidStatus:formValue.PaidStatus,
-        MobileNo:formValue.MobileNo,
-        ChangeBy:this.changeByValue
-      }
-      console.log(payLoad,"payLoad")
-      this.masterService.updateBookingTransmode(payLoad).subscribe((data)=>{
-        console.log(data, "subscription data");
-        this.notification.showSuccess(" Payment mode Updated successfully")
-      })
-
-  }
-
-
-
-  private subscribeToTrnsmodeChanges() {
-    
-    this.updateTransMode
-      .get('Trnsmode')
-      ?.valueChanges.subscribe((value) => {
-        if (value == 'CH') {
-          this.setChequeValidators();
-          this.clearCreditValidators();
-        } else if (value == 'CR' ) {
-          this.updateTransMode.patchValue({ PaidStatus: 'N' });
-          this.clearChequeValidators();
-          this.setCreditValidators();
-        } 
-        // else if (value === 'upi' || value === 'debit' || value === 'bank' ) {
-        //   // this.customerdetailsForBillingForm.patchValue({ PaidStatus: 'N' });
-        //   this.clearChequeValidators();
-        //   this.clearCreditValidators();
-        //   this.setUpiValidators();
-        // } 
-        else {
-          this.clearChequeValidators();
-          this.clearCreditValidators();
-          this.clearUpiValidators();
-        }
-      });
-  }
-
-
-
-  private setChequeValidators() {
-    this.updateTransMode
-      .get('InstaNo')
-      ?.setValidators([Validators.required,Validators.minLength(6)]);
-    this.updateTransMode
-      .get('InstaBank')
-      ?.setValidators([Validators.required]);
-    this.updateTransMode
-      .get('InstaDate')
-      ?.setValidators([Validators.required]);
-    this.updateTransMode.get('InstaNo')?.updateValueAndValidity();
-    this.updateTransMode
-      .get('InstaBank')
-      ?.updateValueAndValidity();
-    this.updateTransMode
-      .get('InstaDate')
-      ?.updateValueAndValidity();
-  }
-
-
-  private clearChequeValidators() {
-    this.updateTransMode.get('InstaNo')?.clearValidators();
-    this.updateTransMode.get('InstaBank')?.clearValidators();
-    this.updateTransMode.get('InstaDate')?.clearValidators();
-    this.updateTransMode.get('InstaNo')?.updateValueAndValidity();
-    this.updateTransMode
-      .get('InstaBank')
-      ?.updateValueAndValidity();
-    this.updateTransMode
-      .get('InstaDate')
-      ?.updateValueAndValidity();
-  }
-
-
-  private setCreditValidators() {
-    this.updateTransMode
-      .get('MobileNo')
-      ?.setValidators([Validators.required,Validators.minLength(10),Validators.pattern('^[0-9]{10}$')],);
-    this.updateTransMode.get('MobileNo')?.updateValueAndValidity();
-  }
-
-
-  private clearCreditValidators() {
-    this.updateTransMode.get('MobileNo')?.clearValidators();
-    this.updateTransMode.get('MobileNo')?.updateValueAndValidity();
-  }
-
-  private clearUpiValidators() {
-    this.updateTransMode.get('InstaNo')?.clearValidators();
-    this.updateTransMode.get('InstaNo')?.updateValueAndValidity();
-  }
-
-  convertToDateFormatyyymmdd(dateString: string): string {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = ('0' + (date.getMonth() + 1)).slice(-2); // Months are 0-based
-    const day = ('0' + date.getDate()).slice(-2);
-    return `${year}-${month}-${day}`;
-  }
-
-
-
-
-
-  printPage(): void {
-    const printContent = document.getElementById('print-section');
-    if (printContent) {
-      const WindowPrt = window.open('', '', 'width=900,height=650');
-      WindowPrt?.document.write(`
-        <html>
-          <head>
-            <title>Print</title>
-            <style>
-              @page { 
-                size: A4 portrait; 
-                margin-bottom: 20mm; /* Ensures left & right margins on all pages */
-                margin-top: 15mm;
-                margin-left: 0mm;
-                margin-right: 0mm;
-                
-              }
-              body { 
-                font-family: 'Arial', sans-serif; 
-                color: #333; 
-                line-height: 1.5;
-                margin: 0;
-                padding: 0;
-              }
-  
-              /* Hide Header on First Page */
-              .header:first-of-type {
-                display: none;
-              }
-                 img {
-              display: block !important;
-              max-width: 100% !important;
-              height: auto;
-            }
-  
-              /* Prathista & Vazhipad Title */
-              .prathista-title {
-                font-size: 20px;
-                font-weight: bold;
-                text-align: center;
-                padding: 10px;
-                margin-bottom: 5px;
-                border-bottom: 2px solid #444;
-              }
-              
-              /* Table Styling */
-              table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-top: 10px;
-              }
-              th, td {
-                border: 1px solid #ccc;
-                padding: 10px;
-                text-align: left;
-              }
-              th {
-                background-color: #f4f4f4;
-                font-weight: bold;
-              }
-              tbody tr:nth-child(even) {
-                background-color: #f9f9f9;
-              }
-  table.table1 {
-              border: none !important;
-            }
-
-            table.table1 th, 
-            table.table1 td {
-              border: none !important;
-            }         /* Page Break for Each Prathista & Vazhipad */
-              .group-container {
-                page-break-before: always; /* Ensures new page per section */
-                padding-left: 15mm;
-                padding-right: 15mm;
-                padding-top:0mm;
-                padding-bottom:100mm;
-               
-               
-              }
-            </style>
-          </head>
-          <body>
-            ${printContent.innerHTML}
-          </body>
-        </html>
-      `);
-      WindowPrt?.document.close();
-      WindowPrt?.focus();
-      WindowPrt?.print();
-    }
-  }
-  
-  groupDataByPrathistaAndVazhipad(): void {
-    this.gropedData = this.data.reduce((acc: GroupedData, item: any) => {
-      const prathistaKey = item.Prathista;
-      const vazhipadKey = item.Vazhipad;
-  
-      if (!acc[prathistaKey]) {
-        acc[prathistaKey] = {};
-      }
-  
-      if (!acc[prathistaKey][vazhipadKey]) {
-        acc[prathistaKey][vazhipadKey] = [];
-      }
-  
-      acc[prathistaKey][vazhipadKey].push({
-        Name: item.Name,
-        Name2:item.Name2,
-        Star: item.Star,
-        Star2:item.Star2,
-        Rate: item.Rate,
-        Amount: item.Amount,
-        VazhipadDate:item.EvazDate,
-        Qty:item.Qty,
-        VTime:item.VTime,
-
-      });
-  
-      return acc;
-    }, {} as GroupedData);  // 👈 Type assertion ensures proper structure
-  
-    console.log(this.gropedData, "PDF making");
-  }
-  
-
-
-  calculateTotalAmount(entries: any[]): number {
-    return entries.reduce((total, entry) => total + entry.Amount, 0);
-  }
-
-  getKeys(obj: any): string[] {
-    return obj ? Object.keys(obj) : [];
-  }
-
- getTimeForBill(time:any){
-     
-    switch (time.toString()) {
-      case '0':
-        if (this.lang == 'en') {
-          return 'Any Time';
-        } else {
-          return 'എപ്പോൾ വേണമെങ്കിലും';
-        }
-
-      case '1':
-        if (this.lang == 'en') {
-          return 'Morning';
-        } else {
-          return 'രാവിലെ';
-        }
-      case '2':
-        if (this.lang == 'en') {
-          return 'Evening';
-        } else {
-          return 'വൈകുന്നേരം';
-        }
-      case '3':
-        if (this.lang == 'en') {
-          return 'Night';
-        } else {
-          return 'രാത്രി';
-        }
-
-      case 'CH':
-        if (this.lang == 'en') {
-          return 'CHEQUE';
-        } else {
-          return 'ചെക്ക്';
-        }
-      case 'CR':
-        if (this.lang == 'en') {
-          return 'CREDIT';
-        } else {
-          return 'ക്രെഡിറ്റ്';
-        }
-      case 'DE':
-        if (this.lang == 'en') {
-          return 'DEBIT';
-        } else {
-          return 'ഡെബിറ്റ്';
-        }
-      default:
-        return 'OTHERS';
-    }
-      
-}
-
-
-
-  }
-
-

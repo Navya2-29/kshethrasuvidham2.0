@@ -1,14 +1,10 @@
 import { ReportService } from './../../Report/service/report.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-
 import {
   Component,
   ElementRef,
-  EventEmitter,
-  HostListener,
   OnInit,
-  Output,
   QueryList,
   ViewChild,
   ViewChildren,
@@ -19,7 +15,6 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { DatePipe, formatDate } from '@angular/common';
 import { UpperCaseDirective } from '../../../shared/directives/upper-case.directive';
-
 import {
   AbstractControl,
   FormArray,
@@ -32,31 +27,36 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { AsyncPipe, CommonModule } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import {
   MatAutocomplete,
   MatAutocompleteModule,
   MatAutocompleteSelectedEvent,
 } from '@angular/material/autocomplete';
-import { MorebuttonComponent } from '../../../morebutton/morebutton.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatRadioModule } from '@angular/material/radio';
-import { MobserachbtnComponent } from '../../../mobserachbtn/mobserachbtn.component';
-import { MultidayComponent } from '../multiday/multiday.component';
+
 import { MasterService } from '../../../services/master/master.service';
 import { TotalAmountService } from '../../../shared/service/total-amount.service';
-import { Observable, Subscription, catchError, forkJoin, map, of, startWith } from 'rxjs';
+import {
+  Observable,
+  Subscription,
+  catchError,
+  forkJoin,
+  map,
+  of,
+  startWith,
+} from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MultidayitemsComponent } from '../multidayitems/multidayitems.component';
 import { MultidaybookeddetailsComponent } from '../multidaybookeddetails/multidaybookeddetails.component';
 import { NumberDirective } from '../../../shared/directives/number/number.directive';
 import { ReceiptPrintService } from '../../../shared/service/receipt-print.service';
-// import { NgxPrintModule } from 'ngx-print';
 import { ConfirmationDialogComponent } from '../../../shared/component/confirmation-dialog/confirmation-dialog.component';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { BillingViaMobilenumberComponent } from '../billing-via-mobilenumber/billing-via-mobilenumber.component';
-import { AuthService } from '../../../core/auth/service/auth.service';
+import { CalendarComponent } from '../calendar/calendar.component';
 
 @Component({
   selector: 'app-areareceipt',
@@ -118,6 +118,7 @@ export class AreareceiptComponent implements OnInit {
   input1 = '';
   input2 = '';
   input3 = '';
+  timeSlots: string[] = [];
   @ViewChildren('nameInput') nameInputs!: QueryList<ElementRef>;
   @ViewChild('firstInput') firstInputElement!: ElementRef;
   @ViewChildren('inputRef') inputRefs: QueryList<ElementRef>;
@@ -127,6 +128,8 @@ export class AreareceiptComponent implements OnInit {
   lastEnterTime = 0; // Variable to track the time of the last Enter press
   doubleEnterThreshold = 500; // Time threshold in milliseconds to consider as double press
   @ViewChild('vTimeSelect', { static: false }) vTimeSelect!: ElementRef;
+  private mobileSubscription: Subscription = new Subscription();
+
   devoteeSearchMobileNumber: string | null;
   private subscription: Subscription;
   private masterservice = inject(MasterService);
@@ -134,13 +137,13 @@ export class AreareceiptComponent implements OnInit {
   private notification = inject(ToastrService);
   private receiptPrintService = inject(ReceiptPrintService);
   private reportService = inject(ReportService);
+
   constructor(
     private fb: FormBuilder,
     public dialog: MatDialog,
     private datePipe: DatePipe,
     private router: Router,
     private ts: TranslateService,
-    private authService: AuthService
   ) {
     this.CounterId = localStorage.getItem('counterId');
     this.role = localStorage.getItem('Role');
@@ -153,6 +156,7 @@ export class AreareceiptComponent implements OnInit {
     this.form = this.fb.group({
       vazhipadinfo: this.fb.array([]),
     });
+    this.generateTimeSlots();
   }
 
   ngOnInit(): void {
@@ -163,23 +167,38 @@ export class AreareceiptComponent implements OnInit {
     this.subscription = this.eventService.clickEvent$.subscribe(() => {
       this.clickReceived = true;
       // Handle the event here
-      console.log('Click event received!');
       this.eventService.setSecondComponentData(this.form.value);
       const combinedData = this.eventService.getAllData();
       // this.sendDataToApi(combinedData);
       this.sendDataToApi(combinedData);
     });
 
-    this.receiptPrintService.mobileNumber$.subscribe((data: any) => {
-      this.devoteeSearchMobileNumber = data?.mobile;
-      console.log('Mobile number received:', this.devoteeSearchMobileNumber);
-      if (this.devoteeSearchMobileNumber) {
-        this.openBillingDialog(data);
-      }
-      // else{
-      //   this.notification.error("Please enter valid Mobile number and try again")
-      // }
-    });
+    // this.receiptPrintService.mobileNumber$.subscribe((data: any) => {
+    //   this.devoteeSearchMobileNumber = data?.mobile;
+    //   if (this.devoteeSearchMobileNumber) {
+    //     this.openBillingDialog(data);
+    //   }
+    //   // else{
+    //   //   this.notification.error("Please enter valid Mobile number and try again")
+    //   // }
+    // });
+
+    this.mobileSubscription = this.receiptPrintService.mobileNumber$.subscribe(
+      (data: any) => {
+        this.devoteeSearchMobileNumber = data?.mobile;
+        if (this.devoteeSearchMobileNumber) {
+          // console.log(data, 'check data movbile number values 456');
+          this.openBillingDialog(data);
+
+          this.receiptPrintService.clearMobileNumber();
+        }
+        // else{
+        //   this.notification.error("Please enter valid Mobile number and try again")
+        // }
+      },
+    );
+
+    this.loadRebillData()
   }
 
   ngOnDestroy() {
@@ -199,7 +218,7 @@ export class AreareceiptComponent implements OnInit {
       Vazhipad: ['', [Validators.required, this.vazhipadValidator.bind(this)]],
       Vazhid: [''],
       Name: ['', [Validators.required]],
-      Star: ['', [Validators.required]],
+      Star: ['28', [Validators.required]],
       Prethista: ['', [Validators.required]],
       Qty: [1, [Validators.required]],
       Rate: [
@@ -211,17 +230,19 @@ export class AreareceiptComponent implements OnInit {
         ],
       ],
       Amount: [''],
-      VazhipadDate: ['', [Validators.required,this.minDateValidator()]],
+      VazhipadDate: ['', [Validators.required, this.minDateValidator()]],
       TotalAmt: [this.totalAmount],
       VTime: ['0', [Validators.required]],
       Name2: [''],
       Star2: [''],
+      Name3: [''],
+      Star3: [''],
       Postal: ['0'],
       PMid: ['1'],
       Mday: [''],
       NalBy: [''],
       Mmonth: [''],
-      starName: [''],
+      starName: ['OM'],
       FromDate: [''],
       ToDate: [''],
       SearchBy: [''],
@@ -231,11 +252,15 @@ export class AreareceiptComponent implements OnInit {
       ratechange: [{ disabled: true, value: '' }],
       allowedDays: this.fb.array([]),
       VM_Receipt: [{ disabled: true, value: '' }],
+      Mattinagal: [{ disabled: true, value: '' }],
+      VM_TimeSlot: [{ disabled: true, value: '' }],
+      VM_Token: [{ disabled: true, value: '' }],
       dateToSet: [''],
       noOfLimit: [''],
       maxLimit: [0],
       alreadyBooked: [0],
       errorMessage: [''],
+      Remarks: [''],
       seasonalDates: this.fb.group({
         fromDate: [''],
         toDate: [''],
@@ -259,7 +284,6 @@ export class AreareceiptComponent implements OnInit {
 
   checkVazhipadDate(row: FormGroup) {
     // Retrieve values from the form
-    console.log(row, 'datacheck bocking');
     const vazhipadDateStr = row.get('VazhipadDate')?.value;
     const fromDateStr = row.get('seasonalDates.fromDate')?.value;
     const toDateStr = row.get('seasonalDates.toDate')?.value;
@@ -276,9 +300,8 @@ export class AreareceiptComponent implements OnInit {
         if (vazhipadDate < fromDate || vazhipadDate > toDate) {
           row.get('VazhipadDate')?.setErrors({ invalidDateRange: true });
           this.notification.error(
-            `Vazhipad date must be within ${
-              fromDate.toISOString().split('T')[0]
-            } - ${toDate.toISOString().split('T')[0]}`
+            `Vazhipad date must be within ${fromDate.toISOString().split('T')[0]
+            } - ${toDate.toISOString().split('T')[0]}`,
           );
         } else {
           row.get('VazhipadDate')?.setErrors(null);
@@ -290,21 +313,15 @@ export class AreareceiptComponent implements OnInit {
       const vazhipadDate = vazhipadDateStr ? new Date(vazhipadDateStr) : null;
       const formattedVazhipadDate = this.datePipe.transform(
         vazhipadDateStr,
-        'yyyy-MM-dd'
+        'yyyy-MM-dd',
       );
 
-      // const fromDate = fromBlckDate ? new Date(fromBlckDate) : null;
-      // const toDate = toBlckDate ? new Date(toBlckDate) : null;
-
-      // Validate date ranges
       if (blockingDatesArray.includes(formattedVazhipadDate)) {
-        // Set error if the date is blocked
         row.get('VazhipadDate')?.setErrors({ invalidBlockedDate: true });
         this.notification.error(
-          `The selected Vazhipad date (${formattedVazhipadDate}) is blocked.`
+          `The selected Vazhipad date (${formattedVazhipadDate}) is blocked.`,
         );
       } else {
-        // Clear errors if the date is valid
         row.get('VazhipadDate')?.setErrors(null);
       }
     } else if (vazhipadDateStr && allowedDaysArray.length > 0) {
@@ -321,15 +338,14 @@ export class AreareceiptComponent implements OnInit {
         'Saturday',
       ];
       const selectedDayName = dayNames[vazhipadDate.getDay()];
-      console.log(selectedDayName, 'selectedDayName');
 
       // Check if selected day is in allowedDaysArray
       if (allowedDaysArray.includes(selectedDayName)) {
-        row.get('VazhipadDate')?.setErrors(null); // Clear errors if the day is valid
+        row.get('VazhipadDate')?.setErrors(null);
       } else {
         row.get('VazhipadDate')?.setErrors({ invalidDay: true });
         this.notification.error(
-          `The selected Vazhipad date (${vazhipadDateStr}) falls on ${selectedDayName}, which is not allowed.`
+          `The selected Vazhipad date (${vazhipadDateStr}) falls on ${selectedDayName}, which is not allowed.`,
         );
       }
     }
@@ -342,7 +358,7 @@ export class AreareceiptComponent implements OnInit {
     }
     return null;
   }
-  
+
   selectText(event: FocusEvent): void {
     const inputField = event.target as HTMLInputElement;
     if (inputField.value.trim().length > 0) {
@@ -390,9 +406,9 @@ export class AreareceiptComponent implements OnInit {
             this.notification.success('Rate cannot be zero');
           } else if (row.get('VazhipadDate')?.errors?.['required']) {
             this.notification.success('Please select a VazhipadDate');
-          }else if (row.get('VazhipadDate')?.errors?.['minDate']) {
-  this.notification.success('Vazhipad date cannot be in the past');
-}
+          } else if (row.get('VazhipadDate')?.errors?.['minDate']) {
+            this.notification.success('Vazhipad date cannot be in the past');
+          }
 
           return; // Stop adding new row if current row is invalid
         }
@@ -403,11 +419,11 @@ export class AreareceiptComponent implements OnInit {
     const currentName = currentRow.get('Name')?.value;
     const currentStar = currentRow.get('Star')?.value;
     const newRow = this.createRow();
-    newRow.patchValue({
-      Name: currentName,
-      Star: currentStar,
-      starName: this.getStarbyId(currentStar),
-    });
+    // newRow.patchValue({
+    //   Name: currentName,
+    //   Star: currentStar,
+    //   starName: this.getStarbyId(currentStar),
+    // });
 
     this.vazhipadinfo.insert(index + 1, newRow);
     this.setupAutocomplete(index + 1);
@@ -429,7 +445,7 @@ export class AreareceiptComponent implements OnInit {
     if (this.vazhipadinfo.length > 1) {
       this.vazhipadinfo.removeAt(index);
       this.updateTotalAmount();
-      this.updateSlno();
+      // this.updateSlno();
       this.notification.success('Data deleted successfully');
       this.setupAutocomplete(this.indexForAutoComplete);
       this.setupStarAutocomplete(this.indexForAutoComplete);
@@ -449,26 +465,23 @@ export class AreareceiptComponent implements OnInit {
 
   // formatting date in dd-mm-yyyy
   dateFormat(date: Date): any {
-    console.log(date, 'aaaaaaaaaaaaaaaaa');
     return this.datePipe.transform(date, 'dd-MM-yyyy') || '';
   }
 
+  minDateValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) return null;
 
-minDateValidator(): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    if (!control.value) return null;
+      const enteredDate = new Date(control.value);
+      const today = new Date();
 
-    const enteredDate = new Date(control.value);
-    const today = new Date();
+      // Reset time for accurate date-only comparison
+      today.setHours(0, 0, 0, 0);
+      enteredDate.setHours(0, 0, 0, 0);
 
-    // Reset time for accurate date-only comparison
-    today.setHours(0, 0, 0, 0);
-    enteredDate.setHours(0, 0, 0, 0);
-
-    return enteredDate >= today ? null : { minDate: true };
-  };
-}
-
+      return enteredDate >= today ? null : { minDate: true };
+    };
+  }
 
   setupAutocomplete(index: number): void {
     const row = this.vazhipadinfo.at(index) as FormGroup;
@@ -476,7 +489,7 @@ minDateValidator(): ValidatorFn {
     control?.valueChanges
       .pipe(
         startWith(''),
-        map((value) => this._filter(value))
+        map((value) => this._filter(value)),
       )
       .subscribe((filteredOptions) => {
         this.filteredOptions[index] = filteredOptions;
@@ -524,7 +537,7 @@ minDateValidator(): ValidatorFn {
     control?.valueChanges
       .pipe(
         startWith(''),
-        map((value) => this._filterStar(value))
+        map((value) => this._filterStar(value)),
       )
       .subscribe((filteredOptions) => {
         this.starFilteredOption[index] = filteredOptions;
@@ -575,7 +588,7 @@ minDateValidator(): ValidatorFn {
     control?.valueChanges
       .pipe(
         startWith(''),
-        map((value) => this._filterPrathista(value, index))
+        map((value) => this._filterPrathista(value, index)),
       )
       .subscribe((filteredOptions) => {
         this.prathistaFilteredOption[index] = filteredOptions;
@@ -584,7 +597,7 @@ minDateValidator(): ValidatorFn {
 
   private _filterPrathista(
     value: string | null | undefined,
-    index: number
+    index: number,
   ): any[] {
     if (value === null || value === undefined) {
       return [];
@@ -623,7 +636,6 @@ minDateValidator(): ValidatorFn {
 
   getAllvazhipad() {
     this.masterservice.getAllActiveVazhipad().subscribe((data) => {
-      console.log(data )
       this.VMList = data.map((item) => ({
         VM_Id: item.VM_Id,
         VM_Name: item.VM_Name,
@@ -653,7 +665,6 @@ minDateValidator(): ValidatorFn {
     var vmExists;
     if (this.lang === 'en') {
       vmExists = this.VMList.some((vm) => vm.VM_Name === vazhipad);
-      console.log(vmExists, 'uyuyuyuyy');
     } else if (this.lang != 'en') {
       vmExists = this.VMList.some((vm) => vm.VM_RName === vazhipad);
     }
@@ -671,7 +682,7 @@ minDateValidator(): ValidatorFn {
   }
 
   vazhipadtime = [
-    { id: '0', key: 'TIME1' },
+    // { id: '0', key: 'TIME1' },
     { id: '1', key: 'TIME2' },
     { id: '2', key: 'TIME3' },
     { id: '3', key: 'TIME4' },
@@ -686,25 +697,24 @@ minDateValidator(): ValidatorFn {
     // Fetch vazhipad details
     if (this.lang === 'en') {
       this.selectedVazhipadItem = this.VMList.find(
-        (item) => item.VM_Name === selectedVazhipad
+        (item) => item.VM_Name === selectedVazhipad,
       );
     } else if (this.lang != 'en') {
       this.selectedVazhipadItem = this.VMList.find(
-        (item) => item.VM_RName === selectedVazhipad
+        (item) => item.VM_RName === selectedVazhipad,
       );
     }
 
-    console.log(this.selectedVazhipadItem);
     if (this.selectedVazhipadItem) {
       selectedRow.get('Vazhid')?.setValue(this.selectedVazhipadItem.VM_Id);
-
+      const vazhid = this.selectedVazhipadItem.VM_Id;
       // Fetch vazhipad details using VM_Code
       this.getSeasnalalVazhipadData(this.selectedVazhipadItem.VM_Id, index);
       this.getBlockingvazipadDate(this.selectedVazhipadItem.VM_Id, index);
       this.getDatamasterdateCheck(this.selectedVazhipadItem.VM_Id, index);
       const vazhipadCode = this.selectedVazhipadItem.VM_Code;
 
-      this.fetchVazhipadDetails(vazhipadCode, index);
+      this.fetchVazhipadDetails(vazhipadCode, index, vazhid);
     } else {
       // Handle error or feedback if needed
     }
@@ -716,11 +726,11 @@ minDateValidator(): ValidatorFn {
     selectedRow.get('Star')?.setValue(selectedStar);
     if (this.lang == 'en') {
       this.selectedStarData = this.nakshatham.find(
-        (item) => item.SM_Name == selectedStar
+        (item) => item.SM_Name == selectedStar,
       );
     } else if (this.lang != 'en') {
       this.selectedStarData = this.nakshatham.find(
-        (item) => item.SM_RName === selectedStar
+        (item) => item.SM_RName === selectedStar,
       );
     }
     if (this.selectedStarData) {
@@ -738,11 +748,11 @@ minDateValidator(): ValidatorFn {
 
     if (this.lang == 'en') {
       this.selectedStarData = this.nakshatham.find(
-        (item) => item.SM_Name == selectedStar
+        (item) => item.SM_Name == selectedStar,
       );
     } else if (this.lang != 'en') {
       this.selectedStarData = this.nakshatham.find(
-        (item) => item.SM_RName === selectedStar
+        (item) => item.SM_RName === selectedStar,
       );
     }
 
@@ -754,11 +764,14 @@ minDateValidator(): ValidatorFn {
     }
   }
 
-  fetchVazhipadDetails(vazhipadcode: string, index: number): void {
+  fetchVazhipadDetails(
+    vazhipadcode: string,
+    index: number,
+    vazhid: number,
+  ): void {
     this.masterservice
       .getVazhipadeByCode(vazhipadcode)
       .subscribe((res: any) => {
-        console.log(res, 'nazhipad fetch data');
         const selectedRow = this.vazhipadinfo.at(index) as FormGroup;
 
         if (res[0].VM_Amt != 0) {
@@ -773,7 +786,10 @@ minDateValidator(): ValidatorFn {
         selectedRow.get('ratechange')?.setValue(res[0].VM_Rate_Change);
         selectedRow.get('VTime')?.setValue(res[0].VM_Time);
         selectedRow.get('maxLimit')?.setValue(res[0].VM_MaxNo);
-        this.selectedVazhipadPrathistaDetails(vazhipadcode, index);
+        selectedRow.get('Mattinagal')?.setValue(res[0].VM_Mattinam);
+        selectedRow.get('VM_TimeSlot')?.setValue(res[0].VM_TimeSlot);
+        selectedRow.get('VM_Token')?.setValue(res[0].VM_Token);
+        this.selectedVazhipadPrathistaDetails(vazhipadcode, index, vazhid);
         this.setVazhipadDate(index);
       });
   }
@@ -827,11 +843,14 @@ minDateValidator(): ValidatorFn {
   }
 
   // fetch prathista detasils
-  selectedVazhipadPrathistaDetails(vazhipadcode: any, index: number) {
+ selectedVazhipadPrathistaDetails(
+    vazhipadcode: any,
+    index: number,
+    vazhid: number,
+  ) {
     const selectedRow = this.vazhipadinfo.at(index) as FormGroup;
     this.masterservice.getVazhipadByCodeForDiety(vazhipadcode).subscribe({
       next: (res: any) => {
-        console.log(res);
         this.prathishtaOptions[index] = res.map((item: any) => ({
           id: item.PM_ID,
           name: item.PM_Name,
@@ -890,10 +909,14 @@ minDateValidator(): ValidatorFn {
               });
           }
         }
+        const vmToken = selectedRow.get('VM_Token')?.value;
+        const reciptstatus = selectedRow.get('VM_Receipt')?.value;
+        const prathistaId = this.vazhipadinfo.at(index).get('PMid')?.value;
+        if (vmToken === 'Y' && vazhid && reciptstatus == 'Y') {
+          this.setTocken(index, vazhid, prathistaId);
+        }
         const maxlimitqty = selectedRow.get('maxLimit')?.value;
-        console.log(maxlimitqty, 'maxqty');
         if (Number(maxlimitqty) > 0) {
-          console.log("check for maxqty validation");
           this.getAlreadybookedvazhipadQty(index);
         }
       },
@@ -903,9 +926,32 @@ minDateValidator(): ValidatorFn {
     });
   }
 
+  setTocken(index: number, vazhid: number, pmId: number) {
+    const selectedRow = this.vazhipadinfo.at(index) as FormGroup;
+    const payLoad = {
+      Type: 'TokenNo',
+      FromDate: this.currentDate,
+      ToDate: this.currentDate,
+      PMId: selectedRow.get('PMid')?.value,
+      VazhId: vazhid,
+    };
+    this.masterservice.getVazhipadWiseReport(payLoad).subscribe({
+      next: (res: any) => {
+        if (res && res.length > 0) {
+          selectedRow.get('Slno')?.setValue(res[0].Token);
+          // console.log(res[0].Token, 'tocken nuber  got');
+        } else {
+        }
+      },
+      error: (err: any) => {
+        console.log('error in getting tocken');
+      },
+    });
+  }
+
   getAlreadybookedvazhipadQty(index: number) {
     const selectedRow = this.vazhipadinfo.at(index) as FormGroup;
-    let currentQty=selectedRow.get('Qty')?.value
+    let currentQty = selectedRow.get('Qty')?.value;
     const payLoad = {
       Type: 'VazhipadLimit',
       FromDate: selectedRow.get('VazhipadDate')?.value,
@@ -913,12 +959,9 @@ minDateValidator(): ValidatorFn {
       PMId: selectedRow.get('PMid')?.value,
       VazhId: selectedRow.get('Vazhid')?.value,
     };
-    console.log(payLoad, 'vazhipadwise qty already booked ');
     this.reportService.getVazhipadWiseReport(payLoad).subscribe({
       next: (data) => {
-        console.log(data);
         const qty = data[0].qty;
-        console.log(qty ,"already booked")
         if (qty > 0) {
           selectedRow.get('alreadyBooked')?.setValue(qty);
           this.validateQtyAndSetError(index);
@@ -945,25 +988,26 @@ minDateValidator(): ValidatorFn {
 
     totalQty += currentQty;
 
-    if (totalQty > maxLimit && maxLimit!=0 ) {
-      // const errorMsg = `Qty exceeds available limit. Max: ${maxLimit}, Already booked: ${alreadyBooked}`;
-console.log(totalQty,)
+    if (totalQty > maxLimit && maxLimit != 0) {
       currentGroup.get('Qty')?.setErrors({ exceed: true });
-      let availabilty=maxLimit-alreadyBooked
+      let availabilty = maxLimit - alreadyBooked;
       currentGroup
         .get('errorMessage')
         ?.setValue(
-          `Qty exceeds available limit. Max: ${maxLimit},Already booked:${alreadyBooked} Available qty: ${availabilty}`
+          `Qty exceeds available limit. Max: ${maxLimit},Already booked:${alreadyBooked} Available qty: ${availabilty}`,
         );
       const errorMsg = currentGroup.get('errorMessage')?.value;
       this.notification.error(errorMsg, 'Invalid Quantity');
-      // return false;
       this.form.setErrors({ invalidQty: true });
     } else {
       currentGroup.get('Qty')?.setErrors(null);
       currentGroup.get('errorMessage')?.setValue('');
-      if (!this.vazhipadinfo.controls.some((control: AbstractControl) => (control as FormGroup).get('Qty')?.hasError('exceed'))) {
-        this.form.setErrors(null);  // Clear invalidQty error
+      if (
+        !this.vazhipadinfo.controls.some((control: AbstractControl) =>
+          (control as FormGroup).get('Qty')?.hasError('exceed'),
+        )
+      ) {
+        this.form.setErrors(null); // Clear invalidQty error
       }
     }
   }
@@ -972,7 +1016,6 @@ console.log(totalQty,)
     const formArray = this.vazhipadinfo.controls;
     const currentGroup = formArray[index] as FormGroup;
     const maxLimit = currentGroup.get('maxLimit')?.value;
-    console.log(maxLimit,"qtychange maxlimit max>0")
     if (maxLimit > 0) {
       this.validateQtyAndSetError(index);
     }
@@ -981,9 +1024,9 @@ console.log(totalQty,)
   // opne multiday open dialog box
   openMultiDayDialog(rowIndex: number): void {
     const dialogRef = this.dialog.open(MultidayitemsComponent, {
-      height: '80vh', // Adjust height as needed
-      width: '85vw', // Fullscreen width
-      maxWidth: '100vw', // Prevent dialog from being constrained
+      height: '80vh',
+      width: '85vw',
+      maxWidth: '100vw',
       panelClass: 'full-screen-dialog',
       disableClose: true,
     });
@@ -991,8 +1034,13 @@ console.log(totalQty,)
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         // this.handleDialogData(result);
-        const { finalArray, VM_MaxNo } = result;
-        this.handleMultiDayBookingResult(finalArray, rowIndex, VM_MaxNo);
+        // console.log(result,'multiday booking result in area reciept componet 11111');
+        const { finalArray, VM_MaxNo, lifeTimeVazhipad } = result;
+        this.handleMultiDayBookingResult(
+          finalArray,
+          rowIndex,
+          result.lifeTimeVazhipad,
+        );
       }
     });
   }
@@ -1014,39 +1062,37 @@ console.log(totalQty,)
   }
 
   formatDateToDDMMYYYY(date: Date): string {
-    const day = String(date.getDate()).padStart(2, '0'); // Get day and pad with zero if needed
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based, so add 1
-    const year = date.getFullYear(); // Get the full year
-    return `${year}-${month}-${day}`; // Return formatted string in yyyy-mm-dd format}
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${year}-${month}-${day}`;
   }
 
   private handleMultiDayBookingResult(
     result: any,
     rowIndex: number,
-    singlevazhipadmultiday: number
+
+    lifeTimevazhipad: string,
   ): void {
-    console.log(result, 'multiday filtering');
+    // console.log(result, 'multiday booking result in area reciept componet lifetime vazhipaf',lifeTimevazhipad);
     const row = this.vazhipadinfo.at(rowIndex) as FormGroup;
     let lastIndex = result.length - 1;
     const data = result[0];
-    console.log(data, 'multaday booked details prathsta name check');
-    //  data.VazhipadDate is a Date object
-    const startDate = new Date(data.VazhipadDate); // This should be the start date
-    const endDate = new Date(result[lastIndex].VazhipadDate); // This should be the end date
+    // console.log(data, 'multiday bookinf send details');
+    const startDate = new Date(data.VazhipadDate);
+    const endDate = new Date(result[lastIndex].VazhipadDate);
     const formattedDates = result.map((item: any) => {
-      // Format the VazhipadDate property
       return {
         ...item,
-        VazhipadDate: this.formatDateToDDMMYYYY(new Date(item.VazhipadDate)), // Format date here
+        VazhipadDate: this.formatDateToDDMMYYYY(new Date(item.VazhipadDate)),
       };
     });
-    console.log(formattedDates, 'formatted dates to set fromdate and todate');
     this.multidayBooking[rowIndex] = formattedDates;
     row.patchValue({
       Vazhipad: data.Vazhipad,
       Vazhid: data.Vazhid,
       Prethista: data.Prethista,
-      Qty: data.Qty * result.length,
+      Qty: lifeTimevazhipad == 'Y' ? 1 : data.Qty * result.length,
       Rate: data.Rate,
       VazhipadDate: this.datePipe.transform(startDate, 'yyyy-MM-dd') || '',
       TotalAmt: this.totalAmount,
@@ -1059,14 +1105,17 @@ console.log(totalQty,)
       Star: data.Star,
       Name2: data.Name2,
       Star2: data.Star2,
+      Name3: data.Name3,
+      Star3: data.Star3,
       VTime: data.VTime,
       starName: this.getStarbyId(data.Star),
+      Remarks: data.Remarks,
     });
   }
 
   convertToDate(dateStr: string): Date {
     const [day, month, year] = dateStr.split('-').map(Number);
-    return new Date(year, month - 1, day); // Months are 0-based in JavaScript
+    return new Date(year, month - 1, day);
   }
 
   // Function to format the date
@@ -1086,7 +1135,7 @@ console.log(totalQty,)
 
   focusInput(i: number): void {
     const inputElement = document.getElementById(
-      `Name-${i}`
+      `Name-${i}`,
     ) as HTMLInputElement;
     if (inputElement) {
       inputElement.focus();
@@ -1110,34 +1159,34 @@ console.log(totalQty,)
   }
 
   private cleanVazhipadInfo(item: any) {
-    //  const date1= this.formatDate(item.VazhipadDate)
-
     return {
-      Amount: item.Amount, // Including Amount
-      Mday: item.Mday, // Including Mday
-      Mmonth: item.Mmonth, // Including Mmonth
-      NalBy: item.NalBy, // Including NalBy
-      Name: item.Name, // Including Name
-      Name2: item.Name2, // Including Name2 (if applicable)
-      PMid: item.PMid, // Including PMid
-      Postal: item.Postal, // Including Postal
-      Prethista: item.Prethista, // Including Prethista
-      Qty: item.Qty, // Including Qty
-      Rate: item.Rate, // Including Rate
-      Slno: item.Slno, // Including Slno
-      Star: item.Star, // Including Star
-      Star2: item.Star2, // Including Star2 (if applicable)
-      TotalAmt: item.TotalAmt, // Including TotalAmt
-      Vazhid: item.Vazhid, // Including Vazhid
-      Vazhipad: item.Vazhipad, // Including Vazhipad
-      VazhipadDate: item.VazhipadDate, // Including VazhipadDate
+      Amount: item.Amount,
+      Mday: item.Mday,
+      Mmonth: item.Mmonth,
+      NalBy: item.NalBy,
+      Name: item.Name,
+      Name2: item.Name2,
+      Name3: item.Name3,
+      PMid: item.PMid,
+      Postal: item.Postal,
+      Prethista: item.Prethista,
+      Qty: item.Qty,
+      Rate: item.Rate,
+      Slno: item.Slno,
+      Star: item.Star,
+      Star2: item.Star2,
+      Star3: item.Star3,
+      TotalAmt: item.TotalAmt,
+      Vazhid: item.Vazhid,
+      Vazhipad: item.Vazhipad,
+      VazhipadDate: item.VazhipadDate,
       VTime: item.VTime,
       FromDate: item.VazhipadDate,
       ToDate: item.VazhipadDate,
       SearchBy: item.SearchBy,
+      Remarks: item.Remarks,
     };
   }
-
 
   formatDate(dateString: any): string {
     const date = new Date(dateString);
@@ -1149,20 +1198,19 @@ console.log(totalQty,)
   }
 
   // api data send
- async sendDataToApi(data: any) {
-    console.log(data, 'send to api dataaaaaaaaaaaaaaaaaaaa to qty check');
-    let isFormValid = true; // Initialize form validity
+  async sendDataToApi(data: any) {
+    let isFormValid = true;
     let multidayRowIndices: number[] = [];
-   const isQtyValid = await this.validateAllVazhipadQty(); // ✅ Wait for quantity check
+    const isQtyValid = await this.validateAllVazhipadQty();
 
-  if (!isQtyValid) {
-    this.notification.error('Please fix the quantity errors before submitting');
-    return;
-  }
-    // Iterate through each form group (row) in the vazhipadinfo FormArray
+    if (!isQtyValid) {
+      this.notification.error(
+        'Please fix the quantity errors before submitting',
+      );
+      return;
+    }
     this.vazhipadinfo.controls.forEach((row, index) => {
       row.markAllAsTouched();
-      // Check if the current row is invalid
       if (row.invalid) {
         isFormValid = false;
         if (row.get('Vazhipad')?.errors?.['required']) {
@@ -1185,34 +1233,30 @@ console.log(totalQty,)
           this.notification.success('Rate cannot be zero');
         } else if (row.get('VazhipadDate')?.errors?.['required']) {
           this.notification.success('Please select a VazhipadDate');
-        }else if (row.get('VazhipadDate')?.errors?.['minDate']) {
-}
-else if (row.get('Qty')?.errors?.['invalidQty']) {
-  this.notification.success('Should add the valid number of qty');
-}
+        } else if (row.get('VazhipadDate')?.errors?.['minDate']) {
+        } else if (row.get('Qty')?.errors?.['invalidQty']) {
+          this.notification.success('Should add the valid number of qty');
+        }
         return;
       } else {
         if (this.multidayBooking[index]) {
-          multidayRowIndices.push(index); // Store the index if multidayBooking data exists
+          multidayRowIndices.push(index);
         }
       }
     });
 
-    // If the form is invalid, do not proceed with the API call
     if (!isFormValid) {
       return;
     }
+    this.receiptPrintService.setSubmitting(true);
 
     const flattenedData = this.flattenMultiDayBooking();
-    console.log(flattenedData, 'to know wat it is');
-    const vazhipadinfo = data.vazhipadinfo || []; // Ensure vazhipadinfo is an array
-    // code for remove multiday showing row.
+    const vazhipadinfo = data.vazhipadinfo || [];
     for (let i = multidayRowIndices.length - 1; i >= 0; i--) {
       const indexToRemove = multidayRowIndices[i];
       vazhipadinfo.splice(indexToRemove, 1);
     }
     const cleanedVazhipadinfo = vazhipadinfo.map(this.cleanVazhipadInfo);
-    console.log(cleanedVazhipadinfo, 'cleaned vazhipad info');
     const combinedVazhipadinfo = [...cleanedVazhipadinfo, ...flattenedData];
 
     this.printData = vazhipadinfo;
@@ -1221,44 +1265,17 @@ else if (row.get('Qty')?.errors?.['invalidQty']) {
       vazhipadinfo: combinedVazhipadinfo,
     };
 
-    // const updatedData = {
-    //   ...data,
-    //   vazhipadinfo: data.vazhipadinfo.map((item:any) => ({
-    //     ...item,
-    //     TotalAmt: this.t, // Calculate the new TotalAmt
-    //   })),
-    // };
-
-    console.log(updatedData, 'checking all data add total amount');
     const formattedData = this.formatDateFields(updatedData);
-    console.log(formattedData, 'Bill Data aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
     if (formattedData.Trnsmode !== 'CS') {
       const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        disableClose: true,
         data: { message: `Do you want to proceed with digital payment ?` },
       });
       dialogRef.afterClosed().subscribe((result) => {
         if (result) {
-          const transactionPayLoad = {
-            TransactionNumber: '1598/0229',
-            SequenceNumber: 1,
-            AllowedPaymentMode: '1',
-            MerchantStorePosCode: '1225053011',
-            Amount: '100',
-            UserID: 'Rinsha',
-            MerchantID: 181763,
-            SecurityToken: '72aaee9c-37b0-4f52-bb9b-b411b0dd2d70',
-            IMEI: 'PINE2607971',
-            AutoCancelDurationInMinutes: 5,
-          };
-          this.masterservice
-            .upLoadTransaction(transactionPayLoad)
-            .subscribe((data) => {
-              console.log(data);
-            });
           this.prnitConfirmDialog(formattedData);
         } else {
-          // this.resetForm();
-          // User did not confirm, save the data to the database
+          this.receiptPrintService.setSubmitting(false);
         }
       });
     } else {
@@ -1267,167 +1284,90 @@ else if (row.get('Qty')?.errors?.['invalidQty']) {
   }
 
   validateAllVazhipadQty(): Promise<boolean> {
-  const vazhipadArray = this.form.get('vazhipadinfo') as FormArray;
-  const groupedEntries: {
-    [key: string]: { indexes: number[]; totalQty: number; maxLimit: number };
-  } = {};
+    const vazhipadArray = this.form.get('vazhipadinfo') as FormArray;
+    const groupedEntries: {
+      [key: string]: { indexes: number[]; totalQty: number; maxLimit: number };
+    } = {};
 
-  vazhipadArray.controls.forEach((row, index) => {
-    if (this.multidayBooking[index]) return;
+    vazhipadArray.controls.forEach((row, index) => {
+      if (this.multidayBooking[index]) return;
 
-    const vazhid = row.get('Vazhid')?.value;
-    const pmid = row.get('PMid')?.value;
-    const date = row.get('VazhipadDate')?.value;
-    const qty = +row.get('Qty')?.value || 0;
-    const maxLimit = +row.get('maxLimit')?.value || 0;
-    if (!vazhid || !pmid || !date) return;
+      const vazhid = row.get('Vazhid')?.value;
+      const pmid = row.get('PMid')?.value;
+      const date = row.get('VazhipadDate')?.value;
+      const qty = +row.get('Qty')?.value || 0;
+      const maxLimit = +row.get('maxLimit')?.value || 0;
+      if (!vazhid || !pmid || !date) return;
 
-    const key = `${vazhid}_${pmid}_${date}`;
+      const key = `${vazhid}_${pmid}_${date}`;
 
-    if (!groupedEntries[key]) {
-      groupedEntries[key] = { indexes: [], totalQty: 0, maxLimit };
-    }
+      if (!groupedEntries[key]) {
+        groupedEntries[key] = { indexes: [], totalQty: 0, maxLimit };
+      }
 
-    groupedEntries[key].indexes.push(index);
-    groupedEntries[key].totalQty += qty;
-  });
+      groupedEntries[key].indexes.push(index);
+      groupedEntries[key].totalQty += qty;
+    });
 
-  const validations = Object.keys(groupedEntries).map((key) => {
-    const [vazhid, pmid, date] = key.split('_');
-    const group = groupedEntries[key];
+    const validations = Object.keys(groupedEntries).map((key) => {
+      const [vazhid, pmid, date] = key.split('_');
+      const group = groupedEntries[key];
 
-    if (!group.maxLimit || group.maxLimit <= 0) {
-      group.indexes.forEach((i) => {
-        vazhipadArray.at(i).get('Qty')?.setErrors(null);
-      });
-      return of(true); // Skip
-    }
+      if (!group.maxLimit || group.maxLimit <= 0) {
+        group.indexes.forEach((i) => {
+          vazhipadArray.at(i).get('Qty')?.setErrors(null);
+        });
+        return of(true);
+      }
 
-    const payload = {
-      Type: 'VazhipadLimit',
-      FromDate: date,
-      ToDate: date,
-      PMId: pmid,
-      VazhId: vazhid,
-    };
+      const payload = {
+        Type: 'VazhipadLimit',
+        FromDate: date,
+        ToDate: date,
+        PMId: pmid,
+        VazhId: vazhid,
+      };
 
-    return this.reportService.getVazhipadWiseReport(payload).pipe(
-      map((res: any) => {
-        const alreadyBooked = res[0]?.qty ?? 0;
-        const totalQty = group.totalQty;
-        const exceeded = alreadyBooked + totalQty > group.maxLimit;
+      return this.reportService.getVazhipadWiseReport(payload).pipe(
+        map((res: any) => {
+          const alreadyBooked = res[0]?.qty ?? 0;
+          const totalQty = group.totalQty;
+          const exceeded = alreadyBooked + totalQty > group.maxLimit;
 
-        if (exceeded) {
-          group.indexes.forEach((i) => {
-            vazhipadArray.at(i).get('Qty')?.setErrors({ exceedLimit: true });
-          });
+          if (exceeded) {
+            group.indexes.forEach((i) => {
+              vazhipadArray.at(i).get('Qty')?.setErrors({ exceedLimit: true });
+            });
 
-          this.notification.error(
-            `Qty exceeds limit for ${this.getVazhipadByid(vazhid)}. Limit: ${group.maxLimit}, Already: ${alreadyBooked}, Entered: ${totalQty}`
-          );
+            this.notification.error(
+              `Qty exceeds limit for ${this.getVazhipadByid(vazhid)}. Limit: ${group.maxLimit
+              }, Already: ${alreadyBooked}, Entered: ${totalQty}`,
+            );
+          } else {
+            group.indexes.forEach((i) => {
+              vazhipadArray.at(i).get('Qty')?.setErrors(null);
+            });
+          }
+
+          return !exceeded;
+        }),
+        catchError(() => of(true)),
+      );
+    });
+
+    return forkJoin(validations.length ? validations : [of(true)])
+      .toPromise()
+      .then((results: any) => {
+        const hasErrors = results.includes(false);
+        if (hasErrors) {
+          this.form.setErrors({ invalidQty: true });
+          return false;
         } else {
-          group.indexes.forEach((i) => {
-            vazhipadArray.at(i).get('Qty')?.setErrors(null);
-          });
+          this.form.setErrors(null);
+          return true;
         }
-
-        return !exceeded;
-      }),
-      catchError(() => of(true)) // Ignore error
-    );
-  });
-
-  return forkJoin(validations.length ? validations : [of(true)]).toPromise().then((results: any) => {
-  const hasErrors = results.includes(false);
-  if (hasErrors) {
-    this.form.setErrors({ invalidQty: true });
-    return false;
-  } else {
-    this.form.setErrors(null);
-    return true;
+      });
   }
-});
-}
-
-
-//   validateAllVazhipadQty() {
-//     const vazhipadArray = this.form.get('vazhipadinfo') as FormArray;
-
-//     // Step 1: Group entries by (Vazhid, PMid, VazhipadDate)
-//     const groupedEntries: {
-//       [key: string]: { indexes: number[]; totalQty: number; maxLimit: number };
-//     } = {};
-
-//     vazhipadArray.controls.forEach((row, index) => {
-//       if (this.multidayBooking[index]) {
-//         return;
-//       }
-
-//       const vazhid = row.get('Vazhid')?.value;
-//       const pmid = row.get('PMid')?.value;
-//       const date = row.get('VazhipadDate')?.value;
-//       const qty = +row.get('Qty')?.value || 0;
-//             const maxLimit = +row.get('maxLimit')?.value || 0;
-//       if (!vazhid || !pmid || !date) {
-//         return; // Missing important fields
-//       }
-//       const key = `${vazhid}_${pmid}_${date}`;
-
-//       if (!groupedEntries[key]) {
-//         groupedEntries[key] = { indexes: [], totalQty: 0, maxLimit };
-//       }
-
-//       groupedEntries[key].indexes.push(index);
-//       groupedEntries[key].totalQty += qty;
-//     });
-
-//     // Step 2: For each group, call API once and validate all related rows
-//     Object.keys(groupedEntries).forEach((key) => {
-//       const [vazhid, pmid, date] = key.split('_');
-//       const group = groupedEntries[key];
-
-//  //  If maxLimit is 0 or less, skip validation
-//  if (!group.maxLimit || group.maxLimit <= 0) {
-//   group.indexes.forEach((i) => {
-//     const control = vazhipadArray.at(i).get('Qty');
-//     control?.setErrors(null); // Clear any previous errors if any
-//   });
-//   return; // Skip API call
-// }
-
-
-//       const payload = {
-//         Type: 'VazhipadLimit',
-//         FromDate: date,
-//         ToDate: date,
-//         PMId: pmid,
-//         VazhId: vazhid,
-//       };
-
-//       this.reportService
-//         .getVazhipadWiseReport(payload)
-//         .subscribe((res: any) => {
-//           const alreadyBooked = res[0].qty ?? 0;
-//           const totalQty = group.totalQty;
-
-//           if (alreadyBooked + totalQty > group.maxLimit) {
-//             group.indexes.forEach((i) => {
-//               vazhipadArray.at(i).get('Qty')?.setErrors({ exceedLimit: true });
-//             });
-
-//             this.notification.error(
-//               `Total Qty exceeds limit for Vazhipad ID ${this.getVazhipadByid(vazhid)}. Limit: ${group.maxLimit}, Already Booked: ${alreadyBooked}, Entered: ${totalQty}`
-//             );
-//             this.form.setErrors({ invalidQty: true });
-//           } else {
-//             group.indexes.forEach((i) => {
-//               vazhipadArray.at(i).get('Qty')?.setErrors(null);
-//             });
-//             this.form.setErrors(null); 
-//           }
-//         });
-//     });
-//   }
 
   private getCurrentDateMMYY(): string {
     const now = new Date();
@@ -1444,113 +1384,55 @@ else if (row.get('Qty')?.errors?.['invalidQty']) {
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        // this.receiptPrintService.setReceiptData(formattedData);   this is originallllllll print calll
         this.sendBillingDataApiCall(formattedData);
         this.cancelFlag = false;
       } else {
         this.sendBillingDataApiCall(formattedData);
 
         this.cancelFlag = true;
-        // User did not confirm, save the data to the database
       }
     });
   }
 
-  // api call send billinf data to db
+  // api call send billing data to db
   sendBillingDataApiCall(formattedData: any) {
     const updatedData = {
       ...formattedData,
       vazhipadinfo: formattedData.vazhipadinfo.map((item: any) => ({
         ...item,
-        TotalAmt: this.totalAmount.toString(), // Calculate TotalAmt dynamically
+        TotalAmt: this.totalAmount.toString(),
       })),
     };
-
-    console.log(
-      updatedData,
-      'sendBillingDataApiCall at last callllllllllllllllllllllllll'
-    );
-
-    this.masterservice.getLastBillNumber().subscribe((data) => {
-      console.log(data, 'ffrfrere');
-
-      if (data[0].billno) {
-        this.lockTableLastbillNumber = data[0].billno;
-        console.log(this.lockTableLastbillNumber);
-        console.log(this.billNumberFormatDate);
-        this.generatedCurrentBillnumber =
-          this.lockTableLastbillNumber.toString() +
-          '/' +
-          this.billNumberFormatDate;
-        console.log(this.generatedCurrentBillnumber);
-        updatedData.BillNo = this.generatedCurrentBillnumber;
-        console.log(updatedData, 'after add bill number');
-
-        const payLoad = {
-          Type: 'BookingBillLock',
-          Code: this.CounterId + 'Lock',
-        };
-        console.log(payLoad);
-        this.masterservice.getMaster(payLoad).subscribe((data) => {
-          console.log(data, 'locked billapi reposnse');
-          this.onSubmitBookingDetailsApiCall(updatedData);
-        });
-      } else {
-        this.retryFetchBillNumber(updatedData);
-      }
-    });
-  }
-
-  retryFetchBillNumber(updatedData: any, retryCount = 0) {
-    if (retryCount >= 3) {
-      this.notification.error(
-        'Unable to fetch a unique bill number. Please contact support.'
-      );
-      return;
-    }
-
-    setTimeout(() => {
-      this.sendBillingDataApiCall(updatedData);
-    }, 2000); // Retry after 2 seconds
+    this.onSubmitBookingDetailsApiCall(updatedData);
   }
 
   onSubmitBookingDetailsApiCall(formattedData: any) {
-    console.log(formattedData, 'data send to api before the submission');
     this.masterservice.vazhipadBooking(formattedData).subscribe((res: any) => {
       if (res) {
         if (res.RespStatus === 'I') {
-          this.masterservice
-            .updateLastBillNumber(this.lockTableLastbillNumber + 1)
-            .subscribe({
-              next: (data) => {
-                this.eventService.notifytheupdateLastbillnumber();
-              },
-              error: (err) => {},
-            });
+          this.receiptPrintService.setSubmitting(false);
+
+          const BillNo = res.BillNo;
+          formattedData.BillNo = BillNo;
           if (!this.cancelFlag) {
             this.receiptPrintService.setReceiptData(formattedData);
           }
           this.receiptPrintService.setBooleanValue(true);
+          this.receiptPrintService.setSubmitting(false);
           this.notification.success(res.RespMsg);
           this.resetForm();
-          // this.masterservice.getLastBillNumber().subscribe({
-          //   next: (lastbillno) => {
-          // const lastBillNumber = lastbillno[0].billno;
-          // const currentBillnumber = lastBillNumber + 1;
-          // console.log(currentBillnumber)
-          // this.masterservice
-          //   .updateLastBillNumber(this.lockTableLastbillNumber+1)
-          //   .subscribe({
-          //     next: (data) => {
-          //       this.eventService.notifytheupdateLastbillnumber();
-          //     },
-          //     error: (err) => {},
-          //   });
+
+          this.eventService.notifytheupdateLastbillnumber();
 
           this.isDataSaved = true;
+        } else {
+          this.notification.error('Something went wrong. Please try again');
+          this.receiptPrintService.notifyApiFailed();
+          this.receiptPrintService.setSubmitting(false);
         }
       } else {
-        this.notification.error('Please check your connection and try agin');
+        this.notification.error('Please check your connection and try again');
+        this.receiptPrintService.setSubmitting(false);
       }
     });
   }
@@ -1559,9 +1441,8 @@ else if (row.get('Qty')?.errors?.['invalidQty']) {
   resetForm() {
     this.form.reset();
     this.vazhipadinfo.clear();
-    this.addRow(-1); // Add an initial row after resetting
+    this.addRow(-1);
     this.updateTotalAmount();
-    this.updateSlno();
     this.multidayBooking = [];
     this.cancelFlag = false;
   }
@@ -1590,6 +1471,8 @@ else if (row.get('Qty')?.errors?.['invalidQty']) {
             TotalAmt: String(item.TotalAmt),
             Name2: String(item.Name2),
             Star2: String(item.Star2),
+            Name3: item.Name3 ? String(item.Name3) : '',
+            Star3: item.Star3 ? String(item.Star3) : '',
             Postal: String(item.Postal),
             PMid: String(item.PMid),
             Mday: String(item.Mday),
@@ -1598,8 +1481,9 @@ else if (row.get('Qty')?.errors?.['invalidQty']) {
             FromDate: item.FromDate,
             ToDate: item.ToDate,
             SearchBy: String(item.SearchBy),
+            Remarks: String(item.Remarks),
           };
-        }
+        },
       );
     }
     return formattedData;
@@ -1631,7 +1515,6 @@ else if (row.get('Qty')?.errors?.['invalidQty']) {
   getSeasnalalVazhipadData(vid: string, index: number) {
     this.masterservice.getSeasonalVazhipadDateCheck(vid).subscribe({
       next: (data) => {
-        // Check if the response data is empty or not
         if (data && data.length > 0) {
           const seasonalDates = {
             fromDate: data[0].VS_FromDate,
@@ -1641,13 +1524,12 @@ else if (row.get('Qty')?.errors?.['invalidQty']) {
           const row = this.vazhipadinfo.at(index) as FormGroup;
           const formattedFromDate = this.datePipe.transform(
             seasonalDates.fromDate,
-            'yyyy-MM-dd'
+            'yyyy-MM-dd',
           );
           const formattedToDate = this.datePipe.transform(
             seasonalDates.toDate,
-            'yyyy-MM-dd'
+            'yyyy-MM-dd',
           );
-          // Update the form with the fetched seasonal dates
           row.get('seasonalDates')?.patchValue({
             fromDate: formattedFromDate,
             toDate: formattedToDate,
@@ -1657,17 +1539,14 @@ else if (row.get('Qty')?.errors?.['invalidQty']) {
           const row = this.vazhipadinfo.at(index) as FormGroup;
           row.get('seasonalDates')?.patchValue({ fromDate: '', toDate: '' });
           row.get('vazhipadDate')?.patchValue('');
-          // Optionally, show a notification or alert to inform the user
         }
       },
       error: (err) => {
-        // Handle error case by resetting seasonal dates
         const row = this.vazhipadinfo.at(index) as FormGroup;
         row.get('seasonalDates')?.patchValue({ fromDate: '', toDate: '' });
         row.get('vazhipadDate')?.patchValue('');
-        // Optionally, show a notification or alert to inform the user
         this.notification.error(
-          'Error fetching seasonal data. Please try again later.'
+          'Error fetching seasonal data. Please try again later.',
         );
       },
     });
@@ -1688,66 +1567,36 @@ else if (row.get('Qty')?.errors?.['invalidQty']) {
     const row = this.vazhipadinfo.at(index) as FormGroup;
     this.masterservice.getDayMastervazhipaddateCheck(vid).subscribe({
       next: (data) => {
-        console.log(data, 'day master');
-
-        // Extract 'Day' field values
         const allowedDays = data.map((item: any) => item.Day);
 
-        // Convert day IDs to day names
         const allowedDayNames = allowedDays.map(
-          (dayId) => this.dayMapping[dayId] || 'Unknown'
+          (dayId) => this.dayMapping[dayId] || 'Unknown',
         );
 
-        // Get the 'allowedDays' FormArray from the current row
         const allowDaysFormArray = row.get('allowedDays') as FormArray;
 
-        // Clear previous allowed days in the FormArray
         while (allowDaysFormArray.length) {
           allowDaysFormArray.removeAt(0);
         }
 
-        // Push the extracted 'Day' values into the 'allowedDays' FormArray
-        // Push the **day names** into the FormArray
         allowedDayNames.forEach((dayName: string) => {
           allowDaysFormArray.push(this.fb.control(dayName));
         });
-
-        console.log('Allowed Days (IDs):', allowedDays);
-        console.log('Allowed Days (Names):', allowedDayNames);
-        console.log(row);
       },
       error: (err) => {
         console.error('Error fetching day master data:', err);
       },
     });
   }
-  // checkDayBasedVazhipadDate(row: FormGroup): void {
-  //   const allowedDays = row.get('allowedDays')?.value as number[];
-  //   const vazhipadDate = row.get('VazhipadDate')?.value;
-  //   if (allowedDays && vazhipadDate) {
-  //     const dateToCheck = new Date(vazhipadDate);
-  //     const dayOfWeek = dateToCheck.getDay(); // Sunday: 0, Monday: 1, etc
-  //     if (!allowedDays.includes(dayOfWeek + 1)) {
-  //       // Adjusting dayOfWeek to match your numbering
-  //       this.notification.error(
-  //         'Selected VazhipadDate is not on an allowed day.'
-  //       );
-  //       row.get('VazhipadDate')?.setValue(''); // Optionally reset the date
-  //     }
-  //   }
-  // }
 
   clearAll() {
     this.resetForm();
   }
 
   handleTabKeyDown(event: KeyboardEvent, index: number): void {
-    // Check if the Tab key is pressed
     if (event.key === 'enter') {
-      // Prevent the default behavior so it doesn't move focus immediately
       event.preventDefault();
 
-      // Call the addRow function to add a new row
       this.addRow(index);
     }
   }
@@ -1758,7 +1607,6 @@ else if (row.get('Qty')?.errors?.['invalidQty']) {
   }
 
   getStarbyId(id: string) {
-    console.log(id, 'star id');
     if (this.lang == 'en') {
       const star = this.nakshatham.find((item) => item.SM_Id == id);
       return star ? star.SM_Name : '';
@@ -1766,8 +1614,6 @@ else if (row.get('Qty')?.errors?.['invalidQty']) {
       const star = this.nakshatham.find((item) => item.SM_Id == id);
       return star ? star.SM_RName : '';
     }
-
-    // console.log(star,"sssssssssssssssss")
   }
 
   changeLanguage(lang: any) {
@@ -1778,135 +1624,81 @@ else if (row.get('Qty')?.errors?.['invalidQty']) {
 
   handleKeyDowns(event: KeyboardEvent, index: number): void {
     if (event.key === 'ArrowLeft') {
-      // Prevent default behavior of the left arrow key
       event.preventDefault();
-
-      // Get the previous input element in the row
       const inputs = document.querySelectorAll(
-        'form [formControlName]'
+        'form [formControlName]',
       ) as NodeListOf<HTMLInputElement>;
-
-      // Focus the previous input element (if any)
       if (inputs[index - 1]) {
         (inputs[index - 1] as HTMLInputElement).focus();
       }
     }
   }
 
-  // onKeydown(event: KeyboardEvent, index: number) {
-  //   const inputElements = this.inputRefs.toArray();  // Convert the QueryList to an array of ElementRef
-
-  //   if (event.key === 'ArrowLeft') {
-  //     // Find the current element's index in the inputRefs list
-  //     const currentIndex = inputElements.findIndex(input => input.nativeElement === event.target);
-
-  //     // Move to the previous element if it's not the first one
-  //     if (currentIndex > 0) {
-  //       inputElements[currentIndex - 1].nativeElement.focus();
-  //       event.preventDefault(); // Prevent default behavior of the left arrow key
-  //     }
-  //   }
-  // }
-
-  // Time threshold in milliseconds to consider as double press
-
   navigateToNext(event: Event, rowIndex: number, nextField: string): void {
     const keyboardEvent = event as KeyboardEvent;
-    console.log(keyboardEvent.key, 'keyyyy');
-    // Get the current time
     const currentTime = new Date().getTime();
 
     if (keyboardEvent.key === 'Enter') {
       keyboardEvent.preventDefault();
 
-      // Check if the time between two Enter key presses is within the threshold for double press
-      // if (currentTime - this.lastEnterTime < this.doubleEnterThreshold) {
-      //   // If double Enter is detected, add a new row
-      //   this.addRow(rowIndex);
-      // }
-
-      // Update the last Enter press time
-      // this.lastEnterTime = currentTime;
-
-      // Reset the lastEnterTime after the double press threshold (optional)
-      // setTimeout(() => {
-      //   this.lastEnterTime = 0; // Reset to allow another detection of double Enter later
-      // }, this.doubleEnterThreshold);
-
-      // Get all form elements within the row
       const rowFormElements = Array.from(
         document.querySelectorAll(
-          `#row-${rowIndex} input, #row-${rowIndex} mat-select, #row-${rowIndex} select, #row-${rowIndex} textarea`
-        )
+          `#row-${rowIndex} input, #row-${rowIndex} mat-select, #row-${rowIndex} select, #row-${rowIndex} textarea`,
+        ),
       ) as HTMLElement[];
 
-      // Remove the highlighted class from all elements first
       rowFormElements.forEach((el) => el.classList.remove('highlighted'));
-      // Find the index of the currently active (focused) element
       let currentIndex = rowFormElements.findIndex(
-        (el) => el === document.activeElement
+        (el) => el === document.activeElement,
       );
 
       if (currentIndex === -1) {
-        console.error('Current active element not found in form elements.');
+        // console.error('Current active element not found in form elements.');
         return;
       }
 
-      // Get the current element
       const currentElement = rowFormElements[currentIndex];
 
       if (
         currentElement &&
         currentElement.getAttribute('formControlName') == 'VTime'
       ) {
-        // If the user pressed Enter on the 'vtime' field, add a new row
-        console.log('Enter key pressed on vtime field. Adding new row...');
-        this.addRow(rowIndex); // Add a new row function should be defined elsewhere in your code
-        return; // Exit the function to prevent moving to the next field
+        this.addRow(rowIndex);
+        return;
       }
 
-      // Check if the current element has a value (if it's empty, show red border)
       if (
         currentElement instanceof HTMLInputElement ||
         currentElement instanceof HTMLTextAreaElement ||
         currentElement instanceof HTMLSelectElement
       ) {
         if (!currentElement.value.trim()) {
-          // Add red border if field is empty
           currentElement.classList.add('invalid');
-          return; // Don't proceed with navigation until the field has data
+          return;
         } else {
-          // Remove red border if field has data
           currentElement.classList.remove('invalid');
         }
       }
 
-      // If nextField is specified (for example, 'VazhipadDate'), find the corresponding element
       const nextElement = rowFormElements.find(
-        (el) => el.getAttribute('formControlName') === nextField
+        (el) => el.getAttribute('formControlName') === nextField,
       );
 
       if (nextElement) {
-        // Focus the next element
         nextElement.focus();
         nextElement.classList.add('highlighted');
-        // For mat-select, open the dropdown if it's a mat-select
         if (nextElement.tagName.toLowerCase() === 'mat-select') {
           const matSelect = nextElement as any;
           if (matSelect && matSelect.open) {
-            matSelect.open(); // Open mat-select dropdown
+            matSelect.open();
           }
         } else if (nextElement.tagName.toLowerCase() === 'select') {
-          // Open <select> dropdown (trigger click)
           const selectElement = nextElement as HTMLSelectElement;
           const clickEvent = new MouseEvent('click', { bubbles: true });
-          selectElement.dispatchEvent(clickEvent); // Trigger click to open dropdown
+          selectElement.dispatchEvent(clickEvent);
         }
       } else {
-        // If no specific next field, just navigate to the next available element
         let nextElement = rowFormElements[currentIndex + 1];
-
-        // Skip over any hidden elements or elements that are not focusable (if needed)
         while (
           nextElement &&
           (nextElement.hasAttribute('hidden') ||
@@ -1914,22 +1706,17 @@ else if (row.get('Qty')?.errors?.['invalidQty']) {
         ) {
           nextElement = rowFormElements[++currentIndex + 1];
         }
-
-        // If there's a next element, focus it
         if (nextElement) {
           nextElement.focus();
-
-          // For mat-select, open the dropdown if it's a mat-select
           if (nextElement.tagName.toLowerCase() === 'mat-select') {
             const matSelect = nextElement as any;
             if (matSelect && matSelect.open) {
-              matSelect.open(); // Open mat-select dropdown
+              matSelect.open();
             }
           } else if (nextElement.tagName.toLowerCase() === 'select') {
-            // Open <select> dropdown (trigger click)
             const selectElement = nextElement as HTMLSelectElement;
             const clickEvent = new MouseEvent('click', { bubbles: true });
-            selectElement.dispatchEvent(clickEvent); // Trigger click to open dropdown
+            selectElement.dispatchEvent(clickEvent);
           }
         } else {
           console.warn('Next element not found. End of row reached.');
@@ -1937,32 +1724,26 @@ else if (row.get('Qty')?.errors?.['invalidQty']) {
       }
     }
 
-    // Handle ArrowLeft (Left Arrow Key)
     if (keyboardEvent.key === 'ArrowLeft') {
-      console.log('left arrow pressed');
-      keyboardEvent.preventDefault(); // Prevent default behavior (such as moving cursor within text field)
+      keyboardEvent.preventDefault();
 
-      // Get all form elements within the row
       const rowFormElements = Array.from(
         document.querySelectorAll(
-          `#row-${rowIndex} input, #row-${rowIndex} mat-select, #row-${rowIndex} select, #row-${rowIndex} textarea`
-        )
+          `#row-${rowIndex} input, #row-${rowIndex} mat-select, #row-${rowIndex} select, #row-${rowIndex} textarea`,
+        ),
       ) as HTMLElement[];
 
-      // Find the index of the currently active (focused) element
       let currentIndex = rowFormElements.findIndex(
-        (el) => el === document.activeElement
+        (el) => el === document.activeElement,
       );
 
       if (currentIndex === -1) {
-        console.error('Current active element not found in form elements.');
+        // console.error('Current active element not found in form elements.');
         return;
       }
 
-      // Focus the previous element (move right to left)
       let prevElement = rowFormElements[currentIndex - 1];
 
-      // Skip over any hidden or disabled elements (if needed)
       while (
         prevElement &&
         (prevElement.hasAttribute('hidden') ||
@@ -1971,37 +1752,31 @@ else if (row.get('Qty')?.errors?.['invalidQty']) {
         prevElement = rowFormElements[--currentIndex - 1];
       }
 
-      // If there's a previous element, focus it
       if (prevElement) {
         prevElement.focus();
 
-        // For mat-select, open the dropdown if it's a mat-select
         if (prevElement.tagName.toLowerCase() === 'mat-select') {
           const matSelect = prevElement as any;
           if (matSelect && matSelect.open) {
-            matSelect.open(); // Open mat-select dropdown
+            matSelect.open();
           }
         } else if (prevElement.tagName.toLowerCase() === 'select') {
           const selectElement = prevElement as HTMLSelectElement;
           const clickEvent = new MouseEvent('click', { bubbles: true });
-          selectElement.dispatchEvent(clickEvent); // Trigger click to open dropdown
+          selectElement.dispatchEvent(clickEvent);
         }
       } else {
         console.warn('Previous element not found. Beginning of row reached.');
       }
     }
 
-    // Handle ArrowDown (Down Arrow Key)
     if (keyboardEvent.key === 'ArrowDown') {
-      console.log('down arrow pressed');
-      keyboardEvent.preventDefault(); // Prevent default behavior
+      keyboardEvent.preventDefault();
 
-      // Move to the next row
       const nextRow = document.querySelector(`#row-${rowIndex + 1}`);
       if (nextRow) {
-        // Focus the first element in the next row
         const firstElementInNextRow = nextRow.querySelector(
-          'input, mat-select, select, textarea'
+          'input, mat-select, select, textarea',
         );
         if (firstElementInNextRow) {
           (firstElementInNextRow as HTMLElement).focus();
@@ -2009,16 +1784,12 @@ else if (row.get('Qty')?.errors?.['invalidQty']) {
       }
     }
 
-    //Handle ArrowUp (Up Arrow Key)  
     if (keyboardEvent.key === 'ArrowUp') {
-      console.log('up arrow pressed');
-      keyboardEvent.preventDefault(); // Prevent default behavior
-      // Move to the previous row
+      keyboardEvent.preventDefault();
       const prevRow = document.querySelector(`#row-${rowIndex - 1}`);
       if (prevRow) {
-        // Focus the first element in the previous row
         const firstElementInPrevRow = prevRow.querySelector(
-          'input, mat-select, select, textarea'
+          'input, mat-select, select, textarea',
         );
         if (firstElementInPrevRow) {
           (firstElementInPrevRow as HTMLElement).focus();
@@ -2031,19 +1802,16 @@ else if (row.get('Qty')?.errors?.['invalidQty']) {
     const payLoad = { Type: 'BlockingALL', Code: vmId };
     this.masterservice.getMaster(payLoad).subscribe({
       next: (data) => {
-        console.log(data, 'datablocing');
-
         const row = this.vazhipadinfo.at(index) as FormGroup;
 
         if (data && data.length > 0) {
           const blockingDatesArray = data.map((d: any) =>
-            this.datePipe.transform(d.VBDate, 'yyyy-MM-dd')
+            this.datePipe.transform(d.VBDate, 'yyyy-MM-dd'),
           );
-          console.log(blockingDatesArray, 'blockingDatesArray');
 
           // Get the FormArray and reset it
           const blockingDatesControl = row.get(
-            'blockingDates.dates'
+            'blockingDates.dates',
           ) as FormArray;
           blockingDatesControl.clear();
 
@@ -2051,7 +1819,6 @@ else if (row.get('Qty')?.errors?.['invalidQty']) {
           blockingDatesArray.forEach((date: any) => {
             blockingDatesControl.push(new FormControl(date));
           });
-          console.log(row, 'roqqqqqqqqqqqqqqqqq');
           // this.setVazhipadDate(index);
           this.setVazhipadDate(index);
         } else {
@@ -2067,7 +1834,7 @@ else if (row.get('Qty')?.errors?.['invalidQty']) {
         row.get('vazhipadDate')?.patchValue('');
         // Optionally, show a notification or alert to inform the user
         this.notification.error(
-          'Error fetching blocking data. Please try again later.'
+          'Error fetching blocking data. Please try again later.',
         );
       },
     });
@@ -2076,71 +1843,43 @@ else if (row.get('Qty')?.errors?.['invalidQty']) {
   openBillingDialog(mobileNumber: any) {
     const dialogRef = this.dialog.open(BillingViaMobilenumberComponent, {
       width: '600px',
-      data: mobileNumber, // Pass any data to the dialog if needed
+      data: mobileNumber,
     });
 
     // Handle dialog result
     dialogRef.afterClosed().subscribe((result) => {
-      console.log('Selected Rows:', result);
+      if (!result) {
+        // User pressed CANCEL → do nothing
+        return;
+      }
+
       this.nameStarArray = result.selectedData;
       this.singleorMultiDay = result.SmFlag;
-      console.log(this.singleorMultiDay);
-      if (result) {
-        let index = this.vazhipadinfo.length - 1;
-        console.log(index, 'firsrt index check');
 
-        if (this.singleorMultiDay) {
-          if (index == 0) {
-            this.openDevoteeMasterMultiDayDialog(index, this.nameStarArray);
-          } else {
-            this.openDevoteeMasterMultiDayDialog(index + 1, this.nameStarArray);
-          }
+      let index = this.vazhipadinfo.length - 1;
+
+      if (this.singleorMultiDay) {
+        if (index == 0) {
+          this.openDevoteeMasterMultiDayDialog(index, this.nameStarArray);
         } else {
-          // Add multiple rows based on the array of Name and Star pairs
-          this.nameStarArray.forEach((item: { Name: string; Star: string }) => {
-            this.addRowsFromNameStarArray(item.Name, item.Star, index);
-            index++;
-          });
+          this.openDevoteeMasterMultiDayDialog(index + 1, this.nameStarArray);
         }
+      } else {
+        // Add multiple rows based on the array of Name and Star pairs
+        this.nameStarArray.forEach((item: { Name: string; Star: string }) => {
+          this.addRowsFromNameStarArray(item.Name, item.Star, index);
+          index++;
+        });
       }
     });
   }
 
   // Method to dynamically add a row to the form
   addRowsFromNameStarArray(name: string, star: string, index: number): void {
-    // const index=this.vazhipadinfo.length-1;
-    //   if(index==0){
-    //   const row = this.vazhipadinfo.at(index) as FormGroup;
-    //   row.patchValue({
-    //    Name:name,
-    //     starName:star,
-    //     Star:"1"
-    //   })
-    //  }
     this.addRowForNameAndStar(index, name, star);
   }
 
   addRowForNameAndStar(index: number, name: string, star: string): void {
-    // if (index === -1 && this.vazhipadinfo.length === 0) {
-    //   this.vazhipadinfo.push(this.createRow());
-    //   this.setupAutocomplete(0);
-    //   this.setupStarAutocomplete(0);
-    //   this.updateTotalAmount();
-    //   return;
-
-    // }
-    // this.indexForAutoComplete = index;
-    // if (
-    //   this.vazhipadinfo.length > 0 &&
-    //   !this.vazhipadinfo.at(this.vazhipadinfo.length - 1).valid
-    // ) {
-    //   const row = this.vazhipadinfo.at(index) as FormGroup;
-
-    // }
-
-    // const currentRow = this.vazhipadinfo.at(index) as FormGroup;
-    // const currentName = currentRow.get('Name')?.value;
-    // const currentStar = currentRow.get('Star')?.value;
     if (index == 0) {
       const row = this.vazhipadinfo.at(index) as FormGroup;
       row.patchValue({
@@ -2161,13 +1900,12 @@ else if (row.get('Qty')?.errors?.['invalidQty']) {
       this.setupStarAutocomplete(index);
       this.updateTotalAmount();
       setTimeout(() => {
-        this.focusOnNewRow(); // Focus on the newly created row's text box
+        this.focusOnNewRow();
       }, 0);
     }
   }
 
   getStarbyIName(Name: string) {
-    console.log(Name, 'star id');
     if (this.lang == 'en') {
       const star = this.nakshatham.find((item) => item.SM_Name == Name);
       return star ? star.SM_Id : '';
@@ -2179,12 +1917,10 @@ else if (row.get('Qty')?.errors?.['invalidQty']) {
 
   // opne multiday open dialog box
   openDevoteeMasterMultiDayDialog(rowIndex: number, data: any): void {
-    console.log(rowIndex, 'multiday index check');
-    console.log(data, 'multiday ');
     const dialogRef = this.dialog.open(MultidayitemsComponent, {
-      height: '80vh', // Adjust height as needed
-      width: '85vw', // Fullscreen width
-      maxWidth: '100vw', // Prevent dialog from being constrained
+      height: '80vh',
+      width: '85vw',
+      maxWidth: '100vw',
       panelClass: 'full-screen-dialog',
       disableClose: true,
       data: data,
@@ -2199,10 +1935,160 @@ else if (row.get('Qty')?.errors?.['invalidQty']) {
     });
   }
 
-  getVazhipadByid(id:any){
-// this.VMList.find()
-const vazhipad = this.VMList.find(v => v.VM_Id == id);
-  return vazhipad ? vazhipad.VM_Name :id ;
-
+  getVazhipadByid(id: any) {
+    // this.VMList.find()
+    const vazhipad = this.VMList.find((v) => v.VM_Id == id);
+    return vazhipad ? vazhipad.VM_Name : id;
   }
+  generateTimeSlots() {
+    this.timeSlots = [];
+    for (let i = 4; i < 20; i++) {
+      const start = this.formatHour(i);
+      const end = this.formatHour(i + 1);
+      this.timeSlots.push(`${start} - ${end}`);
+    }
+  }
+
+  formatHour(hour: number): string {
+    const period = hour < 12 ? 'AM' : 'PM';
+    let h = hour % 12;
+    if (h === 0) h = 12;
+    const hourStr = h < 10 ? `0${h}` : `${h}`;
+    return `${hourStr}:00 ${period}`;
+  }
+  onPrathistaChange(event: Event, index: number) {
+    const select = event.target as HTMLSelectElement;
+    const selectedName = select.value;
+    const selectedRow = this.vazhipadinfo.at(index) as FormGroup;
+    const selectedvazhid = this.vazhipadinfo.at(index).get('Vazhid')?.value;
+    const vmToken = selectedRow.get('VM_Token')?.value;
+    const reciptstatus = selectedRow.get('VM_Receipt')?.value;
+    const options = this.prathishtaOptions[index];
+    const selectedObj =
+      this.lang === 'en'
+        ? options.find((opt: any) => opt.name === selectedName)
+        : options.find((opt: any) => opt.rname === selectedName);
+
+    if (selectedObj) {
+      const pmid = selectedObj.id;
+      if (vmToken == 'Y' && reciptstatus == 'Y') {
+        this.setTocken(index, selectedvazhid, pmid);
+      }
+    }
+  }
+
+  openCalendarPopup(index: number) {
+    const row = this.vazhipadinfo.at(index);
+    const vazhipadName = row.get('Vazhipad')?.value;
+    const vazhipadId = row.get('Vazhid')?.value;
+    const vazhmax = row.get('maxLimit')?.value;
+    if (!vazhipadName || !vazhipadId) {
+      this.notification.error("Please select the vazhipad")
+      return;
+    }
+
+    // Calculate how many tickets for this Vazhipad are already in the current form (unsaved)
+    const localBookedMap = new Map<string, number>();
+    this.vazhipadinfo.controls.forEach((group: any, i: number) => {
+      if (i !== index && group.get('Vazhid')?.value === vazhipadId) {
+        const formDate = group.get('VazhipadDate')?.value;
+        const formQty = +group.get('Qty')?.value || 0;
+        if (formDate && formQty > 0) {
+          const currentTotal = localBookedMap.get(formDate) || 0;
+          localBookedMap.set(formDate, currentTotal + formQty);
+        }
+      }
+    });
+
+    const dialogRef = this.dialog.open(CalendarComponent, {
+      width: '850px',
+      panelClass: 'transparent-dialog',
+      data: {
+        index: index,
+        vazhipadName: vazhipadName,
+        vazhipadId: vazhipadId,
+        currentDate: row.get('VazhipadDate')?.value,
+        maxlimit: vazhmax,
+        localBookedMap: localBookedMap
+      }
+    });
+    dialogRef.afterClosed().subscribe((selectedDate: string) => {
+
+      if (!selectedDate) return;
+
+      row.patchValue({
+        VazhipadDate: selectedDate
+      });
+
+      this.getAlreadybookedvazhipadQty(index);
+    })
+  }
+
+  loadRebillData() {
+      this.receiptPrintService.getBookingData().subscribe(data => {
+    if (data && data.length) {
+      // console.log('Received:', data);
+      this.loadDataIntoForm(data);
+    } else {
+      console.warn('No data received');
+    }
+  });
+  }
+
+
+ loadDataIntoForm(data: any[]) {
+  this.vazhipadinfo.clear();
+
+  data.forEach((item: any, index: number) => {
+    const row = this.createRow();
+    this.vazhipadinfo.push(row);
+
+    // ✅ Patch basic values FIRST
+    row.patchValue({
+      Vazhipad: item.Vazhipad,
+      Name: item.Name,
+      Name2: item.Name2,
+      Star: item.Star,
+      Star2: item.Star2,
+      Qty: item.Qty,
+      Rate: item.Rate,
+      Amount: item.Amount,
+      VazhipadDate: item.EvazDate,
+      VTime: item.VTime,
+      PMid: item.PMId,
+      MDay: item.MDay,
+      NalBy: item.NalBy,
+      Mmonth: item.MMonth
+    });
+
+    // 🔥 IMPORTANT: manually trigger selection logic
+    this.triggerVazhipadSelection(item.Vazhipad, index);
+  });
+}
+triggerVazhipadSelection(vazhipadValue: string, index: number) {
+  const row = this.vazhipadinfo.at(index) as FormGroup;
+
+  let selected;
+
+  if (this.lang === 'en') {
+    selected = this.VMList.find(v => v.VM_Name === vazhipadValue);
+  } else {
+    selected = this.VMList.find(v => v.VM_RName === vazhipadValue);
+  }
+
+  if (!selected) {
+    // console.warn('Vazhipad not found:', vazhipadValue);
+    return;
+  }
+
+  //  Set Vazhid
+  row.get('Vazhid')?.setValue(selected.VM_Id);
+
+  //  Call same APIs as onSelect
+  this.getSeasnalalVazhipadData(selected.VM_Id, index);
+  this.getBlockingvazipadDate(selected.VM_Id, index);
+  this.getDatamasterdateCheck(selected.VM_Id, index);
+
+  this.fetchVazhipadDetails(selected.VM_Code, index, selected.VM_Id);
+}
 }

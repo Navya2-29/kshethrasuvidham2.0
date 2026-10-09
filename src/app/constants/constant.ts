@@ -1,29 +1,24 @@
-import { NgPluralCase } from '@angular/common';
 export const Constant = {
-  // BASE_URL: 'http:///api.suvidham.in/api/KshetramAPI/',
-  // BASE_URL:'http://localhost/api/KshetramAPI/',
-  // BASE_URL:'https://api.lacsindore.in/api/KshetramAPI/',
-  // BASE_URL: 'https://panchiyammaapi.suvidham.in/api/KshetramAPI/',
-  //  BASE_URL: 'https://api.rgstrusttvm.in/api/KshetramAPI/', 
-  // BASE_URL:'https://api.oolamparaganapthy.in/api/KshetramAPI/',
-  // BASE_URL:'https://api.egmoreayyappantempleapms.in/api/KshetramAPI/',
-  BASE_URL:'https://api.pisharikavukollam.in/api/KshetramAPI/',
-  // BASE_URL:'https://api.vadakkevilakam.in/api/KshetramAPI/',
-  //  BASE_URL:'https://api.smvtt.org/api/KshetramAPI/',
-  
+  //BASE_URL: 'https://aniyaram.kshethrasuvidham.com/apis/api/KshetramAPI/',
+  // BASE_URL: 'https://cheruvathur.kshethrasuvidham.com/apis/api/KshetramAPI/',
+  // BASE_URL: 'https://kkd.kshethrasuvidham.com/apis/api/KshetramAPI/',
+  // BASE_URL: 'https://counter.bokaroayyappatemple.in/apis/api/KshetramAPI/',
+  // BASE_URL: 'https://lakshmanaswami.kshethrasuvidham.com/apis/api/KshetramAPI/',
+  // BASE_URL: 'https://lakshmanaswami.kshethrasuvidham.com/apis/api/KshetramAPI/',
+  BASE_URL: 'https://demo1.kshethrasuvidham.com/apis/api/KshetramAPI/',
+  //  BASE_URL: 'https://balaji.kshethrasuvidham.com/apis/api/KshetramAPI/',
+  //  BASE_URL: 'https://sudarsana.kshethrasuvidham.com/apis/api/KshetramAPI/',
+  // BASE_URL: 'https://counter.annanagarayyappatemple.org/apis/api/KshetramAPI/',
+  //  BASE_URL: 'https://sv.kshethrasuvidham.com/apis/api/KshetramAPI/',
+
+
   METHODS: {
-    // master view
     GET_MASTER: 'ViewMasters',
-    // delete masters
     DELETE_MASTER: 'DeleteMasters',
-    // pmaster
     CREATE_PMASTER: 'AddPrathista',
-    // cmaster
     CREATE_CMASTER: 'AddVazhipadCategory',
     Type: 'Category',
-    // vmaster
     CREATE_VMASTER: 'AddVazhipadMaster',
-    // daymaster
     CREATE_VDAY: 'DayMaster',
     // SPECIAL master
     GET_VSPECIAL: 'specialDay',
@@ -36,14 +31,11 @@ export const Constant = {
     // vihidhm master
     // GET_ALL_VIHIDHAM: 'getall',
     CREATE_VIHIDHAM: 'AddVihidhamCategory',
-    CREATE_VIHIDHAMRATE:"AddVihidhamRateMaster",
+    CREATE_VIHIDHAMRATE: 'AddVihidhamRateMaster',
     // UPDATE_VIHIDHAM: 'update',
     DELETE_VIHIDHAM: 'VihidhamCategory',
-
     // BLOcking master
-
     CREATE_VBLOCK: 'VazhipadBlocking',
-
     // COMBO MASTWR
     GET_VCOMBO: 'comboVazhipad',
     GET_VCOMBO_BYID: 'vcombo',
@@ -51,28 +43,22 @@ export const Constant = {
     CREATE_VCOMBO: 'create',
     UPDATE_VCOMBO: 'update',
     DELETE_VCOMBO: 'delete',
-
     // ITEM MASTER
     GET_ITEM: 'Nad',
     GET_ALL_ITEM: '',
     CREATE_ITEM: 'AddNAdavaravuMaster',
     UPDATE_ITEM: 'update',
     DELETE_ITEM: 'delete',
-
     // member master
-
     GET_ALL_MEMBER: 'getall',
     CREATE_MEMBER: 'create',
     UPDATE_MEMBER: 'update',
     DELETE_MEMBER: 'delete',
-
     // login
     LOGIN: 'GetLoginInfo',
-
     // commen
     GET_ACCOUNTHEAD: 'getAccountHead',
     GET_SUBACCOUNTHEAD: 'getAccountSubHead',
-
     // vazhipad booking
     VAZHIPAD_BOOKING: 'VazhipadBooking',
     SEARCHBYMOBILENUMBER: 'ViewMasters',
@@ -82,18 +68,21 @@ export const Constant = {
     CANCEL_BILL: 'CancelBill',
     NADAVARAV_BOOKING: 'NadavaravuBooking',
     CREATE_STAFF: 'AddStaffMaster',
-  CREDITCOLLECT:"CreditCollect",
-  UPDATEBILL:"UpdateBill",
-  DUPLICATECOUNT:"DuplicateCount",
-  ADDCOUNTER:"ADDCounter",
-  UPDATESETTING:"UpdateSetting",
-  VAZHIPADWISEREPRT:"VazhipadWiseReport",
-  UPDATEBILLMODE:"UpdateBillMode",
-  CHECKMULTIBLOCKS:"CheckMultiBlocks",
-  DAY:"Day",
-  DEVOTEEMASTER:"DevoteeMaster",
-  FEECOLLECTION:"FeeCollection",
-  CHANGEPASSWORD:"ChangePassword"
+    CREDITCOLLECT: 'CreditCollect',
+    UPDATEBILL: 'UpdateBill',
+    DUPLICATECOUNT: 'DuplicateCount',
+    ADDCOUNTER: 'ADDCounter',
+    UPDATESETTING: 'UpdateSetting',
+    VAZHIPADWISEREPRT: 'VazhipadWiseReport',
+    UPDATEBILLMODE: 'UpdateBillMode',
+    CHECKMULTIBLOCKS: 'CheckMultiBlocks',
+    DAY: 'Day',
+    DEVOTEEMASTER: 'DevoteeMaster',
+    FEECOLLECTION: 'FeeCollection',
+    CHANGEPASSWORD: 'ChangePassword',
+    UPDATEONLINESTATUS: 'UpdateOnlineStatus',
+    GOTHRAMMASTER: 'AddGothramMaster',
+    UPDATESTARMASTER: 'UpdateStarMaster',
+    UPDATEUTIL: "UpdateUtil"
   },
-
 };

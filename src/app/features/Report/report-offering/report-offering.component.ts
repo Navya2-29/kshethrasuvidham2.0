@@ -14,15 +14,17 @@ import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PrintreportService } from '../../../shared/service/printreport.service';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
-
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+import { MatIconModule } from '@angular/material/icon';
 interface ConsolidatedData {
   Vazhipad: string;
-  TotalQty: number; // Renamed for clarity
+  TotalQty: number;
 }
 @Component({
   selector: 'app-report-offering',
   standalone: true,
-  imports: [CommonModule, MatTableModule,SpinnerComponent, TranslateModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule],
+  imports: [CommonModule, MatTableModule,SpinnerComponent,MatIconModule, TranslateModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule],
   templateUrl: './report-offering.component.html',
   styleUrls: ['./report-offering.component.css','/src/assets/styles/report.style.css'],
 })
@@ -475,5 +477,102 @@ generatePDFs() {
     console.error("Error generating PDF:", error);
   });
 }
+exportToExcel(): void {
 
+  const workbook = XLSX.utils.book_new();
+
+  // ==========================================
+  // Sheet Data Array
+  // ==========================================
+  const excelData: any[] = [];
+
+  // Header
+  excelData.push([this.templeName]);
+  excelData.push([this.templeAddress]);
+  excelData.push(['OFFERING REPORT']);
+  excelData.push([
+    `${this.formatDateToDDMMYYYY(this.fromDate)} To ${this.formatDateToDDMMYYYY(this.toDate)}`
+  ]);
+  excelData.push([]);
+
+  // ==========================================
+  // Table Header
+  // ==========================================
+  excelData.push([
+    'SI No',
+    'Vazhipad',
+    'Quantity'
+  ]);
+
+  // ==========================================
+  // Rows
+  // ==========================================
+  this.data.forEach((item: any, index: number) => {
+    excelData.push([
+      index + 1,
+      item.Vazhipad,
+      item.Qty
+    ]);
+  });
+
+  // ==========================================
+  // Total
+  // ==========================================
+  const totalQty =
+    this.data.reduce(
+      (sum: number, item: any) =>
+        sum + Number(item.Qty || 0),
+      0
+    );
+
+  excelData.push([]);
+  excelData.push([
+    '',
+    'Grand Total',
+    totalQty
+  ]);
+
+  // ==========================================
+  // Worksheet
+  // ==========================================
+  const worksheet =
+    XLSX.utils.aoa_to_sheet(excelData);
+
+  worksheet['!cols'] = [
+    { wch: 10 },
+    { wch: 35 },
+    { wch: 15 }
+  ];
+
+  // ==========================================
+  // Add Sheet
+  // ==========================================
+  XLSX.utils.book_append_sheet(
+    workbook,
+    worksheet,
+    'Offering Report'
+  );
+
+  // ==========================================
+  // Save File
+  // ==========================================
+  const excelBuffer: any =
+    XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array'
+    });
+
+  const file = new Blob(
+    [excelBuffer],
+    {
+      type:
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+    }
+  );
+
+  saveAs(
+    file,
+    `Offering_Report_${new Date().getTime()}.xlsx`
+  );
+}
 }

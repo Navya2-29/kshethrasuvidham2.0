@@ -8,7 +8,6 @@ import {
   MatPaginatorModule,
   PageEvent,
 } from '@angular/material/paginator';
-
 import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -18,6 +17,9 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FeeCollection } from '../../../models/feecollection.model';
 import { PrintreportService } from '../../../shared/service/printreport.service';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+import { MatIconModule } from '@angular/material/icon';
 @Component({
   selector: 'app-report-mattinangal',
   standalone: true,
@@ -26,7 +28,7 @@ import { SpinnerComponent } from '../../../shared/component/spinner/spinner.comp
     MatTableModule,
     MatPaginatorModule,
     HeaderComponent,
-    MatTooltipModule,MatFormFieldModule, MatInputModule,TranslateModule,SpinnerComponent
+    MatTooltipModule,MatFormFieldModule, MatInputModule,TranslateModule,SpinnerComponent,MatIconModule
   ],
   templateUrl: './report-mattinangal.component.html',
   styleUrls: ['./report-mattinangal.component.css','/src/assets/styles/report.style.css'],
@@ -59,7 +61,7 @@ templeAddress:string|null;
     private http:HttpClient,
     private ts: TranslateService,
     private reportPrintservice:PrintreportService,
-    
+
   ) {
 this.lang=localStorage.getItem('Language');
 this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
@@ -71,8 +73,8 @@ const userLang = navigator.language || 'en';
 
   }
 
- 
-  
+
+
 
 
   groupDataByName(data: FeeCollection[]): { [key: string]: FeeCollection[] } {
@@ -84,7 +86,7 @@ const userLang = navigator.language || 'en';
       return acc;
     }, {} as { [key: string]: FeeCollection[] });
   }
-  
+
 
 
 
@@ -108,21 +110,45 @@ const userLang = navigator.language || 'en';
     this.service.getReport(payLoad).subscribe({
       next: (data) => {
         console.log('Fetched report data:', data);
+
+data.sort((a:any, b:any) => {
+  // Parse BillDate (format: dd.mm.yyyy)
+  const [aDay, aMonth, aYear] = a.BillDate.split('.').map(Number);
+  const [bDay, bMonth, bYear] = b.BillDate.split('.').map(Number);
+
+  const aDate = new Date(aYear, aMonth - 1, aDay);
+  const bDate = new Date(bYear, bMonth - 1, bDay);
+
+  // Compare dates first
+  if (aDate < bDate) return -1;
+  if (aDate > bDate) return 1;
+
+  // If dates are equal, compare BillNo
+  const [aMain, aSub] = a.BillNo.split('/').map(Number);
+  const [bMain, bSub] = b.BillNo.split('/').map(Number);
+
+  if (aMain !== bMain) return aMain - bMain;
+  return aSub - bSub;
+});
+
         this.data = data;
+
+
+
+
+
+
         // this.groupDataByTransactionMode(this.data); // Group the data
         this.groupedData = this.groupDataByName(this.data);
         this.dataSource.data = this.data;
         this.loading=false;
-        
+
       },
       error: (error) => {
         console.error('Error fetching report data:', error);
       },
     });
   }
-
-
-  
 
 
   goBack(): void {
@@ -149,21 +175,21 @@ const userLang = navigator.language || 'en';
 //       console.error('No content found to print');
 //       return;
 //     }
-  
+
 //     const WindowPrt = window.open('', '', 'width=800,height=600');
-    
+
 //     // Check if the print window was successfully opened
 //     if (!WindowPrt) {
 //       console.error('Unable to open print window. Please check pop-up blockers.');
 //       return;
 //     }
-  
+
 //     WindowPrt.document.write(`
 //       <html>
 //         <head>
 //           <title>Print</title>
 //           <style>
-         
+
 //           body {
 //     font-size: 16px;
 //     font-family: "Times New Roman", serif;
@@ -209,8 +235,8 @@ const userLang = navigator.language || 'en';
 //             #print-section{
 // padding-bottom: 100px;
 //   }
-       
-    
+
+
 //     .page-break {
 //       page-break-before: always;
 //     }
@@ -219,29 +245,29 @@ const userLang = navigator.language || 'en';
 //         <body>${printContent.innerHTML}</body>
 //       </html>
 //     `);
-  
+
 //     WindowPrt.document.close();
 //     WindowPrt.focus();
-  
+
 //     // Make sure that the window is still valid before calling print and close
 //     if (WindowPrt) {
 //       WindowPrt.print();
 //       WindowPrt.close();
-//     } 
+//     }
 }
 
 
 getTotalAmount(): number {
   return this.data.reduce((sum, item) => sum + item.Amount, 0);
 }
-  
- 
-  
-  
-  
-  
- 
-  
+
+
+
+
+
+
+
+
 
   getTransactionType(transmode: string): string {
     switch (transmode) {
@@ -250,7 +276,7 @@ getTotalAmount(): number {
       case 'CS':
         return 'CASH';
       case 'MO':
-        
+
         return 'MONEY ORDER';
       case 'UP':
         return 'UPI';
@@ -267,7 +293,7 @@ getTotalAmount(): number {
   }
 
 
-  
+
  // Calculate the grand total for each transaction mode
  getGrandTotalForTrnsMode(item: string): any {
   const items = this.groupedData[item]; // Get items for the transaction mode
@@ -284,7 +310,124 @@ return total;
 
 }
 
+exportToExcel(): void {
+  const workbook = XLSX.utils.book_new();
+  const excelData: any[] = [];
 
+  // ==========================================
+  // HEADER
+  // ==========================================
+  excelData.push([this.templeName]);
+  excelData.push([this.templeAddress]);
+  excelData.push(['MATTINAM REPORT']);
+  excelData.push([
+    `${this.formatDateToDDMMYYYY(this.fromDate)} To ${this.formatDateToDDMMYYYY(this.toDate)}`
+  ]);
+  excelData.push([]);
+
+  // ==========================================
+  // TABLE HEADER
+  // ==========================================
+  excelData.push([
+    'Bill No',
+    'Bill Date',
+    'Vazhipad',
+    'Remarks',
+    'Name',
+    'Address',
+    'Star',
+    'Qty',
+    'Rate',
+    'Amount',
+    'Mobile No',
+    'Pin Code',
+    'Email'
+  ]);
+
+  // ==========================================
+  // DATA ROWS
+  // ==========================================
+  this.data.forEach((item: any) => {
+    excelData.push([
+      item.BillNo,
+      item.BillDate,
+      item.Vazhipad,
+      item.Remarks,
+      item.Name,
+      `${item.Address1 || ''} ${item.Address2 || ''}`.trim(),
+      item.Star || 'N/A',
+      item.Qty,
+      item.Rate,
+      item.Amount,
+      item.MobileNo || '',
+      item.PinCode || '',
+      item.EmailId || ''
+    ]);
+  });
+
+  // ==========================================
+  // TOTAL ROW
+  // ==========================================
+  excelData.push([
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    'Total',
+    this.getTotalAmount(),
+    '',
+    '',
+    ''
+  ]);
+
+  // ==========================================
+  // CREATE SHEET
+  // ==========================================
+  const worksheet = XLSX.utils.aoa_to_sheet(excelData);
+
+  worksheet['!cols'] = [
+    { wch: 12 }, // Bill No
+    { wch: 15 }, // Bill Date
+    { wch: 28 }, // Vazhipad
+    { wch: 25 }, // Remarks
+    { wch: 25 }, // Name
+    { wch: 35 }, // Address
+    { wch: 15 }, // Star
+    { wch: 10 }, // Qty
+    { wch: 12 }, // Rate
+    { wch: 15 }, // Amount
+    { wch: 18 }, // Mobile
+    { wch: 12 }, // PinCode
+    { wch: 30 }  // Email
+  ];
+
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Mattinam Report');
+
+  // ==========================================
+  // SAVE FILE
+  // ==========================================
+  const excelBuffer: any = XLSX.write(workbook, {
+    bookType: 'xlsx',
+    type: 'array'
+  });
+
+  const file = new Blob(
+    [excelBuffer],
+    {
+      type:
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+    }
+  );
+
+  saveAs(
+    file,
+    `Mattinam_Report_${new Date().getTime()}.xlsx`
+  );
+}
 
 
 

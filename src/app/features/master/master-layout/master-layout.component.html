@@ -1,0 +1,21 @@
+<div class="layout">
+
+  <!-- CONTENT ONLY -->
+  <main class="content">
+    <div class="card">
+
+      <!-- PAGE HEADER -->
+      <div class="card-header">
+        <button class="back-btn" routerLink="/dashboard">←</button>
+        <h2>{{ pageTitle }}</h2>
+      </div>
+
+      <!-- DYNAMIC CONTENT -->
+      <div class="card-body">
+        <ng-content></ng-content>
+      </div>
+
+    </div>
+  </main>
+
+</div>

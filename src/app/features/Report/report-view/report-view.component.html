@@ -1,76 +1,104 @@
 <app-header class="app-header"></app-header>
+
 <div class="report-container">
   <app-spinner *ngIf="loading"></app-spinner>
 
   <div class="icon-container">
-    <button
-      mat-icon-button
-      matTooltip="Back to previous page"
-      (click)="goBack()"
-    >
+    <button mat-icon-button matTooltip="Back to previous page" (click)="goBack()">
       <span class="material-icons">arrow_back</span>
     </button>
-    <button mat-icon-button matTooltip="Print">
-      <span class="material-icons" (click)="generatePDF()">print</span>
+
+    <button mat-icon-button matTooltip="Print" (click)="generatePDF()">
+      <span class="material-icons">print</span>
     </button>
-    <button mat-icon-button matTooltip="Make PDF">
-      <span class="material-icons" (click)="generatePDF()">picture_as_pdf</span>
+     <button
+      mat-icon-button
+      matTooltip="Export to Excel"
+     (click)="exportToExcel()"
+    >
+      <mat-icon>grid_on</mat-icon>
     </button>
   </div>
+
   <div id="print-section">
     <div class="header-print">
-      <h3 class="templename">
-        {{ templeName }}
-      </h3>
-      <h4>
-        {{ templeAddress }}
-      </h4>
-      <h2>
-        {{ "Report Name.POORNAM REPORT" | translate }}
-      </h2>
+      <h3 class="templename">{{ templeName }}</h3>
+      <h4>{{ templeAddress }}</h4>
+      <h2>{{ "Report Name.POORNAM REPORT" | translate }}</h2>
       <p class="date">
-        {{ formatDateToDDMMYYYY(fromDate) }} -{{ formatDateToDDMMYYYY(toDate) }}
+        {{ formatDateToDDMMYYYY(fromDate) }} - {{ formatDateToDDMMYYYY(toDate) }}
       </p>
       <hr />
     </div>
 
-    <!-- PDF Container -->
     <div class="body-print">
       <div id="pdf-content" *ngIf="data.length > 0">
-        <div *ngFor="let timeGroup of groupedData | keyvalue ;let i = index" class="tabble-headings" [ngStyle]="i> 0 ? { 'page-break-before': 'always' } : {}" >
-          <!-- First Level: VTime -->
-        <p class="transactions tabble-heading"><u>{{ getTimeForBill(timeGroup.key) }}</u></p>
-    
-          <!-- Second Level: Vazhipad-Prathista -->
-          <div class="" *ngFor="let subGroup of timeGroup.value | keyvalue">
-           <p class="category">{{ subGroup.key }}</p>
-    
-            <table>
-              <thead>
-                <tr>
-                  <th class="sino">{{ "Report Name.SINO" | translate }}</th>
-                  <th class="name"  >{{ "NAME" | translate }}</th>
-                  <th class="star"  >{{ "STAR" | translate }}</th>
-                  <th class="qty" >{{ "QUANTITY" | translate }}</th>
-                  <th class="address" >{{ "PLACEHOLDER.ADDRESS" | translate }}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let entry of subGroup.value; let i = index">
-                  <td class="sino" data-label="sino">{{ i + 1 }}</td>
-                  <td class="name bold" data-label="Name" >{{ entry.Name }}</td>
-                  <td class="star bold" data-label="star">{{ entry.Star }}</td>
-                  <td class="qty" data-label="qty">{{ entry.Qty }}</td>
-                  <td data-label="address">
-                    <p class="address" >{{ entry.Address1 }}</p>
-                    <p class="address">{{ entry.Address2 }}</p>
-                    <p class="address">{{ entry.MobileNo }}</p>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+        <div
+          *ngFor="let timeGroup of groupedData | keyvalue; let i = index"
+          [ngStyle]="i > 0 ? { 'page-break-before': 'always' } : {}"
+          class="tabble-headings"
+        >
+          <!-- VTime -->
+          <h2 class="transactions tabble-heading">
+          {{ getTimeForBill(timeGroup.key) }}
+          </h2>
+
+          <!-- Prathista -->
+          <div *ngFor="let prathistaGroup of timeGroup.value | keyvalue">
+            <h2 class="category"><u>{{ prathistaGroup.key }}</u></h2>
+
+            <!-- Vazhipad under each Prathista -->
+            <div *ngFor="let vazhipadGroup of prathistaGroup.value | keyvalue">
+              <h3 class="subcategory">{{ vazhipadGroup.key }}</h3>
+
+              <table>
+                <thead>
+                  <tr>
+                    <th class="sino">{{ "Report Name.SINO" | translate }}</th>
+                    <th class="name">{{ "NAME" | translate }}</th>
+                    <th class="star">{{ "STAR" | translate }}</th>
+                    <th class="star">{{ "Gothram" | translate }}</th>
+                    <th class="qty">{{ "QUANTITY" | translate }}</th>
+                    <th class="address">{{ "ADDRESS" | translate }}</th>
+                    <th class="type">{{ "Type" | translate }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let entry of vazhipadGroup.value; let j = index">
+                    <td class="sino">{{ j + 1 }}</td>
+                    <td class="name bold">
+                      {{ entry.Name }}
+                      <ng-container *ngIf="entry.Name2"><br>{{ entry.Name2 }}</ng-container>
+                      <ng-container *ngIf="entry.Name3"><br>{{ entry.Name3 }}</ng-container>
+                    </td>
+                    <td class="star bold">
+                      {{ entry.Star }}
+                      <ng-container *ngIf="entry.Star2"><br>{{ entry.Star2 }}</ng-container>
+                      <ng-container *ngIf="entry.Star3"><br>{{ entry.Star3 }}</ng-container>
+                    </td>
+                    <td class="star bold">{{ entry.Address3 }}</td>
+                    <td class="qty">{{ entry.Qty }}</td>
+                    <td>
+                      <p>{{ entry.Address1 }}</p>
+                      <p>{{ entry.Address2 }}</p>
+                      <p>{{ entry.MobileNo }}</p>
+                    </td>
+                    <td>
+                      {{
+                        entry.Type === 'Counter'
+                          ? 'CTR'
+                          : entry.Type === 'Online'
+                          ? 'OL'
+                          : entry.Type
+                      }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
+    </div>
   </div>
 </div>

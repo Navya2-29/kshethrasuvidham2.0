@@ -1,25 +1,26 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ReportService } from '../service/report.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { jsPDF } from 'jspdf'; 
 import {ReportData} from '../../../models/poornam-report'
 import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Location } from '@angular/common';
-import autoTable from 'jspdf-autotable';
+
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PrintreportService } from '../../../shared/service/printreport.service';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
+import * as XLSX from 'xlsx';
+import {saveAs} from 'file-saver';
+import { MatIconModule } from '@angular/material/icon';
 @Component({
   selector: 'app-report-duplicate',
   standalone: true,
-  imports: [CommonModule,TranslateModule, MatTableModule,SpinnerComponent, MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
+  imports: [CommonModule,TranslateModule, MatTableModule,MatIconModule, SpinnerComponent, MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
   templateUrl: './report-duplicate.component.html',
   styleUrls: ['./report-duplicate.component.css','/src/assets/styles/report.style.css'],
 })
@@ -46,7 +47,7 @@ export class ReportDuplicateComponent {
     private ts: TranslateService, private service: ReportService,private router: Router, private http:HttpClient) {
     this.lang=localStorage.getItem('Language');
     this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
-    this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address'; 
+    this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
     const userLang = navigator.language || 'en';
     const languageCode = userLang.split('-')[0];
     this.ts.setDefaultLang(languageCode);
@@ -72,13 +73,14 @@ export class ReportDuplicateComponent {
     this.service.getReport(payLoad).subscribe({
       next: (data) => {
         console.log('Fetched report data:', data);
-        this.data=data;
-        this.dataSource.data = this.data;
+        // this.data=data;
+        this.data = data.sort((a: any, b: any) =>
+  a.BillNo.localeCompare(b.BillNo, undefined, { numeric: true, sensitivity: 'base' })
+);
+
         this.loading=false;
-        console.log( this.dataSource.data)
-        this.length =this.data .length; 
-        this.dataSource.paginator = this.paginator;
-       
+        this.length =this.data .length;
+
       },
       error: (error) => {
         console.error('Error fetching report data:', error);
@@ -90,7 +92,7 @@ export class ReportDuplicateComponent {
     this.pageIndex = event.pageIndex;
     this.pageSize = event.pageSize;
   }
-  
+
   goBack(): void {
     console.log('Going back...'); // Log to verify method execution
     this.router.navigate(['/getReport']);
@@ -135,7 +137,7 @@ this.reportPrintservice.generatePDF();
 //       <head>
 //         <title>Print</title>
 //          <style>
-         
+
 //           body {
 //     font-size: 16px;
 //     font-family: "Times New Roman", serif;
@@ -181,8 +183,8 @@ this.reportPrintservice.generatePDF();
 //             #print-section{
 // padding-bottom: 100px;
 //   }
-       
-    
+
+
 //     .page-break {
 //       page-break-before: always;
 //     }
@@ -227,4 +229,108 @@ getTotalAmount(): number {
         return 'OTHERS';
     }
   }
+exportToExcel(): void {
+
+  const workbook = XLSX.utils.book_new();
+  const sheetData: any[][] = [];
+
+  // ===== HEADER =====
+  sheetData.push([this.templeName]);
+  sheetData.push([this.templeAddress]);
+  sheetData.push(['DUPLICATE REPORT']);
+  sheetData.push([
+    `${this.formatDateToDDMMYYYY(this.fromDate)} to ${this.formatDateToDDMMYYYY(this.toDate)}`
+  ]);
+  sheetData.push([]);
+
+  // ===== TABLE HEADER =====
+  sheetData.push([
+    'Bill No',
+    'Bill Date',
+    'Counter Id',
+    'User',
+    'Quantity'
+  ]);
+
+  // ===== TABLE DATA =====
+  this.data.forEach((item: any) => {
+    sheetData.push([
+      item.BillNo,
+      item.BillDate,
+      item.CounterId,
+      item.Cuser,
+      item.ct
+    ]);
+  });
+
+  // ===== CREATE SHEET =====
+  const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(sheetData);
+
+  // ===== MERGE HEADER =====
+  worksheet['!merges'] = [
+    { s: { r: 0, c: 0 }, e: { r: 0, c: 4 } },
+    { s: { r: 1, c: 0 }, e: { r: 1, c: 4 } },
+    { s: { r: 2, c: 0 }, e: { r: 2, c: 4 } },
+    { s: { r: 3, c: 0 }, e: { r: 3, c: 4 } }
+  ];
+
+  // ===== HEADER STYLE =====
+  const headerStyle = {
+    alignment: { horizontal: 'center', vertical: 'center' },
+    font: { bold: true, sz: 14 }
+  };
+
+  ['A1', 'A2', 'A3', 'A4'].forEach(cell => {
+    if (worksheet[cell]) worksheet[cell].s = headerStyle;
+  });
+
+  // ===== TABLE HEADER STYLE =====
+  const tableHeaderStyle = {
+    font: { bold: true },
+    alignment: { horizontal: 'center' }
+  };
+
+  const headerRowIndex = 5;
+
+  for (let col = 0; col < 5; col++) {
+    const addr = XLSX.utils.encode_cell({ r: headerRowIndex, c: col });
+    if (worksheet[addr]) worksheet[addr].s = tableHeaderStyle;
+  }
+
+  // ===== ALIGN NUMERIC COLUMNS =====
+  Object.keys(worksheet).forEach(cell => {
+    if (cell.startsWith('C') || cell.startsWith('E')) {
+      if (worksheet[cell]) {
+        worksheet[cell].s = {
+          alignment: { horizontal: 'center' }
+        };
+      }
+    }
+  });
+
+  // ===== COLUMN WIDTH =====
+  worksheet['!cols'] = [
+    { wch: 15 },
+    { wch: 15 },
+    { wch: 15 },
+    { wch: 20 },
+    { wch: 10 }
+  ];
+
+  // ===== ADD SHEET =====
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Duplicate Report');
+
+  // ===== EXPORT =====
+  const excelBuffer = XLSX.write(workbook, {
+    bookType: 'xlsx',
+    type: 'array'
+  });
+
+  const blob = new Blob([excelBuffer], {
+    type:
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+  });
+
+  saveAs(blob, `Duplicate_Report_${new Date().getTime()}.xlsx`);
+}
 }

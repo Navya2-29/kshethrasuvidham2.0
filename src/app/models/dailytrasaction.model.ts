@@ -8,6 +8,8 @@ export interface ReportDailyStmt {
     BillDate: string;
     VazhiDate: string;
     BillNo: string;
+    TrnStatus:string;
+    TotalAmt:number;
     Prathista: string;
     InstBank?:string;
     InstDate?:string;

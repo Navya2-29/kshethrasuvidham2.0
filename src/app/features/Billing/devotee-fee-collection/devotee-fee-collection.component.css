@@ -509,3 +509,23 @@ mat-option {
   color: gray;
   pointer-events: auto; /* Ensure the icon is clickable */
 }
+button:disabled {
+  background-color: #d3d3d3 !important; /* Light gray */
+  color: #888888 !important; /* Optional: change text color */
+  cursor: not-allowed;
+  border-color: #cccccc;
+}
+.btn-submit{
+    background-color: #203b5e;
+    color:white;
+   
+}
+.bwidth{
+ padding:9px;
+    border:none;
+    border-radius:5px;
+    font-size:11pt;
+    font-weight:700;
+    transition:0.5s;
+    width:150px;
+}

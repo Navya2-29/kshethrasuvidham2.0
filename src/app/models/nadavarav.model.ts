@@ -17,6 +17,8 @@ export interface NadavaravReport{
     Rate:number;
     Vazhipad:string;
     Address1:string;
+    CounterId:string;
+    UName:string;
     
 }
 

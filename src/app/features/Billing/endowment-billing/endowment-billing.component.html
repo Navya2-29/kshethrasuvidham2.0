@@ -1,45 +1,6 @@
 <app-header></app-header>
 <div class="high" style="width: 100%">
-  <!-- <h2 class="heading">Endowment Billing</h2> -->
-
-  <!-- <div style="margin-left: 30px;" class="d-flex align-items-center ms-3">
-    <input
-      type="text"
-      [placeholder]="'PLACEHOLDER.MOBILENUMBER' | translate"
-      [(ngModel)]="mobileNumber"
-      style="width: 150px ;margin-right:10px"
-      class="phone sps form-control"
-    />
-    <input type="checkbox" [(ngModel)]="memberDevoteeCheck" style="margin: left 10px;" ><span style="color:black;margin-left: 5px;font-size: 12px;">{{"Member" | translate }}</span> 
-    <button
-    class="btn btn-secondary"
-    (click)="getNameAndStarByMobilenumber()"
-    style=" font-size: 9pt; background-color: #223d61;padding-left: 5px;margin-left: 5px;"
-  >
-    Search for Devotee
-  </button> -->
-
-
-
-
-    <!-- <button -->
-      <!-- class="btn btn-secondary"
-      (click)="onFind()"
-      style="padding: 5px; font-size: 9pt; background-color: #223d61"
-    >
-      Find
-    </button> -->
-    <!-- <div style="margin-top:10px;margin-bottom: 10px;">
-      <input type="checkbox" [(ngModel)]="memberDevoteeCheck" style="margin-top: 5px;" ><span style="color:black;margin-left: 5px;">Member</span> 
-      <button
-      class="btn btn-secondary"
-      (click)="getNameAndStarByMobilenumber()"
-      style=" font-size: 9pt; background-color: #223d61;padding-left: 10px;margin-left: 50px;"
-    >
-      Search for Devotee
-    </button>-->
-    <!-- </div>  -->
-  <!-- </div> -->
+ 
 
   <div class="container" >
 
@@ -188,7 +149,7 @@
                           formControlName="NoOfDays"
                           [min]="1"
                           appNumber
-                          [readonly]="VM_MaxNo > 0"
+                          
                         />
                       </td>
                       <td>
@@ -479,6 +440,18 @@
 <div class="userdetails">
 
   <div class="form-group">
+     <span
+              style="color: red; font-weight: 800; font-size: 16px"
+              class="blink"
+              *ngIf="isLockedShow"
+              >LOCK
+            </span>
+             <span (click)="vazhipadUnblocking()"
+              style="color: rgb(53, 250, 46); font-weight: 800; font-size: 16px"
+               title="Unlock"
+               *ngIf="isLockedShow"
+              > <i class="fa-solid fa-unlock" ></i>
+            </span>
     <label>Bill No</label>
     <input type="text" readonly placeholder="Enter Bill No" formControlName="BillNo">
   </div>
@@ -505,7 +478,9 @@
   </div>
 
   <div class="form-group button-group">
-    <button class="proceed" (click)="onSubmit()">Pay Endowment</button>
+    <button class="proceed" (click)="onSubmit()"  [disabled]="
+                  role == 'admin' || role == 'audit' || role == 'super'
+                " >Pay Endowment</button>
   </div>
  
 </div>

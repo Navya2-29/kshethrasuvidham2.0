@@ -17,12 +17,14 @@ import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import { PrintreportService } from '../../../shared/service/printreport.service';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
-
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-report-cancel',
   standalone: true,
-  imports: [CommonModule,MatTableModule,SpinnerComponent, TranslateModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
+  imports: [CommonModule,MatTableModule,SpinnerComponent,MatIconModule, TranslateModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
   templateUrl: './report-cancel.component.html',
   styleUrls: ['./report-cancel.component.css','/src/assets/styles/report.style.css' ]
 })
@@ -84,7 +86,9 @@ ngOnInit() {
       next: (data) => {
         console.log('Fetched report data:vazhipad', data);
         this.data=data;
-            
+             this.data = this.data.sort((a: any, b: any) =>
+        a.BillNo.localeCompare(b.BillNo, undefined, { numeric: true, sensitivity: 'base' })
+        ); 
       //    this.data = this.data.sort((a:any, b:any) => {
       //     const [numA, denomA] = a.BillNo.split('/').map(Number);
       //     const [numB, denomB] = b.BillNo.split('/').map(Number);
@@ -119,7 +123,10 @@ ngOnInit() {
     this.service.getReport(payLoad).subscribe({
       next: (data) => {
         console.log('Fetched report data:nadavararvu', data);
-        this.nadavaravuDatat=data;
+          this.nadavaravuDatat = data.sort((a: any, b: any) =>
+        a.BillNo.localeCompare(b.BillNo, undefined, { numeric: true, sensitivity: 'base' })
+        );
+        this.nadavaravuDatat=this.nadavaravuDatat;
             
       //    this.data = this.data.sort((a:any, b:any) => {
       //     const [numA, denomA] = a.BillNo.split('/').map(Number);
@@ -128,10 +135,10 @@ ngOnInit() {
       //     // Compare the two parts: first compare the numerator, then the denominator
       //     return numA - numB || denomA - denomB;
       // });
-      console.log(this.filteredData,"aaaaaaaaaaaaaaaaaaa")  
+      // console.log(this.filteredData,"aaaaaaaaaaaaaaaaaaa")  
 this.loading=false;
         this.dataSource.data = this.data
-        console.log( this.dataSource.data)
+        // console.log( this.dataSource.data)
         this.length =this.filteredData .length; 
         this.dataSource.paginator = this.paginator;
         
@@ -508,6 +515,172 @@ getTotalAmount(): number {
 }
 getNadavaravuTotalAmount(): number {
   return this.nadavaravuDatat.reduce((sum, item) => sum + item.Receipt_Amt, 0);
+}
+exportToExcel(): void {
+  const wb = XLSX.utils.book_new();
+
+  // Sheet 1 - Vazhipad Cancel
+  if (this.data?.length > 0) {
+    const vazhipadRows: any[] = [];
+
+    // Title
+    vazhipadRows.push([this.templeName]);
+    vazhipadRows.push([this.templeAddress]);
+    vazhipadRows.push(['VAZHIPAD BOOKING CANCEL REPORT']);
+    vazhipadRows.push([
+      `${this.formatDateToDDMMYYYY(this.fromDate)} to ${this.formatDateToDDMMYYYY(this.toDate)}`
+    ]);
+    vazhipadRows.push([]);
+
+    // Header
+    vazhipadRows.push([
+      'Bill No',
+      'Bill Date',
+      'Vazhipad',
+      'Name',
+      'Qty',
+      'Amount',
+      'Cancel Date',
+      'Remarks'
+    ]);
+
+    // Data
+    this.data.forEach((item: any) => {
+      vazhipadRows.push([
+        item.BillNo,
+        item.BillDate,
+        item.Vazhipad,
+        item.Name,
+        item.Qty,
+        item.Rate,
+        item.Canceldt,
+        item.Remarks
+      ]);
+    });
+
+    // Total
+    vazhipadRows.push([]);
+    vazhipadRows.push([
+      '',
+      '',
+      '',
+      '',
+      '',
+      'TOTAL',
+      '',
+      this.getTotalAmount()
+    ]);
+
+    const ws1 = XLSX.utils.aoa_to_sheet(vazhipadRows);
+    ws1['!cols'] = [
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 30 },
+      { wch: 25 },
+      { wch: 10 },
+      { wch: 15 },
+      { wch: 18 },
+      { wch: 35 }
+    ];
+
+    XLSX.utils.book_append_sheet(wb, ws1, 'Vazhipad Cancel');
+  }
+
+  // Sheet 2 - Nadavaravu Cancel
+  if (this.nadavaravuDatat?.length > 0) {
+    const nadRows: any[] = [];
+
+    nadRows.push([this.templeName]);
+    nadRows.push([this.templeAddress]);
+    nadRows.push(['NADAVARAVU CANCEL REPORT']);
+    nadRows.push([
+      `${this.formatDateToDDMMYYYY(this.fromDate)} to ${this.formatDateToDDMMYYYY(this.toDate)}`
+    ]);
+    nadRows.push([]);
+
+    nadRows.push([
+      'Bill No',
+      'Bill Date',
+      'Item',
+      'Name',
+      'Qty',
+      'Amount',
+      'Cancel Date',
+      'Remarks'
+    ]);
+
+    this.nadavaravuDatat.forEach((item: any) => {
+      nadRows.push([
+        item.BillNo,
+        item.BillDate,
+        this.lang == 'en' ? item.NM_Name : item.NM_RName,
+        item.Name,
+        item.Qty,
+        item.Receipt_Amt,
+        item.Canceldt,
+        item.Reason
+      ]);
+    });
+
+    nadRows.push([]);
+    nadRows.push([
+      '',
+      '',
+      '',
+      '',
+      '',
+      'TOTAL',
+      '',
+      this.getNadavaravuTotalAmount()
+    ]);
+
+    const ws2 = XLSX.utils.aoa_to_sheet(nadRows);
+
+    ws2['!cols'] = [
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 25 },
+      { wch: 25 },
+      { wch: 10 },
+      { wch: 15 },
+      { wch: 18 },
+      { wch: 35 }
+    ];
+
+    XLSX.utils.book_append_sheet(wb, ws2, 'Nadavaravu Cancel');
+  }
+
+  // Sheet 3 - Grand Total
+  const summary = [
+    ['Temple Name', this.templeName],
+    ['Report', 'Booking Cancel Report'],
+    ['From', this.formatDateToDDMMYYYY(this.fromDate)],
+    ['To', this.formatDateToDDMMYYYY(this.toDate)],
+    [],
+    ['Vazhipad Total', this.getTotalAmount()],
+    ['Nadavaravu Total', this.getNadavaravuTotalAmount()],
+    ['Grand Total', this.getTotalAmount() + this.getNadavaravuTotalAmount()]
+  ];
+
+  const ws3 = XLSX.utils.aoa_to_sheet(summary);
+  ws3['!cols'] = [{ wch: 25 }, { wch: 25 }];
+  XLSX.utils.book_append_sheet(wb, ws3, 'Summary');
+
+  // Save file
+  const excelBuffer = XLSX.write(wb, {
+    bookType: 'xlsx',
+    type: 'array'
+  });
+
+  const blob = new Blob([excelBuffer], {
+    type:
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+  });
+
+  saveAs(
+    blob,
+    `Booking_Cancel_Report_${this.fromDate}_to_${this.toDate}.xlsx`
+  );
 }
 
 }

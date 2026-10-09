@@ -29,6 +29,9 @@ export class MultidaybookeddetailsComponent implements OnInit {
  nakshthram:any[]=[];
  starData: { [id: string]: string } = {};
  lang:string | null;
+ hasName2 = false;
+hasStar2 = false;
+
   constructor(
     private dialogRef: MatDialogRef<MultidaybookeddetailsComponent>,
     private multidayService: TotalAmountService,
@@ -55,6 +58,9 @@ this.starDate=this.data[0].VazhipadDate;
 this.lastDAte=this.data[lastIndex].VazhipadDate
 this.vazhipad=this.data[0].Vazhipad;
 this.loadStarData()
+this.hasName2 = this.data.some((item: any) => item.Name2 && item.Name2.trim() !== '');
+  this.hasStar2 = this.data.some((item: any) => item.Star2 && item.Star2.trim() !== '');
+
 }
 onSubmit(){
 this.dialogRef.close()
@@ -103,5 +109,31 @@ getNakshthram(id: string): string {
 
     // console.log(star,"sssssssssssssssss")
   }
+
+
+  print() {
+  const printContent = document.getElementById('print-section');
+  const WindowPrt = window.open('', '', 'width=900,height=650');
+  WindowPrt?.document.write(`
+    <html>
+      <head>
+        <title>Print</title>
+        <style>
+          body { font-family: Manjari, Arial, sans-serif; padding: 20px; }
+          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+          th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+          th { background-color: #f2f2f2; }
+          h2 { text-align: center; color: #223d61; }
+        </style>
+      </head>
+      <body>
+        ${printContent?.innerHTML}
+      </body>
+    </html>
+  `);
+  WindowPrt?.document.close();
+  WindowPrt?.print();
+}
+
 
 }

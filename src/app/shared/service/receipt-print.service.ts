@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
 
 @Injectable({
@@ -19,7 +19,9 @@ export class ReceiptPrintService {
   setBooleanValue(value: boolean): void {
     this.booleanSubject.next(value);
   }
-
+  clearMobileNumber() {
+    this.mobileNumberSubject.next(null);
+  }
 
   private mobileNumberSubject = new BehaviorSubject<string | null>(null);
   mobileNumber$ = this.mobileNumberSubject.asObservable();
@@ -46,7 +48,37 @@ export class ReceiptPrintService {
   refreshData$ = this.refreshDataSubject.asObservable(); // Observable to listen for refresh events
 
   triggerRefresh() {
-    this.refreshDataSubject.next(); // Trigger refresh event
+    this.refreshDataSubject.next();
   }
-  
- }
+  private apiFailedSubject = new Subject<void>();
+
+  // Expose it as observable
+  apiFailed$ = this.apiFailedSubject.asObservable();
+
+  // Method to trigger the event
+  notifyApiFailed() {
+    this.apiFailedSubject.next();
+  }
+
+  isSubmitting = signal(false);
+  setSubmitting(value: boolean) {
+    this.isSubmitting.set(value);
+  }
+
+  // rebill setup to show the vazhipad detaisl on booking page
+ private bookingData$ = new BehaviorSubject<any>(null);
+
+setBookingData(data: any) {
+  console.log('SET DATA:', data);
+  this.bookingData$.next(data);
+}
+
+getBookingData() {
+  return this.bookingData$.asObservable();
+}
+
+clearData() {
+  this.bookingData$.next(null);
+}
+
+}

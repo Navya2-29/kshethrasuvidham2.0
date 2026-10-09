@@ -263,13 +263,16 @@ input[type="text"] {
 border-bottom:2px solid rgb(202, 202, 202);
 border-top:0px solid rgb(202, 202, 202);
  height:30.6px;
+ font-family: Arial, Helvetica, sans-serif;
+ font-weight: bolder;
 }
 
 input[type="number"] {
 border-bottom:2px solid rgb(202, 202, 202);
 height:30.6px;
 width:72px;
-font-size: 12px;
+font-size: 14px;
+font-weight: bolder;
 }
 
 input[type="number"]:focus {
@@ -278,12 +281,13 @@ box-shadow: 0px 0px 0px white;
 }
 
 select {
-font-size: 12px; /* Select tag font size */
+font-size: 14px; /* Select tag font size */
 color: #6e6e6e; /* Select tag font color */
 padding-left: 5px;
+padding-top: 2px;
 border: 1px solid #ccc;
 border-radius: 5px;
-font-weight:400;
+font-weight:bolder;
 border-bottom:2px solid rgb(202, 202, 202);
 }
 
@@ -295,6 +299,8 @@ border-bottom:2px solid #135796;
 option {
 font-size: 14px; /* Option tag font size */
 color: #666; /* Option tag font color */
+font-family: Arial, Helvetica, sans-serif;
+
 }
 
 
@@ -466,4 +472,18 @@ table thead th{
   font-family: Manjari;
   font-size: large;
   padding: 5px;
+}
+.date-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.calendar-btn {
+  background: maroon;
+  color: white;
+  border: none;
+  padding: 6px 8px;
+  cursor: pointer;
+  border-radius: 4px;
 }

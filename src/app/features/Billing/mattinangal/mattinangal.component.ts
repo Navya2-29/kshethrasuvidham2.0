@@ -6,7 +6,7 @@ import { AreaothersComponent } from '../areaothers/areaothers.component';
 @Component({
   selector: 'app-mattinangal',
   standalone: true,
-  imports: [HeaderComponent,FixedbottomComponent,AreaothersComponent],
+  imports: [HeaderComponent,AreaothersComponent],
   templateUrl: './mattinangal.component.html',
   styleUrl: './mattinangal.component.css'
 })

@@ -1,67 +1,89 @@
 /* You can add global styles to this file, and also import other style files */
-@import 'ngx-toastr/toastr';
-@import url('https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap'); 
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam:wght@100..900&display=swap');
-html, body { height: 100%; }
-body { margin: 0; font-family: Manjari, "Helvetica Neue", sans-serif; }
+@import "ngx-toastr/toastr";
+@import url("https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam:wght@100..900&display=swap");
+hhtml,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+
+  overflow: scroll !important; 
+  font-family: "Anek Malayalam, Helvetica Neue", sans-serif !important;
+}
+h1.tname{
+  font-family: "Anek Malayalam ,Helvetica Neue", sans-serif !important;
+}
 
 .mat-mdc-snack-bar-container {
-    &.success-snackbar {
-      --mdc-snackbar-container-color: #54a254;
-      --mat-mdc-snack-bar-button-color: #638488;
-      --mdc-snackbar-supporting-text-color: #ffffff;
-    }
+  &.success-snackbar {
+    --mdc-snackbar-container-color: #54a254;
+    --mat-mdc-snack-bar-button-color: #638488;
+    --mdc-snackbar-supporting-text-color: #ffffff;
   }
+}
+input.gothram::placeholder {
+  font-weight: 800;
+}
+input.gothram::placeholder {
+  font-weight: 800;
+}
+@font-face {
+  font-family: "Noto Sans Malayalam";
+  src: url("assets/fonts/malayalam/NotoSansMalayalam-Regular.ttf")
+    format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
 
-  @font-face {
-    font-family: 'Noto Sans Malayalam';
-    src: url('assets/fonts/malayalam/NotoSansMalayalam-Regular.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-  }
-  
-  @font-face {
-    font-family: 'indulekha';
-    src: url('assets/fonts/malayalam/FML-TT-Indulekha.ttf')  format('truetype');
-    font-weight: normal;
-    font-style: normal;
-  }
-  
-  /* Optional: Include bold font if available */
-  @font-face {
-    font-family: 'Noto Sans Malayalam Bold';
-    src: url('assets/fonts/malayalam/NotoSansMalayalam-Bold.ttf') format('truetype');
-    font-weight: bold;
-    font-style: normal;
-  }
-  @font-face {
-    font-family: 'Manjari-regular';
-    src: url('assets/fonts/malayalam/manjari/Manjari-Regular.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-  }
-  
-  @font-face {
-    font-family: 'Manjari';
-    src: url('assets/fonts/malayalam/manjari/Manjari-Bold.ttf') format('truetype');
-    font-weight: bold;
-    font-style: normal;
-  }
-  
-  @font-face {
-    font-family: 'Manjari-thin';
-    src: url('assets/fonts/malayalam/manjari/Manjari-Thin.ttf') format('truetype');
-    font-weight: normal;
-    font-style: italic;
-  }
-  @font-face {
-    font-family: 'annke';
-    src: url('assets/fonts/malayalam/Ank50104.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-  }
-  html, body { height: 100%;
-  font-family:Manjari ;
-  body { margin: 0; font-family: Manjari !important; }
+@font-face {
+  font-family: "indulekha";
+  src: url("assets/fonts/malayalam/FML-TT-Indulekha.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
 
-  }
+/* Optional: Include bold font if available */
+@font-face {
+  font-family: "Noto Sans Malayalam Bold";
+  src: url("assets/fonts/malayalam/NotoSansMalayalam-Bold.ttf")
+    format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Manjari-regular";
+  src: url("assets/fonts/malayalam/manjari/Manjari-Regular.ttf")
+    format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Manjari";
+  src: url("assets/fonts/malayalam/manjari/Manjari-Bold.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Manjari-thin";
+  src: url("assets/fonts/malayalam/manjari/Manjari-Thin.ttf") format("truetype");
+  font-weight: normal;
+  font-style: italic;
+}
+@font-face {
+  font-family: "annke";
+  src: url("assets/fonts/malayalam/Ank50104.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+.transparent-dialog .mat-mdc-dialog-container,
+.transparent-dialog .mat-mdc-dialog-surface,
+.transparent-dialog .mat-mdc-dialog-panel {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}

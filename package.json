@@ -24,6 +24,7 @@
     "@ngx-translate/core": "^15.0.0",
     "@ngx-translate/http-loader": "^8.0.0",
     "cors": "^2.8.5",
+    "file-saver": "^2.0.5",
     "html2canvas": "^1.4.1",
     "html2pdf": "^0.0.11",
     "html2pdf.js": "^0.10.2",
@@ -39,6 +40,7 @@
     "tslib": "^2.3.0",
     "typescript": "~5.4.5",
     "uuid": "^10.0.0",
+    "xlsx": "^0.18.5",
     "zone.js": "~0.14.3"
   },
   "devDependencies": {
@@ -46,6 +48,7 @@
     "@angular/cli": "^17.2.3",
     "@angular/compiler-cli": "^17.2.0",
     "@angular/localize": "^17.3.12",
+    "@types/file-saver": "^2.0.7",
     "@types/jasmine": "~5.1.0",
     "@types/pdfmake": "^0.2.11",
     "@types/uuid": "^10.0.0",

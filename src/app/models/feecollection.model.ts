@@ -21,5 +21,10 @@ Vazhipad?:string;
 NM_RName:string;
 Address1:string;
 Address2:string;
+PinCode:string;
 MobileNo:string;
+EmailId:string;
+UName:string;
+Remarks:string;
+
 }

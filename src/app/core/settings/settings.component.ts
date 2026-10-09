@@ -38,10 +38,10 @@ export class SettingsComponent {
   templeName: string | null;
   templeDetails: Settings | null = null;
   billType: string = '';
-   @ViewChild('fileInput') fileInput: any;
-   imagePreview: string | ArrayBuffer | null = null;
-   errorMessage: string = '';
-   fileInputMessageFlag: boolean = true;
+  @ViewChild('fileInput') fileInput: any;
+  imagePreview: string | ArrayBuffer | null = null;
+  errorMessage: string = '';
+  fileInputMessageFlag: boolean = true;
 
   private formBuilder = inject(FormBuilder);
   private masterService = inject(MasterService);
@@ -57,6 +57,11 @@ export class SettingsComponent {
       Counter: ['', [Validators.required]],
       phone: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
+      StartTime: [''],
+      EndTime: [''],
+      InstallationDate: [''],
+      ExpiryDate: [''],
+      Notification: [''],
     });
   }
 
@@ -65,10 +70,8 @@ export class SettingsComponent {
   }
 
   updateSettings() {
-    this.loading=true;
+    this.loading = true;
     if (this.settingsForm.valid) {
-      console.log(this.settingsForm.value);
-
       console.log(this.settingsForm.value);
       const payLoad = {
         Name: this.settingsForm.value.templeName,
@@ -79,15 +82,18 @@ export class SettingsComponent {
         Language: this.settingsForm.value.language,
         Counter: String(this.settingsForm.value.Counter),
         Printer: this.settingsForm.value.printer,
+        StartTime: this.settingsForm.value.StartTime,
+        EndTime: this.settingsForm.value.EndTime,
+        InstallationDate: this.settingsForm.value.InstallationDate,
+        ExpiryDate: this.settingsForm.value.ExpiryDate,
+        Notification: this.settingsForm.value.Notification,
       };
-      console.log(payLoad, 'payload');
       this.masterService.upDateSettings(payLoad).subscribe({
         next: (data) => {
-          console.log(data);
           if (data.RespStatus === 'U') {
             this.notification.success('Temple details updated successfully!');
             this.changeSettings();
-            this.loading=false;
+            this.loading = false;
           }
         },
         error: (err) => {
@@ -104,9 +110,8 @@ export class SettingsComponent {
   }
 
   getTempleDetails() {
-    this.loading=true;
+    this.loading = true;
     this.masterService.settingsData().subscribe((data) => {
-      console.log(data, 'settings');
       this.templeDetails = data[0];
       if (this.templeDetails) {
         this.settingsForm.patchValue({
@@ -114,14 +119,34 @@ export class SettingsComponent {
           templeAddress: this.templeDetails.Address,
           language: this.templeDetails.Language,
           printer: this.templeDetails.Printer,
-          logo:this.templeDetails.logo,
+          logo: this.templeDetails.logo,
           Counter: this.templeDetails.Counter,
           phone: this.templeDetails.phone,
           email: this.templeDetails.email,
+          InstallationDate: this.templeDetails.InstallationDate
+            ? new Date(this.templeDetails.InstallationDate)
+                .toISOString()
+                .split('T')[0]
+            : '',
+          ExpiryDate: this.templeDetails.ExpiryDate
+            ? new Date(this.templeDetails.ExpiryDate)
+                .toISOString()
+                .split('T')[0]
+            : '',
+StartTime: this.templeDetails.StartTime
+    ? this.templeDetails.StartTime.substring(0, 5)
+    : '',
+
+  EndTime: this.templeDetails.EndTime
+    ? this.templeDetails.EndTime.substring(0, 5)
+    : '',
+
+  Notification: this.templeDetails.Notification || '',
+
         });
-        this.imagePreview = this.templeDetails.logo;
+        this.imagePreview = `${window.location.origin}/apis/TempleLogo/${this.templeDetails.logo}`;
       }
-      this.loading=false;
+      this.loading = false;
     });
   }
   changeSettings() {
@@ -206,39 +231,32 @@ export class SettingsComponent {
     }
   }
 
-// cancel uploded image only
-removeImagePreview() {
-  this.fileInput.nativeElement.value = '';
-  this.fileInputMessageFlag = true;
-  this.imagePreview = '';
-  this.errorMessage = '';
-  this.settingsForm.patchValue({ logo: '' });
-}
+  // cancel uploded image only
+  removeImagePreview() {
+    this.fileInput.nativeElement.value = '';
+    this.fileInputMessageFlag = true;
+    this.imagePreview = '';
+    this.errorMessage = '';
+    this.settingsForm.patchValue({ logo: '' });
+  }
 
-clearAllBrowserData(){
-   localStorage.setItem('loggedIn', 'false');
+  clearAllBrowserData() {
+    localStorage.setItem('loggedIn', 'false');
     localStorage.removeItem('name');
     localStorage.removeItem('Role');
     localStorage.removeItem('alertmsg');
     localStorage.removeItem('LoginId');
     localStorage.removeItem('username');
     localStorage.removeItem('password');
-    
+
     localStorage.removeItem('counterId');
     localStorage.removeItem('Address');
     localStorage.removeItem('Counter');
     localStorage.removeItem('Days');
-localStorage.removeItem('Language');
-localStorage.removeItem('Logo');
-localStorage.removeItem('Printer');
-localStorage.removeItem('TempleName');
-localStorage.removeItem('TempleName');
-
-
-
-}
-
-
-
-
+    localStorage.removeItem('Language');
+    localStorage.removeItem('Logo');
+    localStorage.removeItem('Printer');
+    localStorage.removeItem('TempleName');
+    localStorage.removeItem('TempleName');
+  }
 }

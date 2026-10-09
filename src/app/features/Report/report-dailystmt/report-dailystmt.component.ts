@@ -1,28 +1,21 @@
 import { SpinnerComponent } from './../../../shared/component/spinner/spinner.component';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { ReportService } from '../service/report.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import {
-  MatPaginator,
-  MatPaginatorModule,
-  PageEvent,
-} from '@angular/material/paginator';
-// import { jsPDF } from 'jspdf';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { ReportData } from '../../../models/poornam-report';
-import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Location } from '@angular/common';
-import autoTable from 'jspdf-autotable';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { HttpClient } from '@angular/common/http';
 import { MasterService } from '../../../services/master/master.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 import { PrintreportService } from '../../../shared/service/printreport.service';
+import { HeaderComponent } from '../../../core/layout/header/header.component';
+import { MatIconModule } from '@angular/material/icon';
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
 @Component({
   selector: 'app-report-dailystmt',
   standalone: true,
@@ -35,15 +28,18 @@ import { PrintreportService } from '../../../shared/service/printreport.service'
     MatTooltipModule,
     MatFormFieldModule,
     MatInputModule,
-    SpinnerComponent
+    SpinnerComponent,
+    MatIconModule
   ],
   templateUrl: './report-dailystmt.component.html',
-  styleUrls: ['./report-dailystmt.component.css','/src/assets/styles/report.style.css'],
+  styleUrls: [
+    './report-dailystmt.component.css',
+    '/src/assets/styles/report.style.css',
+  ],
 })
 export class ReportDailystmtComponent {
-  
-  
   data: ReportData[] = [];
+  filteredData: ReportData[] = [];
   groupedData: { [key: string]: ReportData[] } = {};
   nakshatham: any[];
   lang: string | null;
@@ -51,20 +47,19 @@ export class ReportDailystmtComponent {
   toDate: string;
   templeName: string | null;
   templeAddress: string | null;
-  loading:boolean;
+  loading: boolean;
+  searchText: string = '';
+
   constructor(
     private route: ActivatedRoute,
     private ts: TranslateService,
     private masterService: MasterService,
     private service: ReportService,
     private router: Router,
-    private reportPrintservice:PrintreportService
-    
+    private reportPrintservice: PrintreportService
   ) {
     this.loadStarData();
     this.lang = localStorage.getItem('Language');
-
-    // this.lang=localStorage.getItem('Language');
     this.templeName =
       localStorage.getItem('TempleName') || 'Default Temple Name';
     this.templeAddress =
@@ -84,10 +79,8 @@ export class ReportDailystmtComponent {
     });
   }
 
-  
-  // Call your API service to get the report data
   fetchReportData(type: string, fromDate: string, toDate: string): void {
-    this.loading=true;
+    this.loading = true;
     const payLoad = {
       Type: type,
       FromDate: fromDate,
@@ -96,29 +89,11 @@ export class ReportDailystmtComponent {
     this.service.getReport(payLoad).subscribe({
       next: (data) => {
         console.log('Fetched report data:', data);
-        data.sort((a:any, b:any) => {
-  // Parse BillDate (format: dd.mm.yyyy)
-  const [aDay, aMonth, aYear] = a.BillDate.split('.').map(Number);
-  const [bDay, bMonth, bYear] = b.BillDate.split('.').map(Number);
 
-  const aDate = new Date(aYear, aMonth - 1, aDay);
-  const bDate = new Date(bYear, bMonth - 1, bDay);
-
-  // Compare dates first
-  if (aDate < bDate) return -1;
-  if (aDate > bDate) return 1;
-
-  // If dates are equal, compare BillNo
-  const [aMain, aSub] = a.BillNo.split('/').map(Number);
-  const [bMain, bSub] = b.BillNo.split('/').map(Number);
-
-  if (aMain !== bMain) return aMain - bMain;
-  return aSub - bSub;
-});
         this.data = data;
-this.loading=false;
-      
-
+        this.loading = false;
+        this.filteredData = this.data;
+        this.sortDataByBillDate();
         console.log(this.groupedData);
       },
       error: (error) => {
@@ -126,20 +101,35 @@ this.loading=false;
       },
     });
   }
+  sortDataByBillDate() {
+    this.filteredData.sort((a: any, b: any) => {
+      // Parse BillDate (format: dd.mm.yyyy)
+      const [aDay, aMonth, aYear] = a.BillDate.split('.').map(Number);
+      const [bDay, bMonth, bYear] = b.BillDate.split('.').map(Number);
 
-  // onPageChange(event: PageEvent) {
-  //   this.pageIndex = event.pageIndex;
-  //   this.pageSize = event.pageSize;
-  // }
+      const aDate = new Date(aYear, aMonth - 1, aDay);
+      const bDate = new Date(bYear, bMonth - 1, bDay);
 
+      // Compare dates first
+      if (aDate < bDate) return -1;
+      if (aDate > bDate) return 1;
+
+      // If dates are equal, compare BillNo
+      const [aMain, aSub] = a.BillNo.split('/').map(Number);
+      const [bMain, bSub] = b.BillNo.split('/').map(Number);
+
+      if (aMain !== bMain) return aMain - bMain;
+      return aSub - bSub;
+    });
+  }
   goBack(): void {
-    console.log('Going back...'); // Log to verify method execution
+    console.log('Going back...');
     this.router.navigate(['/getReport']);
 
     if (window.history.length > 1) {
-      window.history.back(); // Goes back to the previous page in history
+      window.history.back();
     } else {
-      window.close(); // Closes the tab if it's the only page open
+      window.close();
     }
   }
 
@@ -147,145 +137,120 @@ this.loading=false;
     const [year, month, day] = date.split('-');
     return `${day}-${month}-${year}`;
   }
-  
+
   getGrandTotal(): number {
-    return this.data
-      .filter(item => item.TrnsMode !== 'CR' && item.TrnStatus !== 'C' ) // exclude 'CR' entries
-      .reduce((total, item) => total + (item.Amount), 0);
+    return this.filteredData
+      .filter((item) => item.TrnsMode !== 'CR' && item.TrnStatus == 'S'  ) // exclude 'CR' entries
+      .reduce((total, item) => total + item.Amount, 0);
   }
 
-  
   isRedText(item: any): boolean {
-    return item.TrnsMode === 'CR' || item.TrnStatus === 'C';
+    return item.TrnsMode === 'CR' || item.TrnStatus === 'C' || item.TrnStatus === 'F' || item.TrnStatus === 'N';
   }
 
   generatePDF() {
-this.reportPrintservice.generatePDF();
-// this.reportPrintservice.generatePDF()
-//     const printContent = document.getElementById('print-section');
-//     if (!printContent) {
-//       console.error('No content found to print');
-//       return;
-//     }
+    this.reportPrintservice.generatePDF();
+    // this.reportPrintservice.generatePDF()
+    //     const printContent = document.getElementById('print-section');
+    //     if (!printContent) {
+    //       console.error('No content found to print');
+    //       return;
+    //     }
 
-//     const WindowPrt = window.open('', '', 'width=800,height=600');
+    //     const WindowPrt = window.open('', '', 'width=800,height=600');
 
-//     // Check if the print window was successfully opened
-//     if (!WindowPrt) {
-//       console.error(
-//         'Unable to open print window. Please check pop-up blockers.'
-//       );
-//       return;
-//     }
+    //     // Check if the print window was successfully opened
+    //     if (!WindowPrt) {
+    //       console.error(
+    //         'Unable to open print window. Please check pop-up blockers.'
+    //       );
+    //       return;
+    //     }
 
-//     WindowPrt.document.write(`
-//     <html>
-//       <head>
-//         <title>Print</title>
-//         <style>
-         
-//           body {
-//     font-size: 10px;
-//     font-family: "Manjari";
-//     margin:5px;
-//   }
-//           h3,p,h4,h2{
-//           line-height:1;
-//           margin-top:0;
-//           text-align:center;
-//           font-family: "Roboto";
-//           font-size:12px;
-//           margin-bottom:0px;
-//           }
-//           .templename{
-//            line-height:1;
-//           margin-top:0;
-//           text-align:center;
-//           font-family: "Manjari";
-//           font-size:12px;
-//           }
-//           hr{
-//           height:2px;
-//           }
-//           .number,.total{
-//             text-align:right;
-//             }
-//           .tabble-heading h3{
-//   font-family: "Manjari;
-//   font-weight: bold;
-//   font-size: 16px;
-//   margin: 8px 0 0 0;
-// }
-//           table {
-//             width: 100%;
-//             border-collapse: collapse;
-//           }
-//           table, th, td {
-//             border: 1px solid black;
-//             text-transform: uppercase;
-//             font-family: "Manjari";
-//           font-size:12px;
+    //     WindowPrt.document.write(`
+    //     <html>
+    //       <head>
+    //         <title>Print</title>
+    //         <style>
 
-//           }
-//             .total,number{
-//             text-align:right;
-//             font-family: "Manjari";
-//           font-size:12px;
-//             }
-//           th, td {
-//            padding-left:5px;
-//             text-align: left;
-//              font-family: "Manjari";
-//           font-size:10px;
-//           border:1px solid gray;
-//           }
-//             #print-section{
-// padding-bottom: 100px;
-//   }
-       
-    
-//     .page-break {
-//       page-break-before: always;
-//     }
-//           </style>
-//       </head>
-//       <body>${printContent.innerHTML}</body>
-//     </html>
-//   `);
+    //           body {
+    //     font-size: 10px;
+    //     font-family: "Manjari";
+    //     margin:5px;
+    //   }
+    //           h3,p,h4,h2{
+    //           line-height:1;
+    //           margin-top:0;
+    //           text-align:center;
+    //           font-family: "Roboto";
+    //           font-size:12px;
+    //           margin-bottom:0px;
+    //           }
+    //           .templename{
+    //            line-height:1;
+    //           margin-top:0;
+    //           text-align:center;
+    //           font-family: "Manjari";
+    //           font-size:12px;
+    //           }
+    //           hr{
+    //           height:2px;
+    //           }
+    //           .number,.total{
+    //             text-align:right;
+    //             }
+    //           .tabble-heading h3{
+    //   font-family: "Manjari;
+    //   font-weight: bold;
+    //   font-size: 16px;
+    //   margin: 8px 0 0 0;
+    // }
+    //           table {
+    //             width: 100%;
+    //             border-collapse: collapse;
+    //           }
+    //           table, th, td {
+    //             border: 1px solid black;
+    //             text-transform: uppercase;
+    //             font-family: "Manjari";
+    //           font-size:12px;
 
-//     WindowPrt.document.close();
-//     WindowPrt.focus();
+    //           }
+    //             .total,number{
+    //             text-align:right;
+    //             font-family: "Manjari";
+    //           font-size:12px;
+    //             }
+    //           th, td {
+    //            padding-left:5px;
+    //             text-align: left;
+    //              font-family: "Manjari";
+    //           font-size:10px;
+    //           border:1px solid gray;
+    //           }
+    //             #print-section{
+    // padding-bottom: 100px;
+    //   }
 
-//     if (WindowPrt) {
-//       WindowPrt.print();
-//       WindowPrt.close();
-//     }
+    //     .page-break {
+    //       page-break-before: always;
+    //     }
+    //           </style>
+    //       </head>
+    //       <body>${printContent.innerHTML}</body>
+    //     </html>
+    //   `);
+
+    //     WindowPrt.document.close();
+    //     WindowPrt.focus();
+
+    //     if (WindowPrt) {
+    //       WindowPrt.print();
+    //       WindowPrt.close();
+    //     }
   }
 
-
-  generatePDFs() {
-    const element = document.getElementById('print-section'); 
-  
-    if (!element) {
-      console.error("Element not found");
-      return;
-    }
-  
-    html2canvas(element, { scale: 2 }).then(canvas => {
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
-  
-      const imgWidth = 210; 
-      const imgHeight = (canvas.height * imgWidth) / canvas.width; 
-  
-      pdf.addImage(imgData, 'PNG', 0, 10, imgWidth, imgHeight);
-      pdf.save('Poornam_Report.pdf'); 
-    }).catch(error => {
-      console.error("Error generating PDF:", error);
-    });
-  }
   getStarbyId(id: string) {
-    console.log(id, 'star id');
     if (this.lang == 'en') {
       const star = this.nakshatham.find((item) => item.id == id);
       return star ? star.SM_NameEng : '';
@@ -299,9 +264,7 @@ this.reportPrintservice.generatePDF();
     const payLoad = { Type: 'ListStar', Code: '' };
     this.masterService.getStarData(payLoad).subscribe({
       next: (data: any[]) => {
-        console.log(data);
-        this.nakshatham = data; 
-
+        this.nakshatham = data;
       },
       error: (err) => {
         console.error('Error loading star data:', err);
@@ -355,13 +318,24 @@ this.reportPrintservice.generatePDF();
         } else {
           return 'ഡെബിറ്റ്';
         }
+      case 'EN':
+        if (this.lang == 'en') {
+          return 'ENDOWMENT';
+        } else {
+          return 'എൻഡോമെന്റ്';
+        }
+      case 'OL':
+        if (this.lang == 'en') {
+          return 'Online';
+        } else {
+          return 'ഓൺലൈൻ';
+        }
       default:
         return 'OTHERS';
     }
   }
 
-
-  gettransactionstatus(status:string){
+  gettransactionstatus(status: string) {
     switch (status) {
       case 'C':
         if (this.lang == 'en') {
@@ -376,14 +350,168 @@ this.reportPrintservice.generatePDF();
         } else {
           return '';
         }
-      
+        case 'F':
+        if (this.lang == 'en') {
+          return 'Failed';
+        } else {
+          return '';
+        }
+        case 'N':
+        if (this.lang == 'en') {
+          return 'Pending';
+        } else {
+          return '';
+        }
+
       default:
         return '';
     }
-
-
-
-
   }
+  onSearch(event: Event): void {
+    const value = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.searchText = value;
 
+    this.filteredData = this.data.filter((item) =>
+      (
+        item.BillDate +
+        ' ' +
+        item.BillNo +
+        ' ' +
+        item.VazhiDate +
+        ' ' +
+        item.Type +
+        '' +
+        item.Vazhipad +
+        ' ' +
+        item.Name +
+        ' ' +
+        item.Star +
+        ' ' +
+        item.Qty +
+        ' ' +
+        item.MobileNo +
+        '' +
+        item.Address1 +
+        '' +
+        item.Rate +
+        item.Address2 +
+        ''
+      )
+        .toLowerCase()
+        .includes(this.searchText)
+    );
+    this.sortDataByBillDate();
+  }
+ exportToExcel(): void {
+
+  const workbook = XLSX.utils.book_new();
+
+  const sheetData: any[][] = [];
+
+  // Header
+  sheetData.push([this.templeName]);
+  sheetData.push([this.templeAddress]);
+  sheetData.push(['DAILY STATEMENT (DETAILED) REPORT']);
+  sheetData.push([
+    `${this.formatDateToDDMMYYYY(this.fromDate)} To ${this.formatDateToDDMMYYYY(this.toDate)}`
+  ]);
+  sheetData.push([]);
+
+  // Table Header
+  sheetData.push([
+    'Sl No',
+    'Bill Date',
+    'Bill No',
+    'Vazhipad Date',
+    'Vazhipad',
+    'Name',
+    'Star',
+    'Qty',
+    'Rate',
+    'Amount',
+    'Transaction',
+    'Status'
+  ]);
+
+  // Table Rows
+  this.data.forEach((item: any, index: number) => {
+    sheetData.push([
+      index + 1,
+      item.BillDate,
+      item.BillNo,
+      item.VazhiDate,
+      item.Vazhipad,
+      item.Name,
+      this.getStarbyId(item.Star),
+      item.Qty,
+      item.Rate,
+      item.Amount,
+      this.getTransactionType(item.TrnsMode),
+      this.gettransactionstatus(item.TrnStatus)
+    ]);
+  });
+
+  // Grand Total
+  sheetData.push([]);
+  sheetData.push([
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    'Grand Total',
+    this.getGrandTotal(),
+    '',
+    ''
+  ]);
+
+  const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(sheetData);
+
+  // Merge Header Rows
+  worksheet['!merges'] = [
+    { s: { r: 0, c: 0 }, e: { r: 0, c: 11 } },
+    { s: { r: 1, c: 0 }, e: { r: 1, c: 11 } },
+    { s: { r: 2, c: 0 }, e: { r: 2, c: 11 } },
+    { s: { r: 3, c: 0 }, e: { r: 3, c: 11 } }
+  ];
+
+  // Column Width
+  worksheet['!cols'] = [
+    { wch: 8 },
+    { wch: 15 },
+    { wch: 12 },
+    { wch: 15 },
+    { wch: 25 },
+    { wch: 25 },
+    { wch: 15 },
+    { wch: 8 },
+    { wch: 12 },
+    { wch: 15 },
+    { wch: 18 },
+    { wch: 15 }
+  ];
+
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Daily Statement');
+
+  const excelBuffer: any = XLSX.write(workbook, {
+    bookType: 'xlsx',
+    type: 'array'
+  });
+
+  const fileData: Blob = new Blob(
+    [excelBuffer],
+    {
+      type:
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+    }
+  );
+
+  FileSaver.saveAs(
+    fileData,
+    `Daily_Detailed_Statement_${new Date().getTime()}.xlsx`
+  );
+}
 }

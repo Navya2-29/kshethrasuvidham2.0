@@ -76,6 +76,35 @@ export class PrintreportService {
           margin-bottom:0;
           font-weight:bold;
           }
+          h2.category{
+     
+    font-family: Manjari;
+
+    font-size: 12px;
+    margin:0;
+    left:5px;
+    font-weight: 800;
+    text-transform: uppercase;
+     text-align:left;
+}
+     h3.subcategory{
+      font-family: Manjari;
+
+    font-size: 12px;
+    margin:0;
+    font-weight: 800;
+    text-transform: uppercase;
+     text-align:left;
+     }
+     h2.transactions{
+      font-family: Manjari;
+
+    font-size: 12px;
+    margin:0;
+    font-weight: 800;
+    text-transform: uppercase;
+     text-align:left;
+     }
           p.date{
            margin-top:5px;
           text-align:center;
@@ -98,6 +127,12 @@ export class PrintreportService {
 .tabble-heading {
   page-break-inside: avoid;
   break-inside: avoid;
+  margin-top: 10px;
+  text-align:left;
+  margin-left:10px;
+}
+  .tabble-headings {
+
   margin-top: 10px;
   text-align:left;
   margin-left:10px;

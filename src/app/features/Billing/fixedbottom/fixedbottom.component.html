@@ -1,14 +1,14 @@
-<div class="bottom" style="font-family: Manjari;" >
+<div class="bottom" style="font-family: Manjari">
   <div class="total">
     <div class="col-md-2">
       <div class="btmsearch">
-        <div>
+        <div class="btnserachrow">
           <input
             type="text"
             [placeholder]="'PLACEHOLDER.BILLNUMBER' | translate"
             [(ngModel)]="billNumber"
-            style="width: 150px"
-            class="phone "
+
+            class="phone"
           />
           <button
             class="btn btn-primary"
@@ -25,13 +25,13 @@
             Find
           </button>
         </div>
-        <div>
+        <div class="btnserachrow">
           <input
             type="text"
             [placeholder]="'PLACEHOLDER.MOBILENUMBER' | translate"
             [(ngModel)]="mobileNumber"
-            style="width: 150px"
-            class="phone "
+            (ngModelChange)="updateMobile($event)"
+            class="phone"
           />
           <button
             class="btn btn-secondary"
@@ -40,102 +40,104 @@
           >
             Find
           </button>
-          <div>
-            <input type="checkbox" [(ngModel)]="memberDevoteeCheck" style="position:absolute;margin-top: 5px;" ><span style="color:black;position:absolute;left:0;margin-left:36px;">{{"Member" | translate }}</span> 
-            <button
+        </div>
+        <div class="membercheckboxclass">
+          <input
+            type="checkbox"
+            [(ngModel)]="memberDevoteeCheck"
+            style="margin-top: 5px"
+          /><span style="color: black">{{ "Member" | translate }}</span>
+          <button
             (click)="onFind()"
-
             class="btn btn-secondary"
-            style="padding: 5px; font-size: 9pt; background-color: #223d61;position:absolute;right:0;"
+            style="padding: 5px; font-size: 9pt; background-color: #223d61 ;max-width:120px"
           >
             Devotee Details
           </button>
-          </div>
         </div>
       </div>
     </div>
     <div class="col-md-2">
       <div class="amttoday">
-        <div
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            column-gap: 0px;
-          "
-        >
-          <p style="font-weight: 800">{{"TODAYCOLLECTION" |translate}}</p>
-          <p style="font-size: 12pt; font-weight: 800; margin-top: -9px">
+
+          <p class="amountdisplay" style="font-weight: 800">{{ "TODAYCOLLECTION" | translate }}</p>
+          <p class="amountdisplay" style="font-size: 12pt; font-weight: 800;">
             Rs. {{ (todayCollection ? todayCollection : 0) | number : "1.2-2" }}
           </p>
-          <p style="border: 1px solid silver; padding: 5px">
-            {{"LastBillNo" | translate}}.
-            <span style="color: #3f51b5; font-weight: 800"
-             *ngIf="!isLockedShow " >{{theLastBillNo}}
+          <p class="lastbillnumber" style="border: 1px solid silver; padding: 5px">
+            {{ "LastBillNo" | translate }}.
+            <span style="color: #3f51b5; font-weight: 800" *ngIf="!isLockedShow"
+              >{{ theLastBillNo }}
             </span>
-            <span style="color:red; font-weight: 800; font-size: 16px;"  class="blink"
-            *ngIf="isLockedShow" >LOCK
-           </span>
+            <span
+              style="color: red; font-weight: 800; font-size: 16px"
+              class="blink"
+              *ngIf="isLockedShow"
+              >LOCK
+            </span>
+            <span
+              (click)="vazhipadUnblocking()"
+              style="color: rgb(53, 250, 46); font-weight: 800; font-size: 16px"
+              title="Unlock"
+              *ngIf="isLockedShow"
+            >
+              <i class="fa-solid fa-unlock"></i>
+            </span>
           </p>
-        </div>
+
       </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-5">
       <form [formGroup]="customerdetailsForBillingForm">
-        <div class="amttotal">
+        <div class="row">
+          <!-- Column 1: Address -->
           <div
-            style="
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              gap: 6px;
-              flex-wrap: wrap;
-            "
+           [ngClass]="['CS', 'CR'].includes(customerdetailsForBillingForm.get('Trnsmode')?.value) ? 'col-md-6' : 'col-md-4'"
+            style="display: flex; flex-direction: column; gap: 6px"
           >
+            <span class="gthm"
+              ><input
+                type="text"
+                matInput
+                class="form-control phone gothram"
+                formControlName="Address3"
+                [matAutocomplete]="autoGothram"
+                placeholder="{{ 'PLACEHOLDER.ADDRESS3' | translate }}"
+                (keydown)="handleKeyDowns($event, 0, 0)"
+              />
+              <mat-autocomplete #autoGothram="matAutocomplete">
+                <mat-option
+                  *ngFor="let gothram of filteredGothrams | async"
+                  [value]="gothram.GC_Name"
+                >
+                  {{ gothram.GC_Name }}
+                </mat-option>
+              </mat-autocomplete>
+              <!-- </mat-form-field> -->
+            </span>
             <input
               type="text"
               formControlName="Address1"
-              #address1 Input
               [placeholder]="'PLACEHOLDER.ADDRESS1' | translate"
-              class="form-control phone"
-              (keydown)="handleKeyDowns($event, 0, 0)"
-            />
-            <input
-              type="text"
-              formControlName="Address2"
-              [placeholder]="'PLACEHOLDER.ADDRESS2' | translate"
               class="form-control phone"
               #address2
               (keydown)="handleKeyDowns($event, 1, 0)"
             />
             <input
               type="text"
-              formControlName="Address3"
-              [placeholder]="'PLACEHOLDER.ADDRESS3' | translate"
+              formControlName="Address2"
+              [placeholder]="'PLACEHOLDER.ADDRESS2' | translate"
               class="form-control phone"
               #address3
               (keydown)="handleKeyDowns($event, 2, 0)"
             />
           </div>
+          <!-- Column 2: Contact -->
+
           <div
-            style="
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              gap: 6px;
-              flex-wrap: wrap;
-            "
+            [ngClass]="['CS', 'CR'].includes(customerdetailsForBillingForm.get('Trnsmode')?.value) ? 'col-md-6' : 'col-md-4'"
+            style="display: flex; flex-direction: column; gap: 8px"
           >
-            <!-- <input type="text" formControlName="Instno" placeholder="DD/Cheque/UPI Number" class="form-control phone"> -->
-            <input
-              type="text"
-              formControlName="Pincode"
-              [placeholder]="'PLACEHOLDER.PINCODE' | translate"
-              class="form-control phone"
-              #pincode
-              (keydown)="handleKeyDowns($event, 0, 1)"
-            />
             <input
               type="text"
               formControlName="Mobile"
@@ -144,7 +146,11 @@
               class="form-control phone"
               #phone
               (keydown)="handleKeyDowns($event, 1, 1)"
-              [class.is-invalid]="customerdetailsForBillingForm.get('Mobile')?.invalid && customerdetailsForBillingForm.get('Mobile')?.touched"
+              [class.is-invalid]="
+                customerdetailsForBillingForm.get('Mobile')?.invalid &&
+                customerdetailsForBillingForm.get('Mobile')?.touched
+              "
+              (input)="mobileSignal.set($any($event.target).value)"
             />
 
             <input
@@ -155,133 +161,176 @@
               #email
               (keydown)="handleKeyDowns($event, 2, 1)"
             />
+            <input
+              type="text"
+              formControlName="Pincode"
+              [placeholder]="'PLACEHOLDER.PINCODE' | translate"
+              class="form-control phone"
+              #pincode
+              (keydown)="handleKeyDowns($event, 0, 1)"
+            />
+          </div>
+
+          <!-- Column 3: Cheque & Bank -->
+          <div
+            *ngIf="!['CS', 'CR'].includes(customerdetailsForBillingForm.get('Trnsmode')?.value)"
+            class="col-md-4"
+            style="display: flex; flex-direction: column; gap: 8px"
+          >
+            <input
+              type="text"
+              *ngIf="
+                customerdetailsForBillingForm.get('Trnsmode')?.value != 'CS'
+              "
+              formControlName="Instno"
+              [placeholder]="'PLACEHOLDER.CHEQUENO' | translate"
+              class="form-control phone"
+              [class.is-invalid]="
+                customerdetailsForBillingForm.get('Instno')?.invalid &&
+                customerdetailsForBillingForm.get('Instno')?.touched
+              "
+            />
+            <input
+              type="date"
+              *ngIf="
+                customerdetailsForBillingForm.get('Trnsmode')?.value === 'CH'
+              "
+              formControlName="InstaDate"
+              placeholder="Enter cheque date"
+              class="form-control phone"
+              [class.is-invalid]="
+                customerdetailsForBillingForm.get('InstaDate')?.invalid &&
+                customerdetailsForBillingForm.get('InstaDate')?.touched
+              "
+            />
+            <input
+              type="text"
+              *ngIf="
+                customerdetailsForBillingForm.get('Trnsmode')?.value === 'CH'
+              "
+              formControlName="InstBank"
+              [placeholder]="'PLACEHOLDER.BANKNAME' | translate"
+              class="form-control phone"
+              [class.is-invalid]="
+                customerdetailsForBillingForm.get('InstBank')?.invalid &&
+                customerdetailsForBillingForm.get('InstBank')?.touched
+              "
+            />
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="col-md-3">
+      <form [formGroup]="customerdetailsForBillingForm">
+        <div style="display: flex; flex-direction: column; max-width: 100%">
+          <div style="max-width: 90%;margin-bottom: 0.3em;">
+           <input
+              type="text"
+              formControlName="Givenamount"
+              placeholder="Enter Amount"
+              style="max-width:50%"
+
+            /> <span style="color:black;margin-left: 3px;max-width: 50%;">Balance:{{balancecalculated}}</span></div>
+          <div style="max-width: 90%">
+            <select
+              class="form-control"
+              formControlName="Trnsmode"
+              #paymentDropdown
+              (change)="onPaymentModeChange($event)"
+              style="max-width: 80%"
+            >
+              <option value="CS">{{ "Cash" | translate }}</option>
+              <option value="UP">{{ "UPI" | translate }}</option>
+              <option value="DE">{{ "Debit" | translate }}</option>
+              <option value="CR">{{ "Credit" | translate }}</option>
+              <option value="CH">{{ "Cheque" | translate }}</option>
+              <option value="MO">{{ "Money order" | translate }}</option>
+              <option value="ON">{{ "PLACEHOLDER.BANK" | translate }}</option>
+              <!-- <option value="EN">{{"Endowment" | translate}}</option> -->
+            </select>
           </div>
           <div
             style="
               display: flex;
               flex-direction: column;
-              align-items: center;
-              gap: 6px;
-              flex-wrap: wrap;
+              align-items: start;
+              text-align: left;
+              gap: 5px;
+              margin-left: 10px;
+              margin-bottom: 20px;
+              flex-grow: 1;
+              margin-right: 0;
+              max-width: 90%;
             "
           >
-            <input
-              type="text"
-              style="width:100px"
-              *ngIf="
-                customerdetailsForBillingForm.get('Trnsmode')?.value != 'CS'
-              "
-              formControlName="Instno"
-              [placeholder]=" 'PLACEHOLDER.CHEQUENO' | translate"
-              class="form-control phone"
-              [class.is-invalid]="customerdetailsForBillingForm.get('Instno')?.invalid && customerdetailsForBillingForm.get('Instno')?.touched"
-            />
-            <input
-            style="width:100px"
-              type="date"
-              *ngIf="
-                customerdetailsForBillingForm.get('Trnsmode')?.value ===
-                'CH'
-              " 
-              formControlName="InstaDate"
-              placeholder="Enter cheque date"
-              class="form-control phone"
-              [class.is-invalid]="customerdetailsForBillingForm.get('InstaDate')?.invalid && customerdetailsForBillingForm.get('InstaDate')?.touched"
-
-            />
-            <input
-            style="width:100px"
-              type="text"
-              *ngIf="
-                customerdetailsForBillingForm.get('Trnsmode')?.value ===
-                'CH'
-              "
-              formControlName="InstBank"
-              [placeholder]="'PLACEHOLDER.BANKNAME' | translate "
-              class="form-control phone"
-              [class.is-invalid]="customerdetailsForBillingForm.get('InstBank')?.invalid && customerdetailsForBillingForm.get('InstBank')?.touched"
-            />
-          </div>
-          <div style="display: flex; flex-direction: column; gap: 0px">
-            <div class="method" style="padding-top: 35px">
-              <h5 style="color: white; line-height: 9pt">Select Payment</h5>
-              <select
-                class="form-control"
-                formControlName="Trnsmode"
-                #paymentDropdown
+           <!-- <div >
+  <input
+    type="checkbox"
+   formControlName="isDonation"
+    id="donationCheck"
+  />
+  <label for="donationCheck " style="font-weight: 500;">
+    Donation Receipt
+  </label>
+</div> -->
+            <div style="display: flex; align-items: center; gap: 10px">
+              <button
                 style="
-                  width: 90%;
-                  height: 30.6px;
-                  padding-left: 0px;
-                  padding-top: 0px;
-                  padding-bottom: 0px;
+                  font-size: 24pt;
+                  background-color: #f4f5f7;
+                  color: purple;
+                  font-weight: 500;
+                  border: none;
+                  white-space: nowrap;
+                  padding: 15px 0px 0px 0px;
+                  margin-top:3px;
+                  min-width:100px;
+                 max-width:160px;
+
+                  text-overflow: ellipsis;
+                  overflow: hidden;
+                  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
                 "
               >
-                <option value="CS">{{"Cash" | translate}}</option>
-                <option value="UP">{{"UPI"|translate}}</option>
-                <option value="DE">{{"Debit" |translate}}</option>
-                <option value="CR">{{"Credit" |translate}}</option>
-                <option value="CH">{{"Cheque"| translate}}</option>
-                <option value="MO">{{"Money order" |translate}}</option>
-                <option value="ON">{{"Online" | translate}}</option>
-                <!-- <option value="EN">{{"Endowment" | translate}}</option> -->
-              </select>
+                {{ totalAmount }}
+              </button>
+
+              <!-- &#8377; -->
+              <button
+                [disabled]="
+                  role == 'admin' ||
+                  role == 'audit' ||
+                  role == 'super' ||
+                  receiptPrinrservice.isSubmitting()
+                "
+                (focus)="onPayFocus()"
+                (blur)="onPayBlur()"
+                id="paybutton"
+                #payButton
+                (click)="onSubmit()"
+                style="
+                  font-size: 12pt;
+                  background-color: #223d61;
+                  color: white;
+                  font-weight: 500;
+                  border: none;
+                  padding: 8px 20px;
+                  cursor: pointer;
+                  min-width: 80px;
+                  max-width: 120px;
+                  margin-right: 20px;
+                "
+              >
+                {{
+                  receiptPrinrservice.isSubmitting() ? "Processing..." : "Pay"
+                }}
+              </button>
             </div>
-            <div 
-  style="display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 100%; flex-wrap: nowrap;">
-
-  <div style="display: flex; flex-direction: column; align-items: start; text-align: left; gap: 5px; margin-left: 10px; margin-bottom: 20px; flex-grow: 1;margin-right: 0;">
-    <span style="font-size: 10pt; font-weight: bold; color: black;margin-left: 70px;">
-      {{"Report Name.total" | translate }}
-    </span>
-
-    <button
-      style="
-        font-size: 24pt;
-        background-color: #f4f5f7;
-        color: purple;
-        font-weight: 500;
-        border: none;
-        white-space: nowrap;
-        padding: 15px 0px 0px 0px;
-        width: 160px;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
-      "
-    >
-       {{ totalAmount }}
-    </button>
-  </div>
-  <!-- &#8377; -->
-  <button 
-[disabled]="role=='admin' || role=='audit' || role=='super'"
-  (focus)="onPayFocus()" (blur)="onPayBlur()"
-  id="paybutton"
-    #payButton
-    (click)="onSubmit()"
-    style="
-      font-size: 12pt;
-      background-color: #223d61;
-      color: white;
-      font-weight: 500;
-      border: none;
-      padding: 8px 20px;
-      cursor: pointer;
-      min-width: 80px; 
-      max-width: 120px; 
-      margin-right: 20px;
-    "
-  >
-    Pay
-  </button>
-    </div>
-            
-            <!-- <button class="btn btn-primary" (click)="" style="font-size:12pt;background-color:#046ef8;color:white;font-weight:500;width:auto;border:none;margin-bottom:30px;">pdf</button> -->
           </div>
+
+          <!-- <button class="btn btn-primary" (click)="" style="font-size:12pt;background-color:#046ef8;color:white;font-weight:500;width:auto;border:none;margin-bottom:30px;">pdf</button> -->
         </div>
       </form>
     </div>
-    <div class="col-md-4"></div>
   </div>
 </div>

@@ -14,8 +14,6 @@ export class AuthService {
 
 
   getLoginInfo(login:Login){
-    console.log(login);
-    // console.log(login.username,login.password +"service");
     const reqBody={"username":login.username,"password":login.password}
   return this.httpClient.post<any>(Constant.BASE_URL+Constant.METHODS.LOGIN,reqBody)
   }

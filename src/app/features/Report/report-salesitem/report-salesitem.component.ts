@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ReportService } from '../service/report.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -6,7 +6,6 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import {
   MatPaginator,
   MatPaginatorModule,
-  PageEvent,
 } from '@angular/material/paginator';
 import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -15,10 +14,11 @@ import { MatInputModule } from '@angular/material/input';
 import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FeeCollection } from '../../../models/feecollection.model';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 import { PrintreportService } from '../../../shared/service/printreport.service';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+import { MatIconModule } from '@angular/material/icon';
 @Component({
   selector: 'app-report-salesitem',
   standalone: true,
@@ -31,7 +31,8 @@ import { SpinnerComponent } from '../../../shared/component/spinner/spinner.comp
     MatFormFieldModule,
     MatInputModule,
     TranslateModule,
-    SpinnerComponent
+    SpinnerComponent,
+    MatIconModule
   ],
   templateUrl: './report-salesitem.component.html',
   styleUrls: [
@@ -40,19 +41,6 @@ import { SpinnerComponent } from '../../../shared/component/spinner/spinner.comp
   ],
 })
 export class ReportSalesitemComponent {
-  displayedColumns: string[] = [
-    'BillNo',
-    'BillDate',
-    'NM_Name',
-    'Name',
-    'Star',
-    'Qty',
-    'ItemValue',
-    'weight',
-    'Receipt_Amt',
-    'TrnMode',
-    'Remarks',
-  ];
   dataSource = new MatTableDataSource<FeeCollection>();
   length = 0;
   pageSize = 10;
@@ -120,6 +108,9 @@ export class ReportSalesitemComponent {
       next: (data) => {
         console.log('Fetched report data:', data);
         this.data = data;
+         this.data  = this.data.sort((a: any, b: any) =>
+        a.BillNo.localeCompare(b.BillNo, undefined, { numeric: true, sensitivity: 'base' })
+        );
         // this.groupDataByTransactionMode(this.data); // Group the data
         this.groupedData = this.groupDataByName(this.data);
         this.dataSource.data = this.data;
@@ -132,13 +123,13 @@ export class ReportSalesitemComponent {
   }
 
   goBack(): void {
-    console.log('Going back...'); // Log to verify method execution
+    console.log('Going back...'); 
     this.router.navigate(['/getReport']);
 
     if (window.history.length > 1) {
-      window.history.back(); // Goes back to the previous page in history
+      window.history.back(); 
     } else {
-      window.close(); // Closes the tab if it's the only page open
+      window.close(); 
     }
   }
 
@@ -149,102 +140,6 @@ export class ReportSalesitemComponent {
 
   generatePDF() {
     this.reportPrintservice.generatePDF();
-
-    //     const printContent = document.getElementById('print-section');
-    //     if (!printContent) {
-    //       console.error('No content found to print');
-    //       return;
-    //     }
-
-    //     const WindowPrt = window.open('', '', 'width=800,height=600');
-
-    //     // Check if the print window was successfully opened
-    //     if (!WindowPrt) {
-    //       console.error('Unable to open print window. Please check pop-up blockers.');
-    //       return;
-    //     }
-
-    //     WindowPrt.document.write(`
-    //       <html>
-    //         <head>
-    //           <title>Print</title>
-    //             <style>
-    //           .header-print h2 h3 h4 {
-    //           margin:0;
-    //           padding:0;
-    //            }
-    //           h3,h4,h2{
-    //           margin-top:0px;
-    //           margin-botton:0px;
-    //           text-align:center;
-
-    //           }
-    //         .tabble-heading{
-    //   margin-top: 10px;
-    //   margin-bottom: 0;
-    //   text-transform: uppercase;
-    //   font-family: 'Times New Roman', Times, serif;
-    //   font-weight: bold;
-    //   text-align: left;
-
-    // }
-    //   .date{
-    //    line-height:1;
-    //           margin-top:0;
-    //   text-align:center;
-    //   }
-    //           table {
-    //             width: 100%;
-    //             border-collapse: collapse;
-    //           }
-    //           table, th, td {
-    //             border: 1px solid black;
-    //             text-transform: uppercase;
-
-    //           }
-    //           th, td {
-    //            padding-left:5px;
-    //             text-align: left;
-    //           }
-    //             #print-section{
-    // padding-bottom: 100px;
-    //   }
-
-    // .number{
-    //     text-align: right;
-    //     /* font-weight: bold; */
-    // }
-    // .total{
-
-    //     text-align: right;
-    //     font-weight: bold;
-    //     font-size: 14px;
-    // }
-
-    // .grandtotal{
-    //     text-align: right;
-    //     font-family: 'Times New Roman', Times, serif;
-    //     font-weight:bolder;
-    //     color: red;
-    //     font-size: 20px;
-    //     margin: 10px 0;
-
-    // }
-
-    //         </style>
-    //         </head>
-    //         <body>${printContent.innerHTML}</body>
-    //       </html>
-    //     `);
-
-    //     WindowPrt.document.close();
-    //     WindowPrt.focus();
-
-    //     // Make sure that the window is still valid before calling print and close
-    //     if (WindowPrt) {
-    //       WindowPrt.print();
-    //       WindowPrt.close();
-    //     }
   }
 
   getTotalAmount(): number {
@@ -273,42 +168,132 @@ export class ReportSalesitemComponent {
     }
   }
 
-  // Calculate the grand total for each transaction mode
   getGrandTotalForTrnsMode(item: string): any {
-    const items = this.groupedData[item]; // Get items for the transaction mode
+    const items = this.groupedData[item]; 
     if (!items || items.length === 0) {
-      return 0; // No items found, return 0
+      return 0; 
     }
-    // Calculate the total
     const total = items.reduce((sum, item) => {
-      // Default to 0 if Rate is missing
       return sum + item.Amount;
     }, 0);
 
     return total;
   }
 
-  generatePDFs() {
-    const element = document.getElementById('print-section');
 
-    if (!element) {
-      console.error('Element not found');
-      return;
+  exportToExcel(): void {
+  const workbook = XLSX.utils.book_new();
+  const excelData: any[] = [];
+
+  // ==========================================
+  // HEADER
+  // ==========================================
+  excelData.push([this.templeName]);
+  excelData.push([this.templeAddress]);
+  excelData.push(['SALES ITEM REPORT']);
+  excelData.push([
+    `${this.formatDateToDDMMYYYY(this.fromDate)} To ${this.formatDateToDDMMYYYY(this.toDate)}`
+  ]);
+  excelData.push([]);
+
+  // ==========================================
+  // GROUPED DATA
+  // ==========================================
+  const groups = Object.keys(this.groupedData);
+
+  groups.forEach((groupName: string) => {
+    const rows = this.groupedData[groupName];
+
+    // Section Heading
+    excelData.push([groupName]);
+
+    // Column Header
+    excelData.push([
+      'Bill No',
+      'Bill Date',
+      'Name',
+      'Star',
+      'Quantity',
+      'Rate',
+      'Amount'
+    ]);
+
+    // Rows
+    rows.forEach((item: any) => {
+      excelData.push([
+        item.BillNo,
+        item.BillDate,
+        item.Name,
+        item.Star || 'N/A',
+        item.Qty,
+        item.Rate,
+        item.Amount
+      ]);
+    });
+
+    // Group Total
+    excelData.push([
+      '',
+      '',
+      '',
+      '',
+      '',
+      'Total',
+      this.getGrandTotalForTrnsMode(groupName)
+    ]);
+
+    excelData.push([]);
+  });
+
+  // ==========================================
+  // GRAND TOTAL
+  // ==========================================
+  excelData.push([
+    '',
+    '',
+    '',
+    '',
+    '',
+    'Grand Total',
+    this.getTotalAmount()
+  ]);
+
+  // ==========================================
+  // CREATE SHEET
+  // ==========================================
+  const worksheet = XLSX.utils.aoa_to_sheet(excelData);
+
+  worksheet['!cols'] = [
+    { wch: 12 }, // Bill No
+    { wch: 15 }, // Bill Date
+    { wch: 28 }, // Name
+    { wch: 15 }, // Star
+    { wch: 12 }, // Qty
+    { wch: 12 }, // Rate
+    { wch: 15 }  // Amount
+  ];
+
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Sales Item Report');
+
+  // ==========================================
+  // SAVE FILE
+  // ==========================================
+  const excelBuffer: any = XLSX.write(workbook, {
+    bookType: 'xlsx',
+    type: 'array'
+  });
+
+  const file = new Blob(
+    [excelBuffer],
+    {
+      type:
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
     }
+  );
 
-    html2canvas(element, { scale: 2 })
-      .then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'mm', 'a4');
-
-        const imgWidth = 210;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-        pdf.addImage(imgData, 'PNG', 0, 10, imgWidth, imgHeight);
-        pdf.save('Poornam_Report.pdf');
-      })
-      .catch((error) => {
-        console.error('Error generating PDF:', error);
-      });
-  }
+  saveAs(
+    file,
+    `Sales_Item_Report_${new Date().getTime()}.xlsx`
+  );
+}
 }

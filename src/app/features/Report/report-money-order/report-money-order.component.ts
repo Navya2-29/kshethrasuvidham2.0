@@ -18,6 +18,9 @@ import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PrintreportService } from '../../../shared/service/printreport.service';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+import { MatIconModule } from '@angular/material/icon';
 @Component({
   selector: 'app-report-money-order',
   standalone: true,
@@ -30,7 +33,8 @@ import { SpinnerComponent } from '../../../shared/component/spinner/spinner.comp
     MatFormFieldModule,
     MatInputModule,
     TranslateModule ,
-    SpinnerComponent
+    SpinnerComponent,
+    MatIconModule
   ],
   templateUrl: './report-money-order.component.html',
   styleUrls: ['./report-money-order.component.css','/src/assets/styles/report.style.css'],
@@ -561,6 +565,110 @@ generatePDF(){
 //   } 
 
 }
+exportToExcel(): void {
 
+  const workbook = XLSX.utils.book_new();
+  const rows: any[] = [];
+
+  /* =====================================================
+      REPORT HEADER
+  ===================================================== */
+  rows.push([this.templeName]);
+  rows.push([this.templeAddress]);
+  rows.push(['MONEY ORDER REPORT']);
+  rows.push([
+    `${this.formatDateToDDMMYYYY(this.fromDate)} to ${this.formatDateToDDMMYYYY(this.toDate)}`
+  ]);
+  rows.push([]);
+
+  /* =====================================================
+      SECTION TITLE
+  ===================================================== */
+  rows.push(['VAZHIPAD']);
+  rows.push([]);
+
+  /* =====================================================
+      TABLE HEADER
+  ===================================================== */
+  rows.push([
+    'Bill No',
+    'Bill Date',
+    'Counter',
+    'Vazhipad',
+    'Name',
+    'Quantity',
+    'Rate',
+    'Amount'
+  ]);
+
+  /* =====================================================
+      DATA ROWS
+  ===================================================== */
+  this.filteredData.forEach((item: any) => {
+
+    rows.push([
+      item.BillNo,
+      item.BillDate,
+      `${item.CounterId} (${item.UName})`,
+      item.Vazhipad,
+      item.Name,
+      item.Qty,
+      item.Rate,
+      item.Amount
+    ]);
+
+  });
+
+  /* =====================================================
+      GRAND TOTAL
+  ===================================================== */
+  rows.push([]);
+  rows.push([
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    'Grand Total',
+    this.getTotalAmount()
+  ]);
+
+  /* =====================================================
+      CREATE SHEET
+  ===================================================== */
+  const worksheet = XLSX.utils.aoa_to_sheet(rows);
+
+  worksheet['!cols'] = [
+    { wch: 15 }, // Bill No
+    { wch: 15 }, // Bill Date
+    { wch: 22 }, // Counter
+    { wch: 30 }, // Vazhipad
+    { wch: 28 }, // Name
+    { wch: 12 }, // Qty
+    { wch: 12 }, // Rate
+    { wch: 15 }  // Amount
+  ];
+
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Money Order');
+
+  /* =====================================================
+      SAVE FILE
+  ===================================================== */
+  const excelBuffer = XLSX.write(workbook, {
+    bookType: 'xlsx',
+    type: 'array'
+  });
+
+  const blob = new Blob([excelBuffer], {
+    type:
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+  });
+
+  saveAs(
+    blob,
+    `Money_Order_Report_${this.fromDate}_to_${this.toDate}.xlsx`
+  );
+}
   
 }

@@ -7,3 +7,9 @@ h3.tabble-heading{
   text-align: left;
 
 }
+.fwname{
+  max-width: 250px;
+  white-space: normal;
+  word-wrap: break-word;
+  word-break: break-word;
+}

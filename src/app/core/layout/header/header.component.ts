@@ -1,107 +1,150 @@
-import { Component, inject } from '@angular/core';
+import {
+  Component,
+  inject,
+  OnInit,
+  DestroyRef,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+} from '@angular/core';
+
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+
 import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
-import { MenuComponent } from '../menu/menu.component';
-import { AreaComponent } from '../../../features/Billing/area/area.component';
 import { MatMenuModule } from '@angular/material/menu';
-import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { MatBadgeModule } from '@angular/material/badge';
+
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { forkJoin } from 'rxjs';
+
+import { MenuComponent } from '../menu/menu.component';
 import { ChangePasswordComponent } from '../../auth/change-password/change-password.component';
-import { MatDialog } from '@angular/material/dialog';
+import { OnlineNotificationPopupComponent } from '../headercomponents/online-notification-popup/online-notification-popup.component';
 import { MasterService } from '../../../services/master/master.service';
+
 @Component({
   selector: 'app-header',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush, // 🔥 PERFORMANCE BOOST
   imports: [
+    CommonModule,
     MatButtonModule,
     MatSidenavModule,
     MatIconModule,
-    MenuComponent,
-    
     MatMenuModule,
-    CommonModule
+    MatBadgeModule,
+    MenuComponent,
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css',
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
+
   private router = inject(Router);
-  private masterService=inject(MasterService);
-  showFiller = false;
-  userName: string | null = '';
-  role:string |null='';
-  counterId:string |null='';
-  templeName:string |null='';
-  logo:string |null='';
-  today:string;
-  day:string;
-  mdate:string;
-  nal:string;
-  constructor(private dialog: MatDialog,) {
-    this.userName = localStorage.getItem('name');
-    this.role=localStorage.getItem('Role');
-    this.counterId=localStorage.getItem('counterId');
-this.templeName=localStorage.getItem('TempleName');
-this.logo=localStorage.getItem('Logo');
+  private masterService = inject(MasterService);
+  private destroyRef = inject(DestroyRef);
+private cdr = inject(ChangeDetectorRef);
+  // UI
+  notificationCount = 0;
+
+  // Cached user data (read once)
+  userName = localStorage.getItem('name') ?? '';
+  role = localStorage.getItem('Role') ?? '';
+  counterId = localStorage.getItem('counterId') ?? '';
+  templeName = localStorage.getItem('TempleName') ?? '';
+  logo = localStorage.getItem('Logo') ?? '';
+
+  // Dates
+  today = '';
+  day = '';
+  mdate = '';
+  nal = '';
+
+  constructor(private dialog: MatDialog) {}
+
+  // ================= INIT =================
+  ngOnInit(): void {
+    this.loadInitialData();
+  }
+getlogo(){
+return `${window.location.origin}/apis/TempleLogo/${this.logo}`;
+// console.log(`${window.location.origin}/apis/TempleLogo/${this.logo}`)
+}
+  // ================= PERFORMANCE LOAD =================
+  private loadInitialData(): void {
+
+    const today = new Date().toISOString().split('T')[0];
+
+    const datePayload = {
+      Type: 'MalayalamDate',
+      Code: today,
+    };
+
+    const notificationPayload = {
+      Type: 'OnlineCurrentCount',
+      Code: '',
+    };
+
+    forkJoin({
+      dates: this.masterService.getMaster(datePayload),
+      notifications: this.masterService.getMaster(notificationPayload),
+    })
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe({
+      next: ({ dates, notifications }) => {
+
+        // Dates
+        if (dates?.length) {
+          const res = dates[0];
+          this.today = res.Date ?? '';
+          this.day = res.day ?? '';
+          this.mdate = res.mdate ?? '';
+          this.nal = res.nal ?? '';
+        }
+
+        // Notifications
+        this.notificationCount = notifications?.length ?? 0;
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        console.error('Header load failed', err);
+      },
+    });
   }
 
-  logout() {
-    localStorage.setItem('loggedIn', 'false');
+  // ================= NAV =================
+  goBack(): void {
+    this.router.navigate(['/front']);
+  }
+
+  logout(): void {
+     localStorage.setItem('loggedIn', 'false');
     localStorage.removeItem('name');
     localStorage.removeItem('Role');
     localStorage.removeItem('alertmsg');
     localStorage.removeItem('LoginId');
     localStorage.removeItem('username');
     localStorage.removeItem('password');
-    // if(this.role==='admin'){
-    //   localStorage.removeItem('counterId');
-    // }
+
     this.router.navigate(['/login']);
-  }
-  goBack(){
-    this.router.navigate(['/front']);
 
   }
-  openChangepasswordDialog(){
-     const dialogRef = this.dialog.open(ChangePasswordComponent, {
-          width: '300px',
-          disableClose: true,
-        });
-    
-        dialogRef.afterClosed().subscribe((result) => {
-          if (result) {
-          }
-        })
-  }
-  
-ngOnInit() {
-this.hetHeaderDatesInfomation();
-}
 
-hetHeaderDatesInfomation(){
-const today = new Date();
-const yyyy = today.getFullYear();
-const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months start from 0
-const dd = String(today.getDate()).padStart(2, '0');
-const formattedDate = `${yyyy}-${mm}-${dd}`;
-
-  const payLoad={
-    Type:"MalayalamDate",
-    Code:formattedDate
+  // ================= DIALOGS =================
+  openChangepasswordDialog(): void {
+    this.dialog.open(ChangePasswordComponent, {
+      width: '300px',
+      disableClose: true,
+    });
   }
 
-  this.masterService.getMaster(payLoad).subscribe({
-    next:(data)=>{
-      console.log(data);
-      this.today=data[0].Date;
-      this.day=data[0].day;
-      this.mdate=data[0].mdate;
-      this.nal=data[0].nal
-    }
-  })
-}
-
-
-
+  openNotifications(): void {
+    this.dialog.open(OnlineNotificationPopupComponent, {
+      width: '900px',
+      data: { title: '', status: '' },
+    });
+  }
 }
