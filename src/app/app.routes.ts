@@ -74,10 +74,12 @@ import { ReportPrathistaAllComponent } from './features/Report/report-prathista-
 import { CalendarComponent } from './features/Billing/calendar/calendar.component';
 import { UserComponent } from './features/master/user/user/user.component';
 import { HallbookingComponent } from './features/Billing/hallbooking/hallbooking.component';
+import { PrintSettingsComponent } from './features/Billing/print-settings/print-settings.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
   { path: 'login', component: LoginComponent },
+  { path: 'print-settings', component: PrintSettingsComponent, canActivate: [authGuard] },
   {
     path: 'dashboard',
     component: DashboardComponent,

@@ -38,6 +38,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NumberToWordsPipe } from '../../../shared/pipe/number-to-words.pipe';
 import { ReceiptPrintService } from '../../../shared/service/receipt-print.service';
 import { Router } from '@angular/router';
+import { QzTrayService } from '../../../shared/service/qz-tray.service';
 export interface Data {
   vazhipad: string;
   name: string;
@@ -166,6 +167,7 @@ export class SearchByBillNumberComponent {
     private ts: TranslateService,
     private receiptService: ReceiptPrintService,
     private router: Router,
+    private qzTrayService: QzTrayService,
   ) {
     // console.log(this.data, 'all data of that bill');
     this.lastBillNo = data[0].BillNo;
@@ -676,7 +678,18 @@ export class SearchByBillNumberComponent {
   //   }
 
   //   return dates;
-  // };
+  private async printHtmlContent(printContent: string) {
+    try {
+      await this.qzTrayService.printHtml(printContent);
+      this.notification.showSuccess('Bill printed successfully via QZ Tray', 'Print Success');
+    } catch (qzError: any) {
+      console.error('QZ Tray direct print error:', qzError);
+      this.notification.showError(
+        'QZ Tray Print failed: ' + (qzError?.message || qzError || 'Make sure QZ Tray is running on this laptop.'),
+        'Print Error'
+      );
+    }
+  }
 
   printReceiptsDotmetrix() {
     this.differentDateArray = [];
@@ -878,16 +891,7 @@ export class SearchByBillNumberComponent {
     </body>
   </html>
   `;
-      const printWindow = window.open('', '_blank', 'width=800,height=600');
-      if (printWindow) {
-        printWindow.document.open();
-        printWindow.document.write(printContent);
-        printWindow.document.close();
-        printWindow.focus();
-        printWindow.print();
-        printWindow.close();
-        // this.resetForm()
-      }
+      this.printHtmlContent(printContent);
     }
   }
 
@@ -1052,12 +1056,8 @@ export class SearchByBillNumberComponent {
 
     if (!printContent) return;
 
-    const printWindow = window.open('', '_blank', 'width=900,height=650');
-    if (!printWindow) return;
-
     const logoUrl = window.location.origin + '/assets/images/temple_logo.png';
-
-    printWindow.document.write(`
+    const htmlToPrint = `
     <html>
       <head>
         <title>Print</title>
@@ -1133,29 +1133,9 @@ export class SearchByBillNumberComponent {
         ${printContent.innerHTML}
       </body>
     </html>
-  `);
+  `;
 
-    printWindow.document.close();
-
-    // ✅ WAIT FOR IMAGES TO LOAD BEFORE PRINT
-    printWindow.onload = () => {
-      const images = printWindow.document.images;
-
-      const imagePromises = Array.from(images).map((img) => {
-        if (img.complete) return Promise.resolve(true);
-        return new Promise((res) => {
-          img.onload = img.onerror = () => res(true);
-        });
-      });
-
-      Promise.all(imagePromises).then(() => {
-        setTimeout(() => {
-          printWindow.focus();
-          printWindow.print();
-          printWindow.close();
-        }, 300);
-      });
-    };
+    this.printHtmlContent(htmlToPrint);
   }
 
   groupDataByPrathistaAndVazhipad(): void {
@@ -1601,17 +1581,7 @@ td{font-size:10pt;}
     </body>
   </html>
 `;
-      const printWindow = window.open('', '_blank', 'width=800,height=600');
-      if (printWindow) {
-        printWindow.document.open();
-        printWindow.document.write(printContent);
-        printWindow.document.close();
-        printWindow.focus();
-        setTimeout(() => {
-          printWindow.print();
-          printWindow.close();
-        }, 500);
-      }
+      this.printHtmlContent(printContent);
     }
   }
 
@@ -1781,19 +1751,7 @@ td{font-size:10pt;}
   }
 
   private printContent(content: string) {
-    const printWindow = window.open('', '_blank', 'width=800,height=600');
-
-    if (printWindow) {
-      printWindow.document.open();
-      printWindow.document.write(content);
-      printWindow.document.close();
-      printWindow.onload = () => {
-        printWindow.print();
-        printWindow.close();
-      };
-    } else {
-      console.error('Failed to open the print window.');
-    }
+    this.printHtmlContent(content);
   }
 
   printReceiptsThermal() {
@@ -2157,21 +2115,7 @@ td{font-size:10pt;}
       </body>
     </html>
   `;
-      const printWindow = window.open('', '_blank', 'width=800,height=600');
-      if (printWindow) {
-        printWindow.document.open();
-        printWindow.document.write(printContent);
-        printWindow.document.close();
-        printWindow.onload = () => {
-          setTimeout(() => {
-            printWindow.focus();
-            printWindow.print();
-            printWindow.close();
-            // this.resetForm();
-          }, 500); // small delay to ensure image is loaded
-        };
-        // this.resetForm()
-      }
+      this.printHtmlContent(printContent);
     }
   }
   getLogo() {

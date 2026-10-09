@@ -1,1 +1,54 @@
-<p>print-settings works!</p>
+<div class="container my-4">
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">QZ Tray Direct / Silent Print Configuration</h5>
+      <span class="badge" [ngClass]="isConnected ? 'bg-success' : 'bg-danger'">
+        {{ isConnected ? 'Connected to QZ Tray' : 'Disconnected' }}
+      </span>
+    </div>
+    <div class="card-body">
+      <div *ngIf="errorMessage" class="alert alert-danger">
+        <strong>Error:</strong> {{ errorMessage }}
+      </div>
+      <div *ngIf="successMessage" class="alert alert-success">
+        {{ successMessage }}
+      </div>
+
+      <div class="mb-3">
+        <button class="btn btn-outline-primary btn-sm me-2" (click)="checkStatusAndLoadPrinters()" [disabled]="isConnecting">
+          {{ isConnecting ? 'Checking...' : 'Refresh Connection & Printers' }}
+        </button>
+      </div>
+
+      <div *ngIf="isConnected" class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label fw-bold">Select Active Printer for Billing:</label>
+          <select class="form-select" [ngModel]="selectedPrinter" (ngModelChange)="onPrinterSelected($event)">
+            <option value="">-- Use System Default ({{ defaultPrinter || 'None' }}) --</option>
+            <option *ngFor="let p of printers" [value]="p">
+              {{ p }} <span *ngIf="p === defaultPrinter">(System Default)</span>
+            </option>
+          </select>
+          <small class="text-muted d-block mt-1">
+            Selected printer is saved and will be used directly for all silent billing prints.
+          </small>
+        </div>
+
+        <div class="col-md-6 d-flex align-items-end">
+          <button class="btn btn-success" (click)="testPrint()">
+            Run Direct Silent Test Print
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-4 p-3 bg-light rounded border">
+        <h6 class="fw-bold mb-2">How Silent Printing Works with QZ Tray:</h6>
+        <ul class="mb-1 text-muted small">
+          <li><strong>No Print Dialog:</strong> Print jobs are sent over a secure local WebSocket connection directly to the Windows print spooler.</li>
+          <li><strong>QZ Tray Desktop App:</strong> QZ Tray must be running in the Windows System Tray (near the clock).</li>
+          <li><strong>First-Time Setup:</strong> When QZ Tray prompts "Allow this website to connect?", check <em>"Remember this decision"</em> and click <em>"Allow"</em> to prevent future prompts.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

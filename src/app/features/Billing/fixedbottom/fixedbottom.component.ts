@@ -1,4 +1,5 @@
 import { MasterService } from './../../../services/master/master.service';
+import { QzTrayService } from '../../../shared/service/qz-tray.service';
 import {
   Component,
   effect,
@@ -129,6 +130,7 @@ export class FixedbottomComponent implements OnInit {
     private ts: TranslateService,
     private service: MasterService,
     private notification: NotificationService,
+    private qzTrayService: QzTrayService,
   ) {
     this.lang = localStorage.getItem('Language') || 'en';
     const userLang = navigator.language || 'en';
@@ -178,6 +180,11 @@ export class FixedbottomComponent implements OnInit {
     this.getStarData();
     this.subscribeToTrnsmodeChanges();
     this.subscribeToMobileChanges();
+
+    // Auto-connect to QZ Tray silently in the background
+    this.qzTrayService.connect().catch((err) => {
+      console.warn('QZ Tray auto-connect status:', err);
+    });
     this.givenamountChanges();
   }
 
@@ -676,43 +683,18 @@ ${group.Slno && group.Slno.toString().trim() !== ''
     this.printHtmlContent(content);
   }
 
-  private printHtmlContent(printContent: string) {
-    const existingIframe = document.getElementById('receipt-print-iframe');
-    if (existingIframe) {
-      existingIframe.remove();
-    }
-
-    const iframe = document.createElement('iframe');
-    iframe.id = 'receipt-print-iframe';
-    iframe.style.position = 'fixed';
-    iframe.style.top = '-9999px';
-    iframe.style.left = '-9999px';
-    iframe.style.width = '0px';
-    iframe.style.height = '0px';
-    iframe.style.border = '0';
-    document.body.appendChild(iframe);
-
-    const doc = iframe.contentWindow?.document;
-    if (doc && iframe.contentWindow) {
-      doc.open();
-      doc.write(printContent);
-      doc.close();
-
-      setTimeout(() => {
-        try {
-          iframe.contentWindow?.print();
-        } catch (e) {
-          console.error('Print failed:', e);
-        } finally {
-          setTimeout(() => {
-            if (document.body.contains(iframe)) {
-              document.body.removeChild(iframe);
-            }
-          }, 1000);
-          this.resetForm();
-        }
-      }, 0);
-    } else {
+  private async printHtmlContent(printContent: string) {
+    try {
+      // Direct silent print via QZ Tray without ANY browser print dialog
+      await this.qzTrayService.printHtml(printContent);
+      this.notification.showSuccess('Bill printed successfully via QZ Tray', 'Print Success');
+    } catch (qzError: any) {
+      console.error('QZ Tray direct print error:', qzError);
+      this.notification.showError(
+        'QZ Tray Print failed: ' + (qzError?.message || qzError || 'Make sure QZ Tray is running on this laptop.'),
+        'Print Error'
+      );
+    } finally {
       this.resetForm();
     }
   }
