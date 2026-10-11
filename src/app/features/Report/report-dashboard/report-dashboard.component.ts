@@ -4,7 +4,7 @@ import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MasterService } from '../../../services/master/master.service';
 import { TranslateService } from '@ngx-translate/core';
 import { TranslateModule } from '@ngx-translate/core';
@@ -18,6 +18,7 @@ import { MatRadioModule } from '@angular/material/radio';
     CommonModule,
     SpinnerComponent,
     ReactiveFormsModule,
+    FormsModule,
     TranslateModule,
     MatRadioModule,
   ],
@@ -35,6 +36,36 @@ export class ReportDashboardComponent {
   pmaster: any[] = [];
   Vmaster: any[] = [];
   lang: string | null;
+  searchQuery: string = '';
+  activeSection: string | null = null;
+
+  toggleSection(sectionKey: string, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    // Accordion: if clicked section is already open, collapse it; otherwise open only this section
+    this.activeSection = this.activeSection === sectionKey ? null : sectionKey;
+  }
+
+  isSectionOpen(sectionKey: string): boolean {
+    if (this.searchQuery && this.searchQuery.trim().length > 0) {
+      return true; // Auto-expand when searching so user sees matching reports
+    }
+    return this.activeSection === sectionKey;
+  }
+
+  selectReport(option: string): void {
+    this.searchForm.get('vazhipadOption')?.setValue(option);
+  }
+
+  matchesSearch(text: string): boolean {
+    if (!this.searchQuery || !this.searchQuery.trim()) {
+      return true;
+    }
+    const query = this.searchQuery.toLowerCase().trim();
+    const translated = this.ts.instant(text) || '';
+    return text.toLowerCase().includes(query) || translated.toLowerCase().includes(query);
+  }
   constructor(
     private fb: FormBuilder,
     private service: ReportService,
