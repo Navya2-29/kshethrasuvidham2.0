@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
 import { ReportService } from '../service/report.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -46,13 +46,10 @@ interface ReportData {
     MatInputModule,
   ],
   templateUrl: './report-view.component.html',
-  styleUrls: [
-    './report-view.component.css',
-    '/src/assets/styles/report.style.css',
-  ],
+  styleUrls: ['./report-view.component.css'],
 })
 export class ReportViewComponent implements OnInit {
-  loading: boolean;
+  loading: boolean = false;
   data: ReportData[] = [];
 
   groupedData: {
@@ -60,24 +57,49 @@ export class ReportViewComponent implements OnInit {
       [prathista: string]: { [vazhipad: string]: ReportData[] };
     };
   } = {};
-  fromDate: string;
-  toDate: string;
+  fromDate: string = '';
+  toDate: string = '';
   lang: string | null;
   templeName: string | null;
   templeAddress: string | null;
+
+  // Pagination
+  currentPage: number = 1;
+  pageSize: number = 10;
+
+  // Column Visibility Management
+  showColumnDropdown: boolean = false;
+  columns: { [key: string]: boolean } = {
+    sino: true,
+    name: true,
+    star: true,
+    gothram: true,
+    quantity: true,
+    address: true,
+    type: true,
+  };
+
+  columnList = [
+    { key: 'sino', label: 'SINO' },
+    { key: 'name', label: 'NAME' },
+    { key: 'star', label: 'STAR' },
+    { key: 'gothram', label: 'GOTHRAM' },
+    { key: 'quantity', label: 'QUANTITY' },
+    { key: 'address', label: 'ADDRESS / PHONE' },
+    { key: 'type', label: 'TYPE' },
+  ];
+
   constructor(
     private route: ActivatedRoute,
     private ts: TranslateService,
     private service: ReportService,
     private router: Router,
-
     private reportPrintservice: PrintreportService,
   ) {
     this.lang = localStorage.getItem('Language');
-    this.templeName =
-      localStorage.getItem('TempleName') || 'Default Temple Name';
-    this.templeAddress =
-      localStorage.getItem('Address') || 'Default Temple Address';
+    this.templeName = localStorage.getItem('TempleName') || '';
+    this.templeAddress = localStorage.getItem('Address') || '';
+
     const userLang = navigator.language || 'en';
     const languageCode = userLang.split('-')[0];
     this.ts.setDefaultLang(languageCode);
@@ -87,10 +109,104 @@ export class ReportViewComponent implements OnInit {
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       const type = params['type'];
-      this.fromDate = params['fromDate'];
-      this.toDate = params['toDate'];
-      this.fetchReportData(type, this.fromDate, this.toDate);
+      this.fromDate = params['fromDate'] || '';
+      this.toDate = params['toDate'] || '';
+
+      if (type) {
+        this.fetchReportData(type, this.fromDate, this.toDate);
+      }
     });
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (this.showColumnDropdown) {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.column-picker-wrapper')) {
+        this.showColumnDropdown = false;
+      }
+    }
+  }
+
+  get visibleColumnCount(): number {
+    return Object.values(this.columns).filter(Boolean).length;
+  }
+
+  get totalColumnCount(): number {
+    return this.columnList.length;
+  }
+
+  toggleColumnDropdown(event?: Event): void {
+    if (event) event.stopPropagation();
+    this.showColumnDropdown = !this.showColumnDropdown;
+  }
+
+  toggleColumn(key: string): void {
+    this.columns[key] = !this.columns[key];
+  }
+
+  // Pagination helpers
+  getPaginatedEntries(entries: ReportData[]): ReportData[] {
+    if (!entries || entries.length === 0) return [];
+    const start = (this.currentPage - 1) * this.pageSize;
+    return entries.slice(start, start + this.pageSize);
+  }
+
+  getTotalPages(entries: ReportData[]): number {
+    if (!entries || entries.length === 0) return 1;
+    return Math.ceil(entries.length / this.pageSize) || 1;
+  }
+
+  getPages(entries: ReportData[]): number[] {
+    const total = this.getTotalPages(entries);
+    return Array.from({ length: total }, (_, i) => i + 1);
+  }
+
+  goToPage(page: number): void {
+    this.currentPage = page;
+  }
+
+  nextPage(entries: ReportData[]): void {
+    if (this.currentPage < this.getTotalPages(entries)) {
+      this.currentPage++;
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  onPageSizeChange(size: any): void {
+    this.pageSize = Number(size) || 10;
+    this.currentPage = 1;
+  }
+
+  getRangeStart(entries: ReportData[]): number {
+    if (!entries || entries.length === 0) return 0;
+    return (this.currentPage - 1) * this.pageSize + 1;
+  }
+
+  getRangeEnd(entries: ReportData[]): number {
+    if (!entries || entries.length === 0) return 0;
+    return Math.min(this.currentPage * this.pageSize, entries.length);
+  }
+
+  getLeadingColspan(): number {
+    let count = 0;
+    if (this.columns['sino']) count++;
+    if (this.columns['name']) count++;
+    if (this.columns['star']) count++;
+    if (this.columns['gothram']) count++;
+    return Math.max(1, count);
+  }
+
+  getTrailingColspan(): number {
+    let count = 0;
+    if (this.columns['address']) count++;
+    if (this.columns['type']) count++;
+    return Math.max(1, count);
   }
 
   // Call your API service to get the report data
@@ -104,19 +220,24 @@ export class ReportViewComponent implements OnInit {
     this.service.getReport(payLoad).subscribe({
       next: (data) => {
         console.log('Fetched report data:', data);
-        this.data = data;
-
-        const groupedByVtime = this.groupByVtime(data);
-
-        this.groupedData = this.groupByPrathistaThenVazhipad(groupedByVtime);
-
+        if (!data || data.length === 0) {
+          return
+        } else {
+          this.populateData(data);
+        }
         this.loading = false;
-        console.log(this.groupedData, 'grouped data');
       },
       error: (error) => {
-        console.error('Error fetching report data:', error);
+        console.error('Error fetching report data, loading preview:', error);
+        this.loading = false;
       },
     });
+  }
+
+  populateData(data: ReportData[]): void {
+    this.data = data;
+    const groupedByVtime = this.groupByVtime(data);
+    this.groupedData = this.groupByPrathistaThenVazhipad(groupedByVtime);
   }
 
   groupByVazhipad(data: ReportData[]): { [key: string]: ReportData[] } {
@@ -181,8 +302,35 @@ export class ReportViewComponent implements OnInit {
   }
 
   formatDateToDDMMYYYY(date: string): string {
-    const [year, month, day] = date.split('-');
-    return `${day}/${month}/${year}`;
+    if (!date) return '';
+    if (date.includes('-')) {
+      const parts = date.split('-');
+      if (parts.length === 3) {
+        const [year, month, day] = parts;
+        return `${day}/${month}/${year}`;
+      }
+    }
+    return date;
+  }
+
+  getTotalQty(entries: ReportData[]): number {
+    if (!entries) return 0;
+    return entries.reduce((sum, item) => sum + (Number(item.Qty) || 0), 0);
+  }
+
+  getTypeBadgeClass(type: string): string {
+    if (!type) return 'badge-ctr';
+    const t = type.toLowerCase();
+    if (t === 'online' || t === 'ol' || t === 'onl') return 'badge-onl';
+    return 'badge-ctr';
+  }
+
+  getTypeLabel(type: string): string {
+    if (!type) return 'CTR';
+    const t = type.toLowerCase();
+    if (t === 'online' || t === 'ol' || t === 'onl') return 'ONL';
+    if (t === 'counter' || t === 'ctr') return 'CTR';
+    return type.toUpperCase();
   }
 
   goBack(): void {

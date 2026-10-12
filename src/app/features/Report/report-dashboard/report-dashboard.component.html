@@ -5,21 +5,32 @@
 <div class="reports-page-header">
   <div class="header-content">
     <div class="header-title-wrap">
-      <!-- Temple Gopuram Icon in Gold -->
+      <!-- Temple Gopuram Icon in Gradient -->
       <div class="temple-icon-wrapper">
         <svg class="temple-svg-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M24 3L21.5 8.5H26.5L24 3Z" fill="#d97706" />
-          <path d="M21 8.5L15 15H33L27 8.5H21Z" fill="#f59e0b" />
-          <path d="M12 15L9 19H39L36 15H12Z" fill="#d97706" />
-          <rect x="7" y="19" width="34" height="4" rx="1" fill="#f59e0b" />
+          <defs>
+            <linearGradient id="templeGopuramGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#029fb0" />
+              <stop offset="50%" stop-color="#04418c" />
+              <stop offset="100%" stop-color="#536aed" />
+            </linearGradient>
+            <linearGradient id="templeAccentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#029fb0" />
+              <stop offset="100%" stop-color="#04418c" />
+            </linearGradient>
+          </defs>
+          <path d="M24 3L21.5 8.5H26.5L24 3Z" fill="url(#templeGopuramGradient)" />
+          <path d="M21 8.5L15 15H33L27 8.5H21Z" fill="url(#templeAccentGradient)" />
+          <path d="M12 15L9 19H39L36 15H12Z" fill="url(#templeGopuramGradient)" />
+          <rect x="7" y="19" width="34" height="4" rx="1" fill="url(#templeAccentGradient)" />
           <!-- Pillars -->
-          <rect x="10" y="23" width="4" height="14" rx="1" fill="#d97706" />
-          <rect x="18" y="23" width="4" height="14" rx="1" fill="#d97706" />
-          <rect x="26" y="23" width="4" height="14" rx="1" fill="#d97706" />
-          <rect x="34" y="23" width="4" height="14" rx="1" fill="#d97706" />
+          <rect x="10" y="23" width="4" height="14" rx="1" fill="url(#templeGopuramGradient)" />
+          <rect x="18" y="23" width="4" height="14" rx="1" fill="url(#templeGopuramGradient)" />
+          <rect x="26" y="23" width="4" height="14" rx="1" fill="url(#templeGopuramGradient)" />
+          <rect x="34" y="23" width="4" height="14" rx="1" fill="url(#templeGopuramGradient)" />
           <!-- Base tiers -->
-          <rect x="7" y="37" width="34" height="3" rx="1" fill="#f59e0b" />
-          <rect x="4" y="40" width="40" height="4" rx="1.5" fill="#d97706" />
+          <rect x="7" y="37" width="34" height="3" rx="1" fill="url(#templeAccentGradient)" />
+          <rect x="4" y="40" width="40" height="4" rx="1.5" fill="url(#templeGopuramGradient)" />
         </svg>
       </div>
       <div class="header-titles">

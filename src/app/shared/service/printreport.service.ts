@@ -43,6 +43,18 @@ export class PrintreportService {
               margin: 20px 20px 20px 10px;
               padding:10px;
               }
+
+            .no-print,
+            .table-pagination-bar,
+            .row-count-text {
+              display: none !important;
+            }
+          }
+
+          .no-print,
+          .table-pagination-bar,
+          .row-count-text {
+            display: none !important;
           }
 
           body {
