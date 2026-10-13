@@ -1,5 +1,5 @@
 import { SpinnerComponent } from './../../../shared/component/spinner/spinner.component';
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { ReportService } from '../service/report.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -50,6 +50,140 @@ export class ReportDailystmtComponent {
   loading: boolean;
   searchText: string = '';
 
+  // Pagination
+  currentPage: number = 1;
+  pageSize: number = 10;
+  isPrinting: boolean = false;
+
+  // Column Visibility Management
+  showColumnDropdown: boolean = false;
+  columns: { [key: string]: boolean } = {
+    billDate: true,
+    billNo: true,
+    vazhiDate: true,
+    vazhipad: true,
+    name: true,
+    star: true,
+    qty: true,
+    rate: true,
+    amount: true,
+    trnsMode: true,
+  };
+
+  columnList = [
+    { key: 'billDate', label: 'Bill Date' },
+    { key: 'billNo', label: 'Bill No' },
+    { key: 'vazhiDate', label: 'Vazhipad Date' },
+    { key: 'vazhipad', label: 'Vazhipad' },
+    { key: 'name', label: 'Name' },
+    { key: 'star', label: 'Star' },
+    { key: 'qty', label: 'Quantity' },
+    { key: 'rate', label: 'Rate' },
+    { key: 'amount', label: 'Amount' },
+    { key: 'trnsMode', label: 'Transaction Mode' },
+  ];
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (this.showColumnDropdown) {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.column-picker-wrapper')) {
+        this.showColumnDropdown = false;
+      }
+    }
+  }
+
+  get visibleColumnCount(): number {
+    return Object.values(this.columns).filter(Boolean).length;
+  }
+
+  get totalColumnCount(): number {
+    return this.columnList.length;
+  }
+
+  toggleColumnDropdown(event?: Event): void {
+    if (event) event.stopPropagation();
+    this.showColumnDropdown = !this.showColumnDropdown;
+  }
+
+  toggleColumn(key: string): void {
+    this.columns[key] = !this.columns[key];
+  }
+
+  getPaginatedEntries(entries: any[]): any[] {
+    if (!entries || entries.length === 0) return [];
+    const start = (this.currentPage - 1) * this.pageSize;
+    return entries.slice(start, start + this.pageSize);
+  }
+
+  getTotalPages(entries: any[]): number {
+    if (!entries || entries.length === 0) return 1;
+    return Math.ceil(entries.length / this.pageSize) || 1;
+  }
+
+  getPages(entries: any[]): number[] {
+    const total = this.getTotalPages(entries);
+    const current = this.currentPage;
+    const range: number[] = [];
+    const maxVisible = 5;
+
+    let start = Math.max(1, current - Math.floor(maxVisible / 2));
+    let end = Math.min(total, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      range.push(i);
+    }
+    return range;
+  }
+
+  goToPage(page: number): void {
+    this.currentPage = page;
+  }
+
+  nextPage(entries: any[]): void {
+    if (this.currentPage < this.getTotalPages(entries)) {
+      this.currentPage++;
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  onPageSizeChange(size: any): void {
+    this.pageSize = Number(size) || 10;
+    this.currentPage = 1;
+  }
+
+  getRangeStart(entries: any[]): number {
+    if (!entries || entries.length === 0) return 0;
+    return (this.currentPage - 1) * this.pageSize + 1;
+  }
+
+  getRangeEnd(entries: any[]): number {
+    if (!entries || entries.length === 0) return 0;
+    return Math.min(this.currentPage * this.pageSize, entries.length);
+  }
+
+  getLeadingColspan(): number {
+    let count = 0;
+    if (this.columns['billDate']) count++;
+    if (this.columns['billNo']) count++;
+    if (this.columns['vazhiDate']) count++;
+    if (this.columns['vazhipad']) count++;
+    if (this.columns['name']) count++;
+    if (this.columns['star']) count++;
+    if (this.columns['qty']) count++;
+    if (this.columns['rate']) count++;
+    return Math.max(1, count);
+  }
+
   constructor(
     private route: ActivatedRoute,
     private ts: TranslateService,
@@ -61,9 +195,9 @@ export class ReportDailystmtComponent {
     this.loadStarData();
     this.lang = localStorage.getItem('Language');
     this.templeName =
-      localStorage.getItem('TempleName') || 'Default Temple Name';
+      localStorage.getItem('TempleName') || '';
     this.templeAddress =
-      localStorage.getItem('Address') || 'Default Temple Address';
+      localStorage.getItem('Address') || '';
     const userLang = navigator.language || 'en';
     const languageCode = userLang.split('-')[0];
     this.ts.setDefaultLang(languageCode);
@@ -149,106 +283,13 @@ export class ReportDailystmtComponent {
   }
 
   generatePDF() {
-    this.reportPrintservice.generatePDF();
-    // this.reportPrintservice.generatePDF()
-    //     const printContent = document.getElementById('print-section');
-    //     if (!printContent) {
-    //       console.error('No content found to print');
-    //       return;
-    //     }
-
-    //     const WindowPrt = window.open('', '', 'width=800,height=600');
-
-    //     // Check if the print window was successfully opened
-    //     if (!WindowPrt) {
-    //       console.error(
-    //         'Unable to open print window. Please check pop-up blockers.'
-    //       );
-    //       return;
-    //     }
-
-    //     WindowPrt.document.write(`
-    //     <html>
-    //       <head>
-    //         <title>Print</title>
-    //         <style>
-
-    //           body {
-    //     font-size: 10px;
-    //     font-family: "Manjari";
-    //     margin:5px;
-    //   }
-    //           h3,p,h4,h2{
-    //           line-height:1;
-    //           margin-top:0;
-    //           text-align:center;
-    //           font-family: "Roboto";
-    //           font-size:12px;
-    //           margin-bottom:0px;
-    //           }
-    //           .templename{
-    //            line-height:1;
-    //           margin-top:0;
-    //           text-align:center;
-    //           font-family: "Manjari";
-    //           font-size:12px;
-    //           }
-    //           hr{
-    //           height:2px;
-    //           }
-    //           .number,.total{
-    //             text-align:right;
-    //             }
-    //           .tabble-heading h3{
-    //   font-family: "Manjari;
-    //   font-weight: bold;
-    //   font-size: 16px;
-    //   margin: 8px 0 0 0;
-    // }
-    //           table {
-    //             width: 100%;
-    //             border-collapse: collapse;
-    //           }
-    //           table, th, td {
-    //             border: 1px solid black;
-    //             text-transform: uppercase;
-    //             font-family: "Manjari";
-    //           font-size:12px;
-
-    //           }
-    //             .total,number{
-    //             text-align:right;
-    //             font-family: "Manjari";
-    //           font-size:12px;
-    //             }
-    //           th, td {
-    //            padding-left:5px;
-    //             text-align: left;
-    //              font-family: "Manjari";
-    //           font-size:10px;
-    //           border:1px solid gray;
-    //           }
-    //             #print-section{
-    // padding-bottom: 100px;
-    //   }
-
-    //     .page-break {
-    //       page-break-before: always;
-    //     }
-    //           </style>
-    //       </head>
-    //       <body>${printContent.innerHTML}</body>
-    //     </html>
-    //   `);
-
-    //     WindowPrt.document.close();
-    //     WindowPrt.focus();
-
-    //     if (WindowPrt) {
-    //       WindowPrt.print();
-    //       WindowPrt.close();
-    //     }
+    this.isPrinting = true;
+    setTimeout(() => {
+      this.reportPrintservice.generatePDF();
+      this.isPrinting = false;
+    }, 50);
   }
+
 
   getStarbyId(id: string) {
     if (this.lang == 'en') {
@@ -370,6 +411,7 @@ export class ReportDailystmtComponent {
   onSearch(event: Event): void {
     const value = (event.target as HTMLInputElement).value.trim().toLowerCase();
     this.searchText = value;
+    this.currentPage = 1;
 
     this.filteredData = this.data.filter((item) =>
       (
