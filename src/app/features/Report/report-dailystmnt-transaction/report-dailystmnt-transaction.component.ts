@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
 import { ReportService } from '../service/report.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -73,9 +73,179 @@ export class ReportDailystmntTransactionComponent {
   } = {};
   currentDate: string = '';
   currentPage: number = 1;
+  pageSize: number = 10;
   lang: string | null;
   templeName: string | null;
   templeAddress: string | null;
+
+  // Column Visibility Management (Master / Common)
+  showColumnDropdown: boolean = false;
+  columns: { [key: string]: boolean } = {
+    vazhipad: true,
+    qty: true,
+    rate: true,
+    amount: true,
+  };
+
+  columnList = [
+    { key: 'vazhipad', label: 'Vazhipad' },
+    { key: 'qty', label: 'Quantity' },
+    { key: 'rate', label: 'Rate' },
+    { key: 'amount', label: 'Amount' },
+  ];
+
+  // Per-Table / Per-Vazhipad Column Visibility Management
+  vazhipadColumns: { [key: string]: { [col: string]: boolean } } = {};
+  openVazhipadDropdownKey: string | null = null;
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (this.showColumnDropdown && !target.closest('.common-column-picker')) {
+      this.showColumnDropdown = false;
+    }
+    if (this.openVazhipadDropdownKey && !target.closest('.vazhipad-column-picker')) {
+      this.openVazhipadDropdownKey = null;
+    }
+  }
+
+  get visibleColumnCount(): number {
+    return Object.values(this.columns).filter(Boolean).length;
+  }
+
+  get totalColumnCount(): number {
+    return this.columnList.length;
+  }
+
+  toggleColumnDropdown(event?: Event): void {
+    if (event) event.stopPropagation();
+    this.showColumnDropdown = !this.showColumnDropdown;
+    if (this.showColumnDropdown) {
+      this.openVazhipadDropdownKey = null;
+    }
+  }
+
+  // Master Column Toggle: Updates master and propagates to all initialized tables
+  toggleColumn(key: string): void {
+    this.columns[key] = !this.columns[key];
+    const updatedVal = this.columns[key];
+    Object.keys(this.vazhipadColumns).forEach((tKey) => {
+      if (this.vazhipadColumns[tKey]) {
+        this.vazhipadColumns[tKey][key] = updatedVal;
+      }
+    });
+  }
+
+  // Table Key Generator
+  getTableKey(modeKey: any, categoryKey: any): string {
+    return `${modeKey}__${categoryKey}`;
+  }
+
+  // Get specific column visibility for a table
+  getColumnsForVazhipad(tableKey: string): { [key: string]: boolean } {
+    if (!this.vazhipadColumns[tableKey]) {
+      this.vazhipadColumns[tableKey] = { ...this.columns };
+    }
+    return this.vazhipadColumns[tableKey];
+  }
+
+  // Check if a specific column is visible for a table
+  isColumnVisible(tableKey: string, colKey: string): boolean {
+    const cols = this.getColumnsForVazhipad(tableKey);
+    return cols[colKey] ?? false;
+  }
+
+  // Count visible columns for a specific table
+  getVazhipadVisibleColumnCount(tableKey: string): number {
+    const cols = this.getColumnsForVazhipad(tableKey);
+    return Object.values(cols).filter(Boolean).length;
+  }
+
+  // Check if a table has custom column overrides different from common
+  hasVazhipadCustomOverrides(tableKey: string): boolean {
+    if (!this.vazhipadColumns[tableKey]) return false;
+    return this.columnList.some((col) => this.vazhipadColumns[tableKey][col.key] !== this.columns[col.key]);
+  }
+
+  // Toggle per-table dropdown
+  toggleVazhipadDropdown(tableKey: string, event?: Event): void {
+    if (event) event.stopPropagation();
+    if (this.openVazhipadDropdownKey === tableKey) {
+      this.openVazhipadDropdownKey = null;
+    } else {
+      this.openVazhipadDropdownKey = tableKey;
+      this.showColumnDropdown = false;
+    }
+  }
+
+  // Separate Column Toggle for a specific table only
+  toggleVazhipadColumn(tableKey: string, colKey: string, event?: Event): void {
+    if (event) event.stopPropagation();
+    const cols = this.getColumnsForVazhipad(tableKey);
+    cols[colKey] = !cols[colKey];
+  }
+
+  // Reset a specific table's columns back to common settings
+  resetVazhipadColumns(tableKey: string, event?: Event): void {
+    if (event) event.stopPropagation();
+    this.vazhipadColumns[tableKey] = { ...this.columns };
+  }
+
+  // Calculate colspan for table footer based on visible leading columns (vazhipad & qty)
+  getColspanForTable(tableKey: string): number {
+    let span = 0;
+    if (this.isColumnVisible(tableKey, 'vazhipad')) span++;
+    if (this.isColumnVisible(tableKey, 'qty')) span++;
+    return Math.max(span, 1);
+  }
+
+
+  getPaginatedEntries(entries: any[]): any[] {
+    if (!entries || entries.length === 0) return [];
+    const start = (this.currentPage - 1) * this.pageSize;
+    return entries.slice(start, start + this.pageSize);
+  }
+
+  getTotalPages(entries: any[]): number {
+    if (!entries || entries.length === 0) return 1;
+    return Math.ceil(entries.length / this.pageSize) || 1;
+  }
+
+  getPages(entries: any[]): number[] {
+    const total = this.getTotalPages(entries);
+    return Array.from({ length: total }, (_, i) => i + 1);
+  }
+
+  goToPage(page: number): void {
+    this.currentPage = page;
+  }
+
+  nextPage(entries: any[]): void {
+    if (this.currentPage < this.getTotalPages(entries)) {
+      this.currentPage++;
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  onPageSizeChange(size: any): void {
+    this.pageSize = Number(size) || 10;
+    this.currentPage = 1;
+  }
+
+  getRangeStart(entries: any[]): number {
+    if (!entries || entries.length === 0) return 0;
+    return (this.currentPage - 1) * this.pageSize + 1;
+  }
+
+  getRangeEnd(entries: any[]): number {
+    if (!entries || entries.length === 0) return 0;
+    return Math.min(this.currentPage * this.pageSize, entries.length);
+  }
   constructor(
     private route: ActivatedRoute,
     private service: ReportService,
@@ -86,9 +256,9 @@ export class ReportDailystmntTransactionComponent {
   ) {
     this.lang = localStorage.getItem('Language');
     this.templeName =
-      localStorage.getItem('TempleName') || 'Default Temple Name';
+      localStorage.getItem('TempleName') || '';
     this.templeAddress =
-      localStorage.getItem('Address') || 'Default Temple Address';
+      localStorage.getItem('Address') || '';
 
     const userLang = navigator.language || 'en';
     const languageCode = userLang.split('-')[0];
@@ -279,8 +449,8 @@ export class ReportDailystmntTransactionComponent {
   }
 
   // generatePDF() {
-  //   const templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
-  //   const templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
+  //   const templeName = localStorage.getItem('TempleName') || '';
+  //   const templeAddress = localStorage.getItem('Address') || '';
   //   const doc = new jsPDF();
   //   const pageWidth = doc.internal.pageSize.width;
   //   const pageHeight = doc.internal.pageSize.height;
@@ -619,46 +789,44 @@ export class ReportDailystmntTransactionComponent {
   Object.keys(this.groupedData).forEach((modeKey) => {
 
     // Transaction Heading
-    sheetData.push([this.getTransactionType(modeKey)]);
+    sheetData.push([`Payment Mode: ${this.getTransactionType(modeKey)}`]);
     sheetData.push([]);
 
     Object.keys(this.groupedData[modeKey]).forEach((categoryKey) => {
+      const tKey = this.getTableKey(modeKey, categoryKey);
 
-      // Category Heading
-      sheetData.push([categoryKey]);
+      // Category / Vazhipad Heading
+      sheetData.push([`Vazhipad: ${categoryKey}`]);
 
-      // Table Header
-      sheetData.push([
-        'Sl No',
-        'Vazhipad',
-        'Quantity',
-        'Rate',
-        'Amount'
-      ]);
+      // Table Header based on visibility
+      const headers: string[] = ['Sl No'];
+      if (this.isColumnVisible(tKey, 'vazhipad')) headers.push('Vazhipad');
+      if (this.isColumnVisible(tKey, 'qty')) headers.push('Quantity');
+      if (this.isColumnVisible(tKey, 'rate')) headers.push('Rate');
+      if (this.isColumnVisible(tKey, 'amount')) headers.push('Amount');
+      sheetData.push(headers);
 
       let slNo = 1;
 
       Object.keys(this.groupedData[modeKey][categoryKey]).forEach((itemKey) => {
-
         const item = this.groupedData[modeKey][categoryKey][itemKey];
-
-        sheetData.push([
-          slNo++,
-          item.vazhipad,
-          item.Qty,
-          item.Rate,
-          item.Amount
-        ]);
+        const row: any[] = [slNo++];
+        if (this.isColumnVisible(tKey, 'vazhipad')) row.push(item.vazhipad);
+        if (this.isColumnVisible(tKey, 'qty')) row.push(item.Qty);
+        if (this.isColumnVisible(tKey, 'rate')) row.push(item.Rate);
+        if (this.isColumnVisible(tKey, 'amount')) row.push(item.Amount);
+        sheetData.push(row);
       });
 
       // Category Total
-      sheetData.push([
-        '',
-        '',
-        '',
-        'TOTAL',
-        this.getTotalForCategory(modeKey, categoryKey)
-      ]);
+      const totalRow: any[] = [];
+      const colCount = headers.length;
+      for (let i = 0; i < Math.max(colCount - 2, 0); i++) {
+        totalRow.push('');
+      }
+      totalRow.push('TOTAL');
+      totalRow.push(this.getTotalForCategory(modeKey, categoryKey));
+      sheetData.push(totalRow);
 
       sheetData.push([]);
     });
@@ -668,7 +836,7 @@ export class ReportDailystmntTransactionComponent {
       '',
       '',
       '',
-      `Total ${this.getTransactionType(modeKey)}`,
+      `Total Payment Mode (${this.getTransactionType(modeKey)})`,
       this.getTotalForTransactionMode(modeKey)
     ]);
 
@@ -679,34 +847,32 @@ export class ReportDailystmntTransactionComponent {
   /* ------------ CREDIT SECTION ------------ */
 
   if (this.creditTransactionArray?.length > 0) {
+    const creditKey = 'CREDIT_COLLECTION';
 
-    sheetData.push(['CREDIT']);
-    sheetData.push([
-      'Sl No',
-      'Vazhipad',
-      'Quantity',
-      'Rate',
-      'Amount'
-    ]);
+    sheetData.push(['Payment Mode: CREDIT']);
+    const creditHeaders: string[] = ['Sl No'];
+    if (this.isColumnVisible(creditKey, 'vazhipad')) creditHeaders.push('Vazhipad');
+    if (this.isColumnVisible(creditKey, 'qty')) creditHeaders.push('Quantity');
+    if (this.isColumnVisible(creditKey, 'rate')) creditHeaders.push('Rate');
+    if (this.isColumnVisible(creditKey, 'amount')) creditHeaders.push('Amount');
+    sheetData.push(creditHeaders);
 
     this.creditTransactionArray.forEach((item: any, index: number) => {
-      sheetData.push([
-        index + 1,
-        item.Vazhipad,
-        item.Qty,
-        item.Rate,
-        item.Amount
-      ]);
+      const row: any[] = [index + 1];
+      if (this.isColumnVisible(creditKey, 'vazhipad')) row.push(item.Vazhipad);
+      if (this.isColumnVisible(creditKey, 'qty')) row.push(item.Qty);
+      if (this.isColumnVisible(creditKey, 'rate')) row.push(item.Rate);
+      if (this.isColumnVisible(creditKey, 'amount')) row.push(item.Amount);
+      sheetData.push(row);
     });
 
-    sheetData.push([
-      '',
-      '',
-      '',
-      'Credit Total',
-      this.getCrediTransactionTotal()
-    ]);
-
+    const creditTotalRow: any[] = [];
+    for (let i = 0; i < Math.max(creditHeaders.length - 2, 0); i++) {
+      creditTotalRow.push('');
+    }
+    creditTotalRow.push('Credit Total');
+    creditTotalRow.push(this.getCrediTransactionTotal());
+    sheetData.push(creditTotalRow);
     sheetData.push([]);
   }
 
