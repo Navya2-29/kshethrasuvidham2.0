@@ -390,6 +390,43 @@ p.user {
 }
   .devoteecreditdata{
   }
+  .category-section {
+    margin-bottom: 24px !important;
+    page-break-inside: avoid;
+  }
+  .category-title-wrap {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-top: 10px;
+    margin-bottom: 6px;
+    margin-left: 10px;
+  }
+  .category-label {
+    font-family: Manjari, sans-serif;
+    font-size: 14px !important;
+    font-weight: 800 !important;
+    text-transform: uppercase;
+  }
+  .category-title-wrap .category,
+  h4.category,
+  p.category {
+    font-family: Manjari, sans-serif;
+    font-size: 15px !important;
+    font-weight: 800 !important;
+    text-transform: uppercase;
+    margin: 0 !important;
+  }
+  th.col-vazhipad {
+    font-size: 11px !important;
+    font-weight: 800 !important;
+  }
+  td.col-vazhipad,
+  td.vazhipad-name,
+  .vazhipad-name {
+    font-size: 12px !important;
+    font-weight: 700 !important;
+  }
         </style>
       </head>
       <body>${printContent.innerHTML}</body>
