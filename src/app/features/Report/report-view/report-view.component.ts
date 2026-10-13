@@ -11,26 +11,10 @@ import { SpinnerComponent } from '../../../shared/component/spinner/spinner.comp
 import { PrintreportService } from '../../../shared/service/printreport.service';
 import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatIconModule } from '@angular/material/icon';
+import { ReportData } from '../../../models/poornam-report';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
-interface ReportData {
-  VTime: number;
-  Vazhipad: string;
-  Prathista: string;
-  Name: string;
-  Name2?: string;
-  Name3?: string;
-  Star: string;
-  Star2?: string;
-  Star3?: string;
-  Qty: number;
-  Address1: string;
-  Address2: string;
-  MobileNo: string;
-  Type: string;
-  Address3: string;
-  VazhiDate: string;
-}
+
 @Component({
   selector: 'app-report-view',
   standalone: true,
@@ -67,24 +51,40 @@ export class ReportViewComponent implements OnInit {
   currentPage: number = 1;
   pageSize: number = 10;
 
-  // Column Visibility Management
+  // Column Visibility Management - Common & Per-Vazhipad
   showColumnDropdown: boolean = false;
+  openVazhipadDropdownKey: string | null = null;
+
+  // Master / Common columns
   columns: { [key: string]: boolean } = {
     sino: true,
+    billNo: true,
+    billDate: false,
+    vazhiDate: false,
     name: true,
     star: true,
     gothram: true,
     quantity: true,
+    rate: false,
+    amount: false,
     address: true,
     type: true,
   };
 
+  // Per-Vazhipad columns: keyed by `${timeKey}__${prathistaKey}__${vazhipadKey}`
+  vazhipadColumns: { [tableKey: string]: { [colKey: string]: boolean } } = {};
+
   columnList = [
     { key: 'sino', label: 'SINO' },
+    { key: 'billNo', label: 'BILL NO' },
+    { key: 'billDate', label: 'BILL DATE' },
+    { key: 'vazhiDate', label: 'VAZHIPAD DATE' },
     { key: 'name', label: 'NAME' },
     { key: 'star', label: 'STAR' },
     { key: 'gothram', label: 'GOTHRAM' },
     { key: 'quantity', label: 'QUANTITY' },
+    { key: 'rate', label: 'RATE' },
+    { key: 'amount', label: 'AMOUNT' },
     { key: 'address', label: 'ADDRESS / PHONE' },
     { key: 'type', label: 'TYPE' },
   ];
@@ -120,11 +120,12 @@ export class ReportViewComponent implements OnInit {
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
-    if (this.showColumnDropdown) {
-      const target = event.target as HTMLElement;
-      if (!target.closest('.column-picker-wrapper')) {
-        this.showColumnDropdown = false;
-      }
+    const target = event.target as HTMLElement;
+    if (this.showColumnDropdown && !target.closest('.common-column-picker')) {
+      this.showColumnDropdown = false;
+    }
+    if (this.openVazhipadDropdownKey && !target.closest('.vazhipad-column-picker')) {
+      this.openVazhipadDropdownKey = null;
     }
   }
 
@@ -139,10 +140,77 @@ export class ReportViewComponent implements OnInit {
   toggleColumnDropdown(event?: Event): void {
     if (event) event.stopPropagation();
     this.showColumnDropdown = !this.showColumnDropdown;
+    if (this.showColumnDropdown) {
+      this.openVazhipadDropdownKey = null;
+    }
   }
 
+  // Common Column Toggle: Updates master and propagates to ALL vazhipads
   toggleColumn(key: string): void {
     this.columns[key] = !this.columns[key];
+    const updatedVal = this.columns[key];
+
+    // Propagate to all initialized vazhipad tables
+    Object.keys(this.vazhipadColumns).forEach((tKey) => {
+      if (this.vazhipadColumns[tKey]) {
+        this.vazhipadColumns[tKey][key] = updatedVal;
+      }
+    });
+  }
+
+  // Table Key Generator
+  getTableKey(timeKey: any, prathistaKey: any, vazhipadKey: any): string {
+    return `${timeKey}__${prathistaKey}__${vazhipadKey}`;
+  }
+
+  // Get specific column visibility for a vazhipad
+  getColumnsForVazhipad(tableKey: string): { [key: string]: boolean } {
+    if (!this.vazhipadColumns[tableKey]) {
+      this.vazhipadColumns[tableKey] = { ...this.columns };
+    }
+    return this.vazhipadColumns[tableKey];
+  }
+
+  // Check if a specific column is visible for a vazhipad
+  isColumnVisible(tableKey: string, colKey: string): boolean {
+    const cols = this.getColumnsForVazhipad(tableKey);
+    return cols[colKey] ?? false;
+  }
+
+  // Count visible columns for a specific vazhipad
+  getVazhipadVisibleColumnCount(tableKey: string): number {
+    const cols = this.getColumnsForVazhipad(tableKey);
+    return Object.values(cols).filter(Boolean).length;
+  }
+
+  // Check if a vazhipad has custom column overrides different from common
+  hasVazhipadCustomOverrides(tableKey: string): boolean {
+    if (!this.vazhipadColumns[tableKey]) return false;
+    return this.columnList.some((col) => this.vazhipadColumns[tableKey][col.key] !== this.columns[col.key]);
+  }
+
+  // Toggle per-vazhipad dropdown
+  toggleVazhipadDropdown(tableKey: string, event?: Event): void {
+    if (event) event.stopPropagation();
+    if (this.openVazhipadDropdownKey === tableKey) {
+      this.openVazhipadDropdownKey = null;
+    } else {
+      this.openVazhipadDropdownKey = tableKey;
+      this.showColumnDropdown = false;
+    }
+  }
+
+  // Separate Column Toggle for a specific vazhipad only
+  toggleVazhipadColumn(tableKey: string, colKey: string, event?: Event): void {
+    if (event) event.stopPropagation();
+    const cols = this.getColumnsForVazhipad(tableKey);
+    cols[colKey] = !cols[colKey];
+  }
+
+  // Reset a specific vazhipad's columns back to common settings
+  resetVazhipadColumns(tableKey: string, event?: Event): void {
+    if (event) event.stopPropagation();
+    this.vazhipadColumns[tableKey] = { ...this.columns };
   }
 
   // Pagination helpers
@@ -193,20 +261,27 @@ export class ReportViewComponent implements OnInit {
     return Math.min(this.currentPage * this.pageSize, entries.length);
   }
 
-  getLeadingColspan(): number {
+  getLeadingColspan(tableKey?: string): number {
+    const cols = tableKey ? this.getColumnsForVazhipad(tableKey) : this.columns;
     let count = 0;
-    if (this.columns['sino']) count++;
-    if (this.columns['name']) count++;
-    if (this.columns['star']) count++;
-    if (this.columns['gothram']) count++;
-    return Math.max(1, count);
+    if (cols['sino']) count++;
+    if (cols['billNo']) count++;
+    if (cols['billDate']) count++;
+    if (cols['vazhiDate']) count++;
+    if (cols['name']) count++;
+    if (cols['star']) count++;
+    if (cols['gothram']) count++;
+    return count > 0 ? count : 1;
   }
 
-  getTrailingColspan(): number {
+  getTrailingColspan(tableKey?: string): number {
+    const cols = tableKey ? this.getColumnsForVazhipad(tableKey) : this.columns;
     let count = 0;
-    if (this.columns['address']) count++;
-    if (this.columns['type']) count++;
-    return Math.max(1, count);
+    if (cols['rate']) count++;
+    if (cols['amount']) count++;
+    if (cols['address']) count++;
+    if (cols['type']) count++;
+    return count > 0 ? count : 1;
   }
 
   // Call your API service to get the report data
@@ -220,12 +295,14 @@ export class ReportViewComponent implements OnInit {
     this.service.getReport(payLoad).subscribe({
       next: (data) => {
         console.log('Fetched report data:', data);
+        this.loading = false;
         if (!data || data.length === 0) {
-          return
+          this.data = [];
+          this.groupedData = {};
+          return;
         } else {
           this.populateData(data);
         }
-        this.loading = false;
       },
       error: (error) => {
         console.error('Error fetching report data, loading preview:', error);
@@ -410,35 +487,43 @@ export class ReportViewComponent implements OnInit {
         // LOOP: Vazhipad
         Object.keys(prathistaGroup).forEach((vazhipadKey) => {
           const vazhipadGroup = prathistaGroup[vazhipadKey];
+          const tableKey = this.getTableKey(timeKey, prathistaKey, vazhipadKey);
+          const cols = this.getColumnsForVazhipad(tableKey);
 
           sheetData.push([`Vazhipad: ${vazhipadKey}`]);
 
           // Table Header
-          sheetData.push([
-            'Sl No',
-            'Name',
-            'Star',
-            'Gothram',
-            'Qty',
-            'Address',
-            'Type'
-          ]);
+          const rowHeader: string[] = [];
+          if (cols['sino']) rowHeader.push('Sl No');
+          if (cols['billNo']) rowHeader.push('Bill No');
+          if (cols['billDate']) rowHeader.push('Bill Date');
+          if (cols['vazhiDate']) rowHeader.push('Vazhipad Date');
+          if (cols['name']) rowHeader.push('Name');
+          if (cols['star']) rowHeader.push('Star');
+          if (cols['gothram']) rowHeader.push('Gothram');
+          if (cols['quantity']) rowHeader.push('Qty');
+          if (cols['rate']) rowHeader.push('Rate');
+          if (cols['amount']) rowHeader.push('Amount');
+          if (cols['address']) rowHeader.push('Address');
+          if (cols['type']) rowHeader.push('Type');
+          sheetData.push(rowHeader);
 
           // Table Rows
           vazhipadGroup.forEach((entry: any, index: number) => {
-            sheetData.push([
-              index + 1,
-              entry.Name,
-              entry.Star,
-              entry.Address3,
-              entry.Qty,
-              `${entry.Address1} ${entry.Address2} ${entry.MobileNo}`,
-              entry.Type === 'Counter'
-                ? 'CTR'
-                : entry.Type === 'Online'
-                  ? 'OL'
-                  : entry.Type
-            ]);
+            const row: any[] = [];
+            if (cols['sino']) row.push(index + 1);
+            if (cols['billNo']) row.push(entry.BillNo || '');
+            if (cols['billDate']) row.push(this.formatDate(entry.BillDate));
+            if (cols['vazhiDate']) row.push(this.formatDate(entry.VazhiDate));
+            if (cols['name']) row.push([entry.Name, entry.Name2, entry.Name3].filter(Boolean).join(', '));
+            if (cols['star']) row.push([entry.Star, entry.Star2, entry.Star3].filter(Boolean).join(', '));
+            if (cols['gothram']) row.push(entry.Address3 || '');
+            if (cols['quantity']) row.push(entry.Qty || 0);
+            if (cols['rate']) row.push(entry.Rate || 0);
+            if (cols['amount']) row.push(entry.Amount || 0);
+            if (cols['address']) row.push([entry.Address1, entry.Address2, entry.MobileNo].filter(Boolean).join(' '));
+            if (cols['type']) row.push(entry.Type === 'Counter' ? 'CTR' : entry.Type === 'Online' ? 'OL' : (entry.Type || ''));
+            sheetData.push(row);
           });
 
           sheetData.push([]); // space after each vazhipad
@@ -451,17 +536,6 @@ export class ReportViewComponent implements OnInit {
     });
 
     const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(sheetData);
-
-    // Optional: column width
-    worksheet['!cols'] = [
-      { wch: 8 },
-      { wch: 25 },
-      { wch: 15 },
-      { wch: 20 },
-      { wch: 8 },
-      { wch: 40 },
-      { wch: 10 }
-    ];
 
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Poornam Report');
 
