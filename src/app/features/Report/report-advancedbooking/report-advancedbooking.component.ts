@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
 import { ReportService } from '../service/report.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -43,16 +43,150 @@ export class ReportAdvancedbookingComponent {
   templeName:string|null;
   templeAddress:string|null;
   loading:boolean;
-  searchText: string = '';
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   groupedData: { [key: string]: ReportData[] } = {};
+  searchText: string = '';
+
+  // Pagination
+  currentPage: number = 1;
+  isPrinting: boolean = false;
+
+  // Column Visibility Management
+  showColumnDropdown: boolean = false;
+  columns: { [key: string]: boolean } = {
+    type: true,
+    billDate: true,
+    billNo: true,
+    vazhiDate: true,
+    vazhipad: true,
+    name: true,
+    star: true,
+    qty: true,
+    rate: true,
+    amount: true,
+  };
+
+  columnList = [
+    { key: 'type', label: 'Type' },
+    { key: 'billDate', label: 'Bill Date' },
+    { key: 'billNo', label: 'Bill No' },
+    { key: 'vazhiDate', label: 'Vazhipad Date' },
+    { key: 'vazhipad', label: 'Vazhipad' },
+    { key: 'name', label: 'Name' },
+    { key: 'star', label: 'Star' },
+    { key: 'qty', label: 'Quantity' },
+    { key: 'rate', label: 'Rate' },
+    { key: 'amount', label: 'Amount' },
+  ];
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (this.showColumnDropdown) {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.column-picker-wrapper')) {
+        this.showColumnDropdown = false;
+      }
+    }
+  }
+
+  get visibleColumnCount(): number {
+    return Object.values(this.columns).filter(Boolean).length;
+  }
+
+  get totalColumnCount(): number {
+    return this.columnList.length;
+  }
+
+  toggleColumnDropdown(event?: Event): void {
+    if (event) event.stopPropagation();
+    this.showColumnDropdown = !this.showColumnDropdown;
+  }
+
+  toggleColumn(key: string): void {
+    this.columns[key] = !this.columns[key];
+  }
+
+  getPaginatedEntries(entries: any[]): any[] {
+    if (!entries || entries.length === 0) return [];
+    const start = (this.currentPage - 1) * this.pageSize;
+    return entries.slice(start, start + this.pageSize);
+  }
+
+  getTotalPages(entries: any[]): number {
+    if (!entries || entries.length === 0) return 1;
+    return Math.ceil(entries.length / this.pageSize) || 1;
+  }
+
+  getPages(entries: any[]): number[] {
+    const total = this.getTotalPages(entries);
+    const current = this.currentPage;
+    const range: number[] = [];
+    const maxVisible = 5;
+
+    let start = Math.max(1, current - Math.floor(maxVisible / 2));
+    let end = Math.min(total, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      range.push(i);
+    }
+    return range;
+  }
+
+  goToPage(page: number): void {
+    this.currentPage = page;
+  }
+
+  nextPage(entries: any[]): void {
+    if (this.currentPage < this.getTotalPages(entries)) {
+      this.currentPage++;
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  onPageSizeChange(size: any): void {
+    this.pageSize = Number(size) || 10;
+    this.currentPage = 1;
+  }
+
+  getRangeStart(entries: any[]): number {
+    if (!entries || entries.length === 0) return 0;
+    return (this.currentPage - 1) * this.pageSize + 1;
+  }
+
+  getRangeEnd(entries: any[]): number {
+    if (!entries || entries.length === 0) return 0;
+    return Math.min(this.currentPage * this.pageSize, entries.length);
+  }
+
+  getLeadingColspan(): number {
+    let count = 0;
+    if (this.columns['type']) count++;
+    if (this.columns['billDate']) count++;
+    if (this.columns['billNo']) count++;
+    if (this.columns['vazhiDate']) count++;
+    if (this.columns['vazhipad']) count++;
+    if (this.columns['name']) count++;
+    if (this.columns['star']) count++;
+    if (this.columns['qty']) count++;
+    if (this.columns['rate']) count++;
+    return Math.max(1, count);
+  }
   constructor(private route: ActivatedRoute,
         private reportPrintservice:PrintreportService,
     
     private ts: TranslateService, private service: ReportService,private router: Router, private http:HttpClient) {
     this.lang=localStorage.getItem('Language');
-    this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
-    this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
+    this.templeName = localStorage.getItem('TempleName') || '';
+    this. templeAddress = localStorage.getItem('Address') || '';
     this.lang = localStorage.getItem('Language');
     const userLang = navigator.language || 'en';
     const languageCode = userLang.split('-')[0];
@@ -78,6 +212,7 @@ export class ReportAdvancedbookingComponent {
        item.Vazhipad + ' ' + item.Name + ' ' + item.Star + ' ' + item.Qty +' '+ item.MobileNo+''+item.Address1+''
         + item.Rate +item.Address2+'').toLowerCase().includes(this.searchText)
     );
+    this.currentPage = 1;
   }
 
 
@@ -147,8 +282,8 @@ export class ReportAdvancedbookingComponent {
   }
 
 //   generatePDF() {
-//     const templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
-//     const templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
+//     const templeName = localStorage.getItem('TempleName') || '';
+//     const templeAddress = localStorage.getItem('Address') || '';
 //     const doc = new jsPDF();
 //     const pageWidth = doc.internal.pageSize.width;
 //     const pageHeight = doc.internal.pageSize.height;
@@ -363,7 +498,11 @@ export class ReportAdvancedbookingComponent {
 // }
   
 generatePDF(){
-  this.reportPrintservice.generatePDF();
+  this.isPrinting = true;
+  setTimeout(() => {
+    this.reportPrintservice.generatePDF();
+    this.isPrinting = false;
+  }, 50);
 //   const printContent = document.getElementById('print-section');
 //   if (!printContent) {
 //     console.error('No content found to print');
@@ -452,6 +591,10 @@ generatePDF(){
 
 getGrandTotal(): number {
   return this.filteredData.reduce((sum, item) => sum + item.Qty * item.Rate, 0);
+}
+
+getTotalAmount(): number {
+  return this.getGrandTotal();
 }
 
 
