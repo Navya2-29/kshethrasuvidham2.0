@@ -119,6 +119,13 @@ td, th {
   flex-wrap: wrap;
 }
 
+.vazhipad-records {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  white-space: nowrap;
+}
+
 .category-label {
   font-family: Manjari, sans-serif;
   font-size: 15px;

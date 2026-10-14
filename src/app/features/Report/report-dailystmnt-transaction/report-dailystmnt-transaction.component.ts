@@ -199,53 +199,114 @@ export class ReportDailystmntTransactionComponent {
     return Math.max(span, 1);
   }
 
+  isPrinting: boolean = false;
+  paginationState: { [tableKey: string]: { currentPage: number; pageSize: number } } = {};
 
-  getPaginatedEntries(entries: any[]): any[] {
+  getPagination(tableKey: string): { currentPage: number; pageSize: number } {
+    if (!this.paginationState[tableKey]) {
+      this.paginationState[tableKey] = { currentPage: 1, pageSize: 10 };
+    }
+    return this.paginationState[tableKey];
+  }
+
+  getCurrentPage(tableKey: string): number {
+    return this.getPagination(tableKey).currentPage;
+  }
+
+  getPageSize(tableKey: string): number {
+    return this.getPagination(tableKey).pageSize;
+  }
+
+  getCategoryList(categoryObj: any): { key: string; value: any }[] {
+    if (!categoryObj) return [];
+    return Object.keys(categoryObj).map((key) => ({ key, value: categoryObj[key] }));
+  }
+
+  getCategoryRowCount(categoryObj: any): number {
+    return categoryObj ? Object.keys(categoryObj).length : 0;
+  }
+
+  getPaginatedCategoryList(tableKey: string, categoryObj: any): { key: string; value: any }[] {
+    const list = this.getCategoryList(categoryObj);
+    return this.getPaginatedEntries(tableKey, list);
+  }
+
+  getPaginatedEntries(tableKey: string, entries: any[]): any[] {
+    if (this.isPrinting) return entries || [];
     if (!entries || entries.length === 0) return [];
-    const start = (this.currentPage - 1) * this.pageSize;
-    return entries.slice(start, start + this.pageSize);
+    const p = this.getPagination(tableKey);
+    const start = (p.currentPage - 1) * p.pageSize;
+    return entries.slice(start, start + p.pageSize);
   }
 
-  getTotalPages(entries: any[]): number {
-    if (!entries || entries.length === 0) return 1;
-    return Math.ceil(entries.length / this.pageSize) || 1;
+  getTotalPages(tableKey: string, entries: any[] | number): number {
+    const total = typeof entries === 'number' ? entries : (entries ? entries.length : 0);
+    if (total === 0) return 1;
+    const p = this.getPagination(tableKey);
+    return Math.ceil(total / p.pageSize) || 1;
   }
 
-  getPages(entries: any[]): number[] {
-    const total = this.getTotalPages(entries);
-    return Array.from({ length: total }, (_, i) => i + 1);
+  getPages(tableKey: string, entries: any[] | number): number[] {
+    const total = this.getTotalPages(tableKey, entries);
+    const current = this.getCurrentPage(tableKey);
+    const range: number[] = [];
+    const maxVisible = 5;
+
+    let start = Math.max(1, current - Math.floor(maxVisible / 2));
+    let end = Math.min(total, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      range.push(i);
+    }
+    return range;
   }
 
-  goToPage(page: number): void {
-    this.currentPage = page;
+  goToPage(tableKey: string, page: number): void {
+    this.getPagination(tableKey).currentPage = page;
   }
 
-  nextPage(entries: any[]): void {
-    if (this.currentPage < this.getTotalPages(entries)) {
-      this.currentPage++;
+  nextPage(tableKey: string, entries: any[] | number): void {
+    const p = this.getPagination(tableKey);
+    if (p.currentPage < this.getTotalPages(tableKey, entries)) {
+      p.currentPage++;
     }
   }
 
-  prevPage(): void {
-    if (this.currentPage > 1) {
-      this.currentPage--;
+  prevPage(tableKey: string): void {
+    const p = this.getPagination(tableKey);
+    if (p.currentPage > 1) {
+      p.currentPage--;
     }
   }
 
-  onPageSizeChange(size: any): void {
-    this.pageSize = Number(size) || 10;
-    this.currentPage = 1;
+  onPageSizeChange(tableKey: string, size: any): void {
+    const p = this.getPagination(tableKey);
+    p.pageSize = Number(size) || 10;
+    p.currentPage = 1;
   }
 
-  getRangeStart(entries: any[]): number {
-    if (!entries || entries.length === 0) return 0;
-    return (this.currentPage - 1) * this.pageSize + 1;
+  getRangeStart(tableKey: string, entries: any[] | number): number {
+    const total = typeof entries === 'number' ? entries : (entries ? entries.length : 0);
+    if (total === 0) return 0;
+    const p = this.getPagination(tableKey);
+    return (p.currentPage - 1) * p.pageSize + 1;
   }
 
-  getRangeEnd(entries: any[]): number {
-    if (!entries || entries.length === 0) return 0;
-    return Math.min(this.currentPage * this.pageSize, entries.length);
+  getRangeEnd(tableKey: string, entries: any[] | number): number {
+    const total = typeof entries === 'number' ? entries : (entries ? entries.length : 0);
+    if (total === 0) return 0;
+    const p = this.getPagination(tableKey);
+    return Math.min(p.currentPage * p.pageSize, total);
   }
+
+  trackByItem(index: number, item: any): any {
+    return item ? (item.key || item.Vazhipad || item.vazhipad || index) : index;
+  }
+
   constructor(
     private route: ActivatedRoute,
     private service: ReportService,
@@ -428,8 +489,12 @@ export class ReportDailystmntTransactionComponent {
     });
   }
   
-  generatePDF() {
-  this.reportPrintservice.generatePDF();
+  generatePDF(): void {
+    this.isPrinting = true;
+    setTimeout(() => {
+      this.reportPrintservice.generatePDF();
+      this.isPrinting = false;
+    }, 100);
   }
 
   // onPageChange(event: PageEvent) {

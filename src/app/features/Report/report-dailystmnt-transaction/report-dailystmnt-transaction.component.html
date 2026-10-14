@@ -11,6 +11,9 @@
         <span class="breadcrumb-separator">/</span>
         <span class="breadcrumb-current">{{ "Report Name.DAILY STATEMENT REPORT" | translate }}</span>
       </nav>
+      <span class="report-badge no-print" *ngIf="data && data.length > 0">
+        {{ data.length }} records
+      </span>
     </div>
 
     <div class="preview-actions">
@@ -110,6 +113,7 @@
                   <div class="category-title-wrap">
                     <!-- <span class="category-label">{{ "VAZHIPAD" | translate }}:</span> -->
                     <h4 class="category">{{ category.key }}</h4>
+                    <span class="vazhipad-records no-print">({{ getCategoryRowCount(category.value) }} records)</span>
                   </div>
 
                   <!-- Per-Table Column Visibility Button & Dropdown -->
@@ -176,7 +180,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr *ngFor="let item of category.value | keyvalue">
+                      <tr *ngFor="let item of (isPrinting ? getCategoryList(category.value) : getPaginatedCategoryList(getTableKey(mode.key, category.key), category.value)); trackBy: trackByItem">
                         <td *ngIf="isColumnVisible(getTableKey(mode.key, category.key), 'vazhipad')" class="col-vazhipad vazhipad-name">{{
                           item.value.vazhipad }}</td>
                         <td *ngIf="isColumnVisible(getTableKey(mode.key, category.key), 'qty')">{{ item.value.Qty }}
@@ -200,6 +204,68 @@
                     </tfoot>
                   </table>
                 </div>
+
+                <!-- Per-Vazhipad Pagination Toolbar -->
+                <div class="table-pagination-bar no-print" *ngIf="getCategoryRowCount(category.value) > 0">
+                  <div class="pagination-info">
+                    <span class="rows-label">Rows per page:</span>
+                    <div class="select-container">
+                      <select
+                        class="page-size-select"
+                        [value]="getPageSize(getTableKey(mode.key, category.key))"
+                        (change)="onPageSizeChange(getTableKey(mode.key, category.key), $any($event.target).value)"
+                        aria-label="Rows per page"
+                      >
+                        <option [value]="10">10</option>
+                        <option [value]="25">25</option>
+                        <option [value]="50">50</option>
+                        <option [value]="100">100</option>
+                        <option [value]="200">200</option>
+                        <option [value]="500">500</option>
+                      </select>
+                    </div>
+                    <span class="pagination-divider">|</span>
+                    <span class="showing-label">
+                      Showing {{ getRangeStart(getTableKey(mode.key, category.key), getCategoryRowCount(category.value)) }}–{{ getRangeEnd(getTableKey(mode.key, category.key), getCategoryRowCount(category.value)) }} of {{ getCategoryRowCount(category.value) }} records
+                    </span>
+                  </div>
+
+                  <div class="pagination-buttons">
+                    <button
+                      type="button"
+                      class="page-btn page-nav-btn"
+                      [disabled]="getCurrentPage(getTableKey(mode.key, category.key)) === 1"
+                      (click)="prevPage(getTableKey(mode.key, category.key))"
+                      aria-label="Previous Page"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                      </svg>
+                    </button>
+
+                    <button
+                      *ngFor="let p of getPages(getTableKey(mode.key, category.key), getCategoryRowCount(category.value))"
+                      type="button"
+                      class="page-btn page-num-btn"
+                      [class.active]="p === getCurrentPage(getTableKey(mode.key, category.key))"
+                      (click)="goToPage(getTableKey(mode.key, category.key), p)"
+                    >
+                      {{ p }}
+                    </button>
+
+                    <button
+                      type="button"
+                      class="page-btn page-nav-btn"
+                      [disabled]="getCurrentPage(getTableKey(mode.key, category.key)) === getTotalPages(getTableKey(mode.key, category.key), getCategoryRowCount(category.value))"
+                      (click)="nextPage(getTableKey(mode.key, category.key), getCategoryRowCount(category.value))"
+                      aria-label="Next Page"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
               </div>
 
               <!-- Total for each transaction mode -->
@@ -217,6 +283,7 @@
               <div class="category-title-wrap">
                 <span class="category-label">{{ "Mode" | translate }}:</span>
                 <h3 class="transaction tabble-heading credit-heading">{{ "Report Name.CREDIT" | translate }}</h3>
+                <span class="vazhipad-records no-print">({{ creditTransactionArray.length }} records)</span>
               </div>
 
               <!-- Per-Table Column Visibility Button & Dropdown for Credit -->
@@ -277,7 +344,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let item of creditTransactionArray">
+                  <tr *ngFor="let item of (isPrinting ? creditTransactionArray : getPaginatedEntries('CREDIT_COLLECTION', creditTransactionArray)); trackBy: trackByItem">
                     <td *ngIf="isColumnVisible('CREDIT_COLLECTION', 'vazhipad')" class="col-vazhipad vazhipad-name">{{ item.Vazhipad }}</td>
                     <td *ngIf="isColumnVisible('CREDIT_COLLECTION', 'qty')">{{ item.Qty }}</td>
                     <td *ngIf="isColumnVisible('CREDIT_COLLECTION', 'rate')" class="number">{{ item.Rate | number :
@@ -298,6 +365,68 @@
                   </tr>
                 </tfoot>
               </table>
+            </div>
+
+            <!-- Credit Collection Pagination Toolbar -->
+            <div class="table-pagination-bar no-print" *ngIf="creditTransactionArray.length > 0">
+              <div class="pagination-info">
+                <span class="rows-label">Rows per page:</span>
+                <div class="select-container">
+                  <select
+                    class="page-size-select"
+                    [value]="getPageSize('CREDIT_COLLECTION')"
+                    (change)="onPageSizeChange('CREDIT_COLLECTION', $any($event.target).value)"
+                    aria-label="Rows per page"
+                  >
+                    <option [value]="10">10</option>
+                    <option [value]="25">25</option>
+                    <option [value]="50">50</option>
+                    <option [value]="100">100</option>
+                    <option [value]="200">200</option>
+                    <option [value]="500">500</option>
+                  </select>
+                </div>
+                <span class="pagination-divider">|</span>
+                <span class="showing-label">
+                  Showing {{ getRangeStart('CREDIT_COLLECTION', creditTransactionArray.length) }}–{{ getRangeEnd('CREDIT_COLLECTION', creditTransactionArray.length) }} of {{ creditTransactionArray.length }} records
+                </span>
+              </div>
+
+              <div class="pagination-buttons">
+                <button
+                  type="button"
+                  class="page-btn page-nav-btn"
+                  [disabled]="getCurrentPage('CREDIT_COLLECTION') === 1"
+                  (click)="prevPage('CREDIT_COLLECTION')"
+                  aria-label="Previous Page"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                  </svg>
+                </button>
+
+                <button
+                  *ngFor="let p of getPages('CREDIT_COLLECTION', creditTransactionArray.length)"
+                  type="button"
+                  class="page-btn page-num-btn"
+                  [class.active]="p === getCurrentPage('CREDIT_COLLECTION')"
+                  (click)="goToPage('CREDIT_COLLECTION', p)"
+                >
+                  {{ p }}
+                </button>
+
+                <button
+                  type="button"
+                  class="page-btn page-nav-btn"
+                  [disabled]="getCurrentPage('CREDIT_COLLECTION') === getTotalPages('CREDIT_COLLECTION', creditTransactionArray.length)"
+                  (click)="nextPage('CREDIT_COLLECTION', creditTransactionArray.length)"
+                  aria-label="Next Page"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         </div>
