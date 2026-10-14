@@ -11,6 +11,9 @@
         <span class="breadcrumb-separator">/</span>
         <span class="breadcrumb-current">Poornam Report</span>
       </nav>
+      <span class="report-badge no-print" *ngIf="data && data.length > 0">
+        {{ data.length }} {{ data.length === 1 ? 'record' : 'records' }}
+      </span>
     </div>
 
     <div class="preview-actions">
@@ -140,9 +143,12 @@
               <!-- Vazhipad Group -->
               <div *ngFor="let vazhipadGroup of prathistaGroup.value | keyvalue" class="vazhipad-group-section">
                 <div class="vazhipad-header-row">
-                  <h3 class="vazhipad-heading">
-                    {{ vazhipadGroup.key }}
-                  </h3>
+                  <div class="vazhipad-title-wrap">
+                    <h3 class="vazhipad-heading">
+                      {{ vazhipadGroup.key }}
+                    </h3>
+                    <span class="vazhipad-records no-print">({{ vazhipadGroup.value.length }} records)</span>
+                  </div>
 
                   <!-- Per-Vazhipad Column Visibility Button & Dropdown -->
                   <div class="column-picker-wrapper vazhipad-column-picker no-print">
@@ -223,8 +229,10 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr *ngFor="let entry of vazhipadGroup.value; let j = index">
-                        <td *ngIf="isColumnVisible(getTableKey(timeGroup.key, prathistaGroup.key, vazhipadGroup.key), 'sino')" class="col-sino cell-sino">{{ j + 1 }}</td>
+                      <tr *ngFor="let entry of (isPrinting ? vazhipadGroup.value : getPaginatedEntries(getTableKey(timeGroup.key, prathistaGroup.key, vazhipadGroup.key), vazhipadGroup.value)); let j = index">
+                        <td *ngIf="isColumnVisible(getTableKey(timeGroup.key, prathistaGroup.key, vazhipadGroup.key), 'sino')" class="col-sino cell-sino">
+                          {{ isPrinting ? (j + 1) : ((getCurrentPage(getTableKey(timeGroup.key, prathistaGroup.key, vazhipadGroup.key)) - 1) * getPageSize(getTableKey(timeGroup.key, prathistaGroup.key, vazhipadGroup.key)) + j + 1) }}
+                        </td>
                         <td *ngIf="isColumnVisible(getTableKey(timeGroup.key, prathistaGroup.key, vazhipadGroup.key), 'billNo')" class="col-billno cell-billno">{{ entry.BillNo || '-' }}</td>
                         <td *ngIf="isColumnVisible(getTableKey(timeGroup.key, prathistaGroup.key, vazhipadGroup.key), 'billDate')" class="col-billdate cell-billdate">{{ formatDateToDDMMYYYY(entry.BillDate) }}</td>
                         <td *ngIf="isColumnVisible(getTableKey(timeGroup.key, prathistaGroup.key, vazhipadGroup.key), 'vazhiDate')" class="col-vazhidate cell-vazhidate">{{ formatDateToDDMMYYYY(entry.VazhiDate) }}</td>
@@ -282,7 +290,66 @@
                 </div>
 
                 <!-- Pagination Toolbar -->
-                
+                <div class="table-pagination-bar no-print" *ngIf="vazhipadGroup.value.length > 0">
+                  <div class="pagination-info">
+                    <span class="rows-label">Rows per page:</span>
+                    <div class="select-container">
+                      <select
+                        class="page-size-select"
+                        [value]="getPageSize(getTableKey(timeGroup.key, prathistaGroup.key, vazhipadGroup.key))"
+                        (change)="onPageSizeChange(getTableKey(timeGroup.key, prathistaGroup.key, vazhipadGroup.key), $any($event.target).value)"
+                        aria-label="Rows per page"
+                      >
+                        <option [value]="10">10</option>
+                        <option [value]="25">25</option>
+                        <option [value]="50">50</option>
+                        <option [value]="100">100</option>
+                        <option [value]="200">200</option>
+                        <option [value]="500">500</option>
+                      </select>
+                    </div>
+                    <span class="pagination-divider">|</span>
+                    <span class="showing-label">
+                      Showing {{ getRangeStart(getTableKey(timeGroup.key, prathistaGroup.key, vazhipadGroup.key), vazhipadGroup.value) }}–{{ getRangeEnd(getTableKey(timeGroup.key, prathistaGroup.key, vazhipadGroup.key), vazhipadGroup.value) }} of {{ vazhipadGroup.value.length }} records
+                    </span>
+                  </div>
+
+                  <div class="pagination-buttons">
+                    <button
+                      type="button"
+                      class="page-btn page-nav-btn"
+                      [disabled]="getCurrentPage(getTableKey(timeGroup.key, prathistaGroup.key, vazhipadGroup.key)) === 1"
+                      (click)="prevPage(getTableKey(timeGroup.key, prathistaGroup.key, vazhipadGroup.key))"
+                      aria-label="Previous Page"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                      </svg>
+                    </button>
+
+                    <button
+                      *ngFor="let p of getPages(getTableKey(timeGroup.key, prathistaGroup.key, vazhipadGroup.key), vazhipadGroup.value)"
+                      type="button"
+                      class="page-btn page-num-btn"
+                      [class.active]="p === getCurrentPage(getTableKey(timeGroup.key, prathistaGroup.key, vazhipadGroup.key))"
+                      (click)="goToPage(getTableKey(timeGroup.key, prathistaGroup.key, vazhipadGroup.key), p)"
+                    >
+                      {{ p }}
+                    </button>
+
+                    <button
+                      type="button"
+                      class="page-btn page-nav-btn"
+                      [disabled]="getCurrentPage(getTableKey(timeGroup.key, prathistaGroup.key, vazhipadGroup.key)) === getTotalPages(getTableKey(timeGroup.key, prathistaGroup.key, vazhipadGroup.key), vazhipadGroup.value)"
+                      (click)="nextPage(getTableKey(timeGroup.key, prathistaGroup.key, vazhipadGroup.key), vazhipadGroup.value)"
+                      aria-label="Next Page"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
             </div>
           </div>
         </div>

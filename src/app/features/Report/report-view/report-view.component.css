@@ -356,6 +356,14 @@
   gap: 16px;
 }
 
+.vazhipad-title-wrap {
+  display: flex !important;
+  align-items: baseline !important;
+  gap: 8px !important;
+  flex: 1 1 auto !important;
+  flex-wrap: wrap !important;
+}
+
 .vazhipad-heading {
   margin: 0 !important;
   font-size: 14px !important;
@@ -363,7 +371,13 @@
   color: #0f172a !important;
   text-transform: uppercase !important;
   letter-spacing: 0.02em !important;
-  flex: 1 1 auto;
+}
+
+.vazhipad-records {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: #64748b !important;
+  white-space: nowrap !important;
 }
 
 .vazhipad-column-picker {
