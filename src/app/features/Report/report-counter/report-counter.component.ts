@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
 import { ReportService } from '../service/report.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -69,6 +69,28 @@ export class ReportCounterComponent {
   templeName:string|null;
   templeAddress:string|null;
 loading:boolean;
+
+  // Pagination & Column Visibility Additions
+  isPrinting: boolean = false;
+  paginationState: { [tableKey: string]: { currentPage: number; pageSize: number } } = {};
+  showColumnDropdown: boolean = false;
+  openVazhipadDropdownKey: string | null = null;
+
+  columns: { [key: string]: boolean } = {
+    vazhipad: true,
+    qty: true,
+    rate: true,
+    amount: true,
+  };
+
+  columnList = [
+    { key: 'vazhipad', label: 'Vazhipad' },
+    { key: 'qty', label: 'Quantity' },
+    { key: 'rate', label: 'Rate' },
+    { key: 'amount', label: 'Amount' },
+  ];
+
+  vazhipadColumns: { [tableKey: string]: { [colKey: string]: boolean } } = {};
   constructor(
     private route: ActivatedRoute,
     private service: ReportService,
@@ -833,4 +855,206 @@ getTotalForCuser(counterId: string, cuser: string): number {
   );
   }
 
+  // --- UI Look, Column Visibility, Pagination & Row Count Additions ---
+
+  getTableKey(counterKey: string | number, userKey: string, modeKey: string): string {
+    return `${counterKey}__${userKey}__${modeKey}`;
+  }
+
+  toggleColumnDropdown(event?: Event): void {
+    if (event) event.stopPropagation();
+    this.showColumnDropdown = !this.showColumnDropdown;
+  }
+
+  toggleColumn(key: string): void {
+    this.columns[key] = !this.columns[key];
+    for (const tKey of Object.keys(this.vazhipadColumns)) {
+      this.vazhipadColumns[tKey][key] = this.columns[key];
+    }
+  }
+
+  isColumnVisible(tableKey: string, colKey: string): boolean {
+    if (this.vazhipadColumns[tableKey] && this.vazhipadColumns[tableKey][colKey] !== undefined) {
+      return this.vazhipadColumns[tableKey][colKey];
+    }
+    return !!this.columns[colKey];
+  }
+
+  getColumnsForVazhipad(tableKey: string): { [key: string]: boolean } {
+    if (!this.vazhipadColumns[tableKey]) {
+      this.vazhipadColumns[tableKey] = { ...this.columns };
+    }
+    return this.vazhipadColumns[tableKey];
+  }
+
+  toggleVazhipadDropdown(tableKey: string, event: Event): void {
+    event.stopPropagation();
+    this.openVazhipadDropdownKey = this.openVazhipadDropdownKey === tableKey ? null : tableKey;
+  }
+
+  toggleVazhipadColumn(tableKey: string, colKey: string, event?: Event): void {
+    if (event) event.stopPropagation();
+    const cols = this.getColumnsForVazhipad(tableKey);
+    cols[colKey] = !cols[colKey];
+  }
+
+  resetVazhipadColumns(tableKey: string, event?: Event): void {
+    if (event) event.stopPropagation();
+    this.vazhipadColumns[tableKey] = { ...this.columns };
+  }
+
+  hasVazhipadCustomOverrides(tableKey: string): boolean {
+    if (!this.vazhipadColumns[tableKey]) return false;
+    const current = this.vazhipadColumns[tableKey];
+    return Object.keys(this.columns).some((k) => current[k] !== this.columns[k]);
+  }
+
+  get visibleColumnCount(): number {
+    return Object.values(this.columns).filter(Boolean).length;
+  }
+
+  get totalColumnCount(): number {
+    return this.columnList.length;
+  }
+
+  getVazhipadVisibleColumnCount(tableKey: string): number {
+    const cols = this.getColumnsForVazhipad(tableKey);
+    return Object.values(cols).filter(Boolean).length;
+  }
+
+  getLeadingColspan(tableKey?: string): number {
+    let span = 0;
+    if (tableKey) {
+      if (this.isColumnVisible(tableKey, 'vazhipad')) span++;
+      if (this.isColumnVisible(tableKey, 'qty')) span++;
+    } else {
+      if (this.columns['vazhipad']) span++;
+      if (this.columns['qty']) span++;
+    }
+    return Math.max(span, 1);
+  }
+
+  // Pagination Methods
+  getPagination(tableKey: string): { currentPage: number; pageSize: number } {
+    if (!this.paginationState[tableKey]) {
+      this.paginationState[tableKey] = { currentPage: 1, pageSize: 10 };
+    }
+    return this.paginationState[tableKey];
+  }
+
+  getCurrentPage(tableKey: string): number {
+    return this.getPagination(tableKey).currentPage;
+  }
+
+  getPageSize(tableKey: string): number {
+    return this.getPagination(tableKey).pageSize;
+  }
+
+  getPaginatedEntries(tableKey: string, entries: any[]): any[] {
+    if (this.isPrinting) return entries || [];
+    if (!entries || entries.length === 0) return [];
+    const p = this.getPagination(tableKey);
+    const start = (p.currentPage - 1) * p.pageSize;
+    return entries.slice(start, start + p.pageSize);
+  }
+
+  getTotalPages(tableKey: string, entries: any[] | number): number {
+    const total = typeof entries === 'number' ? entries : (entries ? entries.length : 0);
+    if (total === 0) return 1;
+    const p = this.getPagination(tableKey);
+    return Math.ceil(total / p.pageSize) || 1;
+  }
+
+  getPages(tableKey: string, entries: any[] | number): number[] {
+    const total = this.getTotalPages(tableKey, entries);
+    const current = this.getCurrentPage(tableKey);
+    const range: number[] = [];
+    const maxVisible = 5;
+
+    let start = Math.max(1, current - Math.floor(maxVisible / 2));
+    let end = Math.min(total, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      range.push(i);
+    }
+    return range;
+  }
+
+  goToPage(tableKey: string, page: number): void {
+    this.getPagination(tableKey).currentPage = page;
+  }
+
+  nextPage(tableKey: string, entries: any[] | number): void {
+    const p = this.getPagination(tableKey);
+    if (p.currentPage < this.getTotalPages(tableKey, entries)) {
+      p.currentPage++;
+    }
+  }
+
+  prevPage(tableKey: string): void {
+    const p = this.getPagination(tableKey);
+    if (p.currentPage > 1) {
+      p.currentPage--;
+    }
+  }
+
+  onPageSizeChange(tableKey: string, size: any): void {
+    const p = this.getPagination(tableKey);
+    p.pageSize = Number(size) || 10;
+    p.currentPage = 1;
+  }
+
+  getRangeStart(tableKey: string, entries: any[] | number): number {
+    const total = typeof entries === 'number' ? entries : (entries ? entries.length : 0);
+    if (total === 0) return 0;
+    const p = this.getPagination(tableKey);
+    return (p.currentPage - 1) * p.pageSize + 1;
+  }
+
+  getRangeEnd(tableKey: string, entries: any[] | number): number {
+    const total = typeof entries === 'number' ? entries : (entries ? entries.length : 0);
+    if (total === 0) return 0;
+    const p = this.getPagination(tableKey);
+    return Math.min(p.currentPage * p.pageSize, total);
+  }
+
+  trackByItem(index: number, item: any): any {
+    return item ? (item.key || item.vazhipad || item.BillNo || index) : index;
+  }
+
+  // Row Count Helpers
+  getCounterRowCount(counterId: string): number {
+    const cusers = this.groupedData[counterId] || {};
+    let total = 0;
+    Object.keys(cusers).forEach((u) => {
+      Object.keys(cusers[u]).forEach((m) => {
+        total += cusers[u][m].length;
+      });
+    });
+    return total;
+  }
+
+  getUserRowCount(counterId: string, cuser: string): number {
+    const modes = this.groupedData[counterId]?.[cuser] || {};
+    let total = 0;
+    Object.keys(modes).forEach((m) => {
+      total += modes[m].length;
+    });
+    return total;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.common-column-picker')) {
+      this.showColumnDropdown = false;
+    }
+    if (!target.closest('.vazhipad-column-picker')) {
+      this.openVazhipadDropdownKey = null;
+    }
+  }
 }
