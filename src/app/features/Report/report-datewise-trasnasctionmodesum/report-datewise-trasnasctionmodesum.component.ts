@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
 import { ReportService } from '../service/report.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -78,6 +78,198 @@ export class ReportDatewiseTrasnasctionmodesumComponent {
   templeName: string | null;
   templeAddress: string | null;
   loading: boolean;
+
+  // Column Visibility Management
+  showColumnDropdown: boolean = false;
+  columns: { [key: string]: boolean } = {
+    user: true,
+    cash: true,
+    upi: true,
+    cheque: true,
+    mo: true,
+    bank: true,
+    debit: true,
+    due: true,
+    total: true,
+  };
+
+  columnList = [
+    { key: 'user', label: 'User' },
+    { key: 'cash', label: 'Cash' },
+    { key: 'upi', label: 'UPI' },
+    { key: 'cheque', label: 'Cheque' },
+    { key: 'mo', label: 'MO' },
+    { key: 'bank', label: 'Bank' },
+    { key: 'debit', label: 'Debit' },
+    { key: 'due', label: 'Due' },
+    { key: 'total', label: 'Total' },
+  ];
+
+  vazhipadColumns: { [tableKey: string]: { [colKey: string]: boolean } } = {};
+  openVazhipadDropdownKey: string | null = null;
+  isPrinting: boolean = false;
+  paginationState: { [tableKey: string]: { currentPage: number; pageSize: number } } = {};
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent | Event): void {
+    const target = event.target as HTMLElement;
+    if (this.showColumnDropdown && !target.closest('.common-column-picker')) {
+      this.showColumnDropdown = false;
+    }
+  }
+
+  get visibleColumnCount(): number {
+    return Object.values(this.columns).filter(Boolean).length;
+  }
+
+  get totalColumnCount(): number {
+    return this.columnList.length;
+  }
+
+  toggleColumnDropdown(event?: Event): void {
+    if (event) event.stopPropagation();
+    this.showColumnDropdown = !this.showColumnDropdown;
+  }
+
+  toggleColumn(key: string): void {
+    this.columns[key] = !this.columns[key];
+    const updatedVal = this.columns[key];
+    Object.keys(this.vazhipadColumns).forEach((tKey) => {
+      if (this.vazhipadColumns[tKey]) {
+        this.vazhipadColumns[tKey][key] = updatedVal;
+      }
+    });
+  }
+
+  getTableKey(dateKey: any, counterKey: any): string {
+    return `${dateKey}__${counterKey}`;
+  }
+
+  getColumnsForTable(tableKey: string): { [key: string]: boolean } {
+    if (!this.vazhipadColumns[tableKey]) {
+      this.vazhipadColumns[tableKey] = { ...this.columns };
+    }
+    return this.vazhipadColumns[tableKey];
+  }
+
+  isColumnVisible(tableKeyOrCol: string, maybeCol?: string): boolean {
+    if (maybeCol) {
+      const cols = this.getColumnsForTable(tableKeyOrCol);
+      return cols[maybeCol] ?? false;
+    }
+    return this.columns[tableKeyOrCol] ?? false;
+  }
+
+  getPagination(tableKey: string): { currentPage: number; pageSize: number } {
+    if (!this.paginationState[tableKey]) {
+      this.paginationState[tableKey] = { currentPage: 1, pageSize: 10 };
+    }
+    return this.paginationState[tableKey];
+  }
+
+  getCurrentPage(tableKey: string): number {
+    return this.getPagination(tableKey).currentPage;
+  }
+
+  getPageSize(tableKey: string): number {
+    return this.getPagination(tableKey).pageSize;
+  }
+
+  getUserList(counterValue: any): { key: string; value: any }[] {
+    if (!counterValue) return [];
+    return Object.keys(counterValue).map((k) => ({ key: k, value: counterValue[k] }));
+  }
+
+  getPaginatedUserList(tableKey: string, counterValue: any): { key: string; value: any }[] {
+    const list = this.getUserList(counterValue);
+    return this.getPaginatedEntries(tableKey, list);
+  }
+
+  getPaginatedEntries(tableKey: string, entries: any[]): any[] {
+    if (this.isPrinting) return entries || [];
+    if (!entries || entries.length === 0) return [];
+    const p = this.getPagination(tableKey);
+    const start = (p.currentPage - 1) * p.pageSize;
+    return entries.slice(start, start + p.pageSize);
+  }
+
+  getTotalPages(tableKey: string, entries: any[] | number): number {
+    const total = typeof entries === 'number' ? entries : (entries ? entries.length : 0);
+    if (total === 0) return 1;
+    const p = this.getPagination(tableKey);
+    return Math.ceil(total / p.pageSize) || 1;
+  }
+
+  getPages(tableKey: string, entries: any[] | number): number[] {
+    const total = this.getTotalPages(tableKey, entries);
+    const current = this.getCurrentPage(tableKey);
+    const range: number[] = [];
+    const maxVisible = 5;
+
+    let start = Math.max(1, current - Math.floor(maxVisible / 2));
+    let end = Math.min(total, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      range.push(i);
+    }
+    return range;
+  }
+
+  goToPage(tableKey: string, page: number): void {
+    this.getPagination(tableKey).currentPage = page;
+  }
+
+  nextPage(tableKey: string, entries: any[] | number): void {
+    const p = this.getPagination(tableKey);
+    if (p.currentPage < this.getTotalPages(tableKey, entries)) {
+      p.currentPage++;
+    }
+  }
+
+  prevPage(tableKey: string): void {
+    const p = this.getPagination(tableKey);
+    if (p.currentPage > 1) {
+      p.currentPage--;
+    }
+  }
+
+  onPageSizeChange(tableKey: string, size: any): void {
+    const p = this.getPagination(tableKey);
+    p.pageSize = Number(size) || 10;
+    p.currentPage = 1;
+  }
+
+  getRangeStart(tableKey: string, entries: any[] | number): number {
+    const total = typeof entries === 'number' ? entries : (entries ? entries.length : 0);
+    if (total === 0) return 0;
+    const p = this.getPagination(tableKey);
+    return (p.currentPage - 1) * p.pageSize + 1;
+  }
+
+  getRangeEnd(tableKey: string, entries: any[] | number): number {
+    const total = typeof entries === 'number' ? entries : (entries ? entries.length : 0);
+    if (total === 0) return 0;
+    const p = this.getPagination(tableKey);
+    return Math.min(p.currentPage * p.pageSize, total);
+  }
+
+  trackByItem(index: number, item: any): any {
+    return item ? (item.key || item.Staff || index) : index;
+  }
+
+  getCounterUserCount(counterValue: any): number {
+    return counterValue ? Object.keys(counterValue).length : 0;
+  }
+
+  getRowCount(items: any[] | any): number {
+    if (!items) return 0;
+    if (Array.isArray(items)) return items.length;
+    return Object.keys(items).length;
+  }
   constructor(
     private route: ActivatedRoute,
     private service: ReportService,
@@ -261,8 +453,18 @@ export class ReportDatewiseTrasnasctionmodesumComponent {
   }
 
   formatDateToDDMMYYYY(date: string): string {
-    const [year, month, day] = date.split('-');
-    return `${day}-${month}-${year}`;
+    if (!date) return '';
+    try {
+      const cleanDate = String(date).split('T')[0];
+      const parts = cleanDate.split('-');
+      if (parts.length === 3) {
+        const [year, month, day] = parts;
+        return `${day}-${month}-${year}`;
+      }
+      return String(date);
+    } catch (e) {
+      return String(date || '');
+    }
   }
 
   getTransactionType(transmode: string): string {
@@ -320,8 +522,14 @@ export class ReportDatewiseTrasnasctionmodesumComponent {
     return this.data.reduce((sum, item) => sum + item.Amount, 0);
   }
 
-  generatePDF() {
-    this.reportPrintservice.generatePDF();
+  generatePDF(): void {
+    this.isPrinting = true;
+    setTimeout(() => {
+      this.reportPrintservice.generatePDF();
+      setTimeout(() => {
+        this.isPrinting = false;
+      }, 1000);
+    }, 150);
   }
   getGrandTotalByMode(mode: string): number {
     return this.Alldata.filter(
@@ -532,10 +740,14 @@ exportToExcel(): void {
     }
   );
 
-  FileSaver.saveAs(
-    blob,
-    `Daily_Temple_Collection_${new Date().getTime()}.xlsx`
-  );
+  if (FileSaver && (FileSaver as any).saveAs) {
+    FileSaver.saveAs(
+      blob,
+      `Daily_Temple_Collection_${new Date().getTime()}.xlsx`
+    );
+  } else {
+    XLSX.writeFile(workbook, `Daily_Temple_Collection_${new Date().getTime()}.xlsx`);
+  }
 }
 
 }
