@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { ReportService } from '../service/report.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -43,14 +43,290 @@ export class ReportDebitComponent {
   filteredNadavaravu:any[]=[];
   filteredCreditCollection:any[]=[];
   filteredFeecollection:any[]=[];
-loading:boolean;
-  constructor(private route: ActivatedRoute,
-        private reportPrintservice:PrintreportService,
-    
-    private ts: TranslateService, private service: ReportService,private router: Router,private http:HttpClient) {
-    this.lang=localStorage.getItem('Language');
+  loading:boolean;
+  isPrinting: boolean = false;
+
+  // Column Visibility Management
+  showColumnDropdown: boolean = false;
+  openTableDropdownKey: string | null = null;
+  columns: { [key: string]: boolean } = {
+    billNo: true,
+    billDate: true,
+    id: true,
+    counter: true,
+    vazhipad: true,
+    name: true,
+    qty: true,
+    rate: true,
+    amount: true,
+  };
+  tableColumns: { [tableKey: string]: { [key: string]: boolean } } = {};
+
+  columnList = [
+    { key: 'billNo', label: 'Bill No' },
+    { key: 'billDate', label: 'Bill Date' },
+    { key: 'id', label: 'ID' },
+    { key: 'counter', label: 'Counter' },
+    { key: 'vazhipad', label: 'Vazhipad' },
+    { key: 'name', label: 'Name' },
+    { key: 'qty', label: 'Quantity' },
+    { key: 'rate', label: 'Rate' },
+    { key: 'amount', label: 'Amount' },
+  ];
+
+  // Pagination per Table
+  paginationState: { [tableKey: string]: { currentPage: number; pageSize: number } } = {};
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (this.showColumnDropdown && !target.closest('.common-column-picker')) {
+      this.showColumnDropdown = false;
+    }
+    if (this.openTableDropdownKey && !target.closest('.debit-table-column-picker')) {
+      this.openTableDropdownKey = null;
+    }
+  }
+
+  get visibleColumnCount(): number {
+    return Object.values(this.columns).filter(Boolean).length;
+  }
+
+  get totalColumnCount(): number {
+    return this.columnList.length;
+  }
+
+  toggleColumnDropdown(event?: Event): void {
+    if (event) event.stopPropagation();
+    this.showColumnDropdown = !this.showColumnDropdown;
+    if (this.showColumnDropdown) {
+      this.openTableDropdownKey = null;
+    }
+  }
+
+  toggleColumn(key: string): void {
+    if (this.columns[key] && this.visibleColumnCount <= 1) {
+      return;
+    }
+    this.columns[key] = !this.columns[key];
+    const updatedVal = this.columns[key];
+
+    // Propagate to all initialized table overrides
+    Object.keys(this.tableColumns).forEach((tKey) => {
+      if (this.tableColumns[tKey]) {
+        this.tableColumns[tKey][key] = updatedVal;
+      }
+    });
+  }
+
+  getTableColumns(tableKey: string): { [key: string]: boolean } {
+    if (!this.tableColumns[tableKey]) {
+      this.tableColumns[tableKey] = { ...this.columns };
+    }
+    return this.tableColumns[tableKey];
+  }
+
+  isColumnVisible(tableKey: string, colKey: string): boolean {
+    const cols = this.getTableColumns(tableKey);
+    return cols[colKey] ?? false;
+  }
+
+  getTableVisibleColumnCount(tableKey: string): number {
+    const cols = this.getTableColumns(tableKey);
+    return Object.values(cols).filter(Boolean).length || 1;
+  }
+
+  hasTableCustomOverrides(tableKey: string): boolean {
+    if (!this.tableColumns[tableKey]) return false;
+    return this.columnList.some((col) => this.tableColumns[tableKey][col.key] !== this.columns[col.key]);
+  }
+
+  toggleTableDropdown(tableKey: string, event?: Event): void {
+    if (event) event.stopPropagation();
+    if (this.openTableDropdownKey === tableKey) {
+      this.openTableDropdownKey = null;
+    } else {
+      this.openTableDropdownKey = tableKey;
+      this.showColumnDropdown = false;
+    }
+  }
+
+  toggleTableColumn(tableKey: string, colKey: string, event?: Event): void {
+    if (event) event.stopPropagation();
+    const cols = this.getTableColumns(tableKey);
+    const visibleCount = Object.values(cols).filter(Boolean).length;
+    if (cols[colKey] && visibleCount <= 1) {
+      return;
+    }
+    cols[colKey] = !cols[colKey];
+  }
+
+  resetTableColumns(tableKey: string, event?: Event): void {
+    if (event) event.stopPropagation();
+    this.tableColumns[tableKey] = { ...this.columns };
+  }
+
+  getLeadingColspan(tableKey: string): number {
+    let count = 0;
+    if (this.isColumnVisible(tableKey, 'billNo')) count++;
+    if (this.isColumnVisible(tableKey, 'billDate')) count++;
+    if (this.isColumnVisible(tableKey, 'id')) count++;
+    if (this.isColumnVisible(tableKey, 'counter')) count++;
+    if (this.isColumnVisible(tableKey, 'vazhipad')) count++;
+    if (this.isColumnVisible(tableKey, 'name')) count++;
+    if (this.isColumnVisible(tableKey, 'qty')) count++;
+    if (this.isColumnVisible(tableKey, 'rate')) count++;
+    if (!this.isColumnVisible(tableKey, 'amount')) count++;
+    return Math.max(1, count);
+  }
+
+  // --- Pagination Methods ---
+  getPagination(tableKey: string): { currentPage: number; pageSize: number } {
+    if (!this.paginationState[tableKey]) {
+      this.paginationState[tableKey] = { currentPage: 1, pageSize: this.pageSize };
+    }
+    return this.paginationState[tableKey];
+  }
+
+  getCurrentPage(tableKey: string): number {
+    return this.getPagination(tableKey).currentPage;
+  }
+
+  getPageSize(tableKey: string): number {
+    return this.getPagination(tableKey).pageSize;
+  }
+
+  getPaginatedEntries(tableKey: string, entries: any[]): any[] {
+    if (this.isPrinting) return entries || [];
+    if (!entries || entries.length === 0) return [];
+    const p = this.getPagination(tableKey);
+    const start = (p.currentPage - 1) * p.pageSize;
+    return entries.slice(start, start + p.pageSize);
+  }
+
+  getTotalPages(tableKey: string, entries: any[] | number): number {
+    const total = typeof entries === 'number' ? entries : (entries ? entries.length : 0);
+    if (total === 0) return 1;
+    const p = this.getPagination(tableKey);
+    return Math.ceil(total / p.pageSize) || 1;
+  }
+
+  getPages(tableKey: string, entries: any[] | number): number[] {
+    const total = this.getTotalPages(tableKey, entries);
+    const current = this.getCurrentPage(tableKey);
+    const range: number[] = [];
+    const maxVisible = 5;
+
+    let start = Math.max(1, current - Math.floor(maxVisible / 2));
+    let end = Math.min(total, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      range.push(i);
+    }
+    return range;
+  }
+
+  goToPage(tableKey: string, page: number): void {
+    this.getPagination(tableKey).currentPage = page;
+  }
+
+  nextPage(tableKey: string, entries: any[]): void {
+    const totalPages = this.getTotalPages(tableKey, entries);
+    if (this.getCurrentPage(tableKey) < totalPages) {
+      this.getPagination(tableKey).currentPage++;
+    }
+  }
+
+  prevPage(tableKey: string): void {
+    if (this.getCurrentPage(tableKey) > 1) {
+      this.getPagination(tableKey).currentPage--;
+    }
+  }
+
+  onPageSizeChange(tableKey: string, size: any): void {
+    const newSize = Number(size) || 10;
+    this.pageSize = newSize;
+    this.getPagination(tableKey).pageSize = newSize;
+    this.getPagination(tableKey).currentPage = 1;
+  }
+
+  getRangeStart(tableKey: string, entries: any[]): number {
+    if (!entries || entries.length === 0) return 0;
+    const p = this.getPagination(tableKey);
+    return (p.currentPage - 1) * p.pageSize + 1;
+  }
+
+  getRangeEnd(tableKey: string, entries: any[]): number {
+    if (!entries || entries.length === 0) return 0;
+    const p = this.getPagination(tableKey);
+    return Math.min(p.currentPage * p.pageSize, entries.length);
+  }
+
+  getItemAmount(item: any): number {
+    if (!item) return 0;
+    const val = item.Amount != null && item.Amount !== '' ? item.Amount : item.Rate;
+    const num = Number(val);
+    return isNaN(num) ? 0 : num;
+  }
+
+  // Vazhipad Total
+  getTotalAmount(): number {
+    const entries = this.isPrinting ? this.filteredData : this.getPaginatedEntries('vazhipad', this.filteredData);
+    return entries.reduce((sum, item) => sum + this.getItemAmount(item), 0);
+  }
+
+  getAllTotalAmount(): number {
+    return this.filteredData.reduce((sum, item) => sum + this.getItemAmount(item), 0);
+  }
+
+  // Credit Collection Total
+  getCreditCollectTotalAmount(): number {
+    const entries = this.isPrinting ? this.filteredCreditCollection : this.getPaginatedEntries('creditCollection', this.filteredCreditCollection);
+    return entries.reduce((sum, item) => sum + this.getItemAmount(item), 0);
+  }
+
+  getAllCreditCollectTotalAmount(): number {
+    return this.filteredCreditCollection.reduce((sum, item) => sum + this.getItemAmount(item), 0);
+  }
+
+  // Fee Collection Total
+  getFeecollectionTotalAmount(): number {
+    const entries = this.isPrinting ? this.filteredFeecollection : this.getPaginatedEntries('feeCollection', this.filteredFeecollection);
+    return entries.reduce((sum, item) => sum + this.getItemAmount(item), 0);
+  }
+
+  getAllFeecollectionTotalAmount(): number {
+    return this.filteredFeecollection.reduce((sum, item) => sum + this.getItemAmount(item), 0);
+  }
+
+  getNadavaravuTotalAmount(): number {
+    return this.filteredNadavaravu.reduce((sum, item) => sum + (Number(item.Receipt_Amt) || 0), 0);
+  }
+
+  // Overall records count & data presence
+  getTotalRecordsCount(): number {
+    return (this.filteredData?.length || 0) + (this.filteredCreditCollection?.length || 0) + (this.filteredFeecollection?.length || 0);
+  }
+
+  hasAnyData(): boolean {
+    return this.getTotalRecordsCount() > 0;
+  }
+
+  constructor(
+    private route: ActivatedRoute,
+    private reportPrintservice: PrintreportService,
+    private ts: TranslateService,
+    private service: ReportService,
+    private router: Router,
+    private http: HttpClient
+  ) {
+    this.lang = localStorage.getItem('Language');
     this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
-    this. templeAddress = localStorage.getItem('Address') || 'Default Temple Address'; 
+    this.templeAddress = localStorage.getItem('Address') || 'Default Temple Address'; 
     const userLang = navigator.language || 'en';
     const languageCode = userLang.split('-')[0];
     this.ts.setDefaultLang(languageCode);
@@ -60,33 +336,15 @@ loading:boolean;
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       const type = params['type'];
-      this. fromDate = params['fromDate'];
-      this. toDate = params['toDate'];
+      this.fromDate = params['fromDate'];
+      this.toDate = params['toDate'];
       this.fetchReportData(type, this.fromDate, this.toDate);
-      this.fetchCreditcollectionReportData(type,this. fromDate, this.toDate);
-      this.fetchFeecollectionReportData(type,this. fromDate, this.toDate);
+      this.fetchCreditcollectionReportData(type, this.fromDate, this.toDate);
+      this.fetchFeecollectionReportData(type, this.fromDate, this.toDate);
     });
   }
 
-
-  getTotalAmount(): number {
-    return this.filteredData.reduce((sum, item) => sum + item.Amount, 0);
-  }
-
-
-  getNadavaravuTotalAmount(): number {
-    return this.filteredNadavaravu.reduce((sum, item) => sum + item.Receipt_Amt, 0);
-  }
-  getCreditCollectTotalAmount(): number {
-    return this.filteredCreditCollection.reduce((sum, item) => sum + item.Amount, 0);
-  }
-  getFeecollectionTotalAmount(): number {
-    return this.filteredFeecollection.reduce((sum, item) => sum + item.Amount, 0);
-  }
-
-
-
- // Call your API service to get the report data
+  // Call your API service to get the report data
   fetchReportData(type: string, fromDate: string, toDate: string): void {
     this.loading=true;
     const payLoad = {
@@ -98,29 +356,16 @@ loading:boolean;
       next: (data) => {
         console.log('Fetched report data:', data);
         this.data=data;
-         this.data = this.data.sort((a: any, b: any) =>
-        a.BillNo.localeCompare(b.BillNo, undefined, { numeric: true, sensitivity: 'base' })
+        this.data = this.data.sort((a: any, b: any) =>
+          a.BillNo.localeCompare(b.BillNo, undefined, { numeric: true, sensitivity: 'base' })
         );
-         this.filteredData = this.data.filter(item => item.TrnsMode === 'DE'); 
-         this.loading=false;  
-        //  this.filteredData = this.filteredData.sort((a:any, b:any) => {
-        //   const [numA, denomA] = a.BillNo.split('/').map(Number);
-        //   const [numB, denomB] = b.BillNo.split('/').map(Number);
-          
-        //   // Compare the two parts: first compare the numerator, then the denominator
-        //   return numA - numB || denomA - denomB;
-      // });
-      // console.log(this.filteredData,"aaaaaaaaaaaaaaaaaaa")  
-
-      //   this.dataSource.data = this.filteredData
-      //   console.log( this.dataSource.data)
-      //   this.length =this.filteredData .length; 
-      //   this.dataSource.paginator = this.paginator;
-        
-      //   console.log(this.filteredData);
+        this.filteredData = this.data.filter(item => item.TrnsMode === 'DE'); 
+        this.getPagination('vazhipad').currentPage = 1;
+        this.loading=false;  
       },
       error: (error) => {
         console.error('Error fetching report data:', error);
+        this.loading=false;
       },
     });
   }
@@ -135,16 +380,17 @@ loading:boolean;
     };
     this.service.getReport(payLoad).subscribe({
       next: (data) => {
-        // this.data=data;
         data = data.sort((a: any, b: any) =>
-        a.BillNo.localeCompare(b.BillNo, undefined, { numeric: true, sensitivity: 'base' })
+          a.BillNo.localeCompare(b.BillNo, undefined, { numeric: true, sensitivity: 'base' })
         );
-         this.filteredCreditCollection = data.filter((item:any) => item.TrnMode === 'DE');   
-         console.log('Fetched report data: credit collect', this.filteredCreditCollection);
-this.loading=false;
+        this.filteredCreditCollection = data.filter((item:any) => item.TrnMode === 'DE');   
+        console.log('Fetched report data: credit collect', this.filteredCreditCollection);
+        this.getPagination('creditCollection').currentPage = 1;
+        this.loading=false;
       },
       error: (error) => {
         console.error('Error fetching report data:', error);
+        this.loading=false;
       },
     });
   }
@@ -158,32 +404,17 @@ this.loading=false;
     };
     this.service.getReport(payLoad).subscribe({
       next: (data) => {
-       
-        // this.data=data;
-         const datas = data.sort((a: any, b: any) =>
-        a.BillNo.localeCompare(b.BillNo, undefined, { numeric: true, sensitivity: 'base' })
+        const datas = data.sort((a: any, b: any) =>
+          a.BillNo.localeCompare(b.BillNo, undefined, { numeric: true, sensitivity: 'base' })
         );
-         this.filteredFeecollection = datas.filter((item:any) => item.TrnMode === 'DE'); 
-         this.loading=false;  
-      //    this.filteredData = this.filteredData.sort((a:any, b:any) => {
-      //     const [numA, denomA] = a.BillNo.split('/').map(Number);
-      //     const [numB, denomB] = b.BillNo.split('/').map(Number);
-          
-      //     // Compare the two parts: first compare the numerator, then the denominator
-      //     return numA - numB || denomA - denomB;
-      // });
-      // console.log(this.filteredData,"aaaaaaaaaaaaaaaaaaa")  
-
-      //   this.dataSource.data = this.filteredData
-      //   console.log( this.dataSource.data)
-      //   this.length =this.filteredData .length; 
-      //   this.dataSource.paginator = this.paginator;
-        
-      //   console.log(this.filteredData);
-      console.log('Fetched report data fee collect:', this.filteredFeecollection);
+        this.filteredFeecollection = datas.filter((item:any) => item.TrnMode === 'DE'); 
+        this.getPagination('feeCollection').currentPage = 1;
+        this.loading=false;  
+        console.log('Fetched report data fee collect:', this.filteredFeecollection);
       },
       error: (error) => {
         console.error('Error fetching report data:', error);
+        this.loading=false;
       },
     });
   }
@@ -435,93 +666,15 @@ this.loading=false;
 //   }
 
 
-generatePDF(){
-  this.reportPrintservice.generatePDF()
-  // const printContent = document.getElementById('print-section');
-  // if (!printContent) {
-  //   console.error('No content found to print');
-  //   return;
-  // }
-
-//   const WindowPrt = window.open('', '', 'width=800,height=600');
-  
-//   // Check if the print window was successfully opened
-//   if (!WindowPrt) {
-//     console.error('Unable to open print window. Please check pop-up blockers.');
-//     return;
-//   }
-
-//   WindowPrt.document.write(`
-//     <html>
-//       <head>
-//         <title>Print</title>
-//         <style>
-         
-//           body {
-//     font-size: 16px;
-//     font-family: "Times New Roman", serif;
-//   }
-//           h3,p,h4,h2{
-//           line-height:1;
-//           margin-top:0;
-//           text-align:center;
-//           }
-//           .templename{
-//            line-height:1;
-//           margin-top:0;
-//           text-align:center;
-//           }
-//           hr{
-//           height:2px;
-//           }
-//           .number,.total{
-//             text-align:right;
-//             }
-//           .tabble-heading h3{
-//   font-family: 'Times New Roman', Times, serif;
-//   font-weight: bold;
-//   font-size: 16px;
-//   margin: 8px 0 0 0;
-// }
-//           table {
-//             width: 100%;
-//             border-collapse: collapse;
-//           }
-//           table, th, td {
-//             border: 1px solid black;
-//             text-transform: uppercase;
-
-//           }
-//             .total,number{
-//             text-align:right;
-//             }
-//           th, td {
-//            padding-left:5px;
-//             text-align: left;
-//           }
-//             #print-section{
-// padding-bottom: 100px;
-//   }
-       
-    
-//     .page-break {
-//       page-break-before: always;
-//     }
-//           </style>
-//       </head>
-//       <body>${printContent.innerHTML}</body>
-//     </html>
-//   `);
-
-//   WindowPrt.document.close();
-//   WindowPrt.focus();
-
-//   // Make sure that the window is still valid before calling print and close
-//   if (WindowPrt) {
-//     WindowPrt.print();
-//     WindowPrt.close();
-//   } 
-}
+  generatePDF(): void {
+    this.isPrinting = true;
+    setTimeout(() => {
+      this.reportPrintservice.generatePDF();
+      setTimeout(() => {
+        this.isPrinting = false;
+      }, 1000);
+    }, 100);
+  }
    
 exportToExcel(): void {
 
@@ -710,16 +863,16 @@ exportToExcel(): void {
     [this.templeName],
     ['DEBIT REPORT SUMMARY'],
     [],
-    ['Vazhipad Total', this.getTotalAmount()],
-    ['Credit Collection Total', this.getCreditCollectTotalAmount()],
-    ['Fee Collection Total', this.getFeecollectionTotalAmount()],
+    ['Vazhipad Total', this.getAllTotalAmount()],
+    ['Credit Collection Total', this.getAllCreditCollectTotalAmount()],
+    ['Fee Collection Total', this.getAllFeecollectionTotalAmount()],
     ['Nadavaravu Total', this.getNadavaravuTotalAmount()],
     [],
     [
       'Grand Total',
-      this.getTotalAmount()
-      + this.getCreditCollectTotalAmount()
-      + this.getFeecollectionTotalAmount()
+      this.getAllTotalAmount()
+      + this.getAllCreditCollectTotalAmount()
+      + this.getAllFeecollectionTotalAmount()
       + this.getNadavaravuTotalAmount()
     ]
   ];
