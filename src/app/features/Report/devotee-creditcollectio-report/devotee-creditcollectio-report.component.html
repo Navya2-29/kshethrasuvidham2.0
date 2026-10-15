@@ -246,8 +246,9 @@
             </p>
           </div>
 
-          <div class="nodataFound" *ngIf="data.length === 0 && allCreditdata.length === 0">
-            <h2></h2>
+          <!-- Empty State -->
+          <div class="nodataFound" *ngIf="data.length === 0 && allCreditdata.length === 0 && !loading">
+            <p>No report records found for the selected criteria.</p>
           </div>
           <hr />
         </div>

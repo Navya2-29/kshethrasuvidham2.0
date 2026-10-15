@@ -71,6 +71,14 @@ th.address, td.address {
   margin-left: 10px;
 }
 
+.nodataFound {
+  text-align: center;
+  padding: 36px 20px;
+  color: #64748b;
+  font-size: 15px;
+  font-weight: 500;
+}
+
 /* Hide print buttons on print */
 @media print {
   .no-print,

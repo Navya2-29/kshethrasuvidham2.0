@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { ReportService } from '../service/report.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -61,6 +61,31 @@ export class ReportFeecollectionComponent {
   pageSize = 10;
   pageSizeOptions: number[] = [10, 50, 100, 200, 300, 500, 1000];
   pageIndex = 0;
+  isPrinting: boolean = false;
+
+  // Column Visibility Management
+  showColumnDropdown: boolean = false;
+  columns: { [key: string]: boolean } = {
+    billNo: true,
+    billDate: true,
+    item: true,
+    star: false,
+    trnMode: true,
+    amount: true,
+  };
+
+  columnList = [
+    { key: 'billNo', label: 'Bill No' },
+    { key: 'billDate', label: 'Bill Date' },
+    { key: 'item', label: 'Item' },
+    { key: 'star', label: 'Star' },
+    { key: 'trnMode', label: 'Payment Method' },
+    { key: 'amount', label: 'Amount' },
+  ];
+
+  // Per-Table Pagination State
+  paginationState: { [tableKey: string]: { currentPage: number; pageSize: number } } = {};
+
   data: FeeCollection[] = [];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   groupedData: { [key: string]: FeeCollection[] } = {};
@@ -68,7 +93,7 @@ export class ReportFeecollectionComponent {
   currentPage: number = 1;
   fromDate: string;
   toDate: string;
-  loading: boolean;
+  loading: boolean = true;
   groupedDatas: { [key: string]: any[] } = {};
   lang: string | null;
   templeName: string | null;
@@ -136,8 +161,131 @@ export class ReportFeecollectionComponent {
       },
       error: (error) => {
         console.error('Error fetching report data:', error);
+        this.loading = false;
       },
     });
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (this.showColumnDropdown) {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.column-picker-wrapper')) {
+        this.showColumnDropdown = false;
+      }
+    }
+  }
+
+  get visibleColumnCount(): number {
+    return Object.values(this.columns).filter(Boolean).length;
+  }
+
+  get totalColumnCount(): number {
+    return this.columnList.length;
+  }
+
+  toggleColumnDropdown(event?: Event): void {
+    if (event) event.stopPropagation();
+    this.showColumnDropdown = !this.showColumnDropdown;
+  }
+
+  toggleColumn(key: string): void {
+    this.columns[key] = !this.columns[key];
+  }
+
+  getLeadingColspan(): number {
+    let count = 0;
+    if (this.columns['billNo']) count++;
+    if (this.columns['billDate']) count++;
+    if (this.columns['item']) count++;
+    if (this.columns['star']) count++;
+    if (this.columns['trnMode']) count++;
+    if (!this.columns['amount']) count++;
+    return Math.max(1, count);
+  }
+
+  // --- Pagination Methods ---
+  getPagination(tableKey: string): { currentPage: number; pageSize: number } {
+    if (!this.paginationState[tableKey]) {
+      this.paginationState[tableKey] = { currentPage: 1, pageSize: 10 };
+    }
+    return this.paginationState[tableKey];
+  }
+
+  getCurrentPage(tableKey: string): number {
+    return this.getPagination(tableKey).currentPage;
+  }
+
+  getPageSize(tableKey: string): number {
+    return this.getPagination(tableKey).pageSize;
+  }
+
+  getPaginatedEntries(tableKey: string, entries: any[]): any[] {
+    if (this.isPrinting) return entries || [];
+    if (!entries || entries.length === 0) return [];
+    const p = this.getPagination(tableKey);
+    const start = (p.currentPage - 1) * p.pageSize;
+    return entries.slice(start, start + p.pageSize);
+  }
+
+  getTotalPages(tableKey: string, entries: any[] | number): number {
+    const total = typeof entries === 'number' ? entries : (entries ? entries.length : 0);
+    if (total === 0) return 1;
+    const p = this.getPagination(tableKey);
+    return Math.ceil(total / p.pageSize) || 1;
+  }
+
+  getPages(tableKey: string, entries: any[] | number): number[] {
+    const total = this.getTotalPages(tableKey, entries);
+    const current = this.getCurrentPage(tableKey);
+    const range: number[] = [];
+    const maxVisible = 5;
+
+    let start = Math.max(1, current - Math.floor(maxVisible / 2));
+    let end = Math.min(total, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      range.push(i);
+    }
+    return range;
+  }
+
+  goToPage(tableKey: string, page: number): void {
+    this.getPagination(tableKey).currentPage = page;
+  }
+
+  nextPage(tableKey: string, entries: any[]): void {
+    const totalPages = this.getTotalPages(tableKey, entries);
+    if (this.getCurrentPage(tableKey) < totalPages) {
+      this.getPagination(tableKey).currentPage++;
+    }
+  }
+
+  prevPage(tableKey: string): void {
+    if (this.getCurrentPage(tableKey) > 1) {
+      this.getPagination(tableKey).currentPage--;
+    }
+  }
+
+  onPageSizeChange(tableKey: string, size: any): void {
+    this.getPagination(tableKey).pageSize = Number(size) || 10;
+    this.getPagination(tableKey).currentPage = 1;
+  }
+
+  getRangeStart(tableKey: string, entries: any[]): number {
+    if (!entries || entries.length === 0) return 0;
+    const p = this.getPagination(tableKey);
+    return (p.currentPage - 1) * p.pageSize + 1;
+  }
+
+  getRangeEnd(tableKey: string, entries: any[]): number {
+    if (!entries || entries.length === 0) return 0;
+    const p = this.getPagination(tableKey);
+    return Math.min(p.currentPage * p.pageSize, entries.length);
   }
 
   goBack(): void {
@@ -156,9 +304,14 @@ export class ReportFeecollectionComponent {
     return `${day}-${month}-${year}`;
   }
 
-  generatePDF() {
-    this.reportPrintservice.generatePDF();
-    //
+  generatePDF(): void {
+    this.isPrinting = true;
+    setTimeout(() => {
+      this.reportPrintservice.generatePDF();
+      setTimeout(() => {
+        this.isPrinting = false;
+      }, 1000);
+    }, 100);
   }
 
   getTotalAmount(): number {

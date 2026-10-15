@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { ReportService } from '../service/report.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -43,9 +43,9 @@ export class ReportMoneyOrderComponent {
   displayedColumns: string[] = [
     'BillNo',
     'BillDate',
+    'Counter',
     'Vazhipad',
     'NAME',
-    'STAR',
     'QTY',
     'RATE',
     'Amount',
@@ -55,6 +55,33 @@ export class ReportMoneyOrderComponent {
   pageSize = 10;
   pageSizeOptions: number[] = [10, 50, 100, 200, 300, 500, 1000];
   pageIndex = 0;
+  currentPage: number = 1;
+  isPrinting: boolean = false;
+
+  // Column Visibility Management
+  showColumnDropdown: boolean = false;
+  columns: { [key: string]: boolean } = {
+    billNo: true,
+    billDate: true,
+    counter: true,
+    vazhipad: true,
+    name: true,
+    qty: true,
+    rate: true,
+    amount: true,
+  };
+
+  columnList = [
+    { key: 'billNo', label: 'Bill No' },
+    { key: 'billDate', label: 'Bill Date' },
+    { key: 'counter', label: 'Counter' },
+    { key: 'vazhipad', label: 'Vazhipad' },
+    { key: 'name', label: 'Name' },
+    { key: 'qty', label: 'Quantity' },
+    { key: 'rate', label: 'Rate' },
+    { key: 'amount', label: 'Amount' },
+  ];
+
   data: ReportData[] = [];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   groupedData: { [key: string]: ReportData[] } = {};
@@ -66,7 +93,7 @@ export class ReportMoneyOrderComponent {
   templeAddress:string|null;
   filteredCreditCollection:any[]=[];
   filteredFeecollection:any[]=[];
-  loading:boolean;
+  loading: boolean = true;
   constructor(
     private route: ActivatedRoute,
     private service: ReportService,
@@ -110,7 +137,9 @@ export class ReportMoneyOrderComponent {
         console.log('Fetched report data:', data);
         this.data = data;
         this.filteredData = this.data.filter((item) => item.TrnsMode === 'MO');
-        this.loading=false;
+        this.length = this.filteredData.length;
+        this.currentPage = 1;
+        this.loading = false;
         // this.filteredData = this.filteredData.sort((a: any, b: any) => {
         //   const [numA, denomA] = a.BillNo.split('/').map(Number);
         //   const [numB, denomB] = b.BillNo.split('/').map(Number);
@@ -129,6 +158,7 @@ export class ReportMoneyOrderComponent {
       },
       error: (error) => {
         console.error('Error fetching report data:', error);
+        this.loading = false;
       },
     });
   }
@@ -217,6 +247,108 @@ this.loading=false;
   formatDateToDDMMYYYY(date: string): string {
     const [year, month, day] = date.split('-');
     return `${day}-${month}-${year}`;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (this.showColumnDropdown) {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.column-picker-wrapper')) {
+        this.showColumnDropdown = false;
+      }
+    }
+  }
+
+  get visibleColumnCount(): number {
+    return Object.values(this.columns).filter(Boolean).length;
+  }
+
+  get totalColumnCount(): number {
+    return this.columnList.length;
+  }
+
+  toggleColumnDropdown(event?: Event): void {
+    if (event) event.stopPropagation();
+    this.showColumnDropdown = !this.showColumnDropdown;
+  }
+
+  toggleColumn(key: string): void {
+    this.columns[key] = !this.columns[key];
+  }
+
+  getPaginatedEntries(entries: any[]): any[] {
+    if (!entries || entries.length === 0) return [];
+    if (this.isPrinting) return entries;
+    const start = (this.currentPage - 1) * this.pageSize;
+    return entries.slice(start, start + this.pageSize);
+  }
+
+  getTotalPages(entries: any[]): number {
+    if (!entries || entries.length === 0) return 1;
+    return Math.ceil(entries.length / this.pageSize) || 1;
+  }
+
+  getPages(entries: any[]): number[] {
+    const total = this.getTotalPages(entries);
+    const current = this.currentPage;
+    const range: number[] = [];
+    const maxVisible = 5;
+
+    let start = Math.max(1, current - Math.floor(maxVisible / 2));
+    let end = Math.min(total, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      range.push(i);
+    }
+    return range;
+  }
+
+  goToPage(page: number): void {
+    this.currentPage = page;
+  }
+
+  nextPage(entries: any[]): void {
+    if (this.currentPage < this.getTotalPages(entries)) {
+      this.currentPage++;
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  onPageSizeChange(size: any): void {
+    this.pageSize = Number(size) || 10;
+    this.currentPage = 1;
+  }
+
+  getRangeStart(entries: any[]): number {
+    if (!entries || entries.length === 0) return 0;
+    return (this.currentPage - 1) * this.pageSize + 1;
+  }
+
+  getRangeEnd(entries: any[]): number {
+    if (!entries || entries.length === 0) return 0;
+    return Math.min(this.currentPage * this.pageSize, entries.length);
+  }
+
+  getLeadingColspan(): number {
+    let count = 0;
+    if (this.columns['billNo']) count++;
+    if (this.columns['billDate']) count++;
+    if (this.columns['counter']) count++;
+    if (this.columns['vazhipad']) count++;
+    if (this.columns['name']) count++;
+    if (this.columns['qty']) count++;
+    if (this.columns['rate']) count++;
+    if (!this.columns['amount']) count++;
+    return count;
   }
 
   // generatePDF(): void {
@@ -465,7 +597,12 @@ this.loading=false;
 
 
   getTotalAmount(): number {
-    return this.filteredData.reduce((sum, item) => sum + item.Amount, 0);
+    const entries = this.isPrinting ? this.filteredData : this.getPaginatedEntries(this.filteredData);
+    return entries.reduce((sum, item) => sum + Number(item.Amount || 0), 0);
+  }
+
+  getAllTotalAmount(): number {
+    return this.filteredData.reduce((sum, item) => sum + Number(item.Amount || 0), 0);
   }
 
   getCreditCollectTotalAmount(): number {
@@ -475,97 +612,15 @@ this.loading=false;
     return this.filteredFeecollection.reduce((sum, item) => sum + item.Amount, 0);
   }
 
-generatePDF(){
-  this.reportPrintservice.generatePDF()
+  generatePDF(): void {
+    this.isPrinting = true;
+    setTimeout(() => {
+      this.reportPrintservice.generatePDF();
+      this.isPrinting = false;
+    }, 100);
+  }
 
-
-//   const printContent = document.getElementById('print-section');
-//   if (!printContent) {
-//     console.error('No content found to print');
-//     return;
-//   }
-
-//   const WindowPrt = window.open('', '', 'width=800,height=600');
-  
-//   // Check if the print window was successfully opened
-//   if (!WindowPrt) {
-//     console.error('Unable to open print window. Please check pop-up blockers.');
-//     return;
-//   }
-
-//   WindowPrt.document.write(`
-//     <html>
-//       <head>
-//         <title>Print</title>
-//        <style>
-         
-//           body {
-//     font-size: 16px;
-//     font-family: "Times New Roman", serif;
-//   }
-//           h3,p,h4,h2{
-//           line-height:1;
-//           margin-top:0;
-//           text-align:center;
-//           }
-//           .templename{
-//            line-height:1;
-//           margin-top:0;
-//           text-align:center;
-//           }
-//           hr{
-//           height:2px;
-//           }
-//           .number,.total{
-//             text-align:right;
-//             }
-//           .tabble-heading h3{
-//   font-family: 'Times New Roman', Times, serif;
-//   font-weight: bold;
-//   font-size: 16px;
-//   margin: 8px 0 0 0;
-// }
-//           table {
-//             width: 100%;
-//             border-collapse: collapse;
-//           }
-//           table, th, td {
-//             border: 1px solid black;
-//             text-transform: uppercase;
-
-//           }
-//             .total,number{
-//             text-align:right;
-//             }
-//           th, td {
-//            padding-left:5px;
-//             text-align: left;
-//           }
-//             #print-section{
-// padding-bottom: 100px;
-//   }
-       
-    
-//     .page-break {
-//       page-break-before: always;
-//     }
-//           </style>
-//       </head>
-//       <body>${printContent.innerHTML}</body>
-//     </html>
-//   `);
-
-//   WindowPrt.document.close();
-//   WindowPrt.focus();
-
-//   // Make sure that the window is still valid before calling print and close
-//   if (WindowPrt) {
-//     WindowPrt.print();
-//     WindowPrt.close();
-//   } 
-
-}
-exportToExcel(): void {
+  exportToExcel(): void {
 
   const workbook = XLSX.utils.book_new();
   const rows: any[] = [];
@@ -631,7 +686,7 @@ exportToExcel(): void {
     '',
     '',
     'Grand Total',
-    this.getTotalAmount()
+    this.getAllTotalAmount()
   ]);
 
   /* =====================================================

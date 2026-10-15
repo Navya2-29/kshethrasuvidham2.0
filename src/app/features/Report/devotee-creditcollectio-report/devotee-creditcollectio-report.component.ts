@@ -89,7 +89,7 @@ export class DevoteeCreditcollectioReportComponent {
   data: MembersReport[] = [];
   fromDate: string;
   toDate: string;
-  loading: boolean;
+  loading: boolean = true;
   currentDate: string = '';
   allCreditdata: ReportData[] = [];
   counterId: string | null;
@@ -152,6 +152,7 @@ export class DevoteeCreditcollectioReportComponent {
       },
       error: (error) => {
         console.error('Error fetching report data:', error);
+        this.loading = false;
       },
     });
   }
