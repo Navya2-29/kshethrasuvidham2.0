@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { ReportService } from '../service/report.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -68,8 +68,215 @@ export class ReportChecquestmntComponent implements OnInit {
   lang: string | null;
   templeName: string | null;
   templeAddress: string | null;
-  filteredFeecollection:any[]=[];
-  loading:boolean;
+  filteredFeecollection: any[] = [];
+  loading: boolean;
+  isPrinting: boolean = false;
+
+  // Column Visibility Management
+  showColumnDropdown: boolean = false;
+  openTableDropdownKey: string | null = null;
+  columns: { [key: string]: boolean } = {
+    billNo: true,
+    billDate: true,
+    bank: true,
+    cheqDate: true,
+    cheqNo: true,
+    counter: true,
+    vazhipad: true,
+    name: true,
+    amount: true,
+  };
+  tableColumns: { [tableKey: string]: { [key: string]: boolean } } = {};
+
+  columnList = [
+    { key: 'billNo', label: 'Bill No' },
+    { key: 'billDate', label: 'Bill Date' },
+    { key: 'bank', label: 'Bank Name' },
+    { key: 'cheqDate', label: 'Cheque Date' },
+    { key: 'cheqNo', label: 'Cheque No' },
+    { key: 'counter', label: 'Counter' },
+    { key: 'vazhipad', label: 'Vazhipad' },
+    { key: 'name', label: 'Name' },
+    { key: 'amount', label: 'Amount' },
+  ];
+
+  // Pagination State per table key
+  paginationState: { [key: string]: { currentPage: number; pageSize: number } } = {};
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.common-column-picker') && !target.closest('.column-menu-dropdown')) {
+      this.showColumnDropdown = false;
+    }
+    if (!target.closest('.cheque-table-column-picker') && !target.closest('.cheque-dropdown-panel')) {
+      this.openTableDropdownKey = null;
+    }
+  }
+
+  toggleColumnDropdown(event: MouseEvent): void {
+    event.stopPropagation();
+    this.showColumnDropdown = !this.showColumnDropdown;
+    if (this.showColumnDropdown) {
+      this.openTableDropdownKey = null;
+    }
+  }
+
+  toggleTableDropdown(tableKey: string, event: MouseEvent): void {
+    event.stopPropagation();
+    this.openTableDropdownKey = this.openTableDropdownKey === tableKey ? null : tableKey;
+    if (this.openTableDropdownKey) {
+      this.showColumnDropdown = false;
+    }
+  }
+
+  isColumnVisible(tableKey: string, colKey: string): boolean {
+    if (this.tableColumns[tableKey] && this.tableColumns[tableKey][colKey] !== undefined) {
+      return this.tableColumns[tableKey][colKey];
+    }
+    return this.columns[colKey] !== false;
+  }
+
+  toggleColumn(colKey: string): void {
+    this.columns[colKey] = !this.columns[colKey];
+    for (const key of Object.keys(this.tableColumns)) {
+      if (this.tableColumns[key] && this.tableColumns[key][colKey] !== undefined) {
+        delete this.tableColumns[key][colKey];
+      }
+    }
+  }
+
+  toggleTableColumn(tableKey: string, colKey: string, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    if (!this.tableColumns[tableKey]) {
+      this.tableColumns[tableKey] = { ...this.columns };
+    }
+    this.tableColumns[tableKey][colKey] = !this.isColumnVisible(tableKey, colKey);
+  }
+
+  getTableColumns(tableKey: string): { [key: string]: boolean } {
+    const res: { [key: string]: boolean } = {};
+    for (const col of this.columnList) {
+      res[col.key] = this.isColumnVisible(tableKey, col.key);
+    }
+    return res;
+  }
+
+  getTableVisibleColumnCount(tableKey: string): number {
+    return this.columnList.filter(col => this.isColumnVisible(tableKey, col.key)).length;
+  }
+
+  hasTableCustomOverrides(tableKey: string): boolean {
+    return !!this.tableColumns[tableKey] && Object.keys(this.tableColumns[tableKey]).length > 0;
+  }
+
+  resetTableColumns(tableKey: string, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    delete this.tableColumns[tableKey];
+  }
+
+  get visibleColumnCount(): number {
+    return Object.values(this.columns).filter((v) => v).length;
+  }
+
+  get totalColumnCount(): number {
+    return this.columnList.length;
+  }
+
+  getLeadingColspan(tableKey: string): number {
+    let count = 0;
+    const leadingKeys = ['billNo', 'billDate', 'bank', 'cheqDate', 'cheqNo', 'counter', 'vazhipad', 'name'];
+    for (const k of leadingKeys) {
+      if (this.isColumnVisible(tableKey, k)) {
+        count++;
+      }
+    }
+    return count > 0 ? count : 1;
+  }
+
+  // Pagination Helpers
+  getPagination(tableKey: string): { currentPage: number; pageSize: number } {
+    if (!this.paginationState[tableKey]) {
+      this.paginationState[tableKey] = { currentPage: 1, pageSize: 10 };
+    }
+    return this.paginationState[tableKey];
+  }
+
+  getCurrentPage(tableKey: string): number {
+    return this.getPagination(tableKey).currentPage;
+  }
+
+  getPageSize(tableKey: string): number {
+    return this.getPagination(tableKey).pageSize;
+  }
+
+  getPaginatedEntries(tableKey: string, list: any[]): any[] {
+    if (!list || list.length === 0) return [];
+    if (this.isPrinting) return list;
+    const pg = this.getPagination(tableKey);
+    const start = (pg.currentPage - 1) * pg.pageSize;
+    return list.slice(start, start + pg.pageSize);
+  }
+
+  getTotalPages(tableKey: string, list: any[]): number {
+    if (!list || list.length === 0) return 1;
+    const pg = this.getPagination(tableKey);
+    return Math.ceil(list.length / pg.pageSize) || 1;
+  }
+
+  getPages(tableKey: string, list: any[]): number[] {
+    const total = this.getTotalPages(tableKey, list);
+    const current = this.getCurrentPage(tableKey);
+    const delta = 2;
+    const pages: number[] = [];
+
+    for (let i = Math.max(1, current - delta); i <= Math.min(total, current + delta); i++) {
+      pages.push(i);
+    }
+    return pages;
+  }
+
+  goToPage(tableKey: string, page: number): void {
+    const pg = this.getPagination(tableKey);
+    pg.currentPage = page;
+  }
+
+  nextPage(tableKey: string, list: any[]): void {
+    const pg = this.getPagination(tableKey);
+    const total = this.getTotalPages(tableKey, list);
+    if (pg.currentPage < total) {
+      pg.currentPage++;
+    }
+  }
+
+  prevPage(tableKey: string): void {
+    const pg = this.getPagination(tableKey);
+    if (pg.currentPage > 1) {
+      pg.currentPage--;
+    }
+  }
+
+  onPageSizeChange(tableKey: string, newSize: number | string): void {
+    const pg = this.getPagination(tableKey);
+    pg.pageSize = Number(newSize) || 10;
+    pg.currentPage = 1;
+  }
+
+  getRangeStart(tableKey: string, list: any[]): number {
+    if (!list || list.length === 0) return 0;
+    const pg = this.getPagination(tableKey);
+    return (pg.currentPage - 1) * pg.pageSize + 1;
+  }
+
+  getRangeEnd(tableKey: string, list: any[]): number {
+    if (!list || list.length === 0) return 0;
+    const pg = this.getPagination(tableKey);
+    return Math.min(pg.currentPage * pg.pageSize, list.length);
+  }
   constructor(
     private route: ActivatedRoute,
     private ts: TranslateService,
@@ -119,6 +326,9 @@ export class ReportChecquestmntComponent implements OnInit {
         a.BillNo.localeCompare(b.BillNo, undefined, { numeric: true, sensitivity: 'base' })
         );
         this.filteredData = this.data.filter((item) => item.TrnsMode === 'CH');
+        if (this.paginationState['vazhipad']) {
+          this.paginationState['vazhipad'].currentPage = 1;
+        }
         
         //    this.filteredData = this.filteredData.sort((a:any, b:any) => {
         //     const [numA, denomA] = a.BillNo.split('/').map(Number);
@@ -156,6 +366,9 @@ export class ReportChecquestmntComponent implements OnInit {
        
         // this.data=data;
          this.filteredFeecollection = data.filter((item:any) => item.TrnMode === 'CH');   
+         if (this.paginationState['feeCollection']) {
+           this.paginationState['feeCollection'].currentPage = 1;
+         }
       //    this.filteredData = this.filteredData.sort((a:any, b:any) => {
       //     const [numA, denomA] = a.BillNo.split('/').map(Number);
       //     const [numB, denomB] = b.BillNo.split('/').map(Number);
@@ -183,11 +396,34 @@ export class ReportChecquestmntComponent implements OnInit {
 
 
   getTotalAmount(): number {
-    return this.filteredData.reduce((sum, item) => sum + item.Amount, 0);
+    const items = this.isPrinting ? this.filteredData : this.getPaginatedEntries('vazhipad', this.filteredData);
+    return items.reduce((sum, item) => sum + (item.Amount || 0), 0);
+  }
+
+  getAllTotalAmount(): number {
+    return this.filteredData.reduce((sum, item) => sum + (item.Amount || 0), 0);
   }
 
   getFeecollectionTotalAmount(): number {
-    return this.filteredFeecollection.reduce((sum, item) => sum + item.Amount, 0);
+    const items = this.isPrinting
+      ? this.filteredFeecollection
+      : this.getPaginatedEntries('feeCollection', this.filteredFeecollection);
+    return items.reduce((sum, item) => sum + (item.Amount || 0), 0);
+  }
+
+  getAllFeecollectionTotalAmount(): number {
+    return this.filteredFeecollection.reduce((sum, item) => sum + (item.Amount || 0), 0);
+  }
+
+  getTotalRecordsCount(): number {
+    return (
+      (this.filteredData ? this.filteredData.length : 0) +
+      (this.filteredFeecollection ? this.filteredFeecollection.length : 0)
+    );
+  }
+
+  hasAnyData(): boolean {
+    return this.getTotalRecordsCount() > 0;
   }
  
   onPageChange(event: PageEvent) {
@@ -225,296 +461,15 @@ export class ReportChecquestmntComponent implements OnInit {
     return `${day}-${month}-${year}`;
   }
 
-  // generatePDF(): void {
-  //   const filteredData = this.data.filter(item => item.TrnsMode === 'CH');
-
-  //   const templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
-  //   const templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
-  //   const doc = new jsPDF();
-  //   const pageWidth = doc.internal.pageSize.width;
-  //   const pageHeight = doc.internal.pageSize.height;
-  //   const headerHeight = 35;
-  //   const footerHeight = 8;
-  //   const lineHeight = 8;
-  //   const tableHeaderFontSize = 11;
-  //   const contentFontSize = 8;
-  //   const currentDate = new Date().toLocaleDateString('en-GB'); // Format as dd-mm-yyyy
-
-  //   const maxColumnWidths = [20, 40, 45, 25, 25, 20]; // Column widths for each column
-  //   const headers = ["Bill No.", "Bank Name", "Vazhipad", "Cheque Date", "Cheque No", "Amount"];
-
-  //   let y = headerHeight;
-  //   let grandTotalAmount = 0;
-  //   this.http
-  //   .get('assets/fonts/malayalam/NotoSansMalayalam-Regular.ttf', {
-  //     responseType: 'arraybuffer',
-  //   })
-  //   .subscribe(
-  //     (fontData) => {
-  //       const doc = new jsPDF();
-
-  //       // Convert ArrayBuffer to Base64
-  //       const fontBase64 = btoa(
-  //         String.fromCharCode(...new Uint8Array(fontData))
-  //       );
-
-  //       // Add the font to jsPDF
-  //       doc.addFileToVFS(
-  //         'NotoSansMalayalam-Regular.ttf',
-  //         fontBase64
-  //       );
-  //       doc.addFont(
-  //         'NotoSansMalayalam-Regular.ttf',
-  //         'NotoSansMalayalam',
-  //         'normal'
-  //       );
-
-  //       // Set the custom font
-  //       doc.setFont('NotoSansMalayalam');
-  //   // Draw Header
-  //   const drawHeader = () => {
-  //     doc.setFontSize(12);
-  //     doc.setFont("NotoSansMalayalam", "bold");
-  //     doc.text(templeName, pageWidth / 2, 12, { align: "center" });
-  //     doc.setFont("NotoSansMalayalam", "normal");
-  //     doc.setFontSize(10);
-  //     doc.text(templeAddress, pageWidth / 2, 18, { align: "center" });
-
-  //     doc.setFontSize(10);
-  //     doc.setFont("NotoSansMalayalam", "bold");
-  //     doc.text("Cheque Transaction Report", pageWidth / 2, 27, { align: "center" });
-
-  //     doc.setFontSize(10);
-  //     doc.setFont("NotoSansMalayalam", "normal");
-  //     // doc.text(`${this.formatDate(this.fromDate)} to ${this.formatDate(this.toDate)}`, pageWidth / 2, 32, { align: "center" });
-  //  // Add current date below the report title but above the table header
-  //  doc.setFontSize(10);
-  //  doc.setFont("NotoSansMalayalam", "normal");
-  //  doc.text(`${this.formatDate(this.fromDate)} to ${this.formatDate(this.toDate)}`, pageWidth / 2, 32, { align: "center" });
-  //  doc.setLineWidth(0.5);
-  //     doc.line(10, y, pageWidth - 10, y); // Line below header
-  //     y += 3; // Space below the line
-  //   };
-
-  //   // Draw Footer
-  //   const drawFooter = (pageNum: number) => {
-  //     doc.setFontSize(10);
-  //     doc.text(`Page ${pageNum}`, pageWidth / 2, pageHeight - footerHeight / 2, { align: "center" });
-  //   };
-
-  //   // Add Table Header
-  //   const drawTableHeader = () => {
-  //     doc.setFontSize(tableHeaderFontSize);
-  //     doc.setFont("NotoSansMalayalam", "bold");
-  //     let x = 10;
-  //     headers.forEach((header, index) => {
-  //       doc.text(header, x, y + 5);
-  //       x += maxColumnWidths[index];
-  //     });
-  //     y += lineHeight;
-  //     doc.setLineWidth(0.3);
-  //     doc.setDrawColor(200, 200, 200); // Light gray color for grid lines
-  //     doc.line(10, y, pageWidth - 10, y); // Line below the table header
-  //     y += 2;
-  //   };
-
-  //   // Helper to wrap text
-  //   const wrapText = (doc: jsPDF, text: string, maxWidth: number): string[] => {
-  //     return doc.splitTextToSize(text, maxWidth);
-  //   };
-
-  //   // Initialize PDF
-  //   drawHeader();
-  //   drawFooter(1);
-  //   drawTableHeader();
-
-  //   let pageNum = 1;
-
-  //   // Iterate over data and draw rows
-  //   filteredData.forEach((row: any) => {
-  //     const instDateFormatted = new Date(row.InstDate).toLocaleDateString('en-GB'); // Format as dd-mm-yyyy
-
-  //     const tableRow = [
-  //       row.BillNo,
-  //       wrapText(doc, row.InstBank, maxColumnWidths[1]), // Wrap Bank Name
-  //       wrapText(doc, row.Vazhipad, maxColumnWidths[2]), // Wrap Vazhipad
-  //       instDateFormatted,
-  //       row.InstNo,
-  //       row.Amount.toFixed(2),
-  //     ];
-
-  //     // Calculate the max height required for wrapped text in the row
-  //     const rowHeight = Math.max(
-  //       ...tableRow.map((cell, index) =>
-  //         Array.isArray(cell) ? cell.length * contentFontSize : lineHeight
-  //       )
-  //     );
-
-  //     // Check if a new page is needed
-  //     if (y + rowHeight > pageHeight - footerHeight - 10) {
-  //       doc.addPage();
-  //       pageNum++;
-  //       y = headerHeight + 5;
-  //       drawHeader();
-  //       drawFooter(pageNum);
-  //       drawTableHeader();
-  //     }
-
-  //     let x = 10;
-  //     // Draw each cell
-  //     doc.setFont("NotoSansMalayalam", "normal");
-  //     doc.setFontSize(contentFontSize);
-
-  //     tableRow.forEach((cell, index) => {
-  //       if (Array.isArray(cell)) {
-  //         // Handle wrapped text
-  //         cell.forEach((line, lineIndex) => {
-  //           doc.text(line, x, y + 5 + lineIndex * contentFontSize);
-  //         });
-  //       } else {
-  //         if (index === 5) {
-  //           // Align Amount column to the right
-  //           doc.text(String(cell), x + maxColumnWidths[index] - 2, y + 5, { align: "right" });
-  //         } else {
-  //           // Left-align other columns
-  //           doc.text(String(cell), x, y + 5);
-  //         }
-  //       }
-  //       x += maxColumnWidths[index];
-  //     });
-
-  //     // Draw row grid lines
-  //     doc.setLineWidth(0.3);
-  //     doc.setDrawColor(200, 200, 200);
-  //     doc.line(10, y, pageWidth - 10, y);
-
-  //     grandTotalAmount += row.Amount;
-  //     y += rowHeight; // Move y position for the next row
-  //   });
-
-  //   // Add Grand Total row
-  //   const grandTotalRow = ["", "Grand Total", "", "", "", grandTotalAmount.toFixed(2)];
-  //   let x = 10;
-  //   doc.setFont("NotoSansMalayalam", "bold");
-  //   doc.setFontSize(contentFontSize +2);
-  //   grandTotalRow.forEach((cell, index) => {
-  //     if (index === 5) {
-  //       doc.text(String(cell), x + maxColumnWidths[index] - 2, y + 5, { align: "right" });
-  //     } else {
-  //       doc.text(String(cell), x, y + 5);
-  //     }
-  //     x += maxColumnWidths[index];
-  //   });
-
-  //   // Draw grid line after Grand Total
-  //   doc.setLineWidth(0.3);
-  //   doc.setDrawColor(200, 200, 200);
-  //   doc.line(10, y, pageWidth - 10, y);
-
-  //   // Save PDF
-  //   // doc.save('Cheque_Transaction_Report.pdf');
-  //   const pdfBlob = doc.output('blob');
-  //   const pdfUrl = URL.createObjectURL(pdfBlob);
-  //   window.open(pdfUrl, '_blank');
-  //   // doc.save('vazhipad_report_with_header_footer.pdf');
-  // },
-  // (error:any) => {
-  //   console.error('Error loading font:', error);
-  // }
-  // );
-  // }
-
-  generatePDF() {
-
-this.reportPrintservice.generatePDF();
-//     const printContent = document.getElementById('print-section');
-//     if (!printContent) {
-//       console.error('No content found to print');
-//       return;
-//     }
-
-//     const WindowPrt = window.open('', '', 'width=800,height=600');
-
-//     // Check if the print window was successfully opened
-//     if (!WindowPrt) {
-//       console.error(
-//         'Unable to open print window. Please check pop-up blockers.'
-//       );
-//       return;
-//     }
-
-//     WindowPrt.document.write(`
-//     <html>
-//       <head>
-//         <title>Print</title>
-//         <style>
-         
-//           body {
-//     font-size: 16px;
-//     font-family: "Times New Roman", serif;
-//   }
-//           h3,p,h4,h2{
-//           line-height:1;
-//           margin-top:0;
-//           text-align:center;
-//           }
-//           .templename{
-//            line-height:1;
-//           margin-top:0;
-//           text-align:center;
-//           }
-//           hr{
-//           height:2px;
-//           }
-//           .number,.total{
-//             text-align:right;
-//             }
-//           .tabble-heading h3{
-//   font-family: 'Times New Roman', Times, serif;
-//   font-weight: bold;
-//   font-size: 16px;
-//   margin: 8px 0 0 0;
-// }
-//           table {
-//             width: 100%;
-//             border-collapse: collapse;
-//           }
-//           table, th, td {
-//             border: 1px solid black;
-//             text-transform: uppercase;
-
-//           }
-//             .total,number{
-//             text-align:right;
-//             }
-//           th, td {
-//            padding-left:5px;
-//             text-align: left;
-//           }
-//             #print-section{
-// padding-bottom: 100px;
-//   }
-       
-    
-//     .page-break {
-//       page-break-before: always;
-//     }
-//           </style>
-//       </head>
-//       <body>${printContent.innerHTML}</body>
-//     </html>
-//   `);
-
-//     WindowPrt.document.close();
-//     WindowPrt.focus();
-
-//     // Make sure that the window is still valid before calling print and close
-//     if (WindowPrt) {
-//       WindowPrt.print();
-//       WindowPrt.close();
-//     }
+  generatePDF(): void {
+    this.isPrinting = true;
+    setTimeout(() => {
+      this.reportPrintservice.generatePDF();
+      setTimeout(() => {
+        this.isPrinting = false;
+      }, 1000);
+    }, 100);
   }
-
 
   exportToExcel(): void {
   const workbook = XLSX.utils.book_new();
@@ -571,7 +526,7 @@ this.reportPrintservice.generatePDF();
       '',
       '',
       'Total',
-      this.getTotalAmount()
+      this.getAllTotalAmount()
     ]);
 
     excelData.push([]);
@@ -617,7 +572,7 @@ this.reportPrintservice.generatePDF();
       '',
       '',
       'Total',
-      this.getFeecollectionTotalAmount()
+      this.getAllFeecollectionTotalAmount()
     ]);
 
     excelData.push([]);
@@ -635,7 +590,7 @@ this.reportPrintservice.generatePDF();
     '',
     '',
     'Grand Total',
-    this.getTotalAmount() + this.getFeecollectionTotalAmount()
+    this.getAllTotalAmount() + this.getAllFeecollectionTotalAmount()
   ]);
 
   // =====================================================
