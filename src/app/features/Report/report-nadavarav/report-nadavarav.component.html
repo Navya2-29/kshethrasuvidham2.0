@@ -226,7 +226,7 @@
                 <ng-container *ngIf="isColumnVisible(category.key, 'amount'); else noAmountTotal">
                   <td [attr.colspan]="getLeadingColspan(category.key)" class="total">
                     {{ "Report Name.TOTAL" | translate }}:
-                    <span class="row-count-text no-print" *ngIf="category.value?.length > 0">
+                    <span class="row-count-text no-print" *ngIf="category.value && category.value.length > 0">
                       (Showing {{ getRangeStart(category.key, category.value) }}–{{ getRangeEnd(category.key, category.value) }} of {{ category.value.length }} records)
                     </span>
                     <span class="row-count-text print-only" *ngIf="isPrinting">
@@ -243,7 +243,7 @@
                 <ng-template #noAmountTotal>
                   <td [attr.colspan]="getTableVisibleColumnCount(category.key)" class="total">
                     {{ "Report Name.TOTAL" | translate }}:
-                    <span class="row-count-text no-print" *ngIf="category.value?.length > 0">
+                    <span class="row-count-text no-print" *ngIf="category.value && category.value.length > 0">
                       (Showing {{ getRangeStart(category.key, category.value) }}–{{ getRangeEnd(category.key, category.value) }} of {{ category.value.length }} records)
                     </span>
                     <span class="row-count-text print-only" *ngIf="isPrinting">
@@ -256,7 +256,7 @@
           </table>
 
           <!-- Pagination Toolbar for each Category Table -->
-          <div class="table-pagination-bar no-print" *ngIf="category.value?.length > 0">
+          <div class="table-pagination-bar no-print" *ngIf="category.value && category.value.length > 0">
             <div class="pagination-info">
               <span class="rows-label">Rows per page:</span>
               <div class="select-container">
