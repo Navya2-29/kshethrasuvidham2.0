@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
 import { ReportService } from '../service/report.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -46,6 +46,173 @@ export class ReportCancelComponent {
   templeName:string|null;
   templeAddress:string|null;
   loading:boolean;
+  isPrinting: boolean = false;
+
+  // Column Visibility Management
+  showColumnDropdown: boolean = false;
+  columns: { [key: string]: boolean } = {
+    billNo: true,
+    billDate: true,
+    vazhipad: true,
+    name: true,
+    qty: true,
+    amount: true,
+    canceldt: true,
+    remarks: true,
+  };
+
+  columnList = [
+    { key: 'billNo', label: 'Bill No' },
+    { key: 'billDate', label: 'Bill Date' },
+    { key: 'vazhipad', label: 'Vazhipad / Item' },
+    { key: 'name', label: 'Name' },
+    { key: 'qty', label: 'Quantity' },
+    { key: 'amount', label: 'Amount' },
+    { key: 'canceldt', label: 'Cancel Date' },
+    { key: 'remarks', label: 'Remarks' },
+  ];
+
+  // Pagination per Table
+  paginationState: { [tableKey: string]: { currentPage: number; pageSize: number } } = {};
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (this.showColumnDropdown) {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.column-picker-wrapper')) {
+        this.showColumnDropdown = false;
+      }
+    }
+  }
+
+  get visibleColumnCount(): number {
+    return Object.values(this.columns).filter(Boolean).length;
+  }
+
+  get totalColumnCount(): number {
+    return this.columnList.length;
+  }
+
+  toggleColumnDropdown(event?: Event): void {
+    if (event) event.stopPropagation();
+    this.showColumnDropdown = !this.showColumnDropdown;
+  }
+
+  toggleColumn(key: string): void {
+    if (this.columns[key] && this.visibleColumnCount <= 1) {
+      return;
+    }
+    this.columns[key] = !this.columns[key];
+  }
+
+  getLeadingColspan(): number {
+    let count = 0;
+    if (this.columns['billNo']) count++;
+    if (this.columns['billDate']) count++;
+    if (this.columns['vazhipad']) count++;
+    if (this.columns['name']) count++;
+    if (this.columns['qty']) count++;
+    if (!this.columns['amount']) count++;
+    return Math.max(1, count);
+  }
+
+  getTrailingColspan(): number {
+    let count = 0;
+    if (this.columns['canceldt']) count++;
+    if (this.columns['remarks']) count++;
+    return count;
+  }
+
+  getPagination(tableKey: string): { currentPage: number; pageSize: number } {
+    if (!this.paginationState[tableKey]) {
+      this.paginationState[tableKey] = { currentPage: 1, pageSize: this.pageSize };
+    }
+    return this.paginationState[tableKey];
+  }
+
+  getCurrentPage(tableKey: string): number {
+    return this.getPagination(tableKey).currentPage;
+  }
+
+  getPageSize(tableKey: string): number {
+    return this.getPagination(tableKey).pageSize;
+  }
+
+  getPaginatedEntries(tableKey: string, entries: any[]): any[] {
+    if (this.isPrinting) return entries || [];
+    if (!entries || entries.length === 0) return [];
+    const p = this.getPagination(tableKey);
+    const start = (p.currentPage - 1) * p.pageSize;
+    return entries.slice(start, start + p.pageSize);
+  }
+
+  getTotalPages(tableKey: string, entries: any[] | number): number {
+    const total = typeof entries === 'number' ? entries : (entries ? entries.length : 0);
+    if (total === 0) return 1;
+    const p = this.getPagination(tableKey);
+    return Math.ceil(total / p.pageSize) || 1;
+  }
+
+  getPages(tableKey: string, entries: any[] | number): number[] {
+    const total = this.getTotalPages(tableKey, entries);
+    const current = this.getCurrentPage(tableKey);
+    const range: number[] = [];
+    const maxVisible = 5;
+
+    let start = Math.max(1, current - Math.floor(maxVisible / 2));
+    let end = Math.min(total, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      range.push(i);
+    }
+    return range;
+  }
+
+  goToPage(tableKey: string, page: number): void {
+    this.getPagination(tableKey).currentPage = page;
+  }
+
+  nextPage(tableKey: string, entries: any[]): void {
+    const totalPages = this.getTotalPages(tableKey, entries);
+    if (this.getCurrentPage(tableKey) < totalPages) {
+      this.getPagination(tableKey).currentPage++;
+    }
+  }
+
+  prevPage(tableKey: string): void {
+    if (this.getCurrentPage(tableKey) > 1) {
+      this.getPagination(tableKey).currentPage--;
+    }
+  }
+
+  onPageSizeChange(tableKey: string, size: any): void {
+    const newSize = Number(size) || 10;
+    this.pageSize = newSize;
+    this.getPagination(tableKey).pageSize = newSize;
+    this.getPagination(tableKey).currentPage = 1;
+  }
+
+  getRangeStart(tableKey: string, entries: any[]): number {
+    if (!entries || entries.length === 0) return 0;
+    const p = this.getPagination(tableKey);
+    return (p.currentPage - 1) * p.pageSize + 1;
+  }
+
+  getRangeEnd(tableKey: string, entries: any[]): number {
+    if (!entries || entries.length === 0) return 0;
+    const p = this.getPagination(tableKey);
+    return Math.min(p.currentPage * p.pageSize, entries.length);
+  }
+
+  getVisibleRowCount(tableKey: string, entries: any[]): number {
+    if (!entries || entries.length === 0) return 0;
+    if (this.isPrinting) return entries.length;
+    return this.getPaginatedEntries(tableKey, entries).length;
+  }
   constructor(private route: ActivatedRoute,
     private reportPrintservice:PrintreportService,
     
@@ -98,15 +265,17 @@ ngOnInit() {
       // });
       console.log(this.filteredData,"aaaaaaaaaaaaaaaaaaa")  
 
-        this.dataSource.data = this.data
-        console.log( this.dataSource.data)
-        this.length =this.filteredData .length; 
+        this.dataSource.data = this.data;
+        console.log(this.dataSource.data);
+        this.length = this.filteredData.length;
         this.dataSource.paginator = this.paginator;
-        this.loading=false;
+        this.getPagination('vazhipad').currentPage = 1;
+        this.loading = false;
         console.log(this.data);
       },
       error: (error) => {
         console.error('Error fetching report data:', error);
+        this.loading = false;
       },
     });
   }
@@ -136,16 +305,16 @@ ngOnInit() {
       //     return numA - numB || denomA - denomB;
       // });
       // console.log(this.filteredData,"aaaaaaaaaaaaaaaaaaa")  
-this.loading=false;
-        this.dataSource.data = this.data
-        // console.log( this.dataSource.data)
-        this.length =this.filteredData .length; 
+        this.loading = false;
+        this.dataSource.data = this.data;
+        this.length = this.filteredData.length;
         this.dataSource.paginator = this.paginator;
-        
+        this.getPagination('nadavaravu').currentPage = 1;
         console.log(this.data);
       },
       error: (error) => {
         console.error('Error fetching report data:', error);
+        this.loading = false;
       },
     });
   }
@@ -422,7 +591,13 @@ formatDateToDDMMYYYY(date: string): string {
 
 
 generatePDF(){
-this.reportPrintservice.generatePDF();
+this.isPrinting = true;
+setTimeout(() => {
+  this.reportPrintservice.generatePDF();
+  setTimeout(() => {
+    this.isPrinting = false;
+  }, 1000);
+}, 100);
 
 //   const printContent = document.getElementById('print-section');
 //   if (!printContent) {
@@ -510,12 +685,37 @@ this.reportPrintservice.generatePDF();
 //   } 
 }
 
-getTotalAmount(): number {
-  return this.data.reduce((sum, item) => sum + item.Amount, 0);
-}
-getNadavaravuTotalAmount(): number {
-  return this.nadavaravuDatat.reduce((sum, item) => sum + item.Receipt_Amt, 0);
-}
+  getItemAmount(item: any): number {
+    if (!item) return 0;
+    const val = item.Rate != null && item.Rate !== '' ? item.Rate : item.Amount;
+    const num = Number(val);
+    return isNaN(num) ? 0 : num;
+  }
+
+  getTotalAmount(): number {
+    const entries = this.isPrinting ? this.data : this.getPaginatedEntries('vazhipad', this.data);
+    return entries.reduce((sum, item) => sum + this.getItemAmount(item), 0);
+  }
+
+  getAllTotalAmount(): number {
+    return this.data.reduce((sum, item) => sum + this.getItemAmount(item), 0);
+  }
+
+  getNadavaravuItemAmount(item: any): number {
+    if (!item) return 0;
+    const val = item.Receipt_Amt != null && item.Receipt_Amt !== '' ? item.Receipt_Amt : item.Amount;
+    const num = Number(val);
+    return isNaN(num) ? 0 : num;
+  }
+
+  getNadavaravuTotalAmount(): number {
+    const entries = this.isPrinting ? this.nadavaravuDatat : this.getPaginatedEntries('nadavaravu', this.nadavaravuDatat);
+    return entries.reduce((sum, item) => sum + this.getNadavaravuItemAmount(item), 0);
+  }
+
+  getAllNadavaravuTotalAmount(): number {
+    return this.nadavaravuDatat.reduce((sum, item) => sum + this.getNadavaravuItemAmount(item), 0);
+  }
 exportToExcel(): void {
   const wb = XLSX.utils.book_new();
 
@@ -568,7 +768,7 @@ exportToExcel(): void {
       '',
       'TOTAL',
       '',
-      this.getTotalAmount()
+      this.getAllTotalAmount()
     ]);
 
     const ws1 = XLSX.utils.aoa_to_sheet(vazhipadRows);
@@ -631,7 +831,7 @@ exportToExcel(): void {
       '',
       'TOTAL',
       '',
-      this.getNadavaravuTotalAmount()
+      this.getAllNadavaravuTotalAmount()
     ]);
 
     const ws2 = XLSX.utils.aoa_to_sheet(nadRows);
@@ -657,9 +857,9 @@ exportToExcel(): void {
     ['From', this.formatDateToDDMMYYYY(this.fromDate)],
     ['To', this.formatDateToDDMMYYYY(this.toDate)],
     [],
-    ['Vazhipad Total', this.getTotalAmount()],
-    ['Nadavaravu Total', this.getNadavaravuTotalAmount()],
-    ['Grand Total', this.getTotalAmount() + this.getNadavaravuTotalAmount()]
+    ['Vazhipad Total', this.getAllTotalAmount()],
+    ['Nadavaravu Total', this.getAllNadavaravuTotalAmount()],
+    ['Grand Total', this.getAllTotalAmount() + this.getAllNadavaravuTotalAmount()]
   ];
 
   const ws3 = XLSX.utils.aoa_to_sheet(summary);
