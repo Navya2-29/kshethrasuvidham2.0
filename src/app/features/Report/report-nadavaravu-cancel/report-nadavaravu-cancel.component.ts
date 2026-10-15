@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { ReportService } from '../service/report.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -12,11 +12,15 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { PrintreportService } from '../../../shared/service/printreport.service';
+import { SpinnerComponent } from '../../../shared/component/spinner/spinner.component';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-report-nadavaravu-cancel',
   standalone: true,
-  imports: [CommonModule,MatTableModule,TranslateModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule,],
+  imports: [CommonModule,MatTableModule,TranslateModule,MatPaginatorModule,HeaderComponent,MatTooltipModule,MatFormFieldModule, MatInputModule, SpinnerComponent],
   templateUrl: './report-nadavaravu-cancel.component.html',
   styleUrls: ['./report-nadavaravu-cancel.component.css','/src/assets/styles/report.style.css'],
 })
@@ -37,7 +41,51 @@ export class ReportNadavaravuCancelComponent {
   lang:string|null;
   templeName:string|null;
   templeAddress:string|null;
-  constructor(private route: ActivatedRoute,private ts: TranslateService, private service: ReportService,private router: Router ,private http:HttpClient) {
+
+  loading: boolean = false;
+  isPrinting: boolean = false;
+
+  // Column Visibility Management
+  showColumnDropdown: boolean = false;
+  columns: { [key: string]: boolean } = {
+    billNo: true,
+    billDate: true,
+    vazhipad: true,
+    name: true,
+    qty: true,
+    rate: true,
+    remarks: true,
+  };
+
+  columnList = [
+    { key: 'billNo', label: 'Bill No' },
+    { key: 'billDate', label: 'Bill Date' },
+    { key: 'vazhipad', label: 'Vazhipad' },
+    { key: 'name', label: 'Name' },
+    { key: 'qty', label: 'Quantity' },
+    { key: 'rate', label: 'Rate' },
+    { key: 'remarks', label: 'Remarks' },
+  ];
+
+  get visibleColumnCount(): number {
+    return Object.values(this.columns).filter(v => v).length;
+  }
+
+  get totalColumnCount(): number {
+    return this.columnList.length;
+  }
+
+  // Pagination
+  currentPage: number = 1;
+
+  constructor(
+    private route: ActivatedRoute,
+    private ts: TranslateService,
+    private service: ReportService,
+    private router: Router,
+    private http: HttpClient,
+    private reportPrintservice: PrintreportService
+  ) {
     this.lang=localStorage.getItem('Language');
     this.templeName = localStorage.getItem('TempleName') || 'Default Temple Name';
     this.templeAddress = localStorage.getItem('Address') || 'Default Temple Address';
@@ -60,6 +108,7 @@ ngOnInit() {
 
 // / Call your API service to get the report data
   fetchReportData(type: string, fromDate: string, toDate: string): void {
+    this.loading = true;
     const payLoad = {
       Type: 'CancelRptNadavaravu',
       FromDate: fromDate,
@@ -69,6 +118,8 @@ ngOnInit() {
       next: (data) => {
         console.log('Fetched report data:', data);
         this.data=data;
+        this.currentPage = 1;
+        this.loading = false;
             
       //    this.data = this.data.sort((a:any, b:any) => {
       //     const [numA, denomA] = a.BillNo.split('/').map(Number);
@@ -88,6 +139,7 @@ ngOnInit() {
       },
       error: (error) => {
         console.error('Error fetching report data:', error);
+        this.loading = false;
       },
     });
   }
@@ -367,57 +419,146 @@ getTotalAmount(): number {
 }
 
 
-generatePDF(){
-  const printContent = document.getElementById('print-section');
-  if (!printContent) {
-    console.error('No content found to print');
-    return;
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.common-column-picker')) {
+      this.showColumnDropdown = false;
+    }
   }
 
-  const WindowPrt = window.open('', '', 'width=800,height=600');
-  
-  // Check if the print window was successfully opened
-  if (!WindowPrt) {
-    console.error('Unable to open print window. Please check pop-up blockers.');
-    return;
+  toggleColumnDropdown(event: MouseEvent): void {
+    event.stopPropagation();
+    this.showColumnDropdown = !this.showColumnDropdown;
   }
 
-  WindowPrt.document.write(`
-    <html>
-      <head>
-        <title>Print</title>
-        <style>
-          /* Add custom styles for printing if needed */
-          table {
-            width: 100%;
-            border-collapse: collapse;
-          }
-          table, th, td {
-            border: 1px solid black;
-          }
-          th, td {
-            padding: 5px;
-            text-align: left;
-          }
-        </style>
-      </head>
-      <body>${printContent.innerHTML}</body>
-    </html>
-  `);
+  toggleColumn(key: string): void {
+    this.columns[key] = !this.columns[key];
+  }
 
-  WindowPrt.document.close();
-  WindowPrt.focus();
+  get paginatedData(): ReportData[] {
+    if (this.isPrinting) {
+      return this.data;
+    }
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.data.slice(start, start + this.pageSize);
+  }
 
-  // Make sure that the window is still valid before calling print and close
-  if (WindowPrt) {
-    WindowPrt.print();
-    WindowPrt.close();
-  } 
-}
+  get totalPages(): number {
+    if (!this.data || this.data.length === 0) return 1;
+    return Math.ceil(this.data.length / this.pageSize) || 1;
+  }
 
-  
+  get pages(): number[] {
+    const pages: number[] = [];
+    const delta = 2;
+    const start = Math.max(1, this.currentPage - delta);
+    const end = Math.min(this.totalPages, this.currentPage + delta);
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    return pages;
+  }
 
+  goToPage(page: number): void {
+    this.currentPage = page;
+  }
 
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
+  }
 
+  prevPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  onPageSizeChange(newSize: any): void {
+    this.pageSize = Number(newSize) || 10;
+    this.currentPage = 1;
+  }
+
+  get rangeStart(): number {
+    if (!this.data || this.data.length === 0) return 0;
+    return (this.currentPage - 1) * this.pageSize + 1;
+  }
+
+  get rangeEnd(): number {
+    if (!this.data || this.data.length === 0) return 0;
+    return Math.min(this.currentPage * this.pageSize, this.data.length);
+  }
+
+  getPaginatedTotal(): number {
+    const items = this.isPrinting ? this.data : this.paginatedData;
+    return items.reduce((sum, item) => sum + (Number(item?.Receipt_Amt) || 0), 0);
+  }
+
+  getLeadingColspan(): number {
+    const leadingKeys = ['billNo', 'billDate', 'vazhipad', 'name', 'qty'];
+    const count = leadingKeys.filter(k => this.columns[k]).length;
+    return count > 0 ? count : 1;
+  }
+
+  hasAnyData(): boolean {
+    return !!(this.data && this.data.length > 0);
+  }
+
+  generatePDF(): void {
+    this.isPrinting = true;
+    this.reportPrintservice.generatePDF();
+    setTimeout(() => {
+      this.isPrinting = false;
+    }, 1000);
+  }
+
+  exportToExcel(): void {
+    const workbook = XLSX.utils.book_new();
+    const excelData: any[] = [];
+
+    excelData.push([this.templeName]);
+    excelData.push([this.templeAddress]);
+    excelData.push(['NADAVARAVU CANCEL REPORT']);
+    excelData.push([
+      `${this.formatDateToDDMMYYYY(this.fromDate)} To ${this.formatDateToDDMMYYYY(this.toDate)}`
+    ]);
+    excelData.push([]);
+    excelData.push(['Bill No', 'Bill Date', 'Vazhipad', 'Name', 'Quantity', 'Rate', 'Remarks']);
+
+    this.data.forEach((item: any) => {
+      excelData.push([
+        item.BillNo,
+        item.BillDate,
+        this.lang === 'en' ? item.NM_Name : (item.NM_RName || item.NM_Name),
+        item.Name,
+        item.Qty,
+        item.Receipt_Amt,
+        item.Reason
+      ]);
+    });
+
+    excelData.push([]);
+    excelData.push(['', '', '', '', 'Grand Total', this.getTotalAmount()]);
+
+    const worksheet = XLSX.utils.aoa_to_sheet(excelData);
+    worksheet['!cols'] = [
+      { wch: 15 },
+      { wch: 15 },
+      { wch: 25 },
+      { wch: 25 },
+      { wch: 12 },
+      { wch: 15 },
+      { wch: 30 }
+    ];
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Nadavaravu Cancel Report');
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const file = new Blob([excelBuffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+    });
+    saveAs(file, `Nadavaravu_Cancel_Report_${new Date().getTime()}.xlsx`);
+  }
 
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { ReportService } from '../service/report.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -54,6 +54,41 @@ export class ReportMattinangalComponent {
 lang:string|null;
 templeName:string|null;
 templeAddress:string|null;
+  isPrinting: boolean = false;
+
+  // Column Visibility Management
+  showColumnDropdown: boolean = false;
+  columns: { [key: string]: boolean } = {
+    billNo: true,
+    billDate: true,
+    vazhipad: true,
+    remarks: true,
+    name: true,
+    star: true,
+    qty: true,
+    rate: true,
+    amount: true,
+  };
+
+  columnList = [
+    { key: 'billNo', label: 'Bill No' },
+    { key: 'billDate', label: 'Bill Date' },
+    { key: 'vazhipad', label: 'Vazhipad' },
+    { key: 'remarks', label: 'Remarks' },
+    { key: 'name', label: 'Name' },
+    { key: 'star', label: 'Star' },
+    { key: 'qty', label: 'Quantity' },
+    { key: 'rate', label: 'Rate' },
+    { key: 'amount', label: 'Amount' },
+  ];
+
+  get visibleColumnCount(): number {
+    return Object.values(this.columns).filter(v => v).length;
+  }
+
+  get totalColumnCount(): number {
+    return this.columnList.length;
+  }
   constructor(
     private route: ActivatedRoute,
     private service: ReportService,
@@ -141,6 +176,7 @@ data.sort((a:any, b:any) => {
         // this.groupDataByTransactionMode(this.data); // Group the data
         this.groupedData = this.groupDataByName(this.data);
         this.dataSource.data = this.data;
+        this.currentPage = 1;
         this.loading=false;
 
       },
@@ -169,7 +205,11 @@ data.sort((a:any, b:any) => {
   }
 
   generatePDF(){
-    this.reportPrintservice.generatePDF()
+    this.isPrinting = true;
+    this.reportPrintservice.generatePDF();
+    setTimeout(() => {
+      this.isPrinting = false;
+    }, 1000);
 //     const printContent = document.getElementById('print-section');
 //     if (!printContent) {
 //       console.error('No content found to print');
@@ -309,6 +349,93 @@ const total = items.reduce((sum, item) => {
 return total;
 
 }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.common-column-picker')) {
+      this.showColumnDropdown = false;
+    }
+  }
+
+  toggleColumnDropdown(event: MouseEvent): void {
+    event.stopPropagation();
+    this.showColumnDropdown = !this.showColumnDropdown;
+  }
+
+  toggleColumn(key: string): void {
+    this.columns[key] = !this.columns[key];
+  }
+
+  get paginatedData(): FeeCollection[] {
+    if (this.isPrinting) {
+      return this.data;
+    }
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.data.slice(start, start + this.pageSize);
+  }
+
+  get totalPages(): number {
+    if (!this.data || this.data.length === 0) return 1;
+    return Math.ceil(this.data.length / this.pageSize) || 1;
+  }
+
+  get pages(): number[] {
+    const pages: number[] = [];
+    const delta = 2;
+    const start = Math.max(1, this.currentPage - delta);
+    const end = Math.min(this.totalPages, this.currentPage + delta);
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    return pages;
+  }
+
+  goToPage(page: number): void {
+    this.currentPage = page;
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  onPageSizeChange(newSize: any): void {
+    this.pageSize = Number(newSize) || 10;
+    this.currentPage = 1;
+  }
+
+  get rangeStart(): number {
+    if (!this.data || this.data.length === 0) return 0;
+    return (this.currentPage - 1) * this.pageSize + 1;
+  }
+
+  get rangeEnd(): number {
+    if (!this.data || this.data.length === 0) return 0;
+    return Math.min(this.currentPage * this.pageSize, this.data.length);
+  }
+
+  getPaginatedTotal(): number {
+    const items = this.isPrinting ? this.data : this.paginatedData;
+    return items.reduce((sum, item) => sum + (Number(item?.Amount) || 0), 0);
+  }
+
+  getLeadingColspan(): number {
+    const leadingKeys = ['billNo', 'billDate', 'vazhipad', 'remarks', 'name', 'star', 'qty', 'rate'];
+    const count = leadingKeys.filter(k => this.columns[k]).length;
+    return count > 0 ? count : 1;
+  }
+
+  hasAnyData(): boolean {
+    return !!(this.data && this.data.length > 0);
+  }
 
 exportToExcel(): void {
   const workbook = XLSX.utils.book_new();

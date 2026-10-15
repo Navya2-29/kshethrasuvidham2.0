@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { ReportService } from '../service/report.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -53,6 +53,44 @@ export class ReportNadavaravComponent implements  OnInit {
 lang:string|null;
 templeName:string|null;
 templeAddress:string|null;
+  isPrinting: boolean = false;
+
+  // Column Visibility Management
+  showColumnDropdown: boolean = false;
+  openTableDropdownKey: string | null = null;
+  columns: { [key: string]: boolean } = {
+    billNo: true,
+    billDate: true,
+    counter: true,
+    vazhipad: true,
+    name: true,
+    star: true,
+    qty: true,
+    amount: true,
+  };
+  tableColumns: { [tableKey: string]: { [colKey: string]: boolean } } = {};
+
+  columnList = [
+    { key: 'billNo', label: 'Bill No' },
+    { key: 'billDate', label: 'Bill Date' },
+    { key: 'counter', label: 'Counter' },
+    { key: 'vazhipad', label: 'Vazhipad' },
+    { key: 'name', label: 'Name' },
+    { key: 'star', label: 'Star' },
+    { key: 'qty', label: 'Quantity' },
+    { key: 'amount', label: 'Amount' }
+  ];
+
+  get visibleColumnCount(): number {
+    return Object.values(this.columns).filter(v => v).length;
+  }
+
+  get totalColumnCount(): number {
+    return this.columnList.length;
+  }
+
+  // Pagination State per Category
+  paginationState: { [key: string]: { currentPage: number; pageSize: number } } = {};
   constructor(
     private route: ActivatedRoute,
     private service: ReportService,
@@ -162,6 +200,7 @@ const userLang = navigator.language || 'en';
 );
 
         // this.data = data;
+        this.paginationState = {};
         this.groupDataByTransactionMode(this.data); // Group the data
         this.loading=false;
         // this.data = data.sort((a: any, b: any) => {
@@ -226,7 +265,11 @@ const userLang = navigator.language || 'en';
   }
 
   generatePDF(){
+    this.isPrinting = true;
     this.reportPrintservice.generatePDF();
+    setTimeout(() => {
+      this.isPrinting = false;
+    }, 1000);
 //     const printContent = document.getElementById('print-section');
 //     if (!printContent) {
 //       console.error('No content found to print');
@@ -632,6 +675,171 @@ return total;
 
 
 }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.common-column-picker') && !target.closest('.nadavarav-table-column-picker')) {
+      this.showColumnDropdown = false;
+      this.openTableDropdownKey = null;
+    }
+  }
+
+  toggleColumnDropdown(event: MouseEvent): void {
+    event.stopPropagation();
+    this.showColumnDropdown = !this.showColumnDropdown;
+    this.openTableDropdownKey = null;
+  }
+
+  toggleTableDropdown(key: string, event: MouseEvent): void {
+    event.stopPropagation();
+    if (this.openTableDropdownKey === key) {
+      this.openTableDropdownKey = null;
+    } else {
+      this.openTableDropdownKey = key;
+      this.showColumnDropdown = false;
+    }
+  }
+
+  isColumnVisible(tableKey: string, colKey: string): boolean {
+    if (this.tableColumns[tableKey] && this.tableColumns[tableKey][colKey] !== undefined) {
+      return this.tableColumns[tableKey][colKey];
+    }
+    return this.columns[colKey] !== false;
+  }
+
+  toggleColumn(colKey: string): void {
+    this.columns[colKey] = !this.columns[colKey];
+  }
+
+  toggleTableColumn(tableKey: string, colKey: string, event: Event): void {
+    event.stopPropagation();
+    if (!this.tableColumns[tableKey]) {
+      this.tableColumns[tableKey] = { ...this.columns };
+    }
+    this.tableColumns[tableKey][colKey] = !this.tableColumns[tableKey][colKey];
+  }
+
+  getTableColumns(tableKey: string): { [key: string]: boolean } {
+    if (!this.tableColumns[tableKey]) {
+      return this.columns;
+    }
+    return this.tableColumns[tableKey];
+  }
+
+  getTableVisibleColumnCount(tableKey: string): number {
+    return this.columnList.filter(col => this.isColumnVisible(tableKey, col.key)).length;
+  }
+
+  hasTableCustomOverrides(tableKey: string): boolean {
+    return !!this.tableColumns[tableKey];
+  }
+
+  resetTableColumns(tableKey: string, event: MouseEvent): void {
+    event.stopPropagation();
+    delete this.tableColumns[tableKey];
+  }
+
+  getLeadingColspan(catKey: string): number {
+    const leadingKeys = ['billNo', 'billDate', 'counter', 'vazhipad', 'name', 'star', 'qty'];
+    const count = leadingKeys.filter(k => this.isColumnVisible(catKey, k)).length;
+    return count > 0 ? count : 1;
+  }
+
+  // Pagination helpers
+  getPagination(key: string) {
+    if (!this.paginationState[key]) {
+      this.paginationState[key] = { currentPage: 1, pageSize: 10 };
+    }
+    return this.paginationState[key];
+  }
+
+  getCurrentPage(key: string): number {
+    return this.getPagination(key).currentPage;
+  }
+
+  getPageSize(key: string): number {
+    return this.getPagination(key).pageSize;
+  }
+
+  getPaginatedEntries(key: string, items: any[]): any[] {
+    if (!items || items.length === 0) return [];
+    const state = this.getPagination(key);
+    const start = (state.currentPage - 1) * state.pageSize;
+    return items.slice(start, start + state.pageSize);
+  }
+
+  getTotalPages(key: string, items: any[]): number {
+    if (!items || items.length === 0) return 1;
+    return Math.ceil(items.length / this.getPageSize(key)) || 1;
+  }
+
+  getPages(key: string, items: any[]): number[] {
+    const totalPages = this.getTotalPages(key, items);
+    const current = this.getCurrentPage(key);
+    const delta = 2;
+    const start = Math.max(1, current - delta);
+    const end = Math.min(totalPages, current + delta);
+    const pages: number[] = [];
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    return pages;
+  }
+
+  goToPage(key: string, page: number): void {
+    this.getPagination(key).currentPage = page;
+  }
+
+  nextPage(key: string, items: any[]): void {
+    const max = this.getTotalPages(key, items);
+    const state = this.getPagination(key);
+    if (state.currentPage < max) {
+      state.currentPage++;
+    }
+  }
+
+  prevPage(key: string): void {
+    const state = this.getPagination(key);
+    if (state.currentPage > 1) {
+      state.currentPage--;
+    }
+  }
+
+  onPageSizeChange(key: string, newSize: any): void {
+    const state = this.getPagination(key);
+    state.pageSize = Number(newSize) || 10;
+    state.currentPage = 1;
+  }
+
+  getRangeStart(key: string, items: any[]): number {
+    if (!items || items.length === 0) return 0;
+    const state = this.getPagination(key);
+    return (state.currentPage - 1) * state.pageSize + 1;
+  }
+
+  getRangeEnd(key: string, items: any[]): number {
+    if (!items || items.length === 0) return 0;
+    const state = this.getPagination(key);
+    const end = state.currentPage * state.pageSize;
+    return Math.min(end, items.length);
+  }
+
+  getTotalRecordsCount(): number {
+    if (this.data && this.data.length > 0) {
+      return this.data.length;
+    }
+    return 0;
+  }
+
+  hasAnyData(): boolean {
+    return !!(this.data && this.data.length > 0);
+  }
+
+  getPaginatedCategoryTotal(catKey: string, items: any[]): number {
+    const currentItems = this.isPrinting ? (items || []) : this.getPaginatedEntries(catKey, items);
+    return currentItems.reduce((sum: number, item: any) => sum + (Number(item?.Receipt_Amt) || 0), 0);
+  }
 
 exportToExcel(): void {
   const workbook = XLSX.utils.book_new();
