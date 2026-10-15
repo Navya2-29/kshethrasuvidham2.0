@@ -41,7 +41,79 @@ columnLabels: any = {
 };
 showPopup: boolean = false;
 selectedRow: any = {};
+
+// Pagination
+currentPage: number = 1;
+pageSize: number = 10;
+pageSizeOptions: number[] = [10, 25, 50, 100, 200];
+
+get paginatedData(): any[] {
+  const startIndex = (this.currentPage - 1) * this.pageSize;
+  return this.data.slice(startIndex, startIndex + this.pageSize);
+}
+
+get totalPages(): number {
+  return Math.ceil(this.data.length / this.pageSize) || 1;
+}
+
+get startRecord(): number {
+  if (this.data.length === 0) return 0;
+  return (this.currentPage - 1) * this.pageSize + 1;
+}
+
+get endRecord(): number {
+  return Math.min(this.currentPage * this.pageSize, this.data.length);
+}
+
+setPage(page: number): void {
+  if (page >= 1 && page <= this.totalPages) {
+    this.currentPage = page;
+  }
+}
+
+prevPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+  }
+}
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+  }
+}
+
+onPageSizeChange(newSize: any): void {
+  this.pageSize = Number(newSize);
+  this.currentPage = 1;
+}
+
+get visiblePageNumbers(): (number | string)[] {
+  const total = this.totalPages;
+  const current = this.currentPage;
+  if (total <= 7) {
+    return Array.from({ length: total }, (_, i) => i + 1);
+  }
+  const pages: (number | string)[] = [1];
+  if (current > 3) {
+    pages.push('...');
+  }
+  const start = Math.max(2, current - 1);
+  const end = Math.min(total - 1, current + 1);
+  for (let i = start; i <= end; i++) {
+    pages.push(i);
+  }
+  if (current < total - 2) {
+    pages.push('...');
+  }
+  pages.push(total);
+  return pages;
+}
   constructor(private masterService: MasterService,private dialog: MatDialog) {}
+
+  goBack(): void {
+    window.history.back();
+  }
 
   ngOnInit() {
     this.onTypeChange();
@@ -100,6 +172,7 @@ selectedRow: any = {};
       next: (res: any) => {
         this.originalData = res || [];
         this.data = [...this.originalData];
+        this.currentPage = 1;
 
         if (type === 'MalayalamMonth') {
           this.displayedColumns = [
@@ -153,6 +226,7 @@ const starMatch = this.selectedStar
   });
 
   this.data = filtered;
+  this.currentPage = 1;
 }
 
 openEdit(item: any) {
@@ -188,8 +262,10 @@ openEdit(item: any) {
     this.selectedType = 'all';
     this.year = new Date().getFullYear().toString();
     this.selectedStar = '';
+    this.selectedMonth = '';
 
     this.data = [...this.originalData];
+    this.currentPage = 1;
   }
 
 }
