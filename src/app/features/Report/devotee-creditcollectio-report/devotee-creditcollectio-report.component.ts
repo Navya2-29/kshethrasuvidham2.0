@@ -1,4 +1,4 @@
-import { Component} from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { ReportService } from '../service/report.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -61,6 +61,31 @@ export class DevoteeCreditcollectioReportComponent {
   pageSize = 10;
   pageSizeOptions: number[] = [10, 50, 100, 200, 300, 500, 1000];
   pageIndex = 0;
+  currentPage: number = 1;
+  isPrinting: boolean = false;
+
+  // Column Visibility Management
+  showColumnDropdown: boolean = false;
+  columns: { [key: string]: boolean } = {
+    billDate: true,
+    billNo: true,
+    vazhiDate: true,
+    vazhipad: false,
+    name: true,
+    mobileNo: true,
+    amount: true,
+  };
+
+  columnList = [
+    { key: 'billDate', label: 'Bill Date' },
+    { key: 'billNo', label: 'Bill No' },
+    { key: 'vazhiDate', label: 'Vazhipad Date' },
+    { key: 'vazhipad', label: 'Vazhipad' },
+    { key: 'name', label: 'Name' },
+    { key: 'mobileNo', label: 'Mobile No' },
+    { key: 'amount', label: 'Amount' },
+  ];
+
   data: MembersReport[] = [];
   fromDate: string;
   toDate: string;
@@ -123,6 +148,7 @@ export class DevoteeCreditcollectioReportComponent {
 
         this.loading = false;
         this.length = data.length;
+        this.currentPage = 1;
       },
       error: (error) => {
         console.error('Error fetching report data:', error);
@@ -130,7 +156,106 @@ export class DevoteeCreditcollectioReportComponent {
     });
   }
 
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (this.showColumnDropdown) {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.column-picker-wrapper')) {
+        this.showColumnDropdown = false;
+      }
+    }
+  }
 
+  get visibleColumnCount(): number {
+    return Object.values(this.columns).filter(Boolean).length;
+  }
+
+  get totalColumnCount(): number {
+    return this.columnList.length;
+  }
+
+  toggleColumnDropdown(event?: Event): void {
+    if (event) event.stopPropagation();
+    this.showColumnDropdown = !this.showColumnDropdown;
+  }
+
+  toggleColumn(key: string): void {
+    this.columns[key] = !this.columns[key];
+  }
+
+  getPaginatedEntries(entries: any[]): any[] {
+    if (!entries || entries.length === 0) return [];
+    if (this.isPrinting) return entries;
+    const start = (this.currentPage - 1) * this.pageSize;
+    return entries.slice(start, start + this.pageSize);
+  }
+
+  getTotalPages(entries: any[]): number {
+    if (!entries || entries.length === 0) return 1;
+    return Math.ceil(entries.length / this.pageSize) || 1;
+  }
+
+  getPages(entries: any[]): number[] {
+    const total = this.getTotalPages(entries);
+    const current = this.currentPage;
+    const range: number[] = [];
+    const maxVisible = 5;
+
+    let start = Math.max(1, current - Math.floor(maxVisible / 2));
+    let end = Math.min(total, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      range.push(i);
+    }
+    return range;
+  }
+
+  goToPage(page: number): void {
+    this.currentPage = page;
+  }
+
+  nextPage(entries: any[]): void {
+    if (this.currentPage < this.getTotalPages(entries)) {
+      this.currentPage++;
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  onPageSizeChange(size: any): void {
+    this.pageSize = Number(size) || 10;
+    this.currentPage = 1;
+  }
+
+  getRangeStart(entries: any[]): number {
+    if (!entries || entries.length === 0) return 0;
+    return (this.currentPage - 1) * this.pageSize + 1;
+  }
+
+  getRangeEnd(entries: any[]): number {
+    if (!entries || entries.length === 0) return 0;
+    return Math.min(this.currentPage * this.pageSize, entries.length);
+  }
+
+  getLeadingColspan(): number {
+    let count = 0;
+    if (this.columns['billDate']) count++;
+    if (this.columns['billNo']) count++;
+    if (this.columns['vazhiDate']) count++;
+    if (this.columns['vazhipad']) count++;
+    if (this.columns['name']) count++;
+    if (this.columns['mobileNo']) count++;
+    if (!this.columns['amount']) count++;
+    return count;
+  }
 
   fetchmembercreitReportData(
     type: string,
@@ -203,12 +328,20 @@ export class DevoteeCreditcollectioReportComponent {
   }
 
   getGrandTotal(): number {
-    return this.data.reduce((sum, item) => sum + Number(item.Amount), 0);
+    const entries = this.isPrinting ? this.data : this.getPaginatedEntries(this.data);
+    return entries.reduce((sum, item) => sum + Number(item.Amount || 0), 0);
   }
 
-  generatePDF() {
-    this.reportPrintservice.generatePDF();
+  getAllTotal(): number {
+    return this.data.reduce((sum, item) => sum + Number(item.Amount || 0), 0);
+  }
 
+  generatePDF(): void {
+    this.isPrinting = true;
+    setTimeout(() => {
+      this.reportPrintservice.generatePDF();
+      this.isPrinting = false;
+    }, 100);
   }
 exportToExcel(): void {
 
@@ -254,7 +387,7 @@ exportToExcel(): void {
     '',
     '',
     'Grand Total',
-    this.getTotalAmount()
+    this.getAllTotal()
   ]);
 
   // ===== CREATE SHEET =====
