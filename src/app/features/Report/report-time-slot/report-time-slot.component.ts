@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, HostListener, ViewChild } from '@angular/core';
 import { ReportService } from '../service/report.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -49,12 +49,221 @@ export class ReportTimeSlotComponent {
   };
 } = {};
 
- 
   currentDate: string = '';
   currentPage: number = 1;
   lang: string | null;
   templeName: string | null;
   templeAddress: string | null;
+  isPrinting: boolean = false;
+  pageSize: number = 10;
+  paginationState: { [tableKey: string]: { currentPage: number; pageSize: number } } = {};
+
+  // Column Visibility Management
+  showColumnDropdown: boolean = false;
+  openTableDropdownKey: string | null = null;
+  columns: { [key: string]: boolean } = {
+    billNo: true,
+    name: true,
+    star: true,
+  };
+  tableColumns: { [tableKey: string]: { [key: string]: boolean } } = {};
+
+  columnList = [
+    { key: 'billNo', label: 'Bill No' },
+    { key: 'name', label: 'Name' },
+    { key: 'star', label: 'Star' },
+  ];
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (this.showColumnDropdown && !target.closest('.common-column-picker')) {
+      this.showColumnDropdown = false;
+    }
+    if (this.openTableDropdownKey && !target.closest('.timeslot-column-picker')) {
+      this.openTableDropdownKey = null;
+    }
+  }
+
+  get visibleColumnCount(): number {
+    return Object.values(this.columns).filter(Boolean).length;
+  }
+
+  get totalColumnCount(): number {
+    return this.columnList.length;
+  }
+
+  toggleColumnDropdown(event?: Event): void {
+    if (event) event.stopPropagation();
+    this.showColumnDropdown = !this.showColumnDropdown;
+    if (this.showColumnDropdown) {
+      this.openTableDropdownKey = null;
+    }
+  }
+
+  toggleColumn(key: string): void {
+    if (this.columns[key] && this.visibleColumnCount <= 1) {
+      return;
+    }
+    this.columns[key] = !this.columns[key];
+    const updatedVal = this.columns[key];
+
+    // Propagate to all initialized table overrides
+    Object.keys(this.tableColumns).forEach((tKey) => {
+      if (this.tableColumns[tKey]) {
+        this.tableColumns[tKey][key] = updatedVal;
+      }
+    });
+  }
+
+  getVisibleColumnCount(): number {
+    return this.visibleColumnCount || 1;
+  }
+
+  getTableColumns(tableKey: string): { [key: string]: boolean } {
+    if (!this.tableColumns[tableKey]) {
+      this.tableColumns[tableKey] = { ...this.columns };
+    }
+    return this.tableColumns[tableKey];
+  }
+
+  isColumnVisible(tableKey: string, colKey: string): boolean {
+    const cols = this.getTableColumns(tableKey);
+    return cols[colKey] ?? false;
+  }
+
+  getTableVisibleColumnCount(tableKey: string): number {
+    const cols = this.getTableColumns(tableKey);
+    return Object.values(cols).filter(Boolean).length || 1;
+  }
+
+  hasTableCustomOverrides(tableKey: string): boolean {
+    if (!this.tableColumns[tableKey]) return false;
+    return this.columnList.some((col) => this.tableColumns[tableKey][col.key] !== this.columns[col.key]);
+  }
+
+  toggleTableDropdown(tableKey: string, event?: Event): void {
+    if (event) event.stopPropagation();
+    if (this.openTableDropdownKey === tableKey) {
+      this.openTableDropdownKey = null;
+    } else {
+      this.openTableDropdownKey = tableKey;
+      this.showColumnDropdown = false;
+    }
+  }
+
+  toggleTableColumn(tableKey: string, colKey: string, event?: Event): void {
+    if (event) event.stopPropagation();
+    const cols = this.getTableColumns(tableKey);
+    const visibleCount = Object.values(cols).filter(Boolean).length;
+    if (cols[colKey] && visibleCount <= 1) {
+      return;
+    }
+    cols[colKey] = !cols[colKey];
+  }
+
+  resetTableColumns(tableKey: string, event?: Event): void {
+    if (event) event.stopPropagation();
+    this.tableColumns[tableKey] = { ...this.columns };
+  }
+
+  // --- Pagination Methods ---
+  getTableKey(vazhipad: string, timeslot: string): string {
+    const v = (vazhipad || 'default').replace(/\s+/g, '_');
+    const t = (timeslot || 'default').replace(/\s+/g, '_');
+    return `${v}_${t}`;
+  }
+
+  getPagination(tableKey: string): { currentPage: number; pageSize: number } {
+    if (!this.paginationState[tableKey]) {
+      this.paginationState[tableKey] = { currentPage: 1, pageSize: this.pageSize };
+    }
+    return this.paginationState[tableKey];
+  }
+
+  getCurrentPage(tableKey: string): number {
+    return this.getPagination(tableKey).currentPage;
+  }
+
+  getPageSize(tableKey: string): number {
+    return this.getPagination(tableKey).pageSize;
+  }
+
+  getPaginatedEntries(tableKey: string, entries: any[]): any[] {
+    if (this.isPrinting) return entries || [];
+    if (!entries || entries.length === 0) return [];
+    const p = this.getPagination(tableKey);
+    const start = (p.currentPage - 1) * p.pageSize;
+    return entries.slice(start, start + p.pageSize);
+  }
+
+  getTotalPages(tableKey: string, entries: any[] | number): number {
+    const total = typeof entries === 'number' ? entries : (entries ? entries.length : 0);
+    if (total === 0) return 1;
+    const p = this.getPagination(tableKey);
+    return Math.ceil(total / p.pageSize) || 1;
+  }
+
+  getPages(tableKey: string, entries: any[] | number): number[] {
+    const total = this.getTotalPages(tableKey, entries);
+    const current = this.getCurrentPage(tableKey);
+    const range: number[] = [];
+    const maxVisible = 5;
+
+    let start = Math.max(1, current - Math.floor(maxVisible / 2));
+    let end = Math.min(total, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      range.push(i);
+    }
+    return range;
+  }
+
+  goToPage(tableKey: string, page: number): void {
+    this.getPagination(tableKey).currentPage = page;
+  }
+
+  nextPage(tableKey: string, entries: any[]): void {
+    const totalPages = this.getTotalPages(tableKey, entries);
+    if (this.getCurrentPage(tableKey) < totalPages) {
+      this.getPagination(tableKey).currentPage++;
+    }
+  }
+
+  prevPage(tableKey: string): void {
+    if (this.getCurrentPage(tableKey) > 1) {
+      this.getPagination(tableKey).currentPage--;
+    }
+  }
+
+  onPageSizeChange(tableKey: string, size: any): void {
+    const newSize = Number(size) || 10;
+    this.pageSize = newSize;
+    this.getPagination(tableKey).pageSize = newSize;
+    this.getPagination(tableKey).currentPage = 1;
+  }
+
+  getRangeStart(tableKey: string, entries: any[]): number {
+    if (!entries || entries.length === 0) return 0;
+    const p = this.getPagination(tableKey);
+    return (p.currentPage - 1) * p.pageSize + 1;
+  }
+
+  getRangeEnd(tableKey: string, entries: any[]): number {
+    if (!entries || entries.length === 0) return 0;
+    const p = this.getPagination(tableKey);
+    return Math.min(p.currentPage * p.pageSize, entries.length);
+  }
+
+  getVisibleRowCount(tableKey: string, entries: any[]): number {
+    if (!entries || entries.length === 0) return 0;
+    if (this.isPrinting) return entries.length;
+    return this.getPaginatedEntries(tableKey, entries).length;
+  }
   constructor(
     private route: ActivatedRoute,
     private service: ReportService,
@@ -138,8 +347,14 @@ export class ReportTimeSlotComponent {
     return `${day}-${month}-${year}`;
   }
 
-  generatePDF() {
-    this.reportPrintservice.generatePDF();
+  generatePDF(): void {
+    this.isPrinting = true;
+    setTimeout(() => {
+      this.reportPrintservice.generatePDF();
+      setTimeout(() => {
+        this.isPrinting = false;
+      }, 1000);
+    }, 100);
   }
 
   exportToExcel(): void {
