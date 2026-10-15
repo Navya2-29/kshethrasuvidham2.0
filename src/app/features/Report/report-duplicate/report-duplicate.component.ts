@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, HostListener, ViewChild } from '@angular/core';
 import { ReportService } from '../service/report.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -30,18 +30,39 @@ export class ReportDuplicateComponent {
   dataSource = new MatTableDataSource<ReportData>();
   length = 0;
   pageSize = 10;
-  pageSizeOptions: number[] = [10,50,100,200,300,500,1000];
+  pageSizeOptions: number[] = [10, 25, 50, 100, 200, 300, 500, 1000];
   pageIndex = 0;
-  data:ReportData[]=[];
+  currentPage: number = 1;
+  isPrinting: boolean = false;
+
+  // Column Visibility Management
+  showColumnDropdown: boolean = false;
+  columns: { [key: string]: boolean } = {
+    billNo: true,
+    billDate: true,
+    counterId: true,
+    cuser: true,
+    qty: true,
+  };
+
+  columnList = [
+    { key: 'billNo', label: 'Bill No' },
+    { key: 'billDate', label: 'Bill Date' },
+    { key: 'counterId', label: 'Counter ID' },
+    { key: 'cuser', label: 'User' },
+    { key: 'qty', label: 'Quantity' },
+  ];
+
+  data: ReportData[] = [];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   groupedData: { [key: string]: ReportData[] } = {};
-  filteredData:ReportData[]=[];
-  fromDate:string;
-  toDate:string;
-  lang:string|null;
-  templeName:string|null;
-  templeAddress:string|null;
-  loading:boolean;
+  filteredData: ReportData[] = [];
+  fromDate: string;
+  toDate: string;
+  lang: string | null;
+  templeName: string | null;
+  templeAddress: string | null;
+  loading: boolean = true;
   constructor(private route: ActivatedRoute,
     private reportPrintservice:PrintreportService,
     private ts: TranslateService, private service: ReportService,private router: Router, private http:HttpClient) {
@@ -64,7 +85,7 @@ export class ReportDuplicateComponent {
   }
 
   fetchReportData(type: string, fromDate: string, toDate: string): void {
-    this.loading=true;
+    this.loading = true;
     const payLoad = {
       Type: 'DuplicateCount',
       FromDate: fromDate,
@@ -73,19 +94,128 @@ export class ReportDuplicateComponent {
     this.service.getReport(payLoad).subscribe({
       next: (data) => {
         console.log('Fetched report data:', data);
-        // this.data=data;
         this.data = data.sort((a: any, b: any) =>
-  a.BillNo.localeCompare(b.BillNo, undefined, { numeric: true, sensitivity: 'base' })
-);
-
-        this.loading=false;
-        this.length =this.data .length;
-
+          a.BillNo.localeCompare(b.BillNo, undefined, { numeric: true, sensitivity: 'base' })
+        );
+        this.loading = false;
+        this.length = this.data.length;
+        this.currentPage = 1;
       },
       error: (error) => {
         console.error('Error fetching report data:', error);
+        this.loading = false;
       },
     });
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (this.showColumnDropdown) {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.column-picker-wrapper')) {
+        this.showColumnDropdown = false;
+      }
+    }
+  }
+
+  get visibleColumnCount(): number {
+    return Object.values(this.columns).filter(Boolean).length;
+  }
+
+  get totalColumnCount(): number {
+    return this.columnList.length;
+  }
+
+  toggleColumnDropdown(event?: Event): void {
+    if (event) event.stopPropagation();
+    this.showColumnDropdown = !this.showColumnDropdown;
+  }
+
+  toggleColumn(key: string): void {
+    this.columns[key] = !this.columns[key];
+  }
+
+  getLeadingColspan(): number {
+    let count = 0;
+    if (this.columns['billNo']) count++;
+    if (this.columns['billDate']) count++;
+    if (this.columns['counterId']) count++;
+    if (this.columns['cuser']) count++;
+    if (!this.columns['qty']) count++;
+    return Math.max(1, count);
+  }
+
+  // --- Pagination Methods ---
+  getPaginatedEntries(entries: any[]): any[] {
+    if (this.isPrinting) return entries || [];
+    if (!entries || entries.length === 0) return [];
+    const start = (this.currentPage - 1) * this.pageSize;
+    return entries.slice(start, start + this.pageSize);
+  }
+
+  getTotalPages(entries: any[] | number): number {
+    const total = typeof entries === 'number' ? entries : (entries ? entries.length : 0);
+    if (total === 0) return 1;
+    return Math.ceil(total / this.pageSize) || 1;
+  }
+
+  getPages(entries: any[] | number): number[] {
+    const total = this.getTotalPages(entries);
+    const range: number[] = [];
+    const maxVisible = 5;
+
+    let start = Math.max(1, this.currentPage - Math.floor(maxVisible / 2));
+    let end = Math.min(total, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      range.push(i);
+    }
+    return range;
+  }
+
+  goToPage(page: number): void {
+    this.currentPage = page;
+  }
+
+  nextPage(entries: any[]): void {
+    const totalPages = this.getTotalPages(entries);
+    if (this.currentPage < totalPages) {
+      this.currentPage++;
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  onPageSizeChange(size: any): void {
+    this.pageSize = Number(size) || 10;
+    this.currentPage = 1;
+  }
+
+  getRangeStart(entries: any[]): number {
+    if (!entries || entries.length === 0) return 0;
+    return (this.currentPage - 1) * this.pageSize + 1;
+  }
+
+  getRangeEnd(entries: any[]): number {
+    if (!entries || entries.length === 0) return 0;
+    return Math.min(this.currentPage * this.pageSize, entries.length);
+  }
+
+  getTotalQty(): number {
+    const entries = this.isPrinting ? this.data : this.getPaginatedEntries(this.data);
+    return entries.reduce((sum, item) => sum + (Number(item.ct) || 0), 0);
+  }
+
+  getAllTotalQty(): number {
+    return this.data.reduce((sum, item) => sum + (Number(item.ct) || 0), 0);
   }
 
   onPageChange(event: PageEvent) {
@@ -96,7 +226,6 @@ export class ReportDuplicateComponent {
   goBack(): void {
     console.log('Going back...'); // Log to verify method execution
     this.router.navigate(['/getReport']);
-
 
     if (window.history.length > 1) {
       window.history.back(); // Goes back to the previous page in history
@@ -110,99 +239,20 @@ export class ReportDuplicateComponent {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-
   formatDateToDDMMYYYY(date: string): string {
     const [year, month, day] = date.split('-');
     return `${day}-${month}-${year}`;
   }
 
-
-generatePDF() {
-this.reportPrintservice.generatePDF();
-//   const printContent = document.getElementById('print-section');
-//   if (!printContent) {
-//     console.error('No content found to print');
-//     return;
-//   }
-
-//   const printWindow = window.open('', '', 'width=800,height=600');
-
-//   if (!printWindow) {
-//     console.error('Unable to open print window. Please check pop-up blockers.');
-//     return;
-//   }
-
-//   printWindow.document.write(`
-//     <html>
-//       <head>
-//         <title>Print</title>
-//          <style>
-
-//           body {
-//     font-size: 16px;
-//     font-family: "Times New Roman", serif;
-//   }
-//           h3,p,h4,h2{
-//           line-height:1;
-//           margin-top:0;
-//           text-align:center;
-//           }
-//           .templename{
-//            line-height:1;
-//           margin-top:0;
-//           text-align:center;
-//           }
-//           hr{
-//           height:2px;
-//           }
-//           .number,.total{
-//             text-align:right;
-//             }
-//           .tabble-heading h3{
-//   font-family: 'Times New Roman', Times, serif;
-//   font-weight: bold;
-//   font-size: 16px;
-//   margin: 8px 0 0 0;
-// }
-//           table {
-//             width: 100%;
-//             border-collapse: collapse;
-//           }
-//           table, th, td {
-//             border: 1px solid black;
-//             text-transform: uppercase;
-
-//           }
-//             .total,number{
-//             text-align:right;
-//             }
-//           th, td {
-//            padding-left:5px;
-//             text-align: left;
-//           }
-//             #print-section{
-// padding-bottom: 100px;
-//   }
-
-
-//     .page-break {
-//       page-break-before: always;
-//     }
-//           </style>
-//       </head>
-//       <body>
-//         ${printContent.innerHTML}
-//       </body>
-//     </html>
-//   `);
-
-//   printWindow.document.close();
-//   printWindow.focus();
-
-//   printWindow.print();
-
-//   printWindow.close();
-}
+  generatePDF(): void {
+    this.isPrinting = true;
+    setTimeout(() => {
+      this.reportPrintservice.generatePDF();
+      setTimeout(() => {
+        this.isPrinting = false;
+      }, 1000);
+    }, 100);
+  }
 
 getTotalAmount(): number {
   return this.data.reduce((sum, item) => sum + item.Amount, 0);
