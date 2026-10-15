@@ -1,6 +1,5 @@
-
 import { SpinnerComponent } from './../../../shared/component/spinner/spinner.component';
-import { Component, } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { ReportService } from '../service/report.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -18,6 +17,7 @@ import { saveAs } from 'file-saver';
 import { PrintreportService } from '../../../shared/service/printreport.service';
 import { HeaderComponent } from '../../../core/layout/header/header.component';
 import { MatIconModule } from '@angular/material/icon';
+
 @Component({
   selector: 'app-report-billing-register',
   standalone: true,
@@ -39,7 +39,7 @@ import { MatIconModule } from '@angular/material/icon';
     '/src/assets/styles/report.style.css',
   ],
 })
-export class ReportBillingRegisterComponent {
+export class ReportBillingRegisterComponent implements OnInit {
   data: ReportData[] = [];
   groupedData: ReportData[] = [];
   billRegisterData: ReportData[] = [];
@@ -50,6 +50,52 @@ export class ReportBillingRegisterComponent {
   templeName: string | null;
   templeAddress: string | null;
   loading: boolean;
+
+  // Pagination
+  currentPage: number = 1;
+  pageSize: number = 10;
+  isPrinting: boolean = false;
+
+  // Column Visibility Management
+  showColumnDropdown: boolean = false;
+  columns: { [key: string]: boolean } = {
+    sino: true,
+    billDate: true,
+    billNo: true,
+    cash: true,
+    upi: true,
+    cheque: true,
+    mOrder: true,
+    debit: true,
+    bank: true,
+    online: true,
+    due: true,
+    total: true,
+  };
+
+  columnList = [
+    { key: 'sino', label: 'SI No' },
+    { key: 'billDate', label: 'Bill Date' },
+    { key: 'billNo', label: 'Bill No' },
+    { key: 'cash', label: 'Cash' },
+    { key: 'upi', label: 'UPI' },
+    { key: 'cheque', label: 'Cheque' },
+    { key: 'mOrder', label: 'M.Order' },
+    { key: 'debit', label: 'Debit' },
+    { key: 'bank', label: 'Bank' },
+    { key: 'online', label: 'Online' },
+    { key: 'due', label: 'Due' },
+    { key: 'total', label: 'Total' },
+  ];
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (this.showColumnDropdown && !target.closest('.common-column-picker')) {
+      this.showColumnDropdown = false;
+    }
+  }
+
   constructor(
     private route: ActivatedRoute,
     private ts: TranslateService,
@@ -91,7 +137,7 @@ export class ReportBillingRegisterComponent {
       next: (data) => {
         console.log('Fetched report data:', data);
 
-        data.sort((a: any, b: any) => {
+        (data || []).sort((a: any, b: any) => {
           const [aDay, aMonth, aYear] = a.BillDate.split('.').map(Number);
           const [bDay, bMonth, bYear] = b.BillDate.split('.').map(Number);
 
@@ -108,11 +154,122 @@ export class ReportBillingRegisterComponent {
           return aSub - bSub;
         });
 
-        this.data = data;
+        this.data = data || [];
         this.billRegisterData = this.data;
+        this.currentPage = 1;
         this.loading = false;
       },
+      error: (error) => {
+        console.error('Error fetching report data:', error);
+        this.loading = false;
+      }
     });
+  }
+
+  // --- Column Visibility Methods ---
+  get visibleColumnCount(): number {
+    return Object.values(this.columns).filter(Boolean).length;
+  }
+
+  get totalColumnCount(): number {
+    return this.columnList.length;
+  }
+
+  toggleColumnDropdown(event?: Event): void {
+    if (event) event.stopPropagation();
+    this.showColumnDropdown = !this.showColumnDropdown;
+  }
+
+  toggleColumn(key: string): void {
+    if (this.columns[key] && this.visibleColumnCount <= 1) {
+      return;
+    }
+    this.columns[key] = !this.columns[key];
+  }
+
+  isColumnVisible(colKey: string): boolean {
+    return this.columns[colKey] ?? false;
+  }
+
+  getTableVisibleColumnCount(): number {
+    return Object.values(this.columns).filter(Boolean).length || 1;
+  }
+
+  hasAnyLeadingColumnVisible(): boolean {
+    return this.isColumnVisible('sino') || this.isColumnVisible('billDate') || this.isColumnVisible('billNo');
+  }
+
+  getLeadingColspan(): number {
+    let count = 0;
+    if (this.isColumnVisible('sino')) count++;
+    if (this.isColumnVisible('billDate')) count++;
+    if (this.isColumnVisible('billNo')) count++;
+    return Math.max(1, count);
+  }
+
+  // --- Pagination Methods ---
+  getPaginatedEntries(entries: ReportData[]): ReportData[] {
+    if (this.isPrinting) return entries || [];
+    if (!entries || entries.length === 0) return [];
+    const start = (this.currentPage - 1) * this.pageSize;
+    return entries.slice(start, start + this.pageSize);
+  }
+
+  getTotalPages(entries: ReportData[]): number {
+    if (!entries || entries.length === 0) return 1;
+    return Math.ceil(entries.length / this.pageSize) || 1;
+  }
+
+  getPages(entries: ReportData[]): number[] {
+    const total = this.getTotalPages(entries);
+    const current = this.currentPage;
+    const range: number[] = [];
+    const maxVisible = 5;
+
+    let start = Math.max(1, current - Math.floor(maxVisible / 2));
+    let end = Math.min(total, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      range.push(i);
+    }
+    return range;
+  }
+
+  goToPage(page: number): void {
+    this.currentPage = page;
+  }
+
+  nextPage(entries: ReportData[]): void {
+    const totalPages = this.getTotalPages(entries);
+    if (this.currentPage < totalPages) {
+      this.currentPage++;
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  onPageSizeChange(size: any): void {
+    const newSize = Number(size) || 10;
+    this.pageSize = newSize;
+    this.currentPage = 1;
+  }
+
+  getRangeStart(): number {
+    if (!this.billRegisterData || this.billRegisterData.length === 0) return 0;
+    return (this.currentPage - 1) * this.pageSize + 1;
+  }
+
+  getRangeEnd(): number {
+    if (!this.billRegisterData || this.billRegisterData.length === 0) return 0;
+    return Math.min(this.currentPage * this.pageSize, this.billRegisterData.length);
   }
 
   getDisplayAmount(item: any): number {
@@ -143,6 +300,7 @@ export class ReportBillingRegisterComponent {
   }
 
   formatDateToDDMMYYYY(date: string): string {
+    if (!date) return '';
     const [year, month, day] = date.split('-');
     return `${day}-${month}-${year}`;
   }
@@ -151,12 +309,8 @@ export class ReportBillingRegisterComponent {
     return (
       this.billRegisterData
         .filter((item) => !(item.TrnStatus !== 'S' || item.TrnsMode === 'CR'))
-        // exclude 'CR' entries
         .reduce((acc, item) => {
-          const valueToAdd =
-            // item.Advance && item.Advance > 0
-            //   ? item.Advance
-            item.TotalAmt || 0;
+          const valueToAdd = item.TotalAmt || 0;
           return acc + valueToAdd;
         }, 0)
     );
@@ -167,12 +321,16 @@ export class ReportBillingRegisterComponent {
   }
 
   generatePDF() {
-    this.reportPrintservice.generatePDF();
+    this.isPrinting = true;
+    setTimeout(() => {
+      this.reportPrintservice.generatePDF();
+      setTimeout(() => {
+        this.isPrinting = false;
+      }, 1000);
+    }, 100);
   }
 
   getStarbyId(id: string) {
-    console.log(id, 'star id');
-
     if (this.lang == 'en') {
       const star = this.nakshatham.find((item) => item.id == id);
       return star ? star.SM_NameEng : '';
@@ -186,7 +344,6 @@ export class ReportBillingRegisterComponent {
     const payLoad = { Type: 'ListStar', Code: '' };
     this.masterService.getStarData(payLoad).subscribe({
       next: (data: any[]) => {
-        console.log(data);
         this.nakshatham = data;
       },
       error: (err) => {
@@ -198,49 +355,19 @@ export class ReportBillingRegisterComponent {
   getTransactionType(transmode: string): string {
     switch (transmode) {
       case 'ON':
-        if (this.lang == 'en') {
-          return 'BANK';
-        } else {
-          return 'ബാങ്ക്';
-        }
-
+        return this.lang == 'en' ? 'BANK' : 'ബാങ്ക്';
       case 'CS':
-        if (this.lang == 'en') {
-          return 'CASH';
-        } else {
-          return 'ക്യാഷ്';
-        }
+        return this.lang == 'en' ? 'CASH' : 'ക്യാഷ്';
       case 'MO':
-        if (this.lang == 'en') {
-          return 'MONEY ORDER';
-        } else {
-          return 'മണി ഓർഡർ';
-        }
+        return this.lang == 'en' ? 'MONEY ORDER' : 'മണി ഓർഡർ';
       case 'UP':
-        if (this.lang == 'en') {
-          return 'UPI';
-        } else {
-          return 'യുപിഐ';
-        }
-
+        return this.lang == 'en' ? 'UPI' : 'യുപിഐ';
       case 'CH':
-        if (this.lang == 'en') {
-          return 'CHEQUE';
-        } else {
-          return 'ചെക്ക്';
-        }
+        return this.lang == 'en' ? 'CHEQUE' : 'ചെക്ക്';
       case 'CR':
-        if (this.lang == 'en') {
-          return 'CREDIT';
-        } else {
-          return 'ക്രെഡിറ്റ്';
-        }
+        return this.lang == 'en' ? 'CREDIT' : 'ക്രെഡിറ്റ്';
       case 'DE':
-        if (this.lang == 'en') {
-          return 'DEBIT';
-        } else {
-          return 'ഡെബിറ്റ്';
-        }
+        return this.lang == 'en' ? 'DEBIT' : 'ഡെബിറ്റ്';
       default:
         return 'OTHERS';
     }
@@ -249,170 +376,118 @@ export class ReportBillingRegisterComponent {
   gettransactionstatus(status: string) {
     switch (status) {
       case 'C':
-        if (this.lang == 'en') {
-          return 'cancelled';
-        } else {
-          return 'ക്യാൻസെൽഡ്';
-        }
-
+        return this.lang == 'en' ? 'cancelled' : 'ക്യാൻസെൽഡ്';
       case 'S':
-        if (this.lang == 'en') {
-          return 'Success';
-        } else {
-          return 'സക്‌സസ്';
-        }
-
+        return this.lang == 'en' ? 'Success' : 'സക്‌സസ്';
       default:
         return 'OTHERS';
     }
   }
 
- reportinexcelformat(): void {
+  reportinexcelformat(): void {
+    const workbook = XLSX.utils.book_new();
+    const sheetData: any[][] = [];
 
-  const workbook = XLSX.utils.book_new();
-  const sheetData: any[][] = [];
-
-  // ===== HEADER =====
-  sheetData.push([this.templeName]);
-  sheetData.push([this.templeAddress]);
-  sheetData.push(['BILL REGISTER']);
-  sheetData.push([
-    `${this.formatDateToDDMMYYYY(this.fromDate)} to ${this.formatDateToDDMMYYYY(this.toDate)}`
-  ]);
-  sheetData.push([]);
-
-  // ===== TABLE HEADER =====
-  sheetData.push([
-    'Sl No',
-    'Bill Date',
-    'Bill No',
-    'Cash',
-    'UPI',
-    'Cheque',
-    'M.Order',
-    'Debit',
-    'Bank',
-    'Online',
-    'Due',
-    'Total'
-  ]);
-
-  // ===== DATA ROWS =====
-  this.billRegisterData.forEach((item: any, index: number) => {
-
-    const isRed = item.TrnsMode === 'CR' || item.TrnStatus !== 'S';
-
+    // ===== HEADER =====
+    if (this.templeName) sheetData.push([this.templeName]);
+    if (this.templeAddress) sheetData.push([this.templeAddress]);
+    sheetData.push(['BILL REGISTER']);
     sheetData.push([
-      index + 1,
-      item.BillDate,
-      item.BillNo,
-
-      item.TrnsMode === 'CS' ? item.TotalAmt : 0,
-      item.TrnsMode === 'UP' ? item.TotalAmt : 0,
-      item.TrnsMode === 'CH' ? item.TotalAmt : 0,
-      item.TrnsMode === 'MO' ? item.TotalAmt : 0,
-      item.TrnsMode === 'DE' ? item.TotalAmt : 0,
-      item.TrnsMode === 'ON' ? item.TotalAmt : 0,
-      item.TrnsMode === 'OL' ? item.TotalAmt : 0,
-      item.TrnsMode === 'CR' ? item.TotalAmt : 0,
-
-      // TOTAL column
-      isRed ? -item.TotalAmt : item.TotalAmt
+      `${this.formatDateToDDMMYYYY(this.fromDate)} to ${this.formatDateToDDMMYYYY(this.toDate)}`
     ]);
-  });
+    sheetData.push([]);
 
-  // ===== GRAND TOTAL ROW =====
-  sheetData.push([
-    '',
-    '',
-    'Grand Total',
+    // ===== DYNAMIC TABLE HEADER =====
+    const headers: string[] = [];
+    if (this.isColumnVisible('sino')) headers.push('Sl No');
+    if (this.isColumnVisible('billDate')) headers.push('Bill Date');
+    if (this.isColumnVisible('billNo')) headers.push('Bill No');
+    if (this.isColumnVisible('cash')) headers.push('Cash');
+    if (this.isColumnVisible('upi')) headers.push('UPI');
+    if (this.isColumnVisible('cheque')) headers.push('Cheque');
+    if (this.isColumnVisible('mOrder')) headers.push('M.Order');
+    if (this.isColumnVisible('debit')) headers.push('Debit');
+    if (this.isColumnVisible('bank')) headers.push('Bank');
+    if (this.isColumnVisible('online')) headers.push('Online');
+    if (this.isColumnVisible('due')) headers.push('Due');
+    if (this.isColumnVisible('total')) headers.push('Total');
+    sheetData.push(headers);
 
-    this.getColumnTotal('CS'),
-    this.getColumnTotal('UP'),
-    this.getColumnTotal('CH'),
-    this.getColumnTotal('MO'),
-    this.getColumnTotal('DE'),
-    this.getColumnTotal('ON'),
-    this.getColumnTotal('OL'),
-    -this.getColumnTotal('CR'),
-    this.getGrandTotal()
-  ]);
+    // ===== DATA ROWS =====
+    this.billRegisterData.forEach((item: any, index: number) => {
+      const isRed = item.TrnsMode === 'CR' || item.TrnStatus !== 'S';
+      const row: any[] = [];
+      if (this.isColumnVisible('sino')) row.push(index + 1);
+      if (this.isColumnVisible('billDate')) row.push(item.BillDate);
+      if (this.isColumnVisible('billNo')) row.push(item.BillNo);
+      if (this.isColumnVisible('cash')) row.push(item.TrnsMode === 'CS' ? item.TotalAmt : 0);
+      if (this.isColumnVisible('upi')) row.push(item.TrnsMode === 'UP' ? item.TotalAmt : 0);
+      if (this.isColumnVisible('cheque')) row.push(item.TrnsMode === 'CH' ? item.TotalAmt : 0);
+      if (this.isColumnVisible('mOrder')) row.push(item.TrnsMode === 'MO' ? item.TotalAmt : 0);
+      if (this.isColumnVisible('debit')) row.push(item.TrnsMode === 'DE' ? item.TotalAmt : 0);
+      if (this.isColumnVisible('bank')) row.push(item.TrnsMode === 'ON' ? item.TotalAmt : 0);
+      if (this.isColumnVisible('online')) row.push(item.TrnsMode === 'OL' ? item.TotalAmt : 0);
+      if (this.isColumnVisible('due')) row.push(item.TrnsMode === 'CR' ? item.TotalAmt : 0);
+      if (this.isColumnVisible('total')) row.push(isRed ? -item.TotalAmt : item.TotalAmt);
+      sheetData.push(row);
+    });
 
-  // ===== CREATE SHEET =====
-  const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(sheetData);
-
-  // ===== MERGE HEADER =====
-  worksheet['!merges'] = [
-    { s: { r: 0, c: 0 }, e: { r: 0, c: 11 } },
-    { s: { r: 1, c: 0 }, e: { r: 1, c: 11 } },
-    { s: { r: 2, c: 0 }, e: { r: 2, c: 11 } },
-    { s: { r: 3, c: 0 }, e: { r: 3, c: 11 } }
-  ];
-
-  // ===== HEADER STYLE =====
-  const headerStyle = {
-    alignment: { horizontal: 'center' },
-    font: { bold: true, sz: 14 }
-  };
-
-  ['A1', 'A2', 'A3', 'A4'].forEach(cell => {
-    if (worksheet[cell]) worksheet[cell].s = headerStyle;
-  });
-
-  // ===== TABLE HEADER STYLE =====
-  const tableHeaderStyle = {
-    font: { bold: true },
-    alignment: { horizontal: 'center' }
-  };
-
-  const headerRowIndex = 5;
-
-  for (let col = 0; col < 12; col++) {
-    const addr = XLSX.utils.encode_cell({ r: headerRowIndex, c: col });
-    if (worksheet[addr]) worksheet[addr].s = tableHeaderStyle;
-  }
-
-  // ===== ALIGN NUMBERS RIGHT =====
-  Object.keys(worksheet).forEach(cell => {
-    if (/[D-L]/.test(cell)) {
-      if (worksheet[cell]) {
-        worksheet[cell].s = {
-          alignment: { horizontal: 'right' }
-        };
+    // ===== GRAND TOTAL ROW =====
+    const totalRow: any[] = [];
+    headers.forEach((h, index) => {
+      if (h === 'Sl No' || h === 'Bill Date' || h === 'Bill No') {
+        if (totalRow.length === 0 || !totalRow.includes('Grand Total')) {
+          totalRow.push('Grand Total');
+        } else {
+          totalRow.push('');
+        }
+      } else if (h === 'Cash') {
+        totalRow.push(this.getColumnTotal('CS'));
+      } else if (h === 'UPI') {
+        totalRow.push(this.getColumnTotal('UP'));
+      } else if (h === 'Cheque') {
+        totalRow.push(this.getColumnTotal('CH'));
+      } else if (h === 'M.Order') {
+        totalRow.push(this.getColumnTotal('MO'));
+      } else if (h === 'Debit') {
+        totalRow.push(this.getColumnTotal('DE'));
+      } else if (h === 'Bank') {
+        totalRow.push(this.getColumnTotal('ON'));
+      } else if (h === 'Online') {
+        totalRow.push(this.getColumnTotal('OL'));
+      } else if (h === 'Due') {
+        totalRow.push(-this.getColumnTotal('CR'));
+      } else if (h === 'Total') {
+        totalRow.push(this.getGrandTotal());
+      } else {
+        totalRow.push('');
       }
-    }
-  });
+    });
+    sheetData.push(totalRow);
 
-  // ===== COLUMN WIDTH =====
-  worksheet['!cols'] = [
-    { wch: 8 },
-    { wch: 15 },
-    { wch: 15 },
-    { wch: 12 },
-    { wch: 12 },
-    { wch: 12 },
-    { wch: 12 },
-    { wch: 12 },
-    { wch: 12 },
-    { wch: 12 },
-    { wch: 12 },
-    { wch: 15 }
-  ];
+    // ===== CREATE SHEET =====
+    const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(sheetData);
 
-  // ===== ADD SHEET =====
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Bill Register');
+    // Column widths
+    worksheet['!cols'] = headers.map((h) => {
+      if (h === 'Sl No') return { wch: 8 };
+      if (h === 'Bill Date' || h === 'Bill No') return { wch: 15 };
+      if (h === 'Total') return { wch: 15 };
+      return { wch: 12 };
+    });
 
-  // ===== EXPORT =====
-  const excelBuffer = XLSX.write(workbook, {
-    bookType: 'xlsx',
-    type: 'array'
-  });
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Bill Register');
 
-  const blob = new Blob([excelBuffer], {
-    type:
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
-  });
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array'
+    });
 
-  saveAs(blob, `Bill_Register_${new Date().getTime()}.xlsx`);
-}
+    const blob = new Blob([excelBuffer], {
+      type:
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+    });
+
+    saveAs(blob, `Bill_Register_${new Date().getTime()}.xlsx`);
+  }
 }
