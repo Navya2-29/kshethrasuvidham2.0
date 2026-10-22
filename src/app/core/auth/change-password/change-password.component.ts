@@ -34,8 +34,19 @@ export class ChangePasswordComponent {
     public dialogRef: MatDialogRef<ChangePasswordComponent>,
 
   ) {
-    this.loginId = localStorage.getItem("LoginId")
-    this.storedPassword=localStorage.getItem("password");
+    this.loginId = localStorage.getItem("LoginId");
+    this.storedPassword = localStorage.getItem("password");
+    if (!this.storedPassword) {
+      const userData = localStorage.getItem("userData");
+      if (userData) {
+        try {
+          const user = JSON.parse(userData);
+          this.storedPassword = user?.password || null;
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
 
     this.changepasswordForm = this.fb.group({
       oldPassword: ['', [Validators.required,this.oldPasswordValidator.bind(this)]],
@@ -70,6 +81,9 @@ export class ChangePasswordComponent {
     this.service.changePassword(payLoad).subscribe({
       next: () => {
         console.log("Password changed successfully");
+        if (payLoad.password) {
+          localStorage.setItem("password", payLoad.password);
+        }
         this.dialogRef.close(); 
       },
       error: (err) => {
@@ -85,6 +99,9 @@ export class ChangePasswordComponent {
   }
 
   oldPasswordValidator(control: AbstractControl) {
+    if (!control.value || control.value.trim() === '') {
+      return null;
+    }
     if (this.storedPassword && control.value !== this.storedPassword) {
       return { incorrectOldPassword: true };
     }
