@@ -84,6 +84,9 @@ export class AreareceiptComponent implements OnInit {
   row: FormArray;
   filteredOptions: any[] = [];
   starFilteredOption: any[] = [];
+  nameFilteredOption: any[][] = [];
+  devoteeNamesList: string[] = [];
+  devoteeStarMap: { [name: string]: { starId: string; starName: string } } = {};
   prathistaFilteredOption: any[] = [];
   nakshatham: any[] = [];
   VMList: any[] = [];
@@ -160,8 +163,10 @@ export class AreareceiptComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadDevoteeNamesHistory();
     this.getAllvazhipad();
     this.getNakshthram();
+    this.loadDevoteeMasterData();
     // this.addRow(0);
     this.dateToSet = this.datePipe.transform(this.tomorrowDate, 'yyyy-MM-dd');
     this.subscription = this.eventService.clickEvent$.subscribe(() => {
@@ -373,6 +378,7 @@ export class AreareceiptComponent implements OnInit {
       this.vazhipadinfo.push(this.createRow());
       this.setupAutocomplete(0);
       this.setupStarAutocomplete(0);
+      this.setupNameAutocomplete(0);
       this.updateTotalAmount();
       return;
     }
@@ -428,6 +434,7 @@ export class AreareceiptComponent implements OnInit {
     this.vazhipadinfo.insert(index + 1, newRow);
     this.setupAutocomplete(index + 1);
     this.setupStarAutocomplete(index + 1);
+    this.setupNameAutocomplete(index + 1);
     this.updateTotalAmount();
     setTimeout(() => {
       this.focusOnNewRow(); // Focus on the newly created row's text box
@@ -449,6 +456,7 @@ export class AreareceiptComponent implements OnInit {
       this.notification.success('Data deleted successfully');
       this.setupAutocomplete(this.indexForAutoComplete);
       this.setupStarAutocomplete(this.indexForAutoComplete);
+      this.setupNameAutocomplete(this.indexForAutoComplete);
       this.removeMultidayData(index);
     } else {
       this.resetForm();
@@ -634,6 +642,268 @@ export class AreareceiptComponent implements OnInit {
     return filteredList;
   }
 
+  loadDevoteeNamesHistory(): void {
+    try {
+      const savedNames = localStorage.getItem('billing_history_names');
+      if (savedNames) {
+        this.devoteeNamesList = JSON.parse(savedNames);
+      } else {
+        this.devoteeNamesList = [];
+      }
+      const savedStarMap = localStorage.getItem('billing_devotee_star_map');
+      if (savedStarMap) {
+        this.devoteeStarMap = JSON.parse(savedStarMap);
+      } else {
+        this.devoteeStarMap = {};
+      }
+    } catch (e) {
+      console.warn('Could not load devotee names history', e);
+      this.devoteeNamesList = [];
+      this.devoteeStarMap = {};
+    }
+  }
+
+  loadDevoteeMasterData(): void {
+    const payLoad = {
+      Type: 'DevoteeMaster',
+      Code: '',
+    };
+    this.masterservice.getMaster(payLoad).subscribe({
+      next: (data: any) => {
+        if (data && Array.isArray(data)) {
+          let updated = false;
+          data.forEach((item: any) => {
+            const name = item.Name || item.DevoteeName;
+            if (name && typeof name === 'string') {
+              const trimmed = name.trim().toUpperCase();
+              if (trimmed.length >= 2) {
+                if (!this.devoteeNamesList.includes(trimmed)) {
+                  this.devoteeNamesList.push(trimmed);
+                  updated = true;
+                }
+                const starVal = item.Star ? item.Star.toString() : '';
+                if (starVal && starVal !== '28' && !this.devoteeStarMap[trimmed]) {
+                  const starName = this.getStarbyId(starVal);
+                  if (starName && starName !== 'OM') {
+                    this.devoteeStarMap[trimmed] = {
+                      starId: starVal,
+                      starName: starName,
+                    };
+                    updated = true;
+                  }
+                }
+              }
+            }
+          });
+
+          if (updated) {
+            try {
+              localStorage.setItem(
+                'billing_history_names',
+                JSON.stringify(this.devoteeNamesList.slice(0, 500)),
+              );
+              localStorage.setItem(
+                'billing_devotee_star_map',
+                JSON.stringify(this.devoteeStarMap),
+              );
+            } catch (e) {
+              console.warn('Could not cache devotee names to localStorage', e);
+            }
+          }
+        }
+      },
+      error: (err) => {
+        console.warn('DevoteeMaster load failed for autocomplete', err);
+      },
+    });
+  }
+
+  getAllDevoteeNames(): string[] {
+    const namesSet = new Set<string>();
+
+    // 1. Collect all names currently entered in vazhipadinfo rows
+    if (this.vazhipadinfo) {
+      for (let i = 0; i < this.vazhipadinfo.length; i++) {
+        const row = this.vazhipadinfo.at(i);
+        const nameVal = row?.get('Name')?.value;
+        if (nameVal && typeof nameVal === 'string') {
+          const trimmed = nameVal.trim().toUpperCase();
+          if (trimmed.length >= 2) {
+            namesSet.add(trimmed);
+          }
+        }
+        const name2 = row?.get('Name2')?.value;
+        if (name2 && typeof name2 === 'string') {
+          const trimmed2 = name2.trim().toUpperCase();
+          if (trimmed2.length >= 2) namesSet.add(trimmed2);
+        }
+        const name3 = row?.get('Name3')?.value;
+        if (name3 && typeof name3 === 'string') {
+          const trimmed3 = name3.trim().toUpperCase();
+          if (trimmed3.length >= 2) namesSet.add(trimmed3);
+        }
+      }
+    }
+
+    // 2. Collect from devoteeNamesList (loaded from DevoteeMaster & localStorage history)
+    if (this.devoteeNamesList && Array.isArray(this.devoteeNamesList)) {
+      this.devoteeNamesList.forEach((name) => {
+        if (name && typeof name === 'string') {
+          const trimmed = name.trim().toUpperCase();
+          if (trimmed.length >= 2) {
+            namesSet.add(trimmed);
+          }
+        }
+      });
+    }
+
+    return Array.from(namesSet);
+  }
+
+  getDevoteeStarDisplay(name: string): string {
+    if (!name) return '';
+    const upper = name.trim().toUpperCase();
+    const starInfo = this.devoteeStarMap[upper];
+    if (starInfo && starInfo.starId) {
+      const starName = this.getStarbyId(starInfo.starId) || starInfo.starName;
+      if (starName && starName !== 'OM') {
+        return starName;
+      }
+    }
+    return '';
+  }
+
+  saveNameToHistory(
+    name: string | null | undefined,
+    starId?: string,
+    starName?: string,
+  ): void {
+    if (!name || typeof name !== 'string') return;
+    const trimmed = name.trim().toUpperCase();
+    if (!trimmed || trimmed.length < 2) return;
+
+    if (!this.devoteeNamesList.includes(trimmed)) {
+      this.devoteeNamesList.unshift(trimmed);
+      if (this.devoteeNamesList.length > 500) {
+        this.devoteeNamesList = this.devoteeNamesList.slice(0, 500);
+      }
+      try {
+        localStorage.setItem(
+          'billing_history_names',
+          JSON.stringify(this.devoteeNamesList),
+        );
+      } catch (e) {
+        console.warn('Could not save devotee name to localStorage', e);
+      }
+    }
+
+    const resolvedStarId = starId ? starId.toString() : '';
+    if (resolvedStarId && resolvedStarId !== '28') {
+      const resolvedStarName = starName || this.getStarbyId(resolvedStarId);
+      if (resolvedStarName && resolvedStarName !== 'OM') {
+        this.devoteeStarMap[trimmed] = {
+          starId: resolvedStarId,
+          starName: resolvedStarName,
+        };
+        try {
+          localStorage.setItem(
+            'billing_devotee_star_map',
+            JSON.stringify(this.devoteeStarMap),
+          );
+        } catch (e) {
+          console.warn('Could not save devotee star map', e);
+        }
+      }
+    }
+  }
+
+  setupNameAutocomplete(index: number): void {
+    const row = this.vazhipadinfo.at(index) as FormGroup;
+    if (!row) return;
+    const control = row.get('Name');
+    if (!control) return;
+
+    this.nameFilteredOption[index] = this._filterName(control.value);
+
+    control.valueChanges
+      .pipe(
+        startWith(control.value || ''),
+        map((value) => this._filterName(value)),
+      )
+      .subscribe((filteredOptions) => {
+        this.nameFilteredOption[index] = filteredOptions;
+      });
+  }
+
+  private _filterName(value: string | null | undefined): string[] {
+    if (!value || typeof value !== 'string') {
+      return [];
+    }
+    const filterValue = value.trim().toUpperCase();
+    if (!filterValue || filterValue.length === 0) {
+      return [];
+    }
+
+    const allNames = this.getAllDevoteeNames();
+
+    // 1. Names strictly starting with the typed letter(s) - sorted alphabetically
+    const startsWith = allNames
+      .filter((name) => name.toUpperCase().startsWith(filterValue))
+      .sort((a, b) => a.localeCompare(b));
+
+    // 2. Names containing the typed characters (excluding already matched startsWith)
+    const contains = allNames
+      .filter(
+        (name) =>
+          !name.toUpperCase().startsWith(filterValue) &&
+          name.toUpperCase().includes(filterValue),
+      )
+      .sort((a, b) => a.localeCompare(b));
+
+    return [...startsWith, ...contains].slice(0, 25);
+  }
+
+  onNameSelect(event: MatAutocompleteSelectedEvent, index: number): void {
+    const selectedName = event.option.value;
+    const row = this.vazhipadinfo.at(index) as FormGroup;
+    if (!row) return;
+
+    row.get('Name')?.setValue(selectedName);
+
+    // If star was previously saved for this devotee, auto-populate if currently default 'OM' or empty
+    const upper = (selectedName || '').trim().toUpperCase();
+    const savedStar = this.devoteeStarMap[upper];
+    if (
+      savedStar &&
+      savedStar.starId &&
+      (!row.get('starName')?.value || row.get('starName')?.value === 'OM')
+    ) {
+      const starDisplayName =
+        this.getStarbyId(savedStar.starId) || savedStar.starName || 'OM';
+      row.patchValue({
+        Star: savedStar.starId,
+        starName: starDisplayName,
+      });
+    }
+
+    this.saveNameToHistory(
+      selectedName,
+      row.get('Star')?.value,
+      row.get('starName')?.value,
+    );
+  }
+
+  onNameBlur(index: number): void {
+    const row = this.vazhipadinfo.at(index) as FormGroup;
+    if (!row) return;
+    const nameVal = row.get('Name')?.value;
+    if (nameVal && nameVal.trim()) {
+      const starId = row.get('Star')?.value;
+      const starName = row.get('starName')?.value;
+      this.saveNameToHistory(nameVal, starId, starName);
+    }
+  }
+
   getAllvazhipad() {
     this.masterservice.getAllActiveVazhipad().subscribe((data) => {
       this.VMList = data.map((item) => ({
@@ -657,6 +927,7 @@ export class AreareceiptComponent implements OnInit {
         SM_Code: item.SM_Code,
         SM_RName: item.SM_Name,
       }));
+      this.loadDevoteeMasterData();
     });
   }
 

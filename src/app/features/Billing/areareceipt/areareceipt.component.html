@@ -112,10 +112,24 @@
                   </mat-autocomplete>
                 </td>
                 <td>
-                  <input type="text" appUpperCase style="font-size: 14px; color: black; font-weight: 800"
+                  <input type="text" appUpperCase matInput style="font-size: 14px; color: black; font-weight: 800"
                     class="form-control custom" [placeholder]="'PLACEHOLDER.NAME' | translate" formControlName="Name"
+                    [matAutocomplete]="nameAuto" (blur)="onNameBlur(i)"
                     [readonly]="multidayBooking[i]" (keydown)="navigateToNext($event, i, 'starName')"
-                    id="Name-{{ i }}" />
+                    (focus)="selectText($event)" id="Name-{{ i }}" />
+                  <mat-autocomplete autoActiveFirstOption #nameAuto="matAutocomplete" class="large-autocomplete-panel"
+                    (optionSelected)="onNameSelect($event, i)">
+                    <mat-option *ngFor="let option of nameFilteredOption[i]" [value]="option">
+                      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                        <span style="font-size: 13px; font-weight: 700; color: #1a2f49;">
+                          {{ option }}
+                        </span>
+                        <span *ngIf="getDevoteeStarDisplay(option)" style="font-size: 11px; font-weight: 700; color: #e67e22; background: #fff3cd; padding: 2px 8px; border-radius: 4px; margin-left: 10px;">
+                          {{ getDevoteeStarDisplay(option) }}
+                        </span>
+                      </div>
+                    </mat-option>
+                  </mat-autocomplete>
                   <div [ngStyle]="{
                       display:
                         row.get('Mattinagal')?.value === 'Y' ? 'block' : 'none',
