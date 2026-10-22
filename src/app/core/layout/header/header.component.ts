@@ -136,7 +136,9 @@ return `${window.location.origin}/apis/TempleLogo/${this.logo}`;
   // ================= DIALOGS =================
   openChangepasswordDialog(): void {
     this.dialog.open(ChangePasswordComponent, {
-      width: '300px',
+      width: '380px',
+      maxWidth: '92vw',
+      panelClass: 'custom-change-password-dialog',
       disableClose: true,
     });
   }

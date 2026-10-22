@@ -59,6 +59,7 @@ export class ChangePasswordComponent {
   onSubmit() {
 
     if (this.changepasswordForm.invalid) {
+      this.changepasswordForm.markAllAsTouched();
       return; 
     }
     const payLoad = {

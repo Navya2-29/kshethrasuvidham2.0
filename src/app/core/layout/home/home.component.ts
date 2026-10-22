@@ -168,7 +168,9 @@ export class HomeComponent {
   }
   openChangePasswordDialog() {
     const dialogRef = this.dialog.open(ChangePasswordComponent, {
-      width: '300px',
+      width: '380px',
+      maxWidth: '92vw',
+      panelClass: 'custom-change-password-dialog',
       disableClose: true,
     });
 

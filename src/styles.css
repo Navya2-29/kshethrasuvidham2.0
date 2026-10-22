@@ -87,3 +87,13 @@ input.gothram::placeholder {
   padding: 0 !important;
   overflow: visible !important;
 }
+
+.custom-change-password-dialog .mat-mdc-dialog-container,
+.custom-change-password-dialog .mat-mdc-dialog-surface,
+.custom-change-password-dialog .mdc-dialog__surface {
+  border-radius: 20px !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 16px 40px rgba(10, 30, 60, 0.18) !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
